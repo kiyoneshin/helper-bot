@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
 import logging
+import asyncio
 
 log = logging.getLogger("StaffBot")
 
@@ -14,6 +15,8 @@ class WelcomeCog(commands.Cog):
         channel = self.bot.get_channel(self.welcome_channel_id)
         if isinstance(channel, discord.TextChannel):
             try:
+                await asyncio.sleep(1)
+                
                 embed = discord.Embed(
                     title="Aloha Mem Mới Nha! ✨",
                     description=(
@@ -21,15 +24,13 @@ class WelcomeCog(commands.Cog):
                         f"chọn roles mà bạn muốn tại <#1498731263304007710> , thả lỏng, làm quen với mọi người tại <#1498711783223853101> "
                         f"và biến nơi đây thành ngôi nhà thứ hai của mình nhé."
                     ),
-                    color=0xffb6c1 # Màu hồng pastel cute
+                    color=0xffb6c1
                 )
                 
                 if member.display_avatar:
                     embed.set_thumbnail(url=member.display_avatar.url)
                 
-                ping_msg = "<@&1498711782192189494> cùng <@&1498711782192189492> và <@&1510230255988900002> ra chào đón mem mới nha!"
-                
-                await channel.send(content=ping_msg, embed=embed)
+                await channel.send(embed=embed)
                 log.info(f"Đã gửi thiệp chào mừng tới {member.display_name}")
                 
             except Exception as e:
