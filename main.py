@@ -28,7 +28,7 @@ intents.message_content = True
 
 class StaffBot(commands.Bot):
     def __init__(self):
-        super().__init__(command_prefix="!", intents=intents, help_command=None)
+        super().__init__(command_prefix="y!", intents=intents, help_command=None)
         self.db_pool: Optional[asyncpg.Pool] = None
         self.trap_channel_id: int = TRAP_CHANNEL_ID
 
@@ -58,6 +58,7 @@ class StaffBot(commands.Bot):
         await self.load_extension("cogs.admin")
         await self.load_extension("cogs.staff_ui")
         await self.load_extension("cogs.trap_channel")
+        await self.load_extension("cogs.welcome")
         log.info("Đã nạp thành công các Cogs.")
 
         if TARGET_GUILD != 0:

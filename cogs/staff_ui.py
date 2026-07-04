@@ -9,11 +9,22 @@ def parse_json_field(field_data) -> Any:
     return field_data if field_data is not None else []
 
 def get_main_embed() -> discord.Embed:
-    return discord.Embed(
-        title="🏠 Thông tin Server",
-        description="Chào mọi người, đây là kênh thông tin chung của server.\n\n**Vài rule nhỏ:**\n- Tôn trọng mọi người.\n- Cần hỗ trợ cứ tag đúng role bên dưới nhé.\n\n👇 Chọn menu dưới đây để xem danh sách Staff.",
-        color=0x2b2d31
+    embed = discord.Embed(
+        title="🏠 Chào mừng đến với Angelic ໒꒱",
+        description=(
+            "Tiếng chuông nhà thờ khẽ ngân vang, cánh cổng thiên đường đã mở rộng chào đón bạn! ଘ(੭ˊᵕˋ)੭\n"
+            "Hãy biến nơi đây thành mái nhà bình yên để cùng trò chuyện, chơi game, chữa lành và lưu giữ những kỷ niệm đẹp nhé.\n\n"
+            "📜 **TÓM TẮT LUẬT SERVER (CẦN NHỚ KỸ):**\n"
+            "**1. Văn hóa giao tiếp:** Tôn trọng tất cả mọi người, đùa giỡn có chừng mực. Nghiêm cấm gây war, drama hay mạo danh người khác.\n"
+            "**2. Lằn ranh đỏ (BAN thẳng):** Tuyệt đối không Phân biệt vùng miền/chủng tộc, sài tool phá hoại (spam/nuke/raid), hoặc mua bán trái phép.\n"
+            "**3. Nội dung nhạy cảm:** Hạn chế tối đa nói tục. Cấm gửi nội dung NSFW, máu me ở kênh chung (chỉ được gửi trong 🔞｜𝐓𝐎𝐗𝐈𝐂).\n"
+            "**4. Giữ gìn trật tự:** Không spam (tin nhắn, ping, sticker, ticket). Cấm quảng cáo link ngoài khi chưa được phép.\n"
+            "**5. Không gian chung:** Trò chuyện đúng chủ đề từng kênh, không phá room voice của người khác và tuân thủ lời nhắc của Staff.\n\n"
+            "*Vui lòng chọn menu phía dưới để làm quen với danh sách Ban Quản Trị!*"
+        ),
+        color=0xffb6c1
     )
+    return embed
 
 def build_embed(profile: dict, member: Optional[discord.Member], page: int) -> discord.Embed:
     photos = profile.get("photos", [])
@@ -207,6 +218,28 @@ class StaffUICog(commands.Cog):
         except discord.Forbidden:
             pass
         await ctx.send(embed=get_main_embed(), view=MainView())
+
+    @commands.command(name="help")
+    async def custom_help(self, ctx: commands.Context):
+        embed = discord.Embed(
+            title="Danh sách lệnh của Bot Angelic ໒꒱",
+            description="Dưới đây là các lệnh và tính năng hiện tại bạn có thể sử dụng:",
+            color=0x5865f2
+        )
+        
+        embed.add_field(
+            name="`y!menu`",
+            value="Hiển thị bảng giao diện (Menu) xem danh sách Staff và đánh giá.",
+            inline=False
+        )
+        embed.add_field(
+            name="`y!addstaff`",
+            value="*(Chỉ dành cho Admin có quyền Quản trị)* Thêm hoặc cập nhật dữ liệu Staff.\n**Cú pháp:** `y!addstaff @tag_người_đó tên_role giới_thiệu`\n*(Role hợp lệ: `owner`, `admin`, `recep`)*",
+            inline=False
+        )
+        
+        embed.set_footer(text="Gõ đúng cú pháp nhé!")
+        await ctx.send(embed=embed)
 
 async def setup(bot):
     await bot.add_cog(StaffUICog(bot))
