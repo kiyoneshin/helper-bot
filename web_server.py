@@ -25,4 +25,4 @@ async def start_web_server(bot, port: int):
     runner = web.AppRunner(app)
     await runner.setup()
     await web.TCPSite(runner, "0.0.0.0", port).start()
-    log.info(f"🌐 Web Dashboard đang chạy tại port {port}")
+    log.info(f"Web Dashboard đang chạy tại port {port}")
