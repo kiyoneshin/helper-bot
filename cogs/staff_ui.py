@@ -7,30 +7,20 @@ from typing import Optional, Any
 log = logging.getLogger("StaffBot")
 
 # =====================================================================
-# 1. HÀM THÔNG MINH TỰ ĐỘNG DÒ TÌM & THỰC THI DATABASE
+# 1. HÀM THÔNG MINH TỰ ĐỘNG DÒ TÌM DATABASE TRÊN BOT
 # =====================================================================
 
 async def query_db(bot: Any, sql: str, *args) -> list:
-    """Tự động lấy dữ liệu từ DB (SELECT)"""
+    """Tự động tìm biến kết nối DB trên bot (dù tên là db, pool, database hay db_pool)"""
     possible_names = ['db', 'pool', 'database', 'db_pool', 'conn', 'postgres', 'pg', 'connection']
     for name in possible_names:
         if hasattr(bot, name):
             db_obj = getattr(bot, name)
             if hasattr(db_obj, 'fetch'):
                 return await db_obj.fetch(sql, *args)
+                
     log.error("Không tìm thấy biến kết nối Database hợp lệ trên object bot!")
     return []
-
-async def execute_db(bot: Any, sql: str, *args) -> bool:
-    """Tự động thực thi lệnh thay đổi DB (INSERT, UPDATE, DELETE)"""
-    possible_names = ['db', 'pool', 'database', 'db_pool', 'conn', 'postgres', 'pg', 'connection']
-    for name in possible_names:
-        if hasattr(bot, name):
-            db_obj = getattr(bot, name)
-            if hasattr(db_obj, 'execute'):
-                await db_obj.execute(sql, *args)
-                return True
-    return False
 
 
 # =====================================================================
@@ -102,68 +92,80 @@ def build_embed(user_data: dict, member: Optional[discord.Member] = None, photo_
 
 
 # =====================================================================
-# 3. GIAO DIỆN MODAL ĐÁNH GIÁ (VOTE BOX)
+# 3. MODAL (FORM) NHẬP ĐIỂM ĐÁNH GIÁ VOTE
 # =====================================================================
 
 class VoteModal(discord.ui.Modal, title="🌟 Đánh Giá Nhân Sự"):
-    """Hộp thoại nhập điểm số với bộ lọc 1 chữ số thập phân"""
+    """Form bật lên để người dùng nhập điểm số từ 0.0 đến 5.0"""
     score_input = discord.ui.TextInput(
-        label="Nhập điểm đánh giá (Từ 1.0 đến 5.0)",
-        placeholder="Ví dụ: 4.5, 5.0, 3.8...",
+        label="Nhập điểm đánh giá (0.0 đến 5.0):",
+        placeholder="Ví dụ chuẩn: 4.5 hoặc 5.0 (Tối đa 1 số thập phân)",
         min_length=1,
         max_length=3,
         required=True
     )
 
-    def __init__(self, parent_view: Any, user_data: dict, member: Optional[discord.Member]):
+    def __init__(self, profile_view):
         super().__init__()
-        self.parent_view = parent_view
-        self.user_data = user_data
-        self.member = member
+        self.profile_view = profile_view
 
     async def on_submit(self, interaction: discord.Interaction):
-        input_str = self.score_input.value.strip().replace(',', '.')
+        val_str = self.score_input.value.strip().replace(',', '.')
         
-        # KIỂM TRA ĐỊNH DẠNG: Chỉ nhận số từ 1.0 đến 5.0 và tối đa 1 chữ số thập phân
+        # Kiểm tra khắt khe: Phải là số, từ 0.0 đến 5.0, tối đa 1 chữ số thập phân
         try:
-            score = float(input_str)
-            if score < 1.0 or score > 5.0:
+            val = float(val_str)
+            parts = val_str.split('.')
+            if len(parts) == 2 and len(parts[1]) > 1:
                 raise ValueError()
-            parts = str(score).split('.')
-            if len(parts) > 1 and len(parts[1]) > 1:
+            if not (0.0 <= val <= 5.0):
                 raise ValueError()
         except ValueError:
             await interaction.response.send_message(
-                "➡️ **Điểm đánh giá không hợp lệ!**\n➡️ Vui lòng chỉ nhập số từ **1.0 đến 5.0** và tối đa **1 chữ số thập phân** (Ví dụ hợp lệ: `4.5`, `5.0`, `3.8`).", 
+                "⚠️ **Điểm đánh giá không hợp lệ!**\n➡️ Vui lòng chỉ nhập số từ `0.0` đến `5.0` với tối đa 1 chữ số thập phân (Ví dụ chuẩn: `4.5`, `5.0`, `3`).",
                 ephemeral=True
             )
             return
 
-        # TÍNH TOÁN ĐIỂM TRUNG BÌNH MỚI
-        old_votes = int(self.user_data.get('votes') or 0)
-        old_rating = float(self.user_data.get('rating') or 0.0)
-        
-        new_votes = old_votes + 1
-        new_rating = round(((old_rating * old_votes) + score) / new_votes, 1)
-        
-        # ĐẨY LÊN DATABASE RAILWAY
-        doc_id = str(self.user_data.get('discord_id'))
-        bot = interaction.client
-        success = await execute_db(bot, "UPDATE profiles SET votes = $1, rating = $2 WHERE discord_id = $3", new_votes, new_rating, doc_id)
-        
-        if not success:
-            await interaction.response.send_message("➡️ Có lỗi xảy ra khi kết nối đến Cơ sở dữ liệu! Vui lòng thử lại sau.", ephemeral=True)
-            return
+        val = round(val, 1)
+        bot: Any = interaction.client
+        target_id = str(self.profile_view.user_data.get('discord_id'))
 
-        # CẬP NHẬT DỮ LIỆU TẠI CHỖ & HIỂN THỊ LÊN NÚT BẤM
-        self.user_data['votes'] = new_votes
-        self.user_data['rating'] = new_rating
+        # Lấy danh sách điểm hiện tại từ Database
+        records = await query_db(bot, "SELECT votes FROM profiles WHERE discord_id = $1", target_id)
+        votes_list = []
+        if records and records[0].get('votes'):
+            v_data = records[0]['votes']
+            if isinstance(v_data, str):
+                try: votes_list = json.loads(v_data)
+                except Exception: votes_list = []
+            elif isinstance(v_data, list):
+                votes_list = v_data
+
+        votes_list.append(val)
+        new_avg = round(sum(float(v) for v in votes_list) / len(votes_list), 1)
+
+        # Cập nhật mảng votes và điểm rating trung bình lên PostgreSQL
+        await query_db(
+            bot, 
+            "UPDATE profiles SET votes = $1::jsonb, rating = $2 WHERE discord_id = $3",
+            json.dumps(votes_list), new_avg, target_id
+        )
+
+        # Cập nhật dữ liệu ngay tại View hiện tại
+        self.profile_view.user_data['votes'] = votes_list
+        self.profile_view.user_data['rating'] = new_avg
         
-        self.parent_view.score_btn.label = f"⭐ {new_rating:.1f} / 5.0 ({new_votes} lượt)"
+        # Cập nhật lại nhãn trên nút hiển thị điểm (nút bị khóa)
+        self.profile_view.rating_display_btn.label = f"⭐ {new_avg}/5.0 ({len(votes_list)} lượt)"
+
+        # Tải lại giao diện tin nhắn
+        await interaction.message.edit(view=self.profile_view)
         
-        embed = build_embed(self.user_data, self.member, self.parent_view.photo_index)
-        await interaction.response.edit_message(embed=embed, view=self.parent_view)
-        await interaction.followup.send(f"➡️ **Cảm ơn bạn!** Đánh giá **{score}/5.0** cho **{self.user_data.get('display_name')}** đã được lưu lên Cơ sở dữ liệu!", ephemeral=True)
+        await interaction.response.send_message(
+            f"💖 **Cảm ơn bạn!** Đã ghi nhận điểm đánh giá **{val} ⭐** và cập nhật lên hệ thống!",
+            ephemeral=True
+        )
 
 
 # =====================================================================
@@ -179,7 +181,7 @@ class BaseStaffView(discord.ui.View):
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
         if interaction.user.id != self.author_id:
             await interaction.response.send_message(
-                "➡️ Bạn không thể thao tác trên bảng menu của người khác! Hãy tự gõ `y!menu` để xem nhé.", 
+                "Bạn không thể thao tác trên bảng menu của người khác! Hãy tự gõ `y!menu` để xem nhé.", 
                 ephemeral=True
             )
             return False
@@ -226,14 +228,13 @@ class RoleSelectDropdown(discord.ui.Select):
             await interaction.response.edit_message(embed=empty_embed, view=BackOnlyView(self.author_id))
             return
 
-        # IN DANH SÁCH THẲNG VÀO EMBED
         list_text = f"➡️ **Danh sách các {selected_role.upper()} đang hoạt động:**\n\n"
         for idx, row in enumerate(records, 1):
             name = row.get('display_name', 'Unnamed')
             doc_id = row.get('discord_id')
             list_text += f"**{idx}. {name}** (<@{doc_id}>)\n"
             
-        list_text += "\n➡️ *Vui lòng chọn tên nhân sự từ menu thả xuống bên dưới để xem hồ sơ chi tiết và đánh giá!*"
+        list_text += "\n➡️ *Vui lòng chọn tên nhân sự từ menu thả xuống bên dưới để xem hồ sơ chi tiết và ảnh!*"
 
         role_embed = discord.Embed(
             title=f"📋 Danh sách {selected_role.upper()}",
@@ -273,7 +274,7 @@ class StaffSelectDropdown(discord.ui.Select):
         user_data = next((item for item in self.staff_records if str(item['discord_id']) == selected_id), None)
         
         if not user_data:
-            await interaction.response.send_message("➡️ Không tìm thấy thông tin nhân sự này!", ephemeral=True)
+            await interaction.response.send_message("Không tìm thấy thông tin nhân sự này!", ephemeral=True)
             return
             
         member: Optional[discord.Member] = interaction.guild.get_member(int(selected_id)) if interaction.guild else None
@@ -297,7 +298,7 @@ class StaffListView(BaseStaffView):
 
 
 class ProfileView(BaseStaffView):
-    """View hiển thị Profile chi tiết, có nút Vote và nút hiển thị điểm (khóa bấm)"""
+    """View hiển thị Profile chi tiết, có nút chuyển ảnh, nút điểm trung bình (khóa) và nút đánh giá"""
     def __init__(self, author_id: int, user_data: dict, member: Optional[discord.Member], staff_records: list, role_name: str):
         super().__init__(author_id=author_id)
         self.user_data = user_data
@@ -306,7 +307,6 @@ class ProfileView(BaseStaffView):
         self.role_name = role_name
         self.photo_index = 0
         
-        # Xử lý bật/tắt nút ảnh
         photos = user_data.get('photos', [])
         if isinstance(photos, str):
             try: photos = json.loads(photos)
@@ -316,10 +316,17 @@ class ProfileView(BaseStaffView):
             self.prev_btn.disabled = True
             self.next_btn.disabled = True
 
-        # Đặt thông số cho Nút Hiển Thị Điểm (Nút thứ 3 bên phải nút ảnh tiếp theo, KHÔNG BẤM ĐƯỢC)
-        rating = float(user_data.get('rating') or 0.0)
-        votes = int(user_data.get('votes') or 0)
-        self.score_btn.label = f"⭐ {rating:.1f} / 5.0 ({votes} lượt)"
+        # Tính toán điểm trung bình để hiển thị ra nút bên phải nút Ảnh tiếp
+        votes = user_data.get('votes', [])
+        if isinstance(votes, str):
+            try: votes = json.loads(votes)
+            except Exception: votes = []
+            
+        if votes and len(votes) > 0:
+            avg = round(sum(float(v) for v in votes) / len(votes), 1)
+            self.rating_display_btn.label = f"⭐ {avg}/5.0 ({len(votes)} lượt)"
+        else:
+            self.rating_display_btn.label = "⭐ Chưa có điểm"
 
     @discord.ui.button(label="⏮️ Ảnh trước", style=discord.ButtonStyle.primary, row=0)
     async def prev_btn(self, interaction: discord.Interaction, button: discord.ui.Button):
@@ -345,15 +352,15 @@ class ProfileView(BaseStaffView):
             embed = build_embed(self.user_data, self.member, self.photo_index)
             await interaction.response.edit_message(embed=embed, view=self)
 
-    # NÚT HIỂN THỊ ĐIỂM (KHÓA BẤM - CHỈ ĐỂ HIỂN THỊ)
-    @discord.ui.button(label="⭐ Điểm: 0.0 / 5.0", style=discord.ButtonStyle.secondary, disabled=True, row=0)
-    async def score_btn(self, interaction: discord.Interaction, button: discord.ui.Button):
-        pass # Nút bị khóa nên hàm này sẽ không bao giờ bị gọi
+    # Nút nằm bên phải nút Ảnh tiếp, KHÔNG bấm được, chỉ dùng để hiển thị điểm
+    @discord.ui.button(label="⭐ Chưa có điểm", style=discord.ButtonStyle.secondary, disabled=True, row=0)
+    async def rating_display_btn(self, interaction: discord.Interaction, button: discord.ui.Button):
+        pass
 
-    # NÚT BẤM VOTE ĐỂ MỞ MODAL ĐÁNH GIÁ
-    @discord.ui.button(label="🌟 Đánh Giá", style=discord.ButtonStyle.success, row=0)
+    # Nút bấm để mở Modal (Form) cho người dùng gõ điểm đánh giá
+    @discord.ui.button(label="🌟 Đánh giá", style=discord.ButtonStyle.success, row=0)
     async def vote_btn(self, interaction: discord.Interaction, button: discord.ui.Button):
-        await interaction.response.send_modal(VoteModal(parent_view=self, user_data=self.user_data, member=self.member))
+        await interaction.response.send_modal(VoteModal(self))
 
     @discord.ui.button(label="« Danh sách Staff", style=discord.ButtonStyle.secondary, row=1)
     async def back_to_list(self, interaction: discord.Interaction, button: discord.ui.Button):
@@ -363,7 +370,7 @@ class ProfileView(BaseStaffView):
             doc_id = row.get('discord_id')
             list_text += f"**{idx}. {name}** (<@{doc_id}>)\n"
             
-        list_text += "\n➡️ *Vui lòng chọn tên nhân sự từ menu thả xuống bên dưới để xem hồ sơ chi tiết và đánh giá!*"
+        list_text += "\n➡️ *Vui lòng chọn tên nhân sự từ menu thả xuống bên dưới để xem hồ sơ chi tiết và ảnh!*"
 
         role_embed = discord.Embed(
             title=f"📋 Danh sách {self.role_name.upper()}",
@@ -400,19 +407,17 @@ class StaffUICog(commands.Cog):
     async def check_db(self, ctx: commands.Context):
         """Lệnh kiểm tra toàn bộ danh sách đang có trong Database"""
         try:
-            records = await query_db(self.bot, "SELECT discord_id, role, display_name, rating, votes FROM profiles")
+            records = await query_db(self.bot, "SELECT discord_id, role, display_name FROM profiles")
             if not records:
                 await ctx.send("📭 **Database profiles đang TRỐNG!**\n➡️ Hãy lên Railway kiểm tra lại xem dữ liệu bạn nhập đã được ấn phím **Enter** để xác nhận lưu chưa nhé!")
                 return
             
             msg = "**📋 Danh sách thực tế đang lưu trong Database:**\n"
             for r in records:
-                rating = float(r.get('rating') or 0.0)
-                votes = int(r.get('votes') or 0)
-                msg += f"➡️ ID: `{r['discord_id']}` | Role: `{r['role']}` | Tên: **{r['display_name']}** | ⭐ **{rating:.1f}/5.0** ({votes} vote)\n"
+                msg += f"➡️ ID: `{r['discord_id']}` | Role: `{r['role']}` | Tên: **{r['display_name']}**\n"
             await ctx.send(msg)
         except Exception as e:
-            await ctx.send(f"➡️ Lỗi truy vấn Database: {e}")
+            await ctx.send(f"Lỗi truy vấn Database: {e}")
 
     @commands.command(name="help", aliases=["huongdan", "lenh", "commands"])
     async def help_cmd(self, ctx: commands.Context):
@@ -424,11 +429,11 @@ class StaffUICog(commands.Cog):
         )
         
         embed.add_field(
-            name="✨ Lệnh Giao Diện & Ban Quản Trị",
+            name="✨ Lệnh Giao Diện & Nhân Sự",
             value=(
-                "➡️ `y!menu` (hoặc `y!staff`, `y!bqt`): Mở bảng tương tác xem danh sách, ảnh, và đánh giá điểm cho BQT.\n"
-                "➡️ `y!checkdb`: Kiểm tra nhanh danh sách nhân sự cùng số điểm Vote hiện tại trong Cơ Sở Dữ Liệu.\n"
-                "➡️ `y!addstaff <id> <role> <tên>`: Thêm nhanh một nhân sự mới thẳng vào hệ thống Database."
+                "➡️ `y!menu` (hoặc `y!staff`, `y!bqt`): Mở bảng giao diện xem danh sách và thông tin Ban Quản Trị.\n"
+                "➡️ `y!checkdb`: Kiểm tra nhanh danh sách toàn bộ nhân sự đang được lưu trong Cơ Sở Dữ Liệu.\n"
+                "➡️ `y!addstaff <id> <role> <tên>`: Thêm nhanh một nhân sự mới vào hệ thống Database."
             ),
             inline=False
         )
@@ -436,12 +441,12 @@ class StaffUICog(commands.Cog):
         embed.add_field(
             name="📌 Lệnh Hệ Thống",
             value=(
-                "➡️ `y!help` (hoặc `y!huongdan`): Hiển thị bảng hướng dẫn chi tiết các câu lệnh này."
+                "➡️ `y!help` (hoặc `y!huongdan`): Hiển thị bảng hướng dẫn câu lệnh này."
             ),
             inline=False
         )
         
-        embed.set_footer(text="Angelic Bot • Hãy sử dụng nút Đánh Giá trên menu để chấm điểm cho các Staff nhé!")
+        embed.set_footer(text="Angelic Bot • Sử dụng mũi tên để điều hướng các menu dễ dàng hơn!")
         await ctx.send(embed=embed)
 
 async def setup(bot):
