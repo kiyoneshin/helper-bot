@@ -7,7 +7,24 @@ from typing import Optional, Any
 log = logging.getLogger("StaffBot")
 
 # =====================================================================
-# 1. CÁC HÀM TẠO EMBED GIAO DIỆN
+# 1. HÀM THÔNG MINH TỰ ĐỘNG DÒ TÌM DATABASE TRÊN BOT
+# =====================================================================
+
+async def query_db(bot: Any, sql: str, *args) -> list:
+    """Tự động tìm biến kết nối DB trên bot (dù tên là db, pool, database hay db_pool)"""
+    possible_names = ['db', 'pool', 'database', 'db_pool', 'conn', 'postgres', 'pg', 'connection']
+    for name in possible_names:
+        if hasattr(bot, name):
+            db_obj = getattr(bot, name)
+            if hasattr(db_obj, 'fetch'):
+                return await db_obj.fetch(sql, *args)
+                
+    log.error("Không tìm thấy biến kết nối Database hợp lệ trên object bot!")
+    return []
+
+
+# =====================================================================
+# 2. CÁC HÀM TẠO EMBED GIAO DIỆN
 # =====================================================================
 
 def get_main_embed() -> discord.Embed:
@@ -75,7 +92,7 @@ def build_embed(user_data: dict, member: Optional[discord.Member] = None, photo_
 
 
 # =====================================================================
-# 2. CÁC CLASS GIAO DIỆN (VIEWS & DROPDOWNS)
+# 3. CÁC CLASS GIAO DIỆN (VIEWS & DROPDOWNS)
 # =====================================================================
 
 class BaseStaffView(discord.ui.View):
@@ -120,8 +137,8 @@ class RoleSelectDropdown(discord.ui.Select):
         bot: Any = interaction.client
         
         try:
-            # Dùng ILIKE '%role%' để tìm kiếm siêu chuẩn, dù trong DB có lỡ viết hoa hay bị dư dấu cách vẫn tìm ra!
-            records = await bot.db.fetch("SELECT * FROM profiles WHERE role ILIKE $1", f"%{selected_role}%")
+            # Sử dụng hàm dò tìm tự động query_db và tìm kiếm siêu chuẩn ILIKE
+            records = await query_db(bot, "SELECT * FROM profiles WHERE role ILIKE $1", f"%{selected_role}%")
         except Exception as e:
             log.error(f"Lỗi lấy dữ liệu DB: {e}")
             records = []
@@ -129,7 +146,7 @@ class RoleSelectDropdown(discord.ui.Select):
         if not records or len(records) == 0:
             empty_embed = discord.Embed(
                 title=f"📋 Danh sách {selected_role.upper()}",
-                description=f"🌸 Hiện tại chưa có nhân sự nào giữ vị trí **{selected_role.upper()}** trong server.\n\n*Admin có thể sử dụng lệnh `y!addstaff` hoặc kiểm tra lại Database bằng lệnh `y!checkdb`.*",
+                description=f"🌸 Hiện tại chưa có nhân sự nào giữ vị trí **{selected_role.upper()}** trong server.\n\n*Admin có thể sử dụng lệnh `y!addstaff` hoặc kiểm tra lại bằng lệnh `y!checkdb`.*",
                 color=0xffb6c1
             )
             await interaction.response.edit_message(embed=empty_embed, view=BackOnlyView(self.author_id))
@@ -241,7 +258,7 @@ class ProfileView(BaseStaffView):
                 photos = []
             
         if photos:
-            self.photo_index = (self.photo_index - 1) % len(photos)
+            self.photo_index = (self.photo_index + 1) % len(photos)
             embed = build_embed(self.user_data, self.member, self.photo_index)
             await interaction.response.edit_message(embed=embed, view=self)
 
@@ -263,7 +280,7 @@ class ProfileView(BaseStaffView):
 
 
 # =====================================================================
-# 3. COG CHÍNH & LỆNH Y!MENU / Y!CHECKDB
+# 4. COG CHÍNH & LỆNH Y!MENU / Y!CHECKDB
 # =====================================================================
 
 class StaffUICog(commands.Cog):
@@ -273,21 +290,19 @@ class StaffUICog(commands.Cog):
     @commands.command(name="menu", aliases=["staff", "bqt"])
     async def send_menu(self, ctx: commands.Context):
         """Lệnh hiển thị Menu giới thiệu Ban Quản Trị Angelic"""
-        # Tôi đã TẮT dòng xóa tin nhắn của bạn. 
-        # Giờ bạn gõ y!menu, tin nhắn của bạn sẽ được giữ nguyên không bị xóa nữa!
         await ctx.send(embed=get_main_embed(), view=MainView(author_id=ctx.author.id))
         log.info(f"🌸 {ctx.author.display_name} vừa mở bảng Menu Staff.")
 
     @commands.command(name="checkdb")
     async def check_db(self, ctx: commands.Context):
-        """Lệnh hỗ trợ kiểm tra xem Database thực tế đang lưu những ai"""
+        """Lệnh kiểm tra toàn bộ danh sách đang có trong Database"""
         try:
-            records = await self.bot.db.fetch("SELECT discord_id, role, display_name FROM profiles")
+            records = await query_db(self.bot, "SELECT discord_id, role, display_name FROM profiles")
             if not records:
-                await ctx.send("📭 **Database hiện tại đang HOÀN TOÀN TRỐNG!**\n➡️ Điều này có nghĩa là các thao tác bấm `+ Row` trên Railway của bạn chưa được lưu vào máy chủ. Hãy lên Railway nhập lại và nhớ ấn **Enter** để lưu nhé!")
+                await ctx.send("📭 **Database profiles đang TRỐNG!**\n➡️ Hãy lên Railway kiểm tra lại xem dữ liệu bạn nhập đã được ấn phím **Enter** để xác nhận lưu chưa nhé!")
                 return
             
-            msg = "**📋 Danh sách thực tế đang được lưu trong Database profiles:**\n"
+            msg = "**📋 Danh sách thực tế đang lưu trong Database:**\n"
             for r in records:
                 msg += f"➡️ ID: `{r['discord_id']}` | Role: `{r['role']}` | Tên: **{r['display_name']}**\n"
             await ctx.send(msg)
