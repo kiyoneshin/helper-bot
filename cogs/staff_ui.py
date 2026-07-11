@@ -92,7 +92,7 @@ def build_embed(user_data: dict, member: Optional[discord.Member] = None, photo_
 
 
 # =====================================================================
-# 3. MODAL (FORM) NHẬP ĐIỂM ĐÁNH GIÁ VOTE (ĐÃ FIX TRIỆT ĐỂ LỖI DICT/JSON)
+# 3. MODAL (FORM) NHẬP ĐIỂM ĐÁNH GIÁ VOTE (ĐÃ FIX LỖI RECORD CHỈ ĐỌC)
 # =====================================================================
 
 class VoteModal(discord.ui.Modal, title="🌟 Đánh Giá Nhân Sự"):
@@ -150,7 +150,7 @@ class VoteModal(discord.ui.Modal, title="🌟 Đánh Giá Nhân Sự"):
             elif isinstance(v_data, list):
                 votes_list = v_data
 
-        # LỚP GIÁP BẢO VỆ CHỐNG CRASH: Nếu trong DB lưu nhầm thành dict '{}' hoặc kiểu khác, tự động ép về list rỗng '[]'
+        # Bảo vệ chống lỗi dict '{}' nếu trong DB lưu nhầm
         if not isinstance(votes_list, list):
             votes_list = []
 
@@ -162,6 +162,10 @@ class VoteModal(discord.ui.Modal, title="🌟 Đánh Giá Nhân Sự"):
             "UPDATE profiles SET votes = $1::text::jsonb, rating = $2 WHERE discord_id = $3",
             json.dumps(votes_list), new_avg, target_id
         )
+
+        # NÂNG CẤP CHỐNG LỖI READ-ONLY: Ép kiểu user_data từ asyncpg.Record sang dict thông thường
+        if not isinstance(self.profile_view.user_data, dict):
+            self.profile_view.user_data = dict(self.profile_view.user_data)
 
         self.profile_view.user_data['votes'] = votes_list
         self.profile_view.user_data['rating'] = new_avg
@@ -285,6 +289,9 @@ class StaffSelectDropdown(discord.ui.Select):
             await interaction.response.send_message("Không tìm thấy thông tin nhân sự này!", ephemeral=True)
             return
             
+        # NÂNG CẤP CHỐNG LỖI READ-ONLY: Ép kiểu user_data thành dict ngay khi chọn Staff
+        user_data = dict(user_data)
+
         member: Optional[discord.Member] = interaction.guild.get_member(int(selected_id)) if interaction.guild else None
         embed = build_embed(user_data=user_data, member=member, photo_index=0)
         
@@ -333,7 +340,6 @@ class ProfileView(BaseStaffView):
             except Exception: 
                 votes = []
         
-        # Bảo vệ chống lỗi dict '{}' lúc khởi tạo View
         if not isinstance(votes, list):
             votes = []
             
