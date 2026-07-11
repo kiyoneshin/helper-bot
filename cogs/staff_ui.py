@@ -92,14 +92,14 @@ def build_embed(user_data: dict, member: Optional[discord.Member] = None, photo_
 
 
 # =====================================================================
-# 3. MODAL (FORM) NHẬP ĐIỂM ĐÁNH GIÁ VOTE
+# 3. MODAL (FORM) NHẬP ĐIỂM ĐÁNH GIÁ VOTE (ĐÃ FIX LỖI & NÂNG CẤP)
 # =====================================================================
 
 class VoteModal(discord.ui.Modal, title="🌟 Đánh Giá Nhân Sự"):
-    """Form bật lên để người dùng nhập điểm số từ 0.0 đến 5.0"""
+    """Form bật lên để người dùng nhập điểm số từ 0 đến 5"""
     score_input = discord.ui.TextInput(
-        label="Nhập điểm đánh giá (0.0 đến 5.0):",
-        placeholder="Ví dụ chuẩn: 4.5 hoặc 5.0 (Tối đa 1 số thập phân)",
+        label="Nhập điểm đánh giá (Từ 0 đến 5):",
+        placeholder="Chấp nhận số nguyên (5, 4) hoặc thập phân (5.0, 4.5)",
         min_length=1,
         max_length=3,
         required=True
@@ -112,16 +112,18 @@ class VoteModal(discord.ui.Modal, title="🌟 Đánh Giá Nhân Sự"):
     async def on_submit(self, interaction: discord.Interaction):
         val_str = self.score_input.value.strip().replace(',', '.')
         
+        # Kiểm tra tính hợp lệ: Nhận cả 5 lẫn 5.0, tối đa 1 số thập phân, từ 0 đến 5
         try:
             val = float(val_str)
+            if not (0.0 <= val <= 5.0):
+                raise ValueError()
+                
             parts = val_str.split('.')
             if len(parts) == 2 and len(parts[1]) > 1:
                 raise ValueError()
-            if not (0.0 <= val <= 5.0):
-                raise ValueError()
         except ValueError:
             await interaction.response.send_message(
-                "⚠️ **Điểm đánh giá không hợp lệ!**\n➡️ Vui lòng chỉ nhập số từ `0.0` đến `5.0` với tối đa 1 chữ số thập phân (Ví dụ chuẩn: `4.5`, `5.0`, `3`).",
+                "⚠️ **Điểm đánh giá không hợp lệ!**\n➡️ Vui lòng chỉ nhập điểm từ `0` đến `5`. Chấp nhận dạng số nguyên như `5`, `4` hoặc tối đa 1 chữ số thập phân như `5.0`, `4.5`.",
                 ephemeral=True
             )
             return
@@ -130,6 +132,15 @@ class VoteModal(discord.ui.Modal, title="🌟 Đánh Giá Nhân Sự"):
         bot: Any = interaction.client
         target_id = str(self.profile_view.user_data.get('discord_id'))
 
+        # Kiểm tra bảo mật chót: Không cho phép tự vote chính mình
+        if str(interaction.user.id) == target_id:
+            await interaction.response.send_message(
+                "⚠️ **Bạn không thể tự đánh giá (vote) cho chính bản thân mình được nhé!**",
+                ephemeral=True
+            )
+            return
+
+        # Lấy danh sách điểm hiện tại từ Database
         records = await query_db(bot, "SELECT votes FROM profiles WHERE discord_id = $1", target_id)
         votes_list = []
         if records and records[0].get('votes'):
@@ -143,20 +154,23 @@ class VoteModal(discord.ui.Modal, title="🌟 Đánh Giá Nhân Sự"):
         votes_list.append(val)
         new_avg = round(sum(float(v) for v in votes_list) / len(votes_list), 1)
 
+        # FIX LỖI DB: Dùng $1::text::jsonb để PostgreSQL nhận chuẩn xác chuỗi JSON không bị từ chối
         await query_db(
             bot, 
-            "UPDATE profiles SET votes = $1::jsonb, rating = $2 WHERE discord_id = $3",
+            "UPDATE profiles SET votes = $1::text::jsonb, rating = $2 WHERE discord_id = $3",
             json.dumps(votes_list), new_avg, target_id
         )
 
+        # Cập nhật dữ liệu vào View hiện tại
         self.profile_view.user_data['votes'] = votes_list
         self.profile_view.user_data['rating'] = new_avg
         self.profile_view.rating_display_btn.label = f"⭐ {new_avg}/5.0 ({len(votes_list)} lượt)"
 
-        if interaction.message:
-            await interaction.message.edit(view=self.profile_view)
+        # Cập nhật lại tin nhắn giao diện ngay lập tức mà không bị timeout
+        await interaction.response.edit_message(view=self.profile_view)
         
-        await interaction.response.send_message(
+        # Gửi popup thông báo thành công cho người vote
+        await interaction.followup.send(
             f"💖 **Cảm ơn bạn!** Đã ghi nhận điểm đánh giá **{val} ⭐** và cập nhật lên hệ thống!",
             ephemeral=True
         )
@@ -349,8 +363,16 @@ class ProfileView(BaseStaffView):
     async def rating_display_btn(self, interaction: discord.Interaction, button: discord.ui.Button):
         pass
 
+    # NÂNG CẤP: Kiểm tra tự vote cho bản thân ngay tại nút bấm
     @discord.ui.button(label="🌟 Đánh giá", style=discord.ButtonStyle.success, row=0)
     async def vote_btn(self, interaction: discord.Interaction, button: discord.ui.Button):
+        target_id = str(self.user_data.get('discord_id'))
+        if str(interaction.user.id) == target_id:
+            await interaction.response.send_message(
+                "⚠️ **Bạn không thể tự đánh giá (vote) cho chính bản thân mình được nhé!**",
+                ephemeral=True
+            )
+            return
         await interaction.response.send_modal(VoteModal(self))
 
     @discord.ui.button(label="« Danh sách Staff", style=discord.ButtonStyle.secondary, row=1)
