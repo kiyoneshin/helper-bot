@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 import logging
 import asyncio
+import random
 
 log = logging.getLogger("StaffBot")
 
@@ -17,22 +18,17 @@ class WelcomeCog(commands.Cog):
             try:
                 await asyncio.sleep(1)
                 
-                embed = discord.Embed(
-                    title="Aloha Mem Mới Nha! ✨",
-                    description=(
-                        f"Rất vui vì {member.mention} đã tìm đến Angelic ໒꒱.\n\n"
-                        f"Hãy đọc luật tại <#1512135955983630617>.\n\n"
-                        f"Chọn roles mà bạn muốn tại <#1498731263304007710>.\n\n"
-                        f"Thả lỏng, làm quen với mọi người tại <#1498711783223853101> và biến nơi đây thành ngôi nhà thứ hai của mình nhé."
-                    ),
-                    color=0xffb6c1
-                )
+                welcome_messages = [
+                    f"hé luuu, chào mừng {member.mention} tình iu đến với sivi ăng giê líc cuti cuti",
+                    f"queo căm bbi {member.mention} đến với sivi của tụi mình, mong tình iu cứ thoải mái nói chuyện ạ",
+                    f"lốp ăng giê líc xin chào tình iu {member.mention} đã đến với sv của chúng mình",
+                    f"chào mừng {member.mention} đến với sv của tụi mình, mong tình iu sẽ có những trải nghiệm vui vẻ ạ"
+                ]
                 
-                if member.display_avatar:
-                    embed.set_thumbnail(url=member.display_avatar.url)
+                selected_message = random.choice(welcome_messages)
                 
-                await channel.send(embed=embed)
-                log.info(f"Đã gửi thiệp chào mừng tới {member.display_name}")
+                await channel.send(selected_message)
+                log.info(f"Đã gửi text chào mừng tới {member.display_name}")
                 
             except Exception as e:
                 log.error(f"Lỗi gửi tin nhắn welcome: {e}")
