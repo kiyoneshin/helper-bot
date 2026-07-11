@@ -92,7 +92,7 @@ def build_embed(user_data: dict, member: Optional[discord.Member] = None, photo_
 
 
 # =====================================================================
-# 3. MODAL (FORM) NHẬP ĐIỂM ĐÁNH GIÁ VOTE (ĐÃ FIX LỖI & NÂNG CẤP)
+# 3. MODAL (FORM) NHẬP ĐIỂM ĐÁNH GIÁ VOTE (ĐÃ FIX TRIỆT ĐỂ LỖI DICT/JSON)
 # =====================================================================
 
 class VoteModal(discord.ui.Modal, title="🌟 Đánh Giá Nhân Sự"):
@@ -112,7 +112,6 @@ class VoteModal(discord.ui.Modal, title="🌟 Đánh Giá Nhân Sự"):
     async def on_submit(self, interaction: discord.Interaction):
         val_str = self.score_input.value.strip().replace(',', '.')
         
-        # Kiểm tra tính hợp lệ: Nhận cả 5 lẫn 5.0, tối đa 1 số thập phân, từ 0 đến 5
         try:
             val = float(val_str)
             if not (0.0 <= val <= 5.0):
@@ -132,7 +131,6 @@ class VoteModal(discord.ui.Modal, title="🌟 Đánh Giá Nhân Sự"):
         bot: Any = interaction.client
         target_id = str(self.profile_view.user_data.get('discord_id'))
 
-        # Kiểm tra bảo mật chót: Không cho phép tự vote chính mình
         if str(interaction.user.id) == target_id:
             await interaction.response.send_message(
                 "⚠️ **Bạn không thể tự đánh giá (vote) cho chính bản thân mình được nhé!**",
@@ -140,37 +138,39 @@ class VoteModal(discord.ui.Modal, title="🌟 Đánh Giá Nhân Sự"):
             )
             return
 
-        # Lấy danh sách điểm hiện tại từ Database
         records = await query_db(bot, "SELECT votes FROM profiles WHERE discord_id = $1", target_id)
         votes_list = []
-        if records and records[0].get('votes'):
+        if records and records[0].get('votes') is not None:
             v_data = records[0]['votes']
             if isinstance(v_data, str):
-                try: votes_list = json.loads(v_data)
-                except Exception: votes_list = []
+                try: 
+                    votes_list = json.loads(v_data)
+                except Exception: 
+                    votes_list = []
             elif isinstance(v_data, list):
                 votes_list = v_data
+
+        # LỚP GIÁP BẢO VỆ CHỐNG CRASH: Nếu trong DB lưu nhầm thành dict '{}' hoặc kiểu khác, tự động ép về list rỗng '[]'
+        if not isinstance(votes_list, list):
+            votes_list = []
 
         votes_list.append(val)
         new_avg = round(sum(float(v) for v in votes_list) / len(votes_list), 1)
 
-        # FIX LỖI DB: Dùng $1::text::jsonb để PostgreSQL nhận chuẩn xác chuỗi JSON không bị từ chối
         await query_db(
             bot, 
             "UPDATE profiles SET votes = $1::text::jsonb, rating = $2 WHERE discord_id = $3",
             json.dumps(votes_list), new_avg, target_id
         )
 
-        # Cập nhật dữ liệu vào View hiện tại
         self.profile_view.user_data['votes'] = votes_list
         self.profile_view.user_data['rating'] = new_avg
         self.profile_view.rating_display_btn.label = f"⭐ {new_avg}/5.0 ({len(votes_list)} lượt)"
 
-        # Cập nhật lại tin nhắn giao diện ngay lập tức mà không bị timeout
-        await interaction.response.edit_message(view=self.profile_view)
+        if interaction.message:
+            await interaction.message.edit(view=self.profile_view)
         
-        # Gửi popup thông báo thành công cho người vote
-        await interaction.followup.send(
+        await interaction.response.send_message(
             f"💖 **Cảm ơn bạn!** Đã ghi nhận điểm đánh giá **{val} ⭐** và cập nhật lên hệ thống!",
             ephemeral=True
         )
@@ -317,8 +317,10 @@ class ProfileView(BaseStaffView):
         
         photos = user_data.get('photos', [])
         if isinstance(photos, str):
-            try: photos = json.loads(photos)
-            except Exception: photos = []
+            try: 
+                photos = json.loads(photos)
+            except Exception: 
+                photos = []
             
         if len(photos) <= 1:
             self.prev_btn.disabled = True
@@ -326,8 +328,14 @@ class ProfileView(BaseStaffView):
 
         votes = user_data.get('votes', [])
         if isinstance(votes, str):
-            try: votes = json.loads(votes)
-            except Exception: votes = []
+            try: 
+                votes = json.loads(votes)
+            except Exception: 
+                votes = []
+        
+        # Bảo vệ chống lỗi dict '{}' lúc khởi tạo View
+        if not isinstance(votes, list):
+            votes = []
             
         if votes and len(votes) > 0:
             avg = round(sum(float(v) for v in votes) / len(votes), 1)
@@ -339,8 +347,10 @@ class ProfileView(BaseStaffView):
     async def prev_btn(self, interaction: discord.Interaction, button: discord.ui.Button):
         photos = self.user_data.get('photos', [])
         if isinstance(photos, str):
-            try: photos = json.loads(photos)
-            except Exception: photos = []
+            try: 
+                photos = json.loads(photos)
+            except Exception: 
+                photos = []
             
         if photos:
             self.photo_index = (self.photo_index - 1) % len(photos)
@@ -351,8 +361,10 @@ class ProfileView(BaseStaffView):
     async def next_btn(self, interaction: discord.Interaction, button: discord.ui.Button):
         photos = self.user_data.get('photos', [])
         if isinstance(photos, str):
-            try: photos = json.loads(photos)
-            except Exception: photos = []
+            try: 
+                photos = json.loads(photos)
+            except Exception: 
+                photos = []
             
         if photos:
             self.photo_index = (self.photo_index + 1) % len(photos)
@@ -363,7 +375,6 @@ class ProfileView(BaseStaffView):
     async def rating_display_btn(self, interaction: discord.Interaction, button: discord.ui.Button):
         pass
 
-    # NÂNG CẤP: Kiểm tra tự vote cho bản thân ngay tại nút bấm
     @discord.ui.button(label="🌟 Đánh giá", style=discord.ButtonStyle.success, row=0)
     async def vote_btn(self, interaction: discord.Interaction, button: discord.ui.Button):
         target_id = str(self.user_data.get('discord_id'))
