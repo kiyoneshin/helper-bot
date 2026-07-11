@@ -112,7 +112,6 @@ class VoteModal(discord.ui.Modal, title="🌟 Đánh Giá Nhân Sự"):
     async def on_submit(self, interaction: discord.Interaction):
         val_str = self.score_input.value.strip().replace(',', '.')
         
-        # Kiểm tra khắt khe: Phải là số, từ 0.0 đến 5.0, tối đa 1 chữ số thập phân
         try:
             val = float(val_str)
             parts = val_str.split('.')
@@ -131,7 +130,6 @@ class VoteModal(discord.ui.Modal, title="🌟 Đánh Giá Nhân Sự"):
         bot: Any = interaction.client
         target_id = str(self.profile_view.user_data.get('discord_id'))
 
-        # Lấy danh sách điểm hiện tại từ Database
         records = await query_db(bot, "SELECT votes FROM profiles WHERE discord_id = $1", target_id)
         votes_list = []
         if records and records[0].get('votes'):
@@ -145,22 +143,18 @@ class VoteModal(discord.ui.Modal, title="🌟 Đánh Giá Nhân Sự"):
         votes_list.append(val)
         new_avg = round(sum(float(v) for v in votes_list) / len(votes_list), 1)
 
-        # Cập nhật mảng votes và điểm rating trung bình lên PostgreSQL
         await query_db(
             bot, 
             "UPDATE profiles SET votes = $1::jsonb, rating = $2 WHERE discord_id = $3",
             json.dumps(votes_list), new_avg, target_id
         )
 
-        # Cập nhật dữ liệu ngay tại View hiện tại
         self.profile_view.user_data['votes'] = votes_list
         self.profile_view.user_data['rating'] = new_avg
-        
-        # Cập nhật lại nhãn trên nút hiển thị điểm (nút bị khóa)
         self.profile_view.rating_display_btn.label = f"⭐ {new_avg}/5.0 ({len(votes_list)} lượt)"
 
-        # Tải lại giao diện tin nhắn
-        await interaction.message.edit(view=self.profile_view)
+        if interaction.message:
+            await interaction.message.edit(view=self.profile_view)
         
         await interaction.response.send_message(
             f"💖 **Cảm ơn bạn!** Đã ghi nhận điểm đánh giá **{val} ⭐** và cập nhật lên hệ thống!",
@@ -316,7 +310,6 @@ class ProfileView(BaseStaffView):
             self.prev_btn.disabled = True
             self.next_btn.disabled = True
 
-        # Tính toán điểm trung bình để hiển thị ra nút bên phải nút Ảnh tiếp
         votes = user_data.get('votes', [])
         if isinstance(votes, str):
             try: votes = json.loads(votes)
@@ -352,12 +345,10 @@ class ProfileView(BaseStaffView):
             embed = build_embed(self.user_data, self.member, self.photo_index)
             await interaction.response.edit_message(embed=embed, view=self)
 
-    # Nút nằm bên phải nút Ảnh tiếp, KHÔNG bấm được, chỉ dùng để hiển thị điểm
     @discord.ui.button(label="⭐ Chưa có điểm", style=discord.ButtonStyle.secondary, disabled=True, row=0)
     async def rating_display_btn(self, interaction: discord.Interaction, button: discord.ui.Button):
         pass
 
-    # Nút bấm để mở Modal (Form) cho người dùng gõ điểm đánh giá
     @discord.ui.button(label="🌟 Đánh giá", style=discord.ButtonStyle.success, row=0)
     async def vote_btn(self, interaction: discord.Interaction, button: discord.ui.Button):
         await interaction.response.send_modal(VoteModal(self))
