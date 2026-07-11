@@ -120,7 +120,6 @@ class RoleSelectDropdown(discord.ui.Select):
         bot: Any = interaction.client
         
         try:
-            # FIX LỖI DB: Dùng LOWER(TRIM(role)) để chống lỗi viết hoa hay dư khoảng trắng trong DB
             records = await bot.db.fetch("SELECT * FROM profiles WHERE LOWER(TRIM(role)) = $1", selected_role.lower())
         except Exception as e:
             log.error(f"Lỗi lấy dữ liệu DB: {e}")
@@ -273,10 +272,6 @@ class StaffUICog(commands.Cog):
     @commands.command(name="menu", aliases=["staff", "bqt"])
     async def send_menu(self, ctx: commands.Context):
         """Lệnh hiển thị Menu giới thiệu Ban Quản Trị Angelic"""
-        try:
-            await ctx.message.delete()
-        except discord.Forbidden:
-            pass
             
         await ctx.send(embed=get_main_embed(), view=MainView(author_id=ctx.author.id))
         log.info(f"🌸 {ctx.author.display_name} vừa mở bảng Menu Staff.")
