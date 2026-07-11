@@ -92,7 +92,7 @@ def build_embed(user_data: dict, member: Optional[discord.Member] = None, photo_
 
 
 # =====================================================================
-# 3. MODAL (FORM) NHẬP ĐIỂM ĐÁNH GIÁ VOTE (ĐÃ FIX LỖI RECORD CHỈ ĐỌC)
+# 3. MODAL (FORM) NHẬP ĐIỂM VOTE (GIỮ NGUYÊN 100%)
 # =====================================================================
 
 class VoteModal(discord.ui.Modal, title="🌟 Đánh Giá Nhân Sự"):
@@ -139,37 +139,50 @@ class VoteModal(discord.ui.Modal, title="🌟 Đánh Giá Nhân Sự"):
             return
 
         records = await query_db(bot, "SELECT votes FROM profiles WHERE discord_id = $1", target_id)
-        votes_list = []
+        votes_dict = {}
         if records and records[0].get('votes') is not None:
             v_data = records[0]['votes']
             if isinstance(v_data, str):
                 try: 
-                    votes_list = json.loads(v_data)
+                    v_data = json.loads(v_data)
                 except Exception: 
-                    votes_list = []
+                    v_data = {}
+            
+            if isinstance(v_data, dict):
+                votes_dict = v_data
             elif isinstance(v_data, list):
-                votes_list = v_data
+                for idx, old_score in enumerate(v_data):
+                    if isinstance(old_score, (int, float)):
+                        votes_dict[f"old_voter_{idx}"] = float(old_score)
 
-        # Bảo vệ chống lỗi dict '{}' nếu trong DB lưu nhầm
-        if not isinstance(votes_list, list):
-            votes_list = []
+        if not isinstance(votes_dict, dict):
+            votes_dict = {}
 
-        votes_list.append(val)
-        new_avg = round(sum(float(v) for v in votes_list) / len(votes_list), 1)
+        voter_id = str(interaction.user.id)
+        
+        if voter_id in votes_dict:
+            await interaction.response.send_message(
+                "⚠️ **Bạn đã đánh giá cho nhân sự này rồi!**\n➡️ Mỗi người chỉ được quyền vote 1 lần duy nhất cho mỗi Staff để đảm bảo tính công bằng.",
+                ephemeral=True
+            )
+            return
+
+        votes_dict[voter_id] = val
+        scores = [float(v) for v in votes_dict.values()]
+        new_avg = round(sum(scores) / len(scores), 1)
 
         await query_db(
             bot, 
             "UPDATE profiles SET votes = $1::text::jsonb, rating = $2 WHERE discord_id = $3",
-            json.dumps(votes_list), new_avg, target_id
+            json.dumps(votes_dict), new_avg, target_id
         )
 
-        # NÂNG CẤP CHỐNG LỖI READ-ONLY: Ép kiểu user_data từ asyncpg.Record sang dict thông thường
         if not isinstance(self.profile_view.user_data, dict):
             self.profile_view.user_data = dict(self.profile_view.user_data)
 
-        self.profile_view.user_data['votes'] = votes_list
+        self.profile_view.user_data['votes'] = votes_dict
         self.profile_view.user_data['rating'] = new_avg
-        self.profile_view.rating_display_btn.label = f"⭐ {new_avg}/5.0 ({len(votes_list)} lượt)"
+        self.profile_view.rating_display_btn.label = f"⭐ {new_avg}/5.0 ({len(scores)} lượt)"
 
         if interaction.message:
             await interaction.message.edit(view=self.profile_view)
@@ -181,7 +194,7 @@ class VoteModal(discord.ui.Modal, title="🌟 Đánh Giá Nhân Sự"):
 
 
 # =====================================================================
-# 4. CÁC CLASS GIAO DIỆN (VIEWS & DROPDOWNS)
+# 4. CÁC CLASS GIAO DIỆN (VIEWS & DROPDOWNS - GIỮ NGUYÊN 100%)
 # =====================================================================
 
 class BaseStaffView(discord.ui.View):
@@ -289,7 +302,6 @@ class StaffSelectDropdown(discord.ui.Select):
             await interaction.response.send_message("Không tìm thấy thông tin nhân sự này!", ephemeral=True)
             return
             
-        # NÂNG CẤP CHỐNG LỖI READ-ONLY: Ép kiểu user_data thành dict ngay khi chọn Staff
         user_data = dict(user_data)
 
         member: Optional[discord.Member] = interaction.guild.get_member(int(selected_id)) if interaction.guild else None
@@ -333,19 +345,22 @@ class ProfileView(BaseStaffView):
             self.prev_btn.disabled = True
             self.next_btn.disabled = True
 
-        votes = user_data.get('votes', [])
+        votes = user_data.get('votes', {})
         if isinstance(votes, str):
             try: 
                 votes = json.loads(votes)
             except Exception: 
-                votes = []
+                votes = {}
         
-        if not isinstance(votes, list):
-            votes = []
+        scores = []
+        if isinstance(votes, list):
+            scores = [float(v) for v in votes if isinstance(v, (int, float))]
+        elif isinstance(votes, dict):
+            scores = [float(v) for v in votes.values()]
             
-        if votes and len(votes) > 0:
-            avg = round(sum(float(v) for v in votes) / len(votes), 1)
-            self.rating_display_btn.label = f"⭐ {avg}/5.0 ({len(votes)} lượt)"
+        if scores and len(scores) > 0:
+            avg = round(sum(scores) / len(scores), 1)
+            self.rating_display_btn.label = f"⭐ {avg}/5.0 ({len(scores)} lượt)"
         else:
             self.rating_display_btn.label = "⭐ Chưa có điểm"
 
@@ -418,7 +433,7 @@ class ProfileView(BaseStaffView):
 
 
 # =====================================================================
-# 5. COG CHÍNH & CÁC LỆNH Y!MENU / Y!CHECKDB / Y!HELP
+# 5. COG CHÍNH & CÁC LỆNH Y!MENU / Y!CHECKDB / Y!HELP / Y!VOTERS
 # =====================================================================
 
 class StaffUICog(commands.Cog):
@@ -449,6 +464,62 @@ class StaffUICog(commands.Cog):
         except Exception as e:
             await ctx.send(f"Lỗi truy vấn Database: {e}")
 
+    # ĐÃ SỬA LỖI PYLANCE: Đổi target: str = None thành Optional[str] = None
+    @commands.command(name="voters", aliases=["votelog", "xemvote"])
+    async def check_voters(self, ctx: commands.Context, target: Optional[str] = None):
+        """Lệnh kiểm tra xem ai đã vote cho ai và bao nhiêu điểm"""
+        if not target:
+            await ctx.send(
+                "⚠️ **Vui lòng nhập ID hoặc ping nhân sự cần xem lịch sử vote!**\n"
+                "➡️ Ví dụ chuẩn: `y!voters @Yon Yon Lon Ton` hoặc `y!voters 468428368828956692`"
+            )
+            return
+
+        target_id = target.replace("<@", "").replace("!", "").replace(">", "").strip()
+        
+        try:
+            records = await query_db(self.bot, "SELECT display_name, role, votes, rating FROM profiles WHERE discord_id = $1", target_id)
+            if not records:
+                await ctx.send("📭 **Không tìm thấy nhân sự này trong Database!**\n➡️ Vui lòng kiểm tra lại chính xác ID hoặc ping lại.")
+                return
+            
+            row = records[0]
+            name = row.get('display_name', 'Unnamed Staff')
+            v_data = row.get('votes', {})
+            votes_dict = {}
+            if isinstance(v_data, str):
+                try: votes_dict = json.loads(v_data)
+                except Exception: votes_dict = {}
+            elif isinstance(v_data, dict):
+                votes_dict = v_data
+            elif isinstance(v_data, list):
+                for idx, s in enumerate(v_data):
+                    if isinstance(s, (int, float)):
+                        votes_dict[f"old_voter_{idx}"] = float(s)
+
+            if not votes_dict:
+                await ctx.send(f"⭐ Hồ sơ của **{name}** hiện tại **chưa có lượt đánh giá nào!**")
+                return
+
+            details = ""
+            for idx, (voter_id, score) in enumerate(votes_dict.items(), 1):
+                if voter_id.startswith("old_"):
+                    details += f"**{idx}.** Người dùng ẩn danh *(Dữ liệu cũ)*: **{score} ⭐**\n"
+                else:
+                    details += f"**{idx}.** <@{voter_id}> (`{voter_id}`): **{score} ⭐**\n"
+            
+            # ĐÃ SỬA LỖI PYLANCE: Gom nội dung vào biến chuỗi trước thay vì dùng += trực tiếp trên embed.description
+            desc_text = f"➡️ Điểm trung bình hiện tại: **⭐ {row.get('rating', 0.0)}/5.0** ({len(votes_dict)} lượt)\n\n**Chi tiết từng lượt vote:**\n{details}"
+            embed = discord.Embed(
+                title=f"📋 Lịch Sử Đánh Giá Của {name}",
+                description=desc_text,
+                color=0xffb6c1
+            )
+            embed.set_footer(text="Angelic Bot • Hệ thống tự động ngăn chặn vote lặp lại 2 lần!")
+            await ctx.send(embed=embed)
+        except Exception as e:
+            await ctx.send(f"Lỗi truy vấn Database: {e}")
+
     @commands.command(name="help", aliases=["huongdan", "lenh", "commands"])
     async def help_cmd(self, ctx: commands.Context):
         """Lệnh hiển thị danh sách toàn bộ các câu lệnh của Bot"""
@@ -462,6 +533,7 @@ class StaffUICog(commands.Cog):
             name="✨ Lệnh Giao Diện & Nhân Sự",
             value=(
                 "➡️ `y!menu` (hoặc `y!staff`, `y!bqt`): Mở bảng giao diện xem danh sách và thông tin Ban Quản Trị.\n"
+                "➡️ `y!voters <@user/ID>`: Xem chi tiết danh sách những ai đã vote cho một Staff và số điểm cụ thể.\n"
                 "➡️ `y!checkdb`: Kiểm tra nhanh danh sách toàn bộ nhân sự đang được lưu trong Cơ Sở Dữ Liệu.\n"
                 "➡️ `y!addstaff <id> <role> <tên>`: Thêm nhanh một nhân sự mới vào hệ thống Database."
             ),
