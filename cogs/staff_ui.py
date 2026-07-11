@@ -137,7 +137,6 @@ class RoleSelectDropdown(discord.ui.Select):
         bot: Any = interaction.client
         
         try:
-            # Sử dụng hàm dò tìm tự động query_db và tìm kiếm siêu chuẩn ILIKE
             records = await query_db(bot, "SELECT * FROM profiles WHERE role ILIKE $1", f"%{selected_role}%")
         except Exception as e:
             log.error(f"Lỗi lấy dữ liệu DB: {e}")
@@ -152,9 +151,18 @@ class RoleSelectDropdown(discord.ui.Select):
             await interaction.response.edit_message(embed=empty_embed, view=BackOnlyView(self.author_id))
             return
 
+        # NÂNG CẤP: Tự động in danh sách các Staff ra thẳng nội dung Embed
+        list_text = f"➡️ **Danh sách các {selected_role.upper()} đang hoạt động:**\n\n"
+        for idx, row in enumerate(records, 1):
+            name = row.get('display_name', 'Unnamed')
+            doc_id = row.get('discord_id')
+            list_text += f"**{idx}. {name}** (<@{doc_id}>)\n"
+            
+        list_text += "\n➡️ *Vui lòng chọn tên nhân sự từ menu thả xuống bên dưới để xem hồ sơ chi tiết và ảnh!*"
+
         role_embed = discord.Embed(
             title=f"📋 Danh sách {selected_role.upper()}",
-            description="➡️ Vui lòng chọn một thành viên trong danh sách bên dưới để xem thông tin chi tiết và ảnh!",
+            description=list_text,
             color=0xffb6c1
         )
         await interaction.response.edit_message(
@@ -264,9 +272,18 @@ class ProfileView(BaseStaffView):
 
     @discord.ui.button(label="« Danh sách Staff", style=discord.ButtonStyle.secondary, row=1)
     async def back_to_list(self, interaction: discord.Interaction, button: discord.ui.Button):
+        # Tạo lại văn bản danh sách để khi quay lại vẫn thấy list tên
+        list_text = f"➡️ **Danh sách các {self.role_name.upper()} đang hoạt động:**\n\n"
+        for idx, row in enumerate(self.staff_records, 1):
+            name = row.get('display_name', 'Unnamed')
+            doc_id = row.get('discord_id')
+            list_text += f"**{idx}. {name}** (<@{doc_id}>)\n"
+            
+        list_text += "\n➡️ *Vui lòng chọn tên nhân sự từ menu thả xuống bên dưới để xem hồ sơ chi tiết và ảnh!*"
+
         role_embed = discord.Embed(
             title=f"📋 Danh sách {self.role_name.upper()}",
-            description="➡️ Vui lòng chọn một thành viên trong danh sách bên dưới để xem thông tin chi tiết và ảnh!",
+            description=list_text,
             color=0xffb6c1
         )
         await interaction.response.edit_message(
@@ -280,12 +297,14 @@ class ProfileView(BaseStaffView):
 
 
 # =====================================================================
-# 4. COG CHÍNH & LỆNH Y!MENU / Y!CHECKDB
+# 4. COG CHÍNH & CÁC LỆNH Y!MENU / Y!CHECKDB / Y!HELP
 # =====================================================================
 
 class StaffUICog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        if self.bot.get_command("help"):
+            self.bot.remove_command("help")
 
     @commands.command(name="menu", aliases=["staff", "bqt"])
     async def send_menu(self, ctx: commands.Context):
@@ -308,6 +327,36 @@ class StaffUICog(commands.Cog):
             await ctx.send(msg)
         except Exception as e:
             await ctx.send(f"Lỗi truy vấn Database: {e}")
+
+    @commands.command(name="help", aliases=["huongdan", "lenh", "commands"])
+    async def help_cmd(self, ctx: commands.Context):
+        """Lệnh hiển thị danh sách toàn bộ các câu lệnh của Bot"""
+        embed = discord.Embed(
+            title="Bảng Hướng Dẫn Câu Lệnh Angelic Bot ໒꒱",
+            description="Dưới đây là toàn bộ các câu lệnh khả dụng mà bạn có thể sử dụng trên server:",
+            color=0xffb6c1
+        )
+        
+        embed.add_field(
+            name="✨ Lệnh Giao Diện & Nhân Sự",
+            value=(
+                "➡️ `y!menu` (hoặc `y!staff`, `y!bqt`): Mở bảng giao diện xem danh sách và thông tin Ban Quản Trị.\n"
+                "➡️ `y!checkdb`: Kiểm tra nhanh danh sách toàn bộ nhân sự đang được lưu trong Cơ Sở Dữ Liệu.\n"
+                "➡️ `y!addstaff <id> <role> <tên>`: Thêm nhanh một nhân sự mới vào hệ thống Database."
+            ),
+            inline=False
+        )
+        
+        embed.add_field(
+            name="Lệnh Hệ Thống",
+            value=(
+                "➡️ `y!help` (hoặc `y!huongdan`): Hiển thị bảng hướng dẫn câu lệnh này."
+            ),
+            inline=False
+        )
+        
+        embed.set_footer(text="Angelic Bot • Sử dụng mũi tên để điều hướng các menu dễ dàng hơn!")
+        await ctx.send(embed=embed)
 
 async def setup(bot):
     await bot.add_cog(StaffUICog(bot))
