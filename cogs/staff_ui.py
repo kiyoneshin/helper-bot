@@ -1,14 +1,17 @@
 import discord
 from discord.ext import commands
+import logging
 import json
 from typing import Optional, Any
 
-def parse_json_field(field_data) -> Any:
-    if isinstance(field_data, str):
-        return json.loads(field_data)
-    return field_data if field_data is not None else []
+log = logging.getLogger("StaffBot")
+
+# =====================================================================
+# 1. CÁC HÀM TẠO EMBED GIAO DIỆN
+# =====================================================================
 
 def get_main_embed() -> discord.Embed:
+    """Tạo Embed chào mừng và luật server ở trang đầu tiên"""
     embed = discord.Embed(
         title="🏠 Chào mừng đến với Angelic ໒꒱",
         description=(
@@ -20,226 +23,264 @@ def get_main_embed() -> discord.Embed:
             "**3. Nội dung nhạy cảm:** Hạn chế tối đa nói tục. Cấm gửi nội dung NSFW, máu me ở kênh chung (chỉ được gửi trong 🔞｜𝐓𝐎𝐗𝐈𝐂).\n"
             "**4. Giữ gìn trật tự:** Không spam (tin nhắn, ping, sticker, ticket). Cấm quảng cáo link ngoài khi chưa được phép.\n"
             "**5. Không gian chung:** Trò chuyện đúng chủ đề từng kênh, không phá room voice của người khác và tuân thủ lời nhắc của Staff.\n\n"
-            "*Vui lòng chọn menu phía dưới để làm quen với danh sách Ban Quản Trị!*"
+            "➡️ *Vui lòng chọn menu phía dưới để làm quen với danh sách Ban Quản Trị!*"
         ),
-        color=0xffb6c1
+        color=0xffb6c1 # Màu hồng pastel cute
     )
     return embed
 
-def build_embed(profile: dict, member: Optional[discord.Member], page: int) -> discord.Embed:
-    photos = profile.get("photos", [])
-    tags = profile.get("tags", [])
-    rating = float(profile.get("rating", 0))
-    votes = profile.get("votes", {})
-    name = profile.get("display_name") or (member.display_name if member else "Thành viên cũ")
 
-    embed = discord.Embed(color=0x5865f2)
-    avatar_url = member.display_avatar.url if member else None
+def build_embed(user_data: dict, member: Optional[discord.Member] = None, photo_index: int = 0) -> discord.Embed:
+    """Tạo Embed hiển thị Profile của Staff"""
+    display_name = user_data.get('display_name', 'Unnamed Staff')
+    role_name = user_data.get('role', 'staff').upper()
     
-    if avatar_url:
-        embed.set_author(name=f"✦ {name}", icon_url=avatar_url)
-        embed.set_thumbnail(url=avatar_url)
+    embed = discord.Embed(
+        title=f"✨ {display_name} ✨",
+        color=0xffb6c1
+    )
+    
+    tags = user_data.get('tags', [])
+    if isinstance(tags, str):
+        try: 
+            tags = json.loads(tags)
+        except Exception: 
+            tags = []
+        
+    if tags:
+        embed.description = "\n".join(f"♱ {t}" for t in tags)
     else:
-        embed.set_author(name=f"✦ {name}")
-
-    if tags: 
-        embed.description = "\n".join(f"✦ {t}" for t in tags)
-    embed.add_field(name="⭐ Đánh giá", value=f"**{round(rating, 1)}**/5.0 (`{len(votes)} vote`)", inline=True)
-    if profile.get('contact'):
-        embed.add_field(name="📞 Liên hệ", value=profile['contact'], inline=True)
-
-    if photos:
-        idx = max(0, min(page, len(photos) - 1))
-        embed.set_image(url=photos[idx])
-        embed.set_footer(text=f"Ảnh {idx+1}/{len(photos)}")
-    else:
-        embed.set_footer(text="Chưa có ảnh")
+        embed.description = "*Chưa có thông tin giới thiệu.*"
+        
+    if member and member.display_avatar:
+        embed.set_thumbnail(url=member.display_avatar.url)
+        
+    photos = user_data.get('photos', [])
+    if isinstance(photos, str):
+        try: 
+            photos = json.loads(photos)
+        except Exception: 
+            photos = []
+        
+    if photos and len(photos) > photo_index:
+        img_url = str(photos[photo_index]).strip()
+        if img_url.startswith("http://") or img_url.startswith("https://"):
+            embed.set_image(url=img_url)
+        else:
+            log.warning(f"⚠️ Phát hiện URL ảnh không hợp lệ trong DB, tự động bỏ qua: {img_url}")
+            
+    total_photos = max(1, len(photos))
+    embed.set_footer(text=f"Vị trí: {role_name} • Ảnh {photo_index + 1}/{total_photos}")
     return embed
 
-class MainDropdown(discord.ui.Select):
-    def __init__(self):
+
+# =====================================================================
+# 2. CÁC CLASS GIAO DIỆN (VIEWS & DROPDOWNS)
+# =====================================================================
+
+class BaseStaffView(discord.ui.View):
+    """View cơ sở chứa tính năng khóa người dùng"""
+    def __init__(self, author_id: int, timeout: float = 300):
+        super().__init__(timeout=timeout)
+        self.author_id = author_id
+
+    async def interaction_check(self, interaction: discord.Interaction) -> bool:
+        if interaction.user.id != self.author_id:
+            # Đã bỏ icon X ở thông báo lỗi
+            await interaction.response.send_message(
+                "Bạn không thể thao tác trên bảng menu của người khác! Hãy tự gõ `y!menu` để xem nhé.", 
+                ephemeral=True
+            )
+            return False
+        return True
+
+
+class BackOnlyView(BaseStaffView):
+    """View chỉ có 1 nút Quay lại"""
+    def __init__(self, author_id: int):
+        super().__init__(author_id=author_id)
+
+    @discord.ui.button(label="« Quay về Trang Chủ", style=discord.ButtonStyle.secondary)
+    async def back_button(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await interaction.response.edit_message(embed=get_main_embed(), view=MainView(self.author_id))
+
+
+class RoleSelectDropdown(discord.ui.Select):
+    """Menu thả xuống chọn Chức vụ ở Trang chủ"""
+    def __init__(self, author_id: int):
+        self.author_id = author_id
         options = [
-            discord.SelectOption(label="Tổng quan Server", value="overview", emoji="🏠"),
-            discord.SelectOption(label="Owner", value="owner", description="Chủ server", emoji="👑"),
-            discord.SelectOption(label="Admin", value="admin", description="Quản trị viên", emoji="🛡️"),
-            discord.SelectOption(label="Recep", value="recep", description="Lễ tân / Helper", emoji="💬")
+            discord.SelectOption(label="Owner", description="Xem danh sách Chủ sở hữu server", emoji="👑", value="owner"),
+            discord.SelectOption(label="Admin", description="Xem danh sách Quản trị viên", emoji="🛡️", value="admin"),
+            discord.SelectOption(label="Recep", description="Xem danh sách Lễ tân chào đón", emoji="🌸", value="recep")
         ]
-        super().__init__(placeholder="Xem thông tin ban quản trị...", min_values=1, max_values=1, options=options)
+        super().__init__(placeholder="🗂️ Chọn bộ phận BQT bạn muốn xem...", min_values=1, max_values=1, options=options)
 
     async def callback(self, interaction: discord.Interaction):
-        role_val = self.values[0]
-        if role_val == "overview":
-            await interaction.response.edit_message(embed=get_main_embed(), view=self.view)
-            return
-            
+        selected_role = self.values[0]
         bot: Any = interaction.client
-        async with bot.db_pool.acquire() as conn:
-            records = await conn.fetch("SELECT discord_id, display_name, description FROM profiles WHERE role = $1", role_val)
         
-        if not records:
-            await interaction.response.send_message("Chưa có ai ở vị trí này cả.", ephemeral=True)
-            return
-
-        embed = discord.Embed(title=f"Danh sách {role_val.capitalize()}", description="Chọn một nhân sự phía dưới để xem chi tiết.", color=0x5865f2)
-        await interaction.response.edit_message(embed=embed, view=RoleView(role_val, records))
-
-class MainView(discord.ui.View):
-    def __init__(self):
-        super().__init__(timeout=None)
-        self.add_item(MainDropdown())
-
-class StaffDropdown(discord.ui.Select):
-    def __init__(self, role_val: str, records: list):
-        self.role_val = role_val
-        options = []
-        for r in records:
-            name = r['display_name'] or "Unknown"
-            desc = (r['description'] or "")[:50] + "..." if r['description'] else "Click xem chi tiết"
-            options.append(discord.SelectOption(label=name, value=r['discord_id'], description=desc, emoji="👤"))
-        super().__init__(placeholder="Chọn người muốn xem...", min_values=1, max_values=1, options=options)
-
-    async def callback(self, interaction: discord.Interaction):
-        uid = self.values[0]
-        bot: Any = interaction.client
-        async with bot.db_pool.acquire() as conn:
-            profile = await conn.fetchrow("SELECT * FROM profiles WHERE discord_id = $1", uid)
-        
-        if profile:
-            member = interaction.guild.get_member(int(uid)) if interaction.guild else None
-            p_dict = dict(profile)
-            p_dict['tags'] = parse_json_field(p_dict['tags'])
-            p_dict['photos'] = parse_json_field(p_dict['photos'])
-            p_dict['votes'] = parse_json_field(p_dict.get('votes', '{}'))
-            if not isinstance(p_dict['votes'], dict): p_dict['votes'] = {}
-            
-            embed = build_embed(p_dict, member, 0)
-            await interaction.response.edit_message(embed=embed, view=ProfileView(uid, member, p_dict, self.role_val))
-
-class RoleView(discord.ui.View):
-    def __init__(self, role_val: str, records: list):
-        super().__init__(timeout=None)
-        self.add_item(StaffDropdown(role_val, records))
-
-    @discord.ui.button(label="Quay lại", emoji="⬅️", style=discord.ButtonStyle.secondary, row=1)
-    async def back_btn(self, interaction: discord.Interaction, button: discord.ui.Button):
-        await interaction.response.edit_message(embed=get_main_embed(), view=MainView())
-
-class RateModal(discord.ui.Modal, title="Đánh giá thành viên"):
-    score = discord.ui.TextInput(label="Số điểm (1-5)", placeholder="Ví dụ: 4.5", max_length=3, required=True)
-
-    def __init__(self, user_id: str, member: Optional[discord.Member], view: 'ProfileView'):
-        super().__init__()
-        self.user_id = user_id
-        self.member = member
-        self.pview = view
-
-    async def on_submit(self, interaction: discord.Interaction):
         try:
-            val = float(str(self.score).replace(",", "."))
-            if not (1 <= val <= 5): raise ValueError
-        except ValueError:
-            await interaction.response.send_message("Điểm không hợp lệ! Nhập số từ 1 đến 5.", ephemeral=True)
+            records = await bot.db.fetch("SELECT * FROM profiles WHERE role = $1", selected_role)
+        except Exception as e:
+            log.error(f"Lỗi lấy dữ liệu DB: {e}")
+            records = []
+
+        if not records or len(records) == 0:
+            empty_embed = discord.Embed(
+                title=f"📋 Danh sách {selected_role.upper()}",
+                description=f"🌸 Hiện tại chưa có nhân sự nào giữ vị trí **{selected_role.upper()}** trong server.\n\n*Admin có thể sử dụng lệnh `y!addstaff` hoặc cập nhật Database để bổ sung nhân sự vào danh sách này.*",
+                color=0xffb6c1
+            )
+            await interaction.response.edit_message(embed=empty_embed, view=BackOnlyView(self.author_id))
             return
 
-        voter = str(interaction.user.id)
-        if voter == self.user_id:
-            await interaction.response.send_message("Không thể tự đánh giá bản thân!", ephemeral=True)
+        role_embed = discord.Embed(
+            title=f"📋 Danh sách {selected_role.upper()}",
+            description="➡️ Vui lòng chọn một thành viên trong danh sách bên dưới để xem thông tin chi tiết và ảnh!",
+            color=0xffb6c1
+        )
+        await interaction.response.edit_message(
+            embed=role_embed, 
+            view=StaffListView(author_id=self.author_id, staff_records=records, role_name=selected_role)
+        )
+
+
+class MainView(BaseStaffView):
+    """View Trang chủ chính của Menu"""
+    def __init__(self, author_id: int):
+        super().__init__(author_id=author_id)
+        self.add_item(RoleSelectDropdown(author_id))
+
+
+class StaffSelectDropdown(discord.ui.Select):
+    """Menu thả xuống chọn từng Staff cụ thể"""
+    def __init__(self, author_id: int, staff_records: list, role_name: str):
+        self.author_id = author_id
+        self.staff_records = staff_records
+        self.role_name = role_name
+        
+        options = []
+        for row in staff_records:
+            name = row.get('display_name', 'Staff')
+            doc_id = str(row.get('discord_id'))
+            options.append(discord.SelectOption(label=name, description=f"Xem hồ sơ của {name}", value=doc_id, emoji="✨"))
+            
+        super().__init__(placeholder="👤 Chọn nhân sự muốn xem hồ sơ...", min_values=1, max_values=1, options=options)
+
+    async def callback(self, interaction: discord.Interaction):
+        selected_id = self.values[0]
+        user_data = next((item for item in self.staff_records if str(item['discord_id']) == selected_id), None)
+        
+        if not user_data:
+            # Đã bỏ icon X ở thông báo lỗi
+            await interaction.response.send_message("Không tìm thấy thông tin nhân sự này!", ephemeral=True)
             return
-
-        bot: Any = interaction.client
-        async with bot.db_pool.acquire() as conn:
-            profile = await conn.fetchrow("SELECT votes FROM profiles WHERE discord_id = $1", self.user_id)
-            if not profile:
-                await interaction.response.send_message("Lỗi dữ liệu.", ephemeral=True)
-                return
             
-            votes = parse_json_field(profile['votes'])
-            if not isinstance(votes, dict): votes = {}
-            
-            votes[voter] = val
-            new_rating = round(sum(votes.values()) / len(votes), 2)
-            
-            await conn.execute("UPDATE profiles SET votes = $1::jsonb, rating = $2 WHERE discord_id = $3", json.dumps(votes), new_rating, self.user_id)
+        member: Optional[discord.Member] = interaction.guild.get_member(int(selected_id)) if interaction.guild else None
+        embed = build_embed(user_data=user_data, member=member, photo_index=0)
+        
+        await interaction.response.edit_message(
+            embed=embed, 
+            view=ProfileView(author_id=self.author_id, user_data=user_data, member=member, staff_records=self.staff_records, role_name=self.role_name)
+        )
 
-        self.pview.profile["votes"] = votes
-        self.pview.profile["rating"] = new_rating
-        self.pview._update_buttons()
-        await interaction.response.edit_message(embed=build_embed(self.pview.profile, self.member, self.pview.page), view=self.pview)
 
-class ProfileView(discord.ui.View):
-    def __init__(self, user_id: str, member: Optional[discord.Member], profile_data: dict, from_role: str):
-        super().__init__(timeout=None)
-        self.user_id = user_id
+class StaffListView(BaseStaffView):
+    """View chứa danh sách nhân sự của 1 Role"""
+    def __init__(self, author_id: int, staff_records: list, role_name: str):
+        super().__init__(author_id=author_id)
+        self.add_item(StaffSelectDropdown(author_id, staff_records, role_name))
+
+    @discord.ui.button(label="« Quay về Trang Chủ", style=discord.ButtonStyle.secondary, row=1)
+    async def back_button(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await interaction.response.edit_message(embed=get_main_embed(), view=MainView(self.author_id))
+
+
+class ProfileView(BaseStaffView):
+    """View hiển thị Profile chi tiết, có nút chuyển ảnh và quay lại"""
+    def __init__(self, author_id: int, user_data: dict, member: Optional[discord.Member], staff_records: list, role_name: str):
+        super().__init__(author_id=author_id)
+        self.user_data = user_data
         self.member = member
-        self.profile = profile_data
-        self.from_role = from_role
-        self.page = 0
-        self._update_buttons()
+        self.staff_records = staff_records
+        self.role_name = role_name
+        self.photo_index = 0
+        
+        photos = user_data.get('photos', [])
+        if isinstance(photos, str):
+            try: 
+                photos = json.loads(photos)
+            except Exception: 
+                photos = []
+            
+        if len(photos) <= 1:
+            self.prev_btn.disabled = True
+            self.next_btn.disabled = True
 
-    def _update_buttons(self):
-        total = len(self.profile.get("photos", []))
-        for child in self.children:
-            if isinstance(child, discord.ui.Button) and child.custom_id:
-                if child.custom_id == "prev": child.disabled = self.page <= 0
-                if child.custom_id == "next": child.disabled = self.page >= total - 1
-
-    @discord.ui.button(emoji="⬅️", style=discord.ButtonStyle.secondary, custom_id="back")
-    async def back_btn(self, interaction: discord.Interaction, button: discord.ui.Button):
-        bot: Any = interaction.client
-        async with bot.db_pool.acquire() as conn:
-            records = await conn.fetch("SELECT discord_id, display_name, description FROM profiles WHERE role = $1", self.from_role)
-        embed = discord.Embed(title=f"Danh sách {self.from_role.capitalize()}", description="Chọn một nhân sự phía dưới để xem chi tiết.", color=0x5865f2)
-        await interaction.response.edit_message(embed=embed, view=RoleView(self.from_role, records))
-
-    @discord.ui.button(emoji="⏮", style=discord.ButtonStyle.secondary, custom_id="prev")
+    @discord.ui.button(label="⏮️ Ảnh trước", style=discord.ButtonStyle.primary, row=0)
     async def prev_btn(self, interaction: discord.Interaction, button: discord.ui.Button):
-        self.page = max(0, self.page - 1)
-        self._update_buttons()
-        await interaction.response.edit_message(embed=build_embed(self.profile, self.member, self.page), view=self)
+        photos = self.user_data.get('photos', [])
+        if isinstance(photos, str):
+            try: 
+                photos = json.loads(photos)
+            except Exception: 
+                photos = []
+            
+        if photos:
+            self.photo_index = (self.photo_index - 1) % len(photos)
+            embed = build_embed(self.user_data, self.member, self.photo_index)
+            await interaction.response.edit_message(embed=embed, view=self)
 
-    @discord.ui.button(emoji="⏭", style=discord.ButtonStyle.secondary, custom_id="next")
+    @discord.ui.button(label="⏭️ Ảnh tiếp", style=discord.ButtonStyle.primary, row=0)
     async def next_btn(self, interaction: discord.Interaction, button: discord.ui.Button):
-        self.page = min(len(self.profile.get("photos", [])) - 1, self.page + 1)
-        self._update_buttons()
-        await interaction.response.edit_message(embed=build_embed(self.profile, self.member, self.page), view=self)
+        photos = self.user_data.get('photos', [])
+        if isinstance(photos, str):
+            try: 
+                photos = json.loads(photos)
+            except Exception: 
+                photos = []
+            
+        if photos:
+            self.photo_index = (self.photo_index + 1) % len(photos)
+            embed = build_embed(self.user_data, self.member, self.photo_index)
+            await interaction.response.edit_message(embed=embed, view=self)
 
-    @discord.ui.button(label="⭐ Đánh giá", style=discord.ButtonStyle.primary, custom_id="rate")
-    async def rate_btn(self, interaction: discord.Interaction, button: discord.ui.Button):
-        await interaction.response.send_modal(RateModal(self.user_id, self.member, self))
+    @discord.ui.button(label="« Danh sách Staff", style=discord.ButtonStyle.secondary, row=1)
+    async def back_to_list(self, interaction: discord.Interaction, button: discord.ui.Button):
+        role_embed = discord.Embed(
+            title=f"📋 Danh sách {self.role_name.upper()}",
+            description="➡️ Vui lòng chọn một thành viên trong danh sách bên dưới để xem thông tin chi tiết và ảnh!",
+            color=0xffb6c1
+        )
+        await interaction.response.edit_message(
+            embed=role_embed, 
+            view=StaffListView(self.author_id, self.staff_records, self.role_name)
+        )
+
+    @discord.ui.button(label="🏠 Trang Chủ", style=discord.ButtonStyle.danger, row=1)
+    async def back_to_home(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await interaction.response.edit_message(embed=get_main_embed(), view=MainView(self.author_id))
+
+
+# =====================================================================
+# 3. COG CHÍNH & LỆNH Y!MENU
+# =====================================================================
 
 class StaffUICog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name="menu")
+    @commands.command(name="menu", aliases=["staff", "bqt"])
     async def send_menu(self, ctx: commands.Context):
+        """Lệnh hiển thị Menu giới thiệu Ban Quản Trị Angelic"""
         try:
             await ctx.message.delete()
         except discord.Forbidden:
             pass
-        await ctx.send(embed=get_main_embed(), view=MainView())
-
-    @commands.command(name="help")
-    async def custom_help(self, ctx: commands.Context):
-        embed = discord.Embed(
-            title="Danh sách lệnh của Bot Angelic ໒꒱",
-            description="Dưới đây là các lệnh và tính năng hiện tại bạn có thể sử dụng:",
-            color=0x5865f2
-        )
-        
-        embed.add_field(
-            name="`y!menu`",
-            value="Hiển thị bảng giao diện (Menu) xem danh sách Staff và đánh giá.",
-            inline=False
-        )
-        embed.add_field(
-            name="`y!addstaff`",
-            value="*(Chỉ dành cho Admin có quyền Quản trị)* Thêm hoặc cập nhật dữ liệu Staff.\n**Cú pháp:** `y!addstaff @tag_người_đó tên_role giới_thiệu`\n*(Role hợp lệ: `owner`, `admin`, `recep`)*",
-            inline=False
-        )
-        
-        embed.set_footer(text="Gõ đúng cú pháp nhé!")
-        await ctx.send(embed=embed)
+            
+        await ctx.send(embed=get_main_embed(), view=MainView(author_id=ctx.author.id))
+        log.info(f"🌸 {ctx.author.display_name} vừa mở bảng Menu Staff.")
 
 async def setup(bot):
     await bot.add_cog(StaffUICog(bot))
