@@ -25,7 +25,7 @@ def get_main_embed() -> discord.Embed:
             "**5. Không gian chung:** Trò chuyện đúng chủ đề từng kênh, không phá room voice của người khác và tuân thủ lời nhắc của Staff.\n\n"
             "➡️ *Vui lòng chọn menu phía dưới để làm quen với danh sách Ban Quản Trị!*"
         ),
-        color=0xffb6c1 # Màu hồng pastel cute
+        color=0xffb6c1
     )
     return embed
 
@@ -86,7 +86,6 @@ class BaseStaffView(discord.ui.View):
 
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
         if interaction.user.id != self.author_id:
-            # Đã bỏ icon X ở thông báo lỗi
             await interaction.response.send_message(
                 "Bạn không thể thao tác trên bảng menu của người khác! Hãy tự gõ `y!menu` để xem nhé.", 
                 ephemeral=True
@@ -121,7 +120,8 @@ class RoleSelectDropdown(discord.ui.Select):
         bot: Any = interaction.client
         
         try:
-            records = await bot.db.fetch("SELECT * FROM profiles WHERE role = $1", selected_role)
+            # FIX LỖI DB: Dùng LOWER(TRIM(role)) để chống lỗi viết hoa hay dư khoảng trắng trong DB
+            records = await bot.db.fetch("SELECT * FROM profiles WHERE LOWER(TRIM(role)) = $1", selected_role.lower())
         except Exception as e:
             log.error(f"Lỗi lấy dữ liệu DB: {e}")
             records = []
@@ -173,7 +173,6 @@ class StaffSelectDropdown(discord.ui.Select):
         user_data = next((item for item in self.staff_records if str(item['discord_id']) == selected_id), None)
         
         if not user_data:
-            # Đã bỏ icon X ở thông báo lỗi
             await interaction.response.send_message("Không tìm thấy thông tin nhân sự này!", ephemeral=True)
             return
             
