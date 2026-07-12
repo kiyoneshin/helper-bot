@@ -118,8 +118,8 @@ class StaffTestCog(commands.Cog):
                     if isinstance(s, (int, float)):
                         votes_dict[f"old_{idx}"] = float(s)
 
-            # Bơm điểm ảo với ID đặc biệt để không bị trùng với user thật
-            fake_tester_id = f"test_inject_{len(votes_dict) + 1}"
+            # ĐÃ CHUẨN HÓA: Bơm điểm ảo với cấu trúc test_injection_number
+            fake_tester_id = f"test_injection_{len(votes_dict) + 1}"
             votes_dict[fake_tester_id] = score
             
             scores = [float(v) for v in votes_dict.values()]
@@ -132,7 +132,7 @@ class StaffTestCog(commands.Cog):
             )
 
             await ctx.send(
-                f"💖 **[TEST SUCCESS]** Đã bơm điểm ảo **{score} ⭐** cho **{row['display_name']}**!\n"
+                f"💖 **[TEST SUCCESS]** Đã bơm điểm ảo **{score} ⭐** cho **{row['display_name']}** với ID `{fake_tester_id}`!\n"
                 f"➡️ Điểm trung bình mới cập nhật: **⭐ {new_avg}/5.0** ({len(scores)} lượt)"
             )
         except Exception as e:
@@ -141,26 +141,46 @@ class StaffTestCog(commands.Cog):
     @commands.command(name="test_reset")
     @is_tester()
     async def test_reset_data(self, ctx: commands.Context, target: Optional[str] = None):
-        """[TEST] Dọn dẹp sạch sẽ toàn bộ điểm vote và bộ đếm reply của một Staff về 0
+        """[TEST] Chỉ dọn dẹp các điểm vote ảo (test_injection_...) và giữ nguyên vote thực
         ➡️ Cú pháp: y!test_reset @user
         """
         if not target:
-            await ctx.send("⚠️ **Thiếu thông tin!**\n➡️ Vui lòng nhập ID hoặc ping Staff cần reset dữ liệu: `y!test_reset @user`")
+            await ctx.send("⚠️ **Thiếu thông tin!**\n➡️ Vui lòng nhập ID hoặc ping Staff cần dọn điểm test: `y!test_reset @user`")
             return
 
         target_id = target.replace("<@", "").replace("!", "").replace(">", "").strip()
 
         try:
-            records = await query_db(self.bot, "SELECT display_name FROM profiles WHERE discord_id = $1", target_id)
+            records = await query_db(self.bot, "SELECT display_name, votes FROM profiles WHERE discord_id = $1", target_id)
             if not records:
                 await ctx.send("📭 **Không tìm thấy nhân sự này trong Database!**")
                 return
 
-            # Reset DB về mảng dict rỗng {} và điểm 0.0
+            row = records[0]
+            v_data = row.get('votes', {})
+            votes_dict = {}
+            if isinstance(v_data, str):
+                try: votes_dict = json.loads(v_data)
+                except Exception: votes_dict = {}
+            elif isinstance(v_data, dict):
+                votes_dict = v_data
+            elif isinstance(v_data, list):
+                for idx, s in enumerate(v_data):
+                    if isinstance(s, (int, float)):
+                        votes_dict[f"old_{idx}"] = float(s)
+
+            # Lọc bỏ tất cả các key bắt đầu bằng test_inject hoặc test_injection
+            cleaned_dict = {k: v for k, v in votes_dict.items() if not str(k).startswith("test_inject")}
+            removed_count = len(votes_dict) - len(cleaned_dict)
+
+            # Tính lại điểm trung bình trên số vote thực tế còn lại
+            scores = [float(v) for v in cleaned_dict.values()]
+            new_avg = round(sum(scores) / len(scores), 1) if scores else 0.0
+
             await query_db(
                 self.bot,
-                "UPDATE profiles SET votes = '{}'::jsonb, rating = 0.0 WHERE discord_id = $1",
-                target_id
+                "UPDATE profiles SET votes = $1::text::jsonb, rating = $2 WHERE discord_id = $3",
+                json.dumps(cleaned_dict), new_avg, target_id
             )
 
             # Reset luôn bộ đếm reply trong bộ nhớ tạm của StaffListenerCog (nếu đang chạy)
@@ -170,10 +190,11 @@ class StaffTestCog(commands.Cog):
                     listener_cog.reply_counters[int(target_id)] = 0
 
             await ctx.send(
-                f"🧹 **[TEST RESET]** Đã xóa toàn bộ lịch sử vote và reset bộ đếm reply của **{records[0]['display_name']}** về trắng 100%!"
+                f"🧹 **[TEST CLEANUP]** Đã lọc và xóa **{removed_count} lượt vote ảo** khỏi hồ sơ của **{row['display_name']}**!\n"
+                f"➡️ Điểm trung bình thực tế còn lại: **⭐ {new_avg}/5.0** ({len(scores)} lượt thực)"
             )
         except Exception as e:
-            await ctx.send(f"Lỗi khi reset dữ liệu: {e}")
+            await ctx.send(f"Lỗi khi dọn điểm test: {e}")
 
 async def setup(bot):
     await bot.add_cog(StaffTestCog(bot))
