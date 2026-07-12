@@ -12,7 +12,7 @@ log = logging.getLogger("StaffTest")
 
 # Điền Discord ID của bạn (và những người được quyền test) vào danh sách này
 TESTER_IDS: List[int] = [
-    1452321699314798706, # ID của bạn
+    468428368828956692, # ID của bạn
 ]
 
 def is_tester():
