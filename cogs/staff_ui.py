@@ -104,10 +104,10 @@ class StaffUICog(commands.Cog):
         embed.add_field(
             name="✨ Lệnh Giao Diện & Nhân Sự",
             value=(
-                "➡️ `y!menu` *(bí danh: `y!staff`, `y!bqt`)*: Mở bảng giao diện xem danh sách và thông tin Ban Quản Trị.\n"
-                "➡️ `y!voters <@user/ID>` *(bí danh: `y!votelog`, `y!xemvote`)*: Xem lịch sử ai đã vote cho một Staff và điểm cụ thể.\n"
+                "➡️ `y!menu` *(thay thế: `y!staff`, `y!bqt`)*: Mở bảng giao diện xem danh sách và thông tin Ban Quản Trị.\n"
+                "➡️ `y!voters <@user/ID>` *(thay thế: `y!votelog`, `y!xemvote`)*: Xem lịch sử ai đã vote cho một Staff và điểm cụ thể.\n"
                 "➡️ `y!checkdb`: Kiểm tra nhanh toàn bộ nhân sự đang lưu trong Cơ Sở Dữ Liệu.\n"
-                "➡️ `y!set` *(bí danh: `y!editprofile`, `y!suahoso`)*: Tự chỉnh sửa hồ sơ cá nhân của bạn trong hệ thống *(chỉ dành cho Staff).*"
+                "➡️ `y!set` *(thay thế: `y!editprofile`, `y!suahoso`)*: Tự chỉnh sửa hồ sơ cá nhân của bạn trong hệ thống *(chỉ dành cho Staff).*"
             ),
             inline=False
         )
@@ -136,7 +136,7 @@ class StaffUICog(commands.Cog):
         embed.add_field(
             name="📌 Lệnh Hệ Thống",
             value=(
-                "➡️ `y!help` *(bí danh: `y!huongdan`, `y!lenh`, `y!commands`)*: Hiển thị bảng hướng dẫn câu lệnh này."
+                "➡️ `y!help` *(thay thế: `y!huongdan`, `y!lenh`, `y!commands`)*: Hiển thị bảng hướng dẫn câu lệnh này."
             ),
             inline=False
         )

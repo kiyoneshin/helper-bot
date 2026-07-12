@@ -229,23 +229,38 @@ class StaffPhotoEditView(discord.ui.View):
 
         try:
             msg = await self.bot.wait_for('message', check=check, timeout=60.0)
-            
-            new_photos = [att.url for att in msg.attachments if att.content_type and att.content_type.startswith("image/")]
-            
-            if not new_photos:
+
+            # Lọc chỉ lấy các tệp đính kèm là hình ảnh hợp lệ
+            image_attachments = [att for att in msg.attachments if att.content_type and att.content_type.startswith("image/")]
+
+            if not image_attachments:
                 await interaction.followup.send("File bạn gửi không phải là định dạng hình ảnh hợp lệ!", ephemeral=True)
                 return
 
-            # Delay 1 giây trước khi xóa tin nhắn để tránh lỗi cache hiển thị
+            # Lấy kênh lưu trữ ảnh cố định để tránh lỗi CDN chết sau khi xóa tin nhắn gốc
+            STORAGE_CHANNEL_ID = 1513465012344193088
+            storage_channel = self.bot.get_channel(STORAGE_CHANNEL_ID) or await self.bot.fetch_channel(STORAGE_CHANNEL_ID)
+
+            if not isinstance(storage_channel, discord.TextChannel):
+                await interaction.followup.send("❌ Không thể kết nối tới kênh lưu trữ ảnh! Vui lòng báo Admin kiểm tra lại.", ephemeral=True)
+                return
+
+            # Chuyển đổi từng ảnh thành file object rồi upload lên kênh lưu trữ cố định
+            files = [await att.to_file() for att in image_attachments]
+            storage_msg = await storage_channel.send(files=files)
+
+            # Lấy URL ổn định từ kênh lưu trữ (không bị chết khi tin nhắn gốc bị xóa)
+            new_photos = [att.url for att in storage_msg.attachments]
+
+            # Delay 1 giây rồi mới xóa tin nhắn gốc của Staff để giữ sạch kênh chat
             await asyncio.sleep(1.0)
-            
             try:
                 await msg.delete()
             except discord.Forbidden:
                 pass
 
             photos = self.get_photos_list()
-            photos.extend(new_photos) # Cộng dồn ảnh mới vào danh sách hiện tại
+            photos.extend(new_photos)  # Cộng dồn ảnh mới vào danh sách hiện tại
             self.user_data['photos'] = photos
 
             await query_db(
