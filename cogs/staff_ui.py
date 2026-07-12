@@ -100,26 +100,47 @@ class StaffUICog(commands.Cog):
             description="Dưới đây là toàn bộ các câu lệnh khả dụng mà bạn có thể sử dụng trên server:",
             color=0xffb6c1
         )
-        
+
         embed.add_field(
             name="✨ Lệnh Giao Diện & Nhân Sự",
             value=(
-                "➡️ `y!menu` (hoặc `y!staff`, `y!bqt`): Mở bảng giao diện xem danh sách và thông tin Ban Quản Trị.\n"
-                "➡️ `y!voters <@user/ID>`: Xem chi tiết danh sách những ai đã vote cho một Staff và số điểm cụ thể.\n"
-                "➡️ `y!checkdb`: Kiểm tra nhanh danh sách toàn bộ nhân sự đang được lưu trong Cơ Sở Dữ Liệu.\n"
-                "➡️ `y!addstaff <id> <role> <tên>`: Thêm nhanh một nhân sự mới vào hệ thống Database."
+                "➡️ `y!menu` *(bí danh: `y!staff`, `y!bqt`)*: Mở bảng giao diện xem danh sách và thông tin Ban Quản Trị.\n"
+                "➡️ `y!voters <@user/ID>` *(bí danh: `y!votelog`, `y!xemvote`)*: Xem lịch sử ai đã vote cho một Staff và điểm cụ thể.\n"
+                "➡️ `y!checkdb`: Kiểm tra nhanh toàn bộ nhân sự đang lưu trong Cơ Sở Dữ Liệu.\n"
+                "➡️ `y!set` *(bí danh: `y!editprofile`, `y!suahoso`)*: Tự chỉnh sửa hồ sơ cá nhân của bạn trong hệ thống *(chỉ dành cho Staff).*"
             ),
             inline=False
         )
-        
+
+        embed.add_field(
+            name="🔐 Lệnh Quản Trị *(Chỉ dành cho Admin)*",
+            value=(
+                "➡️ `y!addstaff <@user> <role> [mô tả]`: Thêm một nhân sự mới vào Database.\n"
+                "   ↳ `role` hợp lệ: `owner` | `admin` | `recep`\n"
+                "   ↳ Ví dụ: `y!addstaff @Yon admin Trưởng nhóm`"
+            ),
+            inline=False
+        )
+
+        embed.add_field(
+            name="🛠️ Lệnh Kiểm Thử *(Chỉ dành cho Developer)*",
+            value=(
+                "➡️ `y!test_reply <@user/ID>`: Giả lập kích hoạt ngay tin nhắn nhắc nhở vote (không cần đợi đủ 10 reply).\n"
+                "➡️ `y!test_vote <@user/ID> <điểm>`: Bơm điểm ảo vào hồ sơ Staff để kiểm tra tính toán điểm trung bình.\n"
+                "   ↳ Ví dụ: `y!test_vote @Yon 4.5`\n"
+                "➡️ `y!test_reset <@user/ID>`: Dọn sạch toàn bộ điểm vote ảo *(test_injection)* và giữ nguyên vote thực."
+            ),
+            inline=False
+        )
+
         embed.add_field(
             name="📌 Lệnh Hệ Thống",
             value=(
-                "➡️ `y!help` (hoặc `y!huongdan`): Hiển thị bảng hướng dẫn câu lệnh này."
+                "➡️ `y!help` *(bí danh: `y!huongdan`, `y!lenh`, `y!commands`)*: Hiển thị bảng hướng dẫn câu lệnh này."
             ),
             inline=False
         )
-        
+
         embed.set_footer(text="Angelic Bot • Sử dụng mũi tên để điều hướng các menu dễ dàng hơn!")
         await ctx.send(embed=embed)
 
