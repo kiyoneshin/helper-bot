@@ -286,7 +286,7 @@ class ProfileView(BaseStaffView):
             embed = build_embed(self.user_data, self.member, self.photo_index)
             await interaction.response.edit_message(embed=embed, view=self)
 
-    @discord.ui.button(label="⏭️ Ảnh tiếp", style=discord.ButtonStyle.primary, row=0)
+    @discord.ui.button(label="⏭️ Ảnh sau", style=discord.ButtonStyle.primary, row=0)
     async def next_btn(self, interaction: discord.Interaction, button: discord.ui.Button):
         photos = self.user_data.get('photos', [])
         if isinstance(photos, str):
