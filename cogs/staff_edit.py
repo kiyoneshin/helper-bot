@@ -28,10 +28,9 @@ class EditInfoModal(discord.ui.Modal, title="Chỉnh Sửa Hồ Sơ Staff"):
         super().__init__()
         self.view = view
         
-        # Tự động điền dữ liệu cũ vào ô input (Pre-fill)
         self.name_input = discord.ui.TextInput(
             label="Tên hiển thị (Display Name):",
-            placeholder="Nhập tên hiển thị siêu cute của bạn...",
+            placeholder="Nhập tên hiển thị của bạn...",
             default=current_data.get('display_name') or "",
             required=True,
             max_length=50
@@ -70,7 +69,6 @@ class EditInfoModal(discord.ui.Modal, title="Chỉnh Sửa Hồ Sơ Staff"):
             new_name, new_desc, new_contact, target_id
         )
 
-        # Cập nhật lại dữ liệu hiển thị trên bảng View
         self.view.user_data['display_name'] = new_name
         self.view.user_data['description'] = new_desc
         self.view.user_data['contact'] = new_contact
@@ -87,7 +85,6 @@ class EditTagsModal(discord.ui.Modal, title="Chỉnh Sửa Tags Giới Thiệu")
         super().__init__()
         self.view = view
         
-        # Biến mảng tags thành chuỗi cách nhau bởi dấu phẩy để dễ gõ
         default_tags_str = ", ".join(current_tags) if current_tags else ""
         
         self.tags_input = discord.ui.TextInput(
@@ -105,7 +102,6 @@ class EditTagsModal(discord.ui.Modal, title="Chỉnh Sửa Tags Giới Thiệu")
         target_id = str(interaction.user.id)
         
         raw_str = self.tags_input.value.strip()
-        # Tách chuỗi bằng dấu phẩy và xóa khoảng trắng dư thừa
         new_tags = [t.strip() for t in raw_str.split(",") if t.strip()] if raw_str else []
 
         await query_db(
@@ -121,8 +117,159 @@ class EditTagsModal(discord.ui.Modal, title="Chỉnh Sửa Tags Giới Thiệu")
             
         await interaction.response.send_message("**Đã cập nhật danh sách Tags thành công!**", ephemeral=True)
 
+
 # =====================================================================
-# 2. VIEW GIAO DIỆN NÚT BẤM CHỈNH SỬA (DÀNH RIÊNG CHO STAFF)
+# 2. VIEW QUẢN LÝ ẢNH PROFILE (LƯỚT ẢNH, XÓA & THÊM MỚI)
+# =====================================================================
+
+class StaffPhotoEditView(discord.ui.View):
+    # ĐÃ SỬA LỖI PYLANCE: Đổi parent_view từ discord.ui.View thành Any
+    def __init__(self, bot: Any, user_data: dict, author_id: int, parent_view: Any):
+        super().__init__(timeout=300)
+        self.bot = bot
+        self.user_data = user_data
+        self.author_id = author_id
+        self.parent_view = parent_view
+        self.photo_index = 0
+        self.update_button_states()
+
+    def get_photos_list(self) -> list:
+        photos = self.user_data.get('photos', [])
+        if isinstance(photos, str):
+            try: photos = json.loads(photos)
+            except Exception: photos = []
+        if not isinstance(photos, list):
+            photos = []
+        return photos
+
+    def update_button_states(self):
+        photos = self.get_photos_list()
+        has_multiple = len(photos) > 1
+        has_any = len(photos) > 0
+        
+        self.prev_btn.disabled = not has_multiple
+        self.next_btn.disabled = not has_multiple
+        self.delete_btn.disabled = not has_any
+
+    def build_photo_embed(self) -> discord.Embed:
+        photos = self.get_photos_list()
+        display_name = self.user_data.get('display_name', 'Chưa đặt tên')
+        role_name = str(self.user_data.get('role', 'staff')).upper()
+
+        embed = discord.Embed(
+            title=f"Quản Lý Ảnh Profile: {display_name}",
+            color=0xffb6c1
+        )
+
+        if photos and len(photos) > 0:
+            self.photo_index = self.photo_index % len(photos)
+            img_url = str(photos[self.photo_index]).strip()
+            embed.set_image(url=img_url)
+            embed.description = f"Đang xem bức ảnh thứ **{self.photo_index + 1}/{len(photos)}**.\nBấm **Xóa ảnh** để loại bỏ bức ảnh này, hoặc **Thêm ảnh mới** để tải thêm."
+            embed.set_footer(text=f"Vị trí: {role_name} • Ảnh {self.photo_index + 1}/{len(photos)}")
+        else:
+            embed.description = "Hiện tại hồ sơ của bạn **chưa có bức ảnh nào**.\nHãy bấm nút **Thêm ảnh mới** để tải ảnh lên ngay nhé!"
+            embed.set_footer(text=f"Vị trí: {role_name} • Ảnh 0/0")
+
+        self.update_button_states()
+        return embed
+
+    async def interaction_check(self, interaction: discord.Interaction) -> bool:
+        if interaction.user.id != self.author_id:
+            await interaction.response.send_message("Bạn không thể thao tác trên bảng quản lý của người khác!", ephemeral=True)
+            return False
+        return True
+
+    @discord.ui.button(label="Ảnh trước", style=discord.ButtonStyle.primary, row=0)
+    async def prev_btn(self, interaction: discord.Interaction, button: discord.ui.Button):
+        photos = self.get_photos_list()
+        if photos:
+            self.photo_index = (self.photo_index - 1) % len(photos)
+        await interaction.response.edit_message(embed=self.build_photo_embed(), view=self)
+
+    @discord.ui.button(label="Ảnh sau", style=discord.ButtonStyle.primary, row=0)
+    async def next_btn(self, interaction: discord.Interaction, button: discord.ui.Button):
+        photos = self.get_photos_list()
+        if photos:
+            self.photo_index = (self.photo_index + 1) % len(photos)
+        await interaction.response.edit_message(embed=self.build_photo_embed(), view=self)
+
+    @discord.ui.button(label="Xóa ảnh", style=discord.ButtonStyle.danger, row=0)
+    async def delete_btn(self, interaction: discord.Interaction, button: discord.ui.Button):
+        photos = self.get_photos_list()
+        if not photos:
+            await interaction.response.send_message("Không có ảnh nào để xóa!", ephemeral=True)
+            return
+
+        photos.pop(self.photo_index)
+        if self.photo_index >= len(photos) and self.photo_index > 0:
+            self.photo_index -= 1
+
+        self.user_data['photos'] = photos
+        await query_db(
+            self.bot,
+            "UPDATE profiles SET photos = $1::text::jsonb WHERE discord_id = $2",
+            json.dumps(photos), str(self.author_id)
+        )
+
+        await interaction.response.edit_message(embed=self.build_photo_embed(), view=self)
+        await interaction.followup.send("Đã xóa bức ảnh này khỏi Database thành công!", ephemeral=True)
+
+    @discord.ui.button(label="Thêm ảnh mới", style=discord.ButtonStyle.success, row=0)
+    async def add_photo_btn(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await interaction.response.send_message(
+            "**HÃY GỬI ẢNH NGAY TRONG CHAT NÀY!**\n"
+            "Bạn hãy kéo thả/gửi 1 (hoặc nhiều) bức ảnh vào khung chat này trong vòng **60 giây tới**.\n"
+            "Bot sẽ tự động lưu và thêm vào danh sách ảnh Profile của bạn!",
+            ephemeral=True
+        )
+
+        def check(m: discord.Message):
+            return m.author.id == self.author_id and m.channel.id == interaction.channel_id and len(m.attachments) > 0
+
+        try:
+            msg = await self.bot.wait_for('message', check=check, timeout=60.0)
+            
+            new_photos = [att.url for att in msg.attachments if att.content_type and att.content_type.startswith("image/")]
+            
+            if not new_photos:
+                await interaction.followup.send("File bạn gửi không phải là định dạng hình ảnh hợp lệ!", ephemeral=True)
+                return
+
+            # Delay 1 giây trước khi xóa tin nhắn để tránh lỗi cache hiển thị
+            await asyncio.sleep(1.0)
+            
+            try:
+                await msg.delete()
+            except discord.Forbidden:
+                pass
+
+            photos = self.get_photos_list()
+            photos.extend(new_photos) # Cộng dồn ảnh mới vào danh sách hiện tại
+            self.user_data['photos'] = photos
+
+            await query_db(
+                self.bot,
+                "UPDATE profiles SET photos = $1::text::jsonb WHERE discord_id = $2",
+                json.dumps(photos), str(self.author_id)
+            )
+
+            if interaction.message:
+                await interaction.message.edit(embed=self.build_photo_embed(), view=self)
+
+            await interaction.followup.send(f"Đã thêm thành công **{len(new_photos)}** bức ảnh mới vào hồ sơ!", ephemeral=True)
+
+        except asyncio.TimeoutError:
+            await interaction.followup.send("**Đã hết thời gian 60 giây!** Bạn chưa gửi ảnh nào, vui lòng bấm nút Thêm ảnh mới để thử lại nhé.", ephemeral=True)
+
+    @discord.ui.button(label="Quay lại", style=discord.ButtonStyle.secondary, row=1)
+    async def back_btn(self, interaction: discord.Interaction, button: discord.ui.Button):
+        if interaction.message:
+            await interaction.response.edit_message(embed=self.parent_view.build_preview_embed(), view=self.parent_view)
+
+
+# =====================================================================
+# 3. VIEW GIAO DIỆN CHÍNH CHỈNH SỬA (DÀNH RIÊNG CHO STAFF)
 # =====================================================================
 
 class StaffEditView(discord.ui.View):
@@ -139,7 +286,6 @@ class StaffEditView(discord.ui.View):
         return True
 
     def build_preview_embed(self) -> discord.Embed:
-        """Hàm tự động xây dựng khung Embed xem trước (Preview) thông tin Staff"""
         data = self.user_data
         role_name = str(data.get('role', 'staff')).upper()
         display_name = data.get('display_name', 'Chưa đặt tên')
@@ -150,16 +296,13 @@ class StaffEditView(discord.ui.View):
             color=0xffb6c1
         )
         
-        # 1. Chức vụ & Liên hệ
         contact = data.get('contact') or "*Chưa cập nhật*"
         embed.add_field(name="Chức vụ", value=f"`{role_name}`", inline=True)
         embed.add_field(name="Liên hệ", value=contact, inline=True)
         
-        # 2. Mô tả
         desc = data.get('description') or "*Chưa có lời giới thiệu nào.*"
         embed.add_field(name="Giới thiệu bản thân", value=desc, inline=False)
         
-        # 3. Tags
         tags = data.get('tags', [])
         if isinstance(tags, str):
             try: tags = json.loads(tags)
@@ -167,7 +310,6 @@ class StaffEditView(discord.ui.View):
         tags_str = "\n".join(f"♱ {t}" for t in tags) if tags else "*Chưa có Tag nào.*"
         embed.add_field(name="Danh sách Tags", value=tags_str, inline=False)
 
-        # 4. Ảnh Profile
         photos = data.get('photos', [])
         if isinstance(photos, str):
             try: photos = json.loads(photos)
@@ -179,7 +321,7 @@ class StaffEditView(discord.ui.View):
         else:
             embed.add_field(name="Ảnh Profile", value="*Chưa có bức ảnh nào.*", inline=False)
             
-        embed.set_footer(text="Angelic Bot • Bấm nút Cập nhật ảnh để gửi trực tiếp ảnh mới vào chat!")
+        embed.set_footer(text="Angelic Bot • Bấm Cập nhật ảnh để xem danh sách ảnh, xóa hoặc tải ảnh mới!")
         return embed
 
     @discord.ui.button(label="Sửa Thông Tin", style=discord.ButtonStyle.primary, row=0)
@@ -194,54 +336,15 @@ class StaffEditView(discord.ui.View):
             except Exception: tags = []
         await interaction.response.send_modal(EditTagsModal(self, tags))
 
-    @discord.ui.button(label="🖼️ Cập nhật Ảnh", style=discord.ButtonStyle.success, row=0)
+    @discord.ui.button(label="Cập nhật Ảnh", style=discord.ButtonStyle.success, row=0)
     async def edit_photos_btn(self, interaction: discord.Interaction, button: discord.ui.Button):
-        """Tính năng bắt ảnh trực tiếp từ kênh chat"""
-        await interaction.response.send_message(
-            "**HÃY GỬI ẢNH NGAY TRONG CHAT NÀY!**\n"
-            "Bạn hãy kéo thả/gửi 1 (hoặc nhiều) bức ảnh vào khung chat này trong vòng **60 giây tới**.\n"
-            "Bot sẽ tự động lấy ảnh bạn vừa gửi để lưu làm ảnh Profile mới!",
-            ephemeral=True
-        )
-
-        def check(m: discord.Message):
-            return m.author.id == self.author_id and m.channel.id == interaction.channel_id and len(m.attachments) > 0
-
-        try:
-            msg = await self.bot.wait_for('message', check=check, timeout=60.0)
-            
-            new_photos = [att.url for att in msg.attachments if att.content_type and att.content_type.startswith("image/")]
-            
-            if not new_photos:
-                await interaction.followup.send("File bạn gửi không phải là định dạng hình ảnh hợp lệ!", ephemeral=True)
-                return
-
-            # Cập nhật mảng ảnh mới lên Database
-            await query_db(
-                self.bot,
-                "UPDATE profiles SET photos = $1::text::jsonb WHERE discord_id = $2",
-                json.dumps(new_photos), str(self.author_id)
-            )
-
-            self.user_data['photos'] = new_photos
-            embed = self.build_preview_embed()
-            
-            try:
-                await msg.delete()
-            except discord.Forbidden:
-                pass
-
-            if interaction.message:
-                await interaction.message.edit(embed=embed, view=self)
-
-            await interaction.followup.send(f"**Đã cập nhật thành công {len(new_photos)} bức ảnh mới vào hồ sơ của bạn!**", ephemeral=True)
-
-        except asyncio.TimeoutError:
-            await interaction.followup.send("**Đã hết thời gian 60 giây!** Bạn chưa gửi ảnh nào, vui lòng bấm nút 🖼️ Cập nhật ảnh để thử lại nhé.", ephemeral=True)
+        """Mở bảng giao diện con chuyên dụng để quản lý, lướt và xóa từng ảnh"""
+        photo_view = StaffPhotoEditView(self.bot, self.user_data, self.author_id, self)
+        await interaction.response.edit_message(embed=photo_view.build_photo_embed(), view=photo_view)
 
 
 # =====================================================================
-# 3. COG CHÍNH & LỆNH Y!SET
+# 4. COG CHÍNH & LỆNH Y!SET
 # =====================================================================
 
 class StaffEditCog(commands.Cog):
@@ -254,7 +357,6 @@ class StaffEditCog(commands.Cog):
         target_id = str(ctx.author.id)
         
         try:
-            # Kiểm tra xem ID của người gõ lệnh có tồn tại trong Database không
             records = await query_db(self.bot, "SELECT * FROM profiles WHERE discord_id = $1", target_id)
             
             if not records:
