@@ -54,12 +54,24 @@ class StaffBot(commands.Bot):
         else:
             log.error("Không thể khởi tạo db_pool!")
 
-        # Nạp các module tính năng rút gọn
-        await self.load_extension("cogs.admin")
-        await self.load_extension("cogs.staff_ui")
-        await self.load_extension("cogs.trap_channel")
-        await self.load_extension("cogs.welcome")
-        log.info("Đã nạp thành công các Cogs.")
+        # =====================================================================
+        # NẠP TỰ ĐỘNG (AUTO-LOAD) TOÀN BỘ COGS TRONG THƯ MỤC
+        # =====================================================================
+        cogs_dir = "./cogs"
+        if os.path.exists(cogs_dir):
+            for filename in os.listdir(cogs_dir):
+                # Chỉ nạp các file Python (.py) và bỏ qua các file file ẩn/hệ thống (bắt đầu bằng _)
+                if filename.endswith(".py") and not filename.startswith("_"):
+                    cog_name = f"cogs.{filename[:-3]}"
+                    try:
+                        await self.load_extension(cog_name)
+                        log.info(f"➡️ Đã nạp thành công Cog: {cog_name}")
+                    except Exception as e:
+                        log.error(f"⚠️ Lỗi khi nạp Cog {cog_name}: {e}")
+        else:
+            log.warning("Không tìm thấy thư mục ./cogs để nạp module!")
+
+        log.info("Đã hoàn tất tiến trình kiểm tra và nạp các Cogs.")
 
         if TARGET_GUILD != 0:
             guild = discord.Object(id=TARGET_GUILD)
