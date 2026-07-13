@@ -73,7 +73,7 @@ class StaffRegisterModal(discord.ui.Modal, title="Đăng Ký Hồ Sơ Staff"):
         tags: list[str] = [t.strip() for t in raw_tags.split(",") if t.strip()] if raw_tags else []
 
         log.info(
-            f"📝 [{user.display_name} | {discord_id}] Đang tạo hồ sơ mới: "
+            f"[{user.display_name} | {discord_id}] Đang tạo hồ sơ mới: "
             f"role={self.role_name}, display_name={display_name!r}"
         )
 
@@ -94,11 +94,11 @@ class StaffRegisterModal(discord.ui.Modal, title="Đăng Ký Hồ Sơ Staff"):
                 contact,
                 json.dumps(tags, ensure_ascii=False),
             )
-            log.info(f"✅ [{user.display_name} | {discord_id}] Hồ sơ đã được INSERT thành công.")
+            log.info(f"[{user.display_name} | {discord_id}] Hồ sơ đã được INSERT thành công.")
         except Exception as e:
-            log.error(f"❌ Lỗi INSERT hồ sơ [{discord_id}]: {e}")
+            log.error(f"Lỗi INSERT hồ sơ [{discord_id}]: {e}")
             await interaction.response.send_message(
-                f"❌ Đã xảy ra lỗi khi lưu hồ sơ vào cơ sở dữ liệu:\n`{e}`\n"
+                f"Đã xảy ra lỗi khi lưu hồ sơ vào cơ sở dữ liệu:\n`{e}`\n"
                 "Vui lòng thử lại hoặc báo Admin.",
                 ephemeral=True,
             )
@@ -107,7 +107,7 @@ class StaffRegisterModal(discord.ui.Modal, title="Đăng Ký Hồ Sơ Staff"):
         # --- Gửi nút thêm ảnh sau khi lưu thành công ---
         view = AddPhotoAfterRegisterView(bot=bot, author_id=user.id)
         await interaction.response.send_message(
-            f"✅ **Hồ sơ của bạn đã được tạo thành công!**\n"
+            f"**Hồ sơ của bạn đã được tạo thành công!**\n"
             f"Chức vụ: `{self.role_name.upper()}` | Tên hiển thị: **{display_name}**\n\n"
             "Hãy bấm nút bên dưới để thêm ảnh Profile ngay nhé!",
             view=view,
@@ -180,16 +180,16 @@ class AddPhotoAfterRegisterView(discord.ui.View):
                 or await self.bot.fetch_channel(STORAGE_CHANNEL_ID)
             )
         except Exception as e:
-            log.error(f"❌ Không thể lấy kênh lưu trữ ảnh {STORAGE_CHANNEL_ID}: {e}")
+            log.error(f"Không thể lấy kênh lưu trữ ảnh {STORAGE_CHANNEL_ID}: {e}")
             await interaction.followup.send(
-                "❌ Không thể kết nối tới kênh lưu trữ ảnh! Vui lòng báo Admin kiểm tra lại.",
+                "Không thể kết nối tới kênh lưu trữ ảnh! Vui lòng báo Admin kiểm tra lại.",
                 ephemeral=True,
             )
             return
 
         if not isinstance(storage_channel, discord.TextChannel):
             await interaction.followup.send(
-                "❌ Kênh lưu trữ ảnh không hợp lệ! Vui lòng báo Admin kiểm tra cấu hình.",
+                "Kênh lưu trữ ảnh không hợp lệ! Vui lòng báo Admin kiểm tra cấu hình.",
                 ephemeral=True,
             )
             return
@@ -200,13 +200,13 @@ class AddPhotoAfterRegisterView(discord.ui.View):
             storage_msg = await storage_channel.send(files=files)
             new_photos = [att.url for att in storage_msg.attachments]
             log.info(
-                f"📸 [{interaction.user.display_name} | {self.author_id}] "
+                f"[{interaction.user.display_name} | {self.author_id}] "
                 f"Đã upload {len(new_photos)} ảnh lên kênh lưu trữ."
             )
         except Exception as e:
-            log.error(f"❌ Lỗi upload ảnh lên storage channel: {e}")
+            log.error(f"Lỗi upload ảnh lên storage channel: {e}")
             await interaction.followup.send(
-                f"❌ Lỗi khi upload ảnh: `{e}`", ephemeral=True
+                f"Lỗi khi upload ảnh: `{e}`", ephemeral=True
             )
             return
 
@@ -216,7 +216,7 @@ class AddPhotoAfterRegisterView(discord.ui.View):
             await msg.delete()
         except discord.Forbidden:
             log.warning(
-                f"⚠️ Không có quyền xóa tin nhắn ảnh của {interaction.user.display_name}."
+                f"Không có quyền xóa tin nhắn ảnh của {interaction.user.display_name}."
             )
         except discord.NotFound:
             pass  # Tin nhắn đã bị xóa trước đó, bỏ qua
@@ -249,13 +249,13 @@ class AddPhotoAfterRegisterView(discord.ui.View):
                 discord_id,
             )
             log.info(
-                f"✅ [{interaction.user.display_name} | {discord_id}] "
+                f"[{interaction.user.display_name} | {discord_id}] "
                 f"Đã lưu {len(new_photos)} ảnh mới vào DB. Tổng: {len(existing_photos)} ảnh."
             )
         except Exception as e:
-            log.error(f"❌ Lỗi UPDATE photos [{discord_id}]: {e}")
+            log.error(f"Lỗi UPDATE photos [{discord_id}]: {e}")
             await interaction.followup.send(
-                f"❌ Ảnh đã upload nhưng lưu vào DB thất bại: `{e}`", ephemeral=True
+                f"Ảnh đã upload nhưng lưu vào DB thất bại: `{e}`", ephemeral=True
             )
             return
 
@@ -268,7 +268,7 @@ class AddPhotoAfterRegisterView(discord.ui.View):
             pass
 
         await interaction.followup.send(
-            f"✅ Đã thêm thành công **{len(new_photos)}** bức ảnh vào hồ sơ của bạn!\n"
+            f"Đã thêm thành công **{len(new_photos)}** bức ảnh vào hồ sơ của bạn!\n"
             "Bạn có thể dùng `y!set` để quản lý thêm/xóa ảnh bất cứ lúc nào.",
             ephemeral=True,
         )
@@ -324,11 +324,11 @@ class StaffAddCog(commands.Cog):
         author = ctx.author
         discord_id = str(author.id)
 
-        log.info(f"🔍 [{author.display_name} | {discord_id}] Gọi lệnh y!add.")
+        log.info(f"[{author.display_name} | {discord_id}] Gọi lệnh y!add.")
 
         # --- Bước 1: Lệnh chỉ dùng trong Server ---
         if not isinstance(author, discord.Member):
-            await ctx.send("❌ Lệnh này chỉ dùng được trong Server, không dùng được qua DM!")
+            await ctx.send("Lệnh này chỉ dùng được trong Server, không dùng được qua DM!")
             return
 
         # --- Bước 2: Xác định chức vụ dựa trên Role Discord (ưu tiên từ cao xuống thấp) ---
@@ -342,16 +342,16 @@ class StaffAddCog(commands.Cog):
 
         if assigned_role is None:
             log.warning(
-                f"⛔ [{author.display_name} | {discord_id}] Không có role hợp lệ, từ chối lệnh y!add."
+                f"[{author.display_name} | {discord_id}] Không có role hợp lệ, từ chối lệnh y!add."
             )
             await ctx.send(
-                "⛔ **Bạn không có chức vụ hợp lệ để thực hiện lệnh này!**\n"
+                "**Bạn không có chức vụ hợp lệ để thực hiện lệnh này!**\n"
                 "Lệnh `y!add` chỉ dành cho Owner, Admin và Recep của Server.",
                 delete_after=15,
             )
             return
 
-        log.info(f"✅ [{author.display_name} | {discord_id}] Role hợp lệ: {assigned_role}.")
+        log.info(f"[{author.display_name} | {discord_id}] Role hợp lệ: {assigned_role}.")
 
         # --- Bước 3: Kiểm tra chéo DB — hồ sơ đã tồn tại chưa? ---
         try:
@@ -361,16 +361,16 @@ class StaffAddCog(commands.Cog):
                 discord_id,
             )
         except Exception as e:
-            log.error(f"❌ Lỗi truy vấn DB khi kiểm tra tồn tại [{discord_id}]: {e}")
-            await ctx.send(f"❌ Lỗi khi truy vấn cơ sở dữ liệu: `{e}`")
+            log.error(f"Lỗi truy vấn DB khi kiểm tra tồn tại [{discord_id}]: {e}")
+            await ctx.send(f"Lỗi khi truy vấn cơ sở dữ liệu: `{e}`")
             return
 
         if records:
             log.info(
-                f"ℹ️ [{author.display_name} | {discord_id}] Hồ sơ đã tồn tại, hướng dẫn dùng y!set."
+                f"[{author.display_name} | {discord_id}] Hồ sơ đã tồn tại, hướng dẫn dùng y!set."
             )
             await ctx.send(
-                "ℹ️ **Hồ sơ của bạn đã tồn tại trong hệ thống!**\n"
+                "**Hồ sơ của bạn đã tồn tại trong hệ thống!**\n"
                 "Vui lòng dùng lệnh `y!set` để chỉnh sửa thông tin của mình.",
                 delete_after=15,
             )
@@ -379,14 +379,14 @@ class StaffAddCog(commands.Cog):
         # --- Bước 4: Hiển thị nút mở Form đăng ký ---
         view = _OpenRegisterModalView(role_name=assigned_role, author_id=author.id)
         await ctx.send(
-            f"👋 Chào **{author.display_name}**!\n"
+            f"Chào **{author.display_name}**!\n"
             f"Bạn đang đăng ký với chức vụ: `{assigned_role.upper()}`.\n"
             "Hãy bấm nút bên dưới để mở Form đăng ký hồ sơ Staff.",
             view=view,
         )
-        log.info(f"📬 [{author.display_name} | {discord_id}] Đã gửi nút mở Form đăng ký.")
+        log.info(f"[{author.display_name} | {discord_id}] Đã gửi nút mở Form đăng ký.")
 
 
 async def setup(bot):
     await bot.add_cog(StaffAddCog(bot))
-    log.info("✅ StaffAddCog đã được tải thành công.")
+    log.info("StaffAddCog đã được tải thành công.")
