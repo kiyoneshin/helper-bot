@@ -127,6 +127,8 @@ class StaffUICog(commands.Cog):
                     review_lines.append(f"<@{voter_id}> **{score} ⭐**, {review}")
 
             avg_rating = row.get('rating', 0.0)
+            if isinstance(avg_rating, (int, float)):
+                avg_rating = round(float(avg_rating), 1)
             description = (
                 f"➡️ Điểm trung bình: **⭐ {avg_rating}/5.0** ({len(votes_dict)} lượt đánh giá)\n\n"
                 + "\n".join(review_lines)
