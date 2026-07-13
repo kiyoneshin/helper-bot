@@ -44,7 +44,7 @@ def build_embed(user_data: dict, member: Optional[discord.Member] = None, photo_
             tags = []
 
     tags_text = "\n".join(f"♱ {t}" for t in tags) if tags else "(trống)"
-    embed.description = f"vị trí: {role_name}\n{tags_text}"
+    embed.description = f"**Vị trí:** {role_name.upper()}\n\n**Tags**\n{tags_text}"
 
     # --- Fields: Giới thiệu bản thân & Liên hệ ---
     description_value = user_data.get('description') or "(trống)"
@@ -74,5 +74,5 @@ def build_embed(user_data: dict, member: Optional[discord.Member] = None, photo_
 
     # --- Footer ---
     total_photos = max(1, len(photos))
-    embed.set_footer(text=f"Vị trí: {role_name.upper()} • Ảnh {photo_index + 1}/{total_photos}")
+    embed.set_footer(text=f"Ảnh {photo_index + 1}/{total_photos}")
     return embed
