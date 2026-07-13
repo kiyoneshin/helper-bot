@@ -48,7 +48,7 @@ class EditInfoModal(discord.ui.Modal, title="Chỉnh Sửa Hồ Sơ Staff"):
             placeholder="Link FB, IG hoặc Discord Tag...",
             default=current_data.get('contact') or "",
             required=False,
-            max_length=100
+            max_length=500
         )
         
         self.add_item(self.name_input)
