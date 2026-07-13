@@ -114,7 +114,7 @@ class StaffUICog(commands.Cog):
             await ctx.send(f"Lỗi truy vấn Database: {e}")
 
 
-    @commands.command(name="help", aliases=["huongdan", "lenh", "commands"])
+    @commands.command(name="help", aliases=["huongdan"])
     async def help_cmd(self, ctx: commands.Context):
         """Lệnh hiển thị danh sách toàn bộ các câu lệnh của Bot"""
         embed = discord.Embed(
@@ -124,41 +124,38 @@ class StaffUICog(commands.Cog):
         )
 
         embed.add_field(
-            name="✨ Lệnh Giao Diện & Nhân Sự",
+            name="🌸 1. Tra Cứu & Đánh Giá (Mọi Thành Viên)",
             value=(
-                "➡️ `y!menu` *(thay thế: `y!staff`, `y!bqt`)*: Mở bảng giao diện xem danh sách và thông tin Ban Quản Trị.\n"
-                "➡️ `y!feedback <@user/ID>` *(thay thế: `y!fb`)*: Xem toàn bộ bài đánh giá chi tiết có kèm nội dung nhận xét của cộng đồng.\n"
-                "➡️ `y!checkdb`: Kiểm tra nhanh toàn bộ nhân sự đang lưu trong Cơ Sở Dữ Liệu.\n"
-                "➡️ `y!set` *(thay thế: `y!editprofile`, `y!suahoso`)*: Tự chỉnh sửa hồ sơ cá nhân của bạn trong hệ thống *(chỉ dành cho Staff).*"
+                "➡️ `y!menu` *(hoặc `y!staff`, `y!bqt`)*: Mở bảng menu tương tác để xem hồ sơ, tags và ảnh của Ban Quản Trị.\n"
+                "➡️ `y!feedback <@user/ID>` *(hoặc `y!fb`)*: Xem danh sách toàn bộ bài đánh giá chi tiết (số sao và nội dung nhận xét) của một Staff.\n"
+                "➡️ `y!help` *(hoặc `y!huongdan`)*: Hiển thị bảng hướng dẫn câu lệnh này."
             ),
             inline=False
         )
 
         embed.add_field(
-            name="🔐 Lệnh Quản Trị *(Chỉ dành cho Admin)*",
+            name="🛠️ 2. Đăng Ký & Quản Lý Hồ Sơ (Dành Riêng BQT)",
             value=(
-                "➡️ `y!addstaff <@user> <role> [mô tả]`: Thêm một nhân sự mới vào Database.\n"
-                "   ↳ `role` hợp lệ: `owner` | `admin` | `recep`\n"
-                "   ↳ Ví dụ: `y!addstaff @Yon admin Trưởng nhóm`"
+                "➡️ `y!add`: Bật Form Modal cho phép nhân sự mới tự đăng ký hồ sơ (Tên hiển thị, Giới thiệu, Tags, Liên hệ) và tự động cấp chức vụ theo cấu trúc Role ID của Server, sau đó kích hoạt luồng upload ảnh vĩnh viễn.\n"
+                "➡️ `y!set` *(hoặc `y!editprofile`, `y!suahoso`)*: Mở bảng điều khiển tương tác giúp Staff tự chỉnh sửa thông tin cá nhân hoặc lướt xem/xóa/thêm ảnh hồ sơ hiện có."
             ),
             inline=False
         )
 
         embed.add_field(
-            name="🛠️ Lệnh Kiểm Thử *(Chỉ dành cho Developer)*",
+            name="🛡️ 3. Quản Trị Hệ Thống (Admin / Owner)",
             value=(
-                "➡️ `y!test_reply <@user/ID>`: Giả lập kích hoạt ngay tin nhắn nhắc nhở vote (không cần đợi đủ 10 reply).\n"
-                "➡️ `y!test_vote <@user/ID> <điểm>`: Bơm điểm ảo vào hồ sơ Staff để kiểm tra tính toán điểm trung bình.\n"
-                "   ↳ Ví dụ: `y!test_vote @Yon 4.5`\n"
-                "➡️ `y!test_reset <@user/ID>`: Dọn sạch toàn bộ điểm vote ảo *(test_injection)* và giữ nguyên vote thực."
+                "➡️ `y!checkdb`: Kiểm tra nhanh danh sách toàn bộ nhân sự hiện đang được lưu trữ trong Cơ Sở Dữ Liệu PostgreSQL."
             ),
             inline=False
         )
 
         embed.add_field(
-            name="📌 Lệnh Hệ Thống",
+            name="🧪 4. Kiểm Thử & Debug (Chỉ Dành Cho Tester)",
             value=(
-                "➡️ `y!help` *(thay thế: `y!huongdan`, `y!lenh`, `y!commands`)*: Hiển thị bảng hướng dẫn câu lệnh này."
+                "➡️ `y!test_reply <@user/ID>`: Giả lập kích hoạt ngay câu nhắc nhở vote trên kênh chat (không cần đợi đủ 10 reply).\n"
+                "➡️ `y!test_vote <@user/ID> <điểm>`: Bơm điểm vote ảo vào hồ sơ để kiểm thử công thức tính và làm tròn điểm trung bình.\n"
+                "➡️ `y!test_reset <@user/ID>`: Lọc và dọn sạch toàn bộ các lượt vote ảo khỏi hồ sơ của Staff, trả lại điểm số thực tế."
             ),
             inline=False
         )

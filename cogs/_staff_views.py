@@ -188,7 +188,7 @@ class RoleSelectDropdown(discord.ui.Select):
         if not records or len(records) == 0:
             empty_embed = discord.Embed(
                 title=f"📋 Danh sách {selected_role.upper()}",
-                description=f"🌸 Hiện tại chưa có nhân sự nào giữ vị trí **{selected_role.upper()}** trong server.\n\n*Admin có thể sử dụng lệnh `y!addstaff` hoặc kiểm tra lại bằng lệnh `y!checkdb`.*",
+                description=f"🌸 Hiện tại chưa có nhân sự nào giữ vị trí **{selected_role.upper()}** trong server.\n\n*Admin có thể sử dụng lệnh `y!add` hoặc kiểm tra lại bằng lệnh `y!checkdb`.*",
                 color=0xffb6c1
             )
             await interaction.response.edit_message(embed=empty_embed, view=BackOnlyView(self.author_id))
