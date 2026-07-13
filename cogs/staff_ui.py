@@ -89,7 +89,7 @@ class StaffUICog(commands.Cog):
         if not target:
             await ctx.send(
                 "⚠️ **Vui lòng nhập ID hoặc ping nhân sự muốn xem đánh giá!**\n"
-                "➡️ Ví dụ: `y!feedback @Yon Yon Lon Ton` hoặc `y!fb 468428368828956692`"
+                "Ví dụ: `y!feedback @Yon Yon Lon Ton` hoặc `y!fb 468428368828956692`"
             )
             return
 
@@ -130,7 +130,7 @@ class StaffUICog(commands.Cog):
             if isinstance(avg_rating, (int, float)):
                 avg_rating = round(float(avg_rating), 1)
             description = (
-                f"➡️ Điểm trung bình: **⭐ {avg_rating}/5.0** ({len(votes_dict)} lượt đánh giá)\n\n"
+                f"Điểm trung bình: **⭐ {avg_rating}/5.0** ({len(votes_dict)} lượt đánh giá)\n\n"
                 + "\n".join(review_lines)
             )
 
