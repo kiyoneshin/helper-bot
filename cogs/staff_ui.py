@@ -38,51 +38,6 @@ class StaffUICog(commands.Cog):
         except Exception as e:
             await ctx.send(f"Lỗi truy vấn Database: {e}")
 
-    @commands.command(name="voters", aliases=["votelog", "xemvote"])
-    async def check_voters(self, ctx: commands.Context, target: Optional[str] = None):
-        """Lệnh kiểm tra xem ai đã vote cho ai và bao nhiêu điểm"""
-        if not target:
-            await ctx.send(
-                "⚠️ **Vui lòng nhập ID hoặc ping nhân sự cần xem lịch sử vote!**\n"
-                "➡️ Ví dụ chuẩn: `y!voters @Yon Yon Lon Ton` hoặc `y!voters 468428368828956692`"
-            )
-            return
-
-        target_id = target.replace("<@", "").replace("!", "").replace(">", "").strip()
-        
-        try:
-            records = await query_db(self.bot, "SELECT display_name, role, votes, rating FROM profiles WHERE discord_id = $1", target_id)
-            if not records:
-                await ctx.send("📭 **Không tìm thấy nhân sự này trong Database!**\n➡️ Vui lòng kiểm tra lại chính xác ID hoặc ping lại.")
-                return
-            
-            row = records[0]
-            name = row.get('display_name', 'Unnamed Staff')
-            votes_dict = _normalize_votes(row.get('votes', {}))
-
-            if not votes_dict:
-                await ctx.send(f"⭐ Hồ sơ của **{name}** hiện tại **chưa có lượt đánh giá nào!**")
-                return
-
-            details = ""
-            for idx, (voter_id, entry) in enumerate(votes_dict.items(), 1):
-                score = entry.get("score", 0.0) if isinstance(entry, dict) else float(entry)
-                if voter_id.startswith("old_"):
-                    details += f"**{idx}.** Người dùng ẩn danh *(Dữ liệu cũ)*: **{score} ⭐**\n"
-                else:
-                    details += f"**{idx}.** <@{voter_id}> (`{voter_id}`): **{score} ⭐**\n"
-            
-            desc_text = f"➡️ Điểm trung bình hiện tại: **⭐ {row.get('rating', 0.0)}/5.0** ({len(votes_dict)} lượt)\n\n**Chi tiết từng lượt vote:**\n{details}"
-            embed = discord.Embed(
-                title=f"📋 Lịch Sử Đánh Giá Của {name}",
-                description=desc_text,
-                color=0xffb6c1
-            )
-            embed.set_footer(text="Angelic Bot • Sử dụng `y!feedback <@user>` để xem toàn bộ bài đánh giá chi tiết!")
-            await ctx.send(embed=embed)
-        except Exception as e:
-            await ctx.send(f"Lỗi truy vấn Database: {e}")
-
     @commands.command(name="feedback", aliases=["fb"])
     async def feedback_cmd(self, ctx: commands.Context, target: Optional[str] = None):
         """Lệnh xem danh sách toàn bộ bài đánh giá của một nhân sự"""
@@ -163,7 +118,6 @@ class StaffUICog(commands.Cog):
             name="✨ Lệnh Giao Diện & Nhân Sự",
             value=(
                 "➡️ `y!menu` *(thay thế: `y!staff`, `y!bqt`)*: Mở bảng giao diện xem danh sách và thông tin Ban Quản Trị.\n"
-                "➡️ `y!voters <@user/ID>` *(thay thế: `y!votelog`, `y!xemvote`)*: Xem lịch sử ai đã vote cho một Staff và điểm cụ thể.\n"
                 "➡️ `y!feedback <@user/ID>` *(thay thế: `y!fb`)*: Xem toàn bộ bài đánh giá chi tiết có kèm nội dung nhận xét của cộng đồng.\n"
                 "➡️ `y!checkdb`: Kiểm tra nhanh toàn bộ nhân sự đang lưu trong Cơ Sở Dữ Liệu.\n"
                 "➡️ `y!set` *(thay thế: `y!editprofile`, `y!suahoso`)*: Tự chỉnh sửa hồ sơ cá nhân của bạn trong hệ thống *(chỉ dành cho Staff).*"
