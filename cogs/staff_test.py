@@ -3,6 +3,7 @@ from discord.ext import commands
 import logging
 import json
 from typing import Optional, Any, List
+from cogs._staff_db import query_db, extract_id
 
 log = logging.getLogger("StaffTest")
 
@@ -50,14 +51,10 @@ class StaffTestCog(commands.Cog):
     @commands.command(name="test_reply")
     @is_tester()
     async def test_reply_trigger(self, ctx: commands.Context, target: Optional[str] = None):
-        """[TEST] Giả lập kích hoạt ngay lập tức câu nhắc nhở vote (không cần đợi 10 reply)
-        ➡️ Cú pháp: y!test_reply @user hoặc y!test_reply <ID>
-        """
-        if not target:
-            await ctx.send("⚠️ **Thiếu thông tin!**\n➡️ Vui lòng ping hoặc nhập ID nhân sự muốn test: `y!test_reply @Yon Yon Lon Ton`")
+        target_id = extract_id(target)
+        if not target_id:
+            await ctx.send("⚠️ **Thiếu thông tin!**\n➡️ Vui lòng ping hoặc nhập ID: `y!test_reply 468428368828956692`")
             return
-
-        target_id = target.replace("<@", "").replace("!", "").replace(">", "").strip()
         
         try:
             records = await query_db(self.bot, "SELECT display_name, role FROM profiles WHERE discord_id = $1", target_id)
@@ -82,21 +79,15 @@ class StaffTestCog(commands.Cog):
     @commands.command(name="test_vote")
     @is_tester()
     async def test_inject_vote(self, ctx: commands.Context, target: Optional[str] = None, score: Optional[float] = None):
-        """[TEST] Bơm trực tiếp 1 điểm số ảo vào hồ sơ Staff để test tính toán điểm trung bình
-        ➡️ Cú pháp: y!test_vote @user <điểm> (Ví dụ: y!test_vote @user 4.5)
-        """
-        if not target or score is None:
-            await ctx.send(
-                "⚠️ **Sai cú pháp!**\n"
-                "➡️ Cú pháp chuẩn: `y!test_vote @user <điểm>` (Ví dụ: `y!test_vote @Yon 4.8`)"
-            )
+        target_id = extract_id(target)
+        if not target_id or score is None:
+            await ctx.send("⚠️ **Sai cú pháp!**\n➡️ Cú pháp chuẩn: `y!test_vote <ID hoặc @user> <điểm>` (Ví dụ: `y!test_vote 4684... 4.8`)")
             return
 
         if not (0.0 <= score <= 5.0):
             await ctx.send("⚠️ Điểm test phải nằm trong khoảng từ `0.0` đến `5.0`!")
             return
 
-        target_id = target.replace("<@", "").replace("!", "").replace(">", "").strip()
         score = round(score, 1)
 
         try:
@@ -141,14 +132,10 @@ class StaffTestCog(commands.Cog):
     @commands.command(name="test_reset")
     @is_tester()
     async def test_reset_data(self, ctx: commands.Context, target: Optional[str] = None):
-        """[TEST] Chỉ dọn dẹp các điểm vote ảo (test_injection_...) và giữ nguyên vote thực
-        ➡️ Cú pháp: y!test_reset @user
-        """
-        if not target:
-            await ctx.send("⚠️ **Thiếu thông tin!**\n➡️ Vui lòng nhập ID hoặc ping Staff cần dọn điểm test: `y!test_reset @user`")
+        target_id = extract_id(target)
+        if not target_id:
+            await ctx.send("⚠️ **Thiếu thông tin!**\n➡️ Vui lòng nhập ID hoặc ping: `y!test_reset 468428368828956692`")
             return
-
-        target_id = target.replace("<@", "").replace("!", "").replace(">", "").strip()
 
         try:
             records = await query_db(self.bot, "SELECT display_name, votes FROM profiles WHERE discord_id = $1", target_id)

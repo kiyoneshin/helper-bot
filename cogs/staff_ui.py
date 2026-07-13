@@ -7,6 +7,7 @@ from typing import Optional
 from cogs._staff_db import query_db
 from cogs._staff_embeds import get_main_embed
 from cogs._staff_views import MainView, _normalize_votes
+from cogs._staff_db import query_db, extract_id
 
 log = logging.getLogger("StaffBot")
 
@@ -41,14 +42,15 @@ class StaffUICog(commands.Cog):
     @commands.command(name="feedback", aliases=["fb"])
     async def feedback_cmd(self, ctx: commands.Context, target: Optional[str] = None):
         """Lệnh xem danh sách toàn bộ bài đánh giá của một nhân sự"""
-        if not target:
+        # Sử dụng hàm đa năng để lấy ID
+        target_id = extract_id(target)
+
+        if not target_id:
             await ctx.send(
                 "⚠️ **Vui lòng nhập ID hoặc ping nhân sự muốn xem đánh giá!**\n"
-                "Ví dụ: `y!feedback @Yon Yon Lon Ton` hoặc `y!fb 468428368828956692`"
+                "➡️ Ví dụ chuẩn: `y!fb @Yon Yon Lon Ton` hoặc `y!fb 468428368828956692`"
             )
             return
-
-        target_id = target.replace("<@", "").replace("!", "").replace(">", "").strip()
 
         try:
             records = await query_db(self.bot, "SELECT display_name, votes, rating FROM profiles WHERE discord_id = $1", target_id)
