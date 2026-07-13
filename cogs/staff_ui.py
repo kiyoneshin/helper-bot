@@ -6,7 +6,7 @@ from typing import Optional
 
 from cogs._staff_db import query_db
 from cogs._staff_embeds import get_main_embed
-from cogs._staff_views import MainView
+from cogs._staff_views import MainView, _normalize_votes
 
 log = logging.getLogger("StaffBot")
 
@@ -58,24 +58,15 @@ class StaffUICog(commands.Cog):
             
             row = records[0]
             name = row.get('display_name', 'Unnamed Staff')
-            v_data = row.get('votes', {})
-            votes_dict = {}
-            if isinstance(v_data, str):
-                try: votes_dict = json.loads(v_data)
-                except Exception: votes_dict = {}
-            elif isinstance(v_data, dict):
-                votes_dict = v_data
-            elif isinstance(v_data, list):
-                for idx, s in enumerate(v_data):
-                    if isinstance(s, (int, float)):
-                        votes_dict[f"old_voter_{idx}"] = float(s)
+            votes_dict = _normalize_votes(row.get('votes', {}))
 
             if not votes_dict:
                 await ctx.send(f"⭐ Hồ sơ của **{name}** hiện tại **chưa có lượt đánh giá nào!**")
                 return
 
             details = ""
-            for idx, (voter_id, score) in enumerate(votes_dict.items(), 1):
+            for idx, (voter_id, entry) in enumerate(votes_dict.items(), 1):
+                score = entry.get("score", 0.0) if isinstance(entry, dict) else float(entry)
                 if voter_id.startswith("old_"):
                     details += f"**{idx}.** Người dùng ẩn danh *(Dữ liệu cũ)*: **{score} ⭐**\n"
                 else:
@@ -87,10 +78,75 @@ class StaffUICog(commands.Cog):
                 description=desc_text,
                 color=0xffb6c1
             )
-            embed.set_footer(text="Angelic Bot • Hệ thống tự động ngăn chặn vote lặp lại 2 lần!")
+            embed.set_footer(text="Angelic Bot • Sử dụng `y!feedback <@user>` để xem toàn bộ bài đánh giá chi tiết!")
             await ctx.send(embed=embed)
         except Exception as e:
             await ctx.send(f"Lỗi truy vấn Database: {e}")
+
+    @commands.command(name="feedback", aliases=["fb"])
+    async def feedback_cmd(self, ctx: commands.Context, target: Optional[str] = None):
+        """Lệnh xem danh sách toàn bộ bài đánh giá của một nhân sự"""
+        if not target:
+            await ctx.send(
+                "⚠️ **Vui lòng nhập ID hoặc ping nhân sự muốn xem đánh giá!**\n"
+                "➡️ Ví dụ: `y!feedback @Yon Yon Lon Ton` hoặc `y!fb 468428368828956692`"
+            )
+            return
+
+        target_id = target.replace("<@", "").replace("!", "").replace(">", "").strip()
+
+        try:
+            records = await query_db(self.bot, "SELECT display_name, votes, rating FROM profiles WHERE discord_id = $1", target_id)
+            if not records:
+                await ctx.send(
+                    "📭 **Không tìm thấy nhân sự này trong Database!**\n"
+                    "➡️ Vui lòng kiểm tra lại chính xác ID hoặc ping lại."
+                )
+                return
+
+            row = records[0]
+            name = row.get('display_name', 'Unnamed Staff')
+            votes_dict = _normalize_votes(row.get('votes', {}))
+
+            if not votes_dict:
+                await ctx.send(
+                    f"💖 Hồ sơ của **{name}** hiện tại **chưa có bài đánh giá nào** từ cộng đồng!"
+                )
+                return
+
+            # Xây dựng nội dung danh sách đánh giá
+            review_lines = []
+            for voter_id, entry in votes_dict.items():
+                if not isinstance(entry, dict):
+                    continue
+                score = entry.get("score", 0.0)
+                review = entry.get("review") or "Không có nội dung"
+                if voter_id.startswith("old_"):
+                    review_lines.append(f"*Ẩn danh* **{score} ⭐**, {review}")
+                else:
+                    review_lines.append(f"<@{voter_id}> **{score} ⭐**, {review}")
+
+            avg_rating = row.get('rating', 0.0)
+            description = (
+                f"➡️ Điểm trung bình: **⭐ {avg_rating}/5.0** ({len(votes_dict)} lượt đánh giá)\n\n"
+                + "\n".join(review_lines)
+            )
+
+            # Kiểm tra giới hạn độ dài Embed (4096 ký tự)
+            if len(description) > 4096:
+                description = description[:4090] + "..."
+
+            embed = discord.Embed(
+                title=f"📋 Danh Sách Đánh Giá Của {name}",
+                description=description,
+                color=0xffb6c1
+            )
+            embed.set_footer(text="Angelic Bot • Cảm ơn cộng đồng đã đóng góp đánh giá chân thành! 🌸")
+            await ctx.send(embed=embed)
+
+        except Exception as e:
+            await ctx.send(f"Lỗi truy vấn Database: {e}")
+
 
     @commands.command(name="help", aliases=["huongdan", "lenh", "commands"])
     async def help_cmd(self, ctx: commands.Context):
@@ -106,6 +162,7 @@ class StaffUICog(commands.Cog):
             value=(
                 "➡️ `y!menu` *(thay thế: `y!staff`, `y!bqt`)*: Mở bảng giao diện xem danh sách và thông tin Ban Quản Trị.\n"
                 "➡️ `y!voters <@user/ID>` *(thay thế: `y!votelog`, `y!xemvote`)*: Xem lịch sử ai đã vote cho một Staff và điểm cụ thể.\n"
+                "➡️ `y!feedback <@user/ID>` *(thay thế: `y!fb`)*: Xem toàn bộ bài đánh giá chi tiết có kèm nội dung nhận xét của cộng đồng.\n"
                 "➡️ `y!checkdb`: Kiểm tra nhanh toàn bộ nhân sự đang lưu trong Cơ Sở Dữ Liệu.\n"
                 "➡️ `y!set` *(thay thế: `y!editprofile`, `y!suahoso`)*: Tự chỉnh sửa hồ sơ cá nhân của bạn trong hệ thống *(chỉ dành cho Staff).*"
             ),

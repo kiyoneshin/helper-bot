@@ -7,14 +7,59 @@ from cogs._staff_embeds import get_main_embed, build_embed
 
 log = logging.getLogger("StaffViews")
 
+def _normalize_votes(v_data: Any) -> dict:
+    """
+    Hàm chuẩn hóa (Backward Compatibility): tự động chuyển đổi dữ liệu votes cũ
+    sang cấu trúc mới: {"voter_id": {"score": float, "review": str}}.
+    - Dữ liệu cũ dạng số trần:  {"voter_id": 4.5}       → {"voter_id": {"score": 4.5, "review": "Không có nội dung"}}
+    - Dữ liệu cũ dạng List:     [4.5, 5.0]               → {"old_voter_0": {"score": 4.5, "review": "Không có nội dung"}, ...}
+    - Dữ liệu mới (đã đúng):    {"voter_id": {"score": ..., "review": ...}} → giữ nguyên
+    """
+    if isinstance(v_data, str):
+        try:
+            v_data = json.loads(v_data)
+        except Exception:
+            return {}
+
+    if isinstance(v_data, list):
+        result = {}
+        for idx, old_score in enumerate(v_data):
+            if isinstance(old_score, (int, float)):
+                result[f"old_voter_{idx}"] = {"score": float(old_score), "review": "Không có nội dung"}
+        return result
+
+    if isinstance(v_data, dict):
+        result = {}
+        for voter_id, entry in v_data.items():
+            # Dữ liệu cũ dạng số trần
+            if isinstance(entry, (int, float)):
+                result[voter_id] = {"score": float(entry), "review": "Không có nội dung"}
+            # Dữ liệu mới đã đúng cấu trúc
+            elif isinstance(entry, dict) and "score" in entry:
+                result[voter_id] = {
+                    "score": float(entry.get("score", 0.0)),
+                    "review": str(entry.get("review") or "Không có nội dung")
+                }
+        return result
+
+    return {}
+
+
 class VoteModal(discord.ui.Modal, title="🌟 Đánh Giá Nhân Sự"):
-    """Form bật lên để người dùng nhập điểm số từ 0 đến 5"""
+    """Form bật lên để người dùng nhập điểm số và bài đánh giá"""
     score_input = discord.ui.TextInput(
         label="Nhập điểm đánh giá (Từ 0 đến 5):",
         placeholder="Chấp nhận số nguyên (5, 4) hoặc thập phân (5.0, 4.5)",
         min_length=1,
         max_length=3,
         required=True
+    )
+    review_input = discord.ui.TextInput(
+        label="Nội dung đánh giá:",
+        placeholder="Chia sẻ cảm nhận của bạn về nhân sự này... (không bắt buộc)",
+        style=discord.TextStyle.paragraph,
+        required=False,
+        max_length=200
     )
 
     def __init__(self, profile_view):
@@ -40,6 +85,10 @@ class VoteModal(discord.ui.Modal, title="🌟 Đánh Giá Nhân Sự"):
             return
 
         val = round(val, 1)
+        review_text = self.review_input.value.strip() if self.review_input.value else "Không có nội dung"
+        if not review_text:
+            review_text = "Không có nội dung"
+
         bot: Any = interaction.client
         target_id = str(self.profile_view.user_data.get('discord_id'))
 
@@ -53,35 +102,17 @@ class VoteModal(discord.ui.Modal, title="🌟 Đánh Giá Nhân Sự"):
         records = await query_db(bot, "SELECT votes FROM profiles WHERE discord_id = $1", target_id)
         votes_dict = {}
         if records and records[0].get('votes') is not None:
-            v_data = records[0]['votes']
-            if isinstance(v_data, str):
-                try: 
-                    v_data = json.loads(v_data)
-                except Exception: 
-                    v_data = {}
-            
-            if isinstance(v_data, dict):
-                votes_dict = v_data
-            elif isinstance(v_data, list):
-                for idx, old_score in enumerate(v_data):
-                    if isinstance(old_score, (int, float)):
-                        votes_dict[f"old_voter_{idx}"] = float(old_score)
-
-        if not isinstance(votes_dict, dict):
-            votes_dict = {}
+            votes_dict = _normalize_votes(records[0]['votes'])
 
         voter_id = str(interaction.user.id)
-        
-        if voter_id in votes_dict:
-            await interaction.response.send_message(
-                "⚠️ **Bạn đã đánh giá cho nhân sự này rồi!**\n➡️ Mỗi người chỉ được quyền vote 1 lần duy nhất cho mỗi Staff để đảm bảo tính công bằng.",
-                ephemeral=True
-            )
-            return
+        is_update = voter_id in votes_dict
 
-        votes_dict[voter_id] = val
-        scores = [float(v) for v in votes_dict.values()]
-        new_avg = round(sum(scores) / len(scores), 1)
+        # Ghi đè hoặc thêm mới
+        votes_dict[voter_id] = {"score": val, "review": review_text}
+
+        # Tính lại điểm trung bình từ cấu trúc mới
+        scores = [entry["score"] for entry in votes_dict.values() if isinstance(entry, dict)]
+        new_avg = round(sum(scores) / len(scores), 1) if scores else 0.0
 
         await query_db(
             bot, 
@@ -98,11 +129,13 @@ class VoteModal(discord.ui.Modal, title="🌟 Đánh Giá Nhân Sự"):
 
         if interaction.message:
             await interaction.message.edit(view=self.profile_view)
+
+        if is_update:
+            confirm_msg = f"✏️ **Đã cập nhật bài đánh giá của bạn thành công!** (Điểm mới: **{val} ⭐**)"
+        else:
+            confirm_msg = f"💖 **Cảm ơn bạn!** Đã ghi nhận điểm đánh giá **{val} ⭐** và cập nhật lên hệ thống!"
         
-        await interaction.response.send_message(
-            f"💖 **Cảm ơn bạn!** Đã ghi nhận điểm đánh giá **{val} ⭐** và cập nhật lên hệ thống!",
-            ephemeral=True
-        )
+        await interaction.response.send_message(confirm_msg, ephemeral=True)
 
 
 class BaseStaffView(discord.ui.View):
@@ -260,13 +293,11 @@ class ProfileView(BaseStaffView):
             except Exception: 
                 votes = {}
         
-        scores = []
-        if isinstance(votes, list):
-            scores = [float(v) for v in votes if isinstance(v, (int, float))]
-        elif isinstance(votes, dict):
-            scores = [float(v) for v in votes.values()]
-            
-        if scores and len(scores) > 0:
+        # Chuẩn hóa votes về cấu trúc mới để đọc điểm
+        normalized_votes = _normalize_votes(votes)
+        scores = [entry["score"] for entry in normalized_votes.values() if isinstance(entry, dict)]
+
+        if scores:
             avg = round(sum(scores) / len(scores), 1)
             self.rating_display_btn.label = f"⭐ {avg}/5.0 ({len(scores)} lượt)"
         else:
