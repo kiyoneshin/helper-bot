@@ -28,42 +28,51 @@ def get_main_embed() -> discord.Embed:
 def build_embed(user_data: dict, member: Optional[discord.Member] = None, photo_index: int = 0) -> discord.Embed:
     """Tạo Embed hiển thị Profile của Staff"""
     display_name = user_data.get('display_name', 'Unnamed Staff')
-    role_name = user_data.get('role', 'staff').upper()
-    
+    role_name = user_data.get('role', 'staff')
+
     embed = discord.Embed(
         title=f"✨ {display_name} ✨",
         color=0xffb6c1
     )
-    
+
+    # --- Phần mô tả: dòng vị trí + danh sách tags ---
     tags = user_data.get('tags', [])
     if isinstance(tags, str):
-        try: 
+        try:
             tags = json.loads(tags)
-        except Exception: 
+        except Exception:
             tags = []
-        
-    if tags:
-        embed.description = "\n".join(f"♱ {t}" for t in tags)
-    else:
-        embed.description = "*Chưa có thông tin giới thiệu.*"
-        
+
+    tags_text = "\n".join(f"♱ {t}" for t in tags) if tags else "(trống)"
+    embed.description = f"vị trí: {role_name}\n{tags_text}"
+
+    # --- Fields: Giới thiệu bản thân & Liên hệ ---
+    description_value = user_data.get('description') or "(trống)"
+    contact_value = user_data.get('contact') or "(trống)"
+
+    embed.add_field(name="Giới thiệu bản thân", value=description_value, inline=False)
+    embed.add_field(name="Liên hệ", value=contact_value, inline=False)
+
+    # --- Thumbnail (avatar) ---
     if member and member.display_avatar:
         embed.set_thumbnail(url=member.display_avatar.url)
-        
+
+    # --- Ảnh đính kèm ---
     photos = user_data.get('photos', [])
     if isinstance(photos, str):
-        try: 
+        try:
             photos = json.loads(photos)
-        except Exception: 
+        except Exception:
             photos = []
-        
+
     if photos and len(photos) > photo_index:
         img_url = str(photos[photo_index]).strip()
         if img_url.startswith("http://") or img_url.startswith("https://"):
             embed.set_image(url=img_url)
         else:
             log.warning(f"⚠️ Phát hiện URL ảnh không hợp lệ trong DB, tự động bỏ qua: {img_url}")
-            
+
+    # --- Footer ---
     total_photos = max(1, len(photos))
-    embed.set_footer(text=f"Vị trí: {role_name} • Ảnh {photo_index + 1}/{total_photos}")
+    embed.set_footer(text=f"Vị trí: {role_name.upper()} • Ảnh {photo_index + 1}/{total_photos}")
     return embed
