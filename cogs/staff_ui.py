@@ -74,16 +74,23 @@ class StaffUICog(commands.Cog):
             for voter_id, entry in votes_dict.items():
                 if not isinstance(entry, dict):
                     continue
-                score = entry.get("score", 0.0)
+
+                try:
+                    score = round(float(entry.get("score", 0.0)), 1)
+                except (ValueError, TypeError):
+                    score = 0.0
+                    
                 review = entry.get("review") or "Không có nội dung"
                 if voter_id.startswith("old_"):
                     review_lines.append(f"*Ẩn danh* **{score} ⭐**, {review}")
                 else:
                     review_lines.append(f"<@{voter_id}> **{score} ⭐**, {review}")
 
-            avg_rating = row.get('rating', 0.0)
-            if isinstance(avg_rating, (int, float)):
-                avg_rating = round(float(avg_rating), 1)
+            try:
+                avg_rating = round(float(row.get('rating', 0.0)), 1)
+            except (ValueError, TypeError):
+                avg_rating = 0.0
+
             description = (
                 f"Điểm trung bình: **⭐ {avg_rating}/5.0** ({len(votes_dict)} lượt đánh giá)\n\n"
                 + "\n".join(review_lines)
