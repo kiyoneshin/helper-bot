@@ -21,6 +21,7 @@ TRAP_CHANNEL_ID = int(os.environ.get("TRAP_CHANNEL_ID", "0"))
 if not TOKEN or not DATABASE_URL:
     raise ValueError("LỖI: Thiếu DISCORD_TOKEN hoặc DATABASE_URL trong .env!")
 
+# Cấu hình đầy đủ các quyền (Intents) cần thiết cho bot
 intents = discord.Intents.default()
 intents.guilds = True
 intents.members = True
@@ -28,7 +29,12 @@ intents.message_content = True
 
 class StaffBot(commands.Bot):
     def __init__(self):
-        super().__init__(command_prefix="y!", intents=intents, help_command=None)
+        super().__init__(
+            command_prefix=["y!", "Y!"], 
+            intents=intents, 
+            help_command=None,
+            case_insensitive=True
+        )
         self.db_pool: Optional[asyncpg.Pool] = None
         self.trap_channel_id: int = TRAP_CHANNEL_ID
 
@@ -60,7 +66,6 @@ class StaffBot(commands.Bot):
         cogs_dir = "./cogs"
         if os.path.exists(cogs_dir):
             for filename in os.listdir(cogs_dir):
-                # Chỉ nạp các file Python (.py) và bỏ qua các file file ẩn/hệ thống (bắt đầu bằng _)
                 if filename.endswith(".py") and not filename.startswith("_"):
                     cog_name = f"cogs.{filename[:-3]}"
                     try:
