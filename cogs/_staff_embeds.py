@@ -9,17 +9,39 @@ def get_main_embed() -> discord.Embed:
     """Tạo Embed chào mừng và luật server ở trang đầu tiên"""
     embed = discord.Embed(
         title="🏠 Chào mừng đến với Angelic ໒꒱",
-        description=(
-            "Tiếng chuông nhà thờ khẽ ngân vang, cánh cổng thiên đường đã mở rộng chào đón bạn! ଘ(੭ˊᵕˋ)੭\n"
-            "Hãy biến nơi đây thành mái nhà bình yên để cùng trò chuyện, chơi game, chữa lành và lưu giữ những kỷ niệm đẹp nhé.\n\n"
-            "📜 **TÓM TẮT LUẬT SERVER (CẦN NHỚ KỸ):**\n"
-            "**1. Văn hóa giao tiếp:** Tôn trọng tất cả mọi người, đùa giỡn có chừng mực. Nghiêm cấm gây war, drama hay mạo danh người khác.\n"
-            "**2. Lằn ranh đỏ (BAN thẳng):** Tuyệt đối không Phân biệt vùng miền/chủng tộc, sài tool phá hoại (spam/nuke/raid), hoặc mua bán trái phép.\n"
-            "**3. Nội dung nhạy cảm:** Hạn chế tối đa nói tục. Cấm gửi nội dung NSFW, máu me ở kênh chung (chỉ được gửi trong 🔞｜𝐓𝐎𝐗𝐈𝐂).\n"
-            "**4. Giữ gìn trật tự:** Không spam (tin nhắn, ping, sticker, ticket). Cấm quảng cáo link ngoài khi chưa được phép.\n"
-            "**5. Không gian chung:** Trò chuyện đúng chủ đề từng kênh, không phá room voice của người khác và tuân thủ lời nhắc của Staff.\n\n"
-            "➡️ *Vui lòng chọn menu phía dưới để làm quen với danh sách Ban Quản Trị!*"
-        ),
+            description=(
+                "Tiếng chuông nhà thờ khẽ ngân vang, cánh cổng thiên đường đã mở rộng chào đón bạn! ଘ(੭ˊᵕˋ)੭\n"
+                "Hãy biến nơi đây thành mái nhà bình yên để cùng trò chuyện, chơi game, chữa lành và lưu giữ những kỷ niệm đẹp nhé.\n\n"
+                
+                "📜 **ĐIỀU LỆ SERVER ANGERLIC (CẦN ĐỌC VÀ NHỚ KỸ):**\n\n"
+                
+                "**1. Văn hóa ứng xử & Giao tiếp:**\n"
+                "• Tôn trọng tất cả thành viên và Ban Quản Trị. Đùa giỡn có chừng mực, nghiêm cấm các hành vi toxic, nói xấu sau lưng, gây war, drama hoặc lôi kéo mâu thuẫn cá nhân vào server.\n"
+                "• **Hạn chế tối đa nói tục và đùa giỡn nhạy cảm (sex joke).** Tùy thuộc vào mức độ vi phạm, bot và staff sẽ xử lý từ cảnh cáo, mute (tắt tiếng) cho đến ban (khóa tài khoản) vĩnh viễn.\n\n"
+                
+                "**2. Nội dung nhạy cảm & Cấm kỵ:**\n"
+                "• Tuyệt đối không gửi các nội dung liên quan đến NSFW (đồi trụy) và máu me/kinh dị. Server không phải là không gian chia sẻ các nội dung này. Nếu muốn gửi, bạn chỉ được phép hoạt động trong đúng kênh quy định: <#1512138257771532469> (🔞｜𝐓𝐎𝐗𝐈𝐂).\n\n"
+                
+                "**3. Các lằn ranh đỏ (BAN THẲNG TAY KHÔNG PHÚC KHẢO):**\n"
+                "• **Phân biệt vùng miền (PBVM):** Khóa tài khoản vĩnh viễn ngay lập tức.\n"
+                "• **Phân biệt chủng tộc (PBCT):** Nhẹ thì mute cảnh cáo, nặng sẽ ban thẳng.\n"
+                "• **Sử dụng công cụ phá hoại:** Nghiêm cấm xài các loại tool spam, nuke, raid server.\n"
+                "• Mạo danh người khác hoặc giả mạo danh nghĩa của Staff.\n\n"
+                
+                "**4. Giữ gìn trật tự & An toàn chung:**\n"
+                "• Không spam tin nhắn, emoji, sticker, gif hoặc cố tình liên tục tag (ping) gây phiền hà, khó chịu cho người khác.\n"
+                "• Cấm mọi hình thức quảng cáo server khác, chia sẻ link ngoài khi chưa được Admin cho phép.\n"
+                "• Cấm các hành vi mua bán, giao dịch, trao đổi thương mại trong server dưới mọi hình thức để tránh lừa đảo.\n\n"
+                
+                "**5. Quy định về Không gian chung & Kênh hỗ trợ:**\n"
+                "• Chat đúng chủ đề và mục đích của từng kênh. Không tự ý vào phá room voice hoặc làm phiền không gian riêng của người khác.\n"
+                "• Không spam ticket hoặc tự ý mở ticket khi không thực sự cần thiết. Luôn luôn tuân thủ và hợp tác theo lời nhắc nhở/hướng dẫn của Staff.\n\n"
+                
+                "**🚨 6. Quy định đặc biệt về Hệ thống Role Độ tuổi:**\n"
+                "• Khi bạn tự chọn (pick) role liên quan đến độ tuổi của bản thân, **bắt buộc phải chọn đúng số tuổi thật**. Nếu hệ thống hoặc Ban Quản Trị phát hiện bất kỳ hành vi khai gian tuổi nào, tài khoản đó sẽ bị **BAN vĩnh viễn khỏi server ngay lập tức** (Quy định này áp dụng nghiêm túc cho tất cả mọi người, kể cả Staff).\n\n"
+                
+                "*🌸 Vui lòng chọn menu phía dưới để làm quen với danh sách Ban Quản Trị!*"
+            ),
         color=0xffb6c1
     )
     return embed
