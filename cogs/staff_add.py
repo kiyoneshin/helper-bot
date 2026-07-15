@@ -129,7 +129,8 @@ class AddPhotoAfterRegisterView(discord.ui.View):
 
     async def on_timeout(self):
         for item in self.children:
-            item.disabled = True
+            if isinstance(item, (discord.ui.Button, discord.ui.Select)):
+                item.disabled = True
         if self.message:
             try:
                 await self.message.edit(view=self)
@@ -318,7 +319,7 @@ class _OpenRegisterModalView(discord.ui.View):
 
     async def on_timeout(self):
         for item in self.children:
-            if isinstance(item, discord.ui.Button):
+            if isinstance(item, (discord.ui.Button, discord.ui.Select)):
                 item.disabled = True
         if self.message:
             try:
