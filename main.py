@@ -53,8 +53,14 @@ class StaffBot(commands.Bot):
                         tags JSONB DEFAULT '[]'::jsonb,
                         photos JSONB DEFAULT '[]'::jsonb,
                         votes JSONB DEFAULT '{}'::jsonb,
-                        rating NUMERIC DEFAULT 0.0
+                        rating NUMERIC DEFAULT 0.0,
+                        weekly_replies INT DEFAULT 0
                     )
+                ''')
+                # An toàn với DB cũ: thêm cột weekly_replies nếu chưa tồn tại
+                await conn.execute('''
+                    ALTER TABLE profiles
+                    ADD COLUMN IF NOT EXISTS weekly_replies INT DEFAULT 0
                 ''')
                 log.info("Database PostgreSQL đã sẵn sàng.")
         else:

@@ -16,6 +16,16 @@ async def query_db(bot: Any, sql: str, *args) -> list:
                 return await db_obj.fetch(sql, *args)
     return []
 
+async def execute_db(bot: Any, sql: str, *args) -> None:
+    """Thực thi câu lệnh SQL không trả về kết quả (INSERT/UPDATE/DELETE)"""
+    possible_names = ['db', 'pool', 'database', 'db_pool', 'conn', 'postgres', 'pg', 'connection']
+    for name in possible_names:
+        if hasattr(bot, name):
+            db_obj = getattr(bot, name)
+            if hasattr(db_obj, 'execute'):
+                await db_obj.execute(sql, *args)
+                return
+
 class StaffListenerCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -28,6 +38,9 @@ class StaffListenerCog(commands.Cog):
         # Khung thời gian giới hạn: 10 phút = 600 giây
         self.time_window = 600.0
 
+    # =========================================================================
+    # SỰ KIỆN: ĐẾM LƯỢT REPLY VÀ NHẮC NHỞ VOTE
+    # =========================================================================
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
         if message.author.bot or not message.guild:
@@ -53,6 +66,17 @@ class StaffListenerCog(commands.Cog):
                 if db_role in ['owner', 'admin', 'recep']:
                     current_time = time.time()
                     
+                    # --- Cộng dồn weekly_replies vào DB (real-time, không mất dữ liệu khi bot restart) ---
+                    try:
+                        await execute_db(
+                            self.bot,
+                            "UPDATE profiles SET weekly_replies = weekly_replies + 1 WHERE discord_id = $1",
+                            str(staff_id)
+                        )
+                    except Exception as e:
+                        log.error(f"Lỗi cập nhật weekly_replies cho {staff_id}: {e}")
+
+                    # --- Bộ đếm trong bộ nhớ tạm để kích hoạt nhắc nhở vote ---
                     # 1. Lấy danh sách các mốc thời gian reply hiện có của Staff
                     timestamps = self.reply_tracker.get(staff_id, [])
 
@@ -83,6 +107,41 @@ class StaffListenerCog(commands.Cog):
                 pass
             except Exception as e:
                 log.error(f"Lỗi hệ thống đếm lượt reply: {e}")
+
+    # =========================================================================
+    # SỰ KIỆN: TỰ ĐỘNG ĐỒNG BỘ BIỆT DANH (NICKNAME SYNC)
+    # =========================================================================
+    @commands.Cog.listener()
+    async def on_member_update(self, before: discord.Member, after: discord.Member):
+        # Chỉ xử lý khi display_name thay đổi
+        if before.display_name == after.display_name:
+            return
+
+        try:
+            # Kiểm tra nhanh: người này có phải Staff trong DB không?
+            records = await query_db(
+                self.bot,
+                "SELECT discord_id FROM profiles WHERE discord_id = $1",
+                str(after.id)
+            )
+
+            if not records:
+                return  # Không phải Staff, bỏ qua
+
+            # Cập nhật display_name mới vào DB
+            await execute_db(
+                self.bot,
+                "UPDATE profiles SET display_name = $1 WHERE discord_id = $2",
+                after.display_name,
+                str(after.id)
+            )
+            log.info(
+                f"[NicknameSync] Đã đồng bộ tên: {before.display_name!r} → {after.display_name!r} "
+                f"cho Staff ID {after.id}"
+            )
+
+        except Exception as e:
+            log.error(f"[NicknameSync] Lỗi khi đồng bộ tên cho {after.id}: {e}")
 
 async def setup(bot):
     await bot.add_cog(StaffListenerCog(bot))
