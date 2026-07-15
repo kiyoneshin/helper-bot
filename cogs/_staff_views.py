@@ -217,7 +217,17 @@ class MainView(BaseStaffView):
     """View Trang chủ chính của Menu"""
     def __init__(self, author_id: int):
         super().__init__(author_id=author_id)
+        self.message: Optional[discord.Message] = None
         self.add_item(RoleSelectDropdown(author_id))
+
+    async def on_timeout(self):
+        for item in self.children:
+            item.disabled = True
+        if self.message:
+            try:
+                await self.message.edit(view=self)
+            except Exception:
+                pass
 
 
 class StaffSelectDropdown(discord.ui.Select):

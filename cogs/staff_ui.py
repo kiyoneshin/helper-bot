@@ -20,7 +20,8 @@ class StaffUICog(commands.Cog):
     @commands.command(name="menu", aliases=["staff", "bqt"])
     async def send_menu(self, ctx: commands.Context):
         """Lệnh hiển thị Menu giới thiệu Ban Quản Trị Angelic"""
-        await ctx.send(embed=get_main_embed(), view=MainView(author_id=ctx.author.id))
+        view = MainView(author_id=ctx.author.id)
+        view.message = await ctx.send(embed=get_main_embed(), view=view)
         log.info(f"🌸 {ctx.author.display_name} vừa mở bảng Menu Staff.")
 
     @commands.command(name="checkdb")
@@ -31,11 +32,39 @@ class StaffUICog(commands.Cog):
             if not records:
                 await ctx.send("📭 **Database profiles đang TRỐNG!**\n➡️ Hãy lên Railway kiểm tra lại xem dữ liệu bạn nhập đã được ấn phím **Enter** để xác nhận lưu chưa nhé!")
                 return
-            
-            msg = "**📋 Danh sách thực tế đang lưu trong Database:**\n"
-            for r in records:
-                msg += f"➡️ ID: `{r['discord_id']}` | Role: `{r['role']}` | Tên: **{r['display_name']}**\n"
-            await ctx.send(msg)
+
+            # --- Sắp xếp theo phân cấp chức vụ: owner → admin → recep ---
+            role_order = {'owner': 0, 'admin': 1, 'recep': 2}
+            sorted_records = sorted(
+                records,
+                key=lambda x: role_order.get(x['role'].lower().strip(), 99)
+            )
+
+            # --- Render bảng monospace với căn lề ljust ---
+            COL_ID   = 22
+            COL_ROLE = 8
+            COL_NAME = 25
+
+            header    = f"{'ID'.ljust(COL_ID)}| {'Role'.ljust(COL_ROLE)}| Tên"
+            separator = f"{'-' * COL_ID}|{'-' * (COL_ROLE + 1)}|{'-' * (COL_NAME + 1)}"
+
+            rows = []
+            for r in sorted_records:
+                col_id   = str(r['discord_id']).ljust(COL_ID)
+                col_role = str(r['role']).lower().strip().ljust(COL_ROLE)
+                col_name = str(r['display_name'])
+                rows.append(f"{col_id}| {col_role}| {col_name}")
+
+            table_body = "\n".join(rows)
+            table = f"```\n{header}\n{separator}\n{table_body}\n```"
+
+            total       = len(sorted_records)
+            cnt_owner   = sum(1 for r in sorted_records if r['role'].lower().strip() == 'owner')
+            cnt_admin   = sum(1 for r in sorted_records if r['role'].lower().strip() == 'admin')
+            cnt_recep   = sum(1 for r in sorted_records if r['role'].lower().strip() == 'recep')
+            summary     = f"(owner: {cnt_owner} | admin: {cnt_admin} | recep: {cnt_recep})"
+
+            await ctx.send(f"**📋 Database Profiles — {total} bản ghi {summary}**\n{table}")
         except Exception as e:
             await ctx.send(f"Lỗi truy vấn Database: {e}")
 

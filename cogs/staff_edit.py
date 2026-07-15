@@ -131,7 +131,17 @@ class StaffPhotoEditView(discord.ui.View):
         self.author_id = author_id
         self.parent_view = parent_view
         self.photo_index = 0
+        self.message: Optional[discord.Message] = None
         self.update_button_states()
+
+    async def on_timeout(self):
+        for item in self.children:
+            item.disabled = True
+        if self.message:
+            try:
+                await self.message.edit(view=self)
+            except Exception:
+                pass
 
     def get_photos_list(self) -> list:
         photos = self.user_data.get('photos', [])
@@ -293,6 +303,16 @@ class StaffEditView(discord.ui.View):
         self.bot = bot
         self.user_data = dict(user_data)
         self.author_id = author_id
+        self.message: Optional[discord.Message] = None
+
+    async def on_timeout(self):
+        for item in self.children:
+            item.disabled = True
+        if self.message:
+            try:
+                await self.message.edit(view=self)
+            except Exception:
+                pass
 
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
         if interaction.user.id != self.author_id:
@@ -386,7 +406,7 @@ class StaffEditCog(commands.Cog):
             view = StaffEditView(self.bot, user_data=user_data, author_id=ctx.author.id)
             embed = view.build_preview_embed()
             
-            await ctx.send(embed=embed, view=view)
+            view.message = await ctx.send(embed=embed, view=view)
             log.info(f"🛠️ {ctx.author.display_name} vừa mở bảng chỉnh sửa hồ sơ y!set.")
             
         except Exception as e:

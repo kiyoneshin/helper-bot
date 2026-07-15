@@ -125,6 +125,16 @@ class AddPhotoAfterRegisterView(discord.ui.View):
         super().__init__(timeout=120)
         self.bot = bot
         self.author_id = author_id
+        self.message: discord.Message | None = None
+
+    async def on_timeout(self):
+        for item in self.children:
+            item.disabled = True
+        if self.message:
+            try:
+                await self.message.edit(view=self)
+            except Exception:
+                pass
 
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
         if interaction.user.id != self.author_id:
@@ -285,6 +295,7 @@ class _OpenRegisterModalView(discord.ui.View):
         super().__init__(timeout=120)
         self.role_name = role_name
         self.author_id = author_id
+        self.message: discord.Message | None = None
 
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
         if interaction.user.id != self.author_id:
@@ -309,6 +320,11 @@ class _OpenRegisterModalView(discord.ui.View):
         for item in self.children:
             if isinstance(item, discord.ui.Button):
                 item.disabled = True
+        if self.message:
+            try:
+                await self.message.edit(view=self)
+            except Exception:
+                pass
 
 
 # =====================================================================
@@ -378,7 +394,7 @@ class StaffAddCog(commands.Cog):
 
         # --- Bước 4: Hiển thị nút mở Form đăng ký ---
         view = _OpenRegisterModalView(role_name=assigned_role, author_id=author.id)
-        await ctx.send(
+        view.message = await ctx.send(
             f"Chào **{author.display_name}**!\n"
             f"Bạn đang đăng ký với chức vụ: `{assigned_role.upper()}`.\n"
             "Hãy bấm nút bên dưới để mở Form đăng ký hồ sơ Staff.",
