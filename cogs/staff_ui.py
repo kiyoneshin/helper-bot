@@ -1,202 +1,13 @@
 import discord
 from discord.ext import commands
 import logging
-import json
-from typing import Optional, Any
+from typing import Optional
 
 from cogs._staff_db import query_db, extract_id
 from cogs._staff_embeds import get_main_embed
 from cogs._staff_views import MainView, _normalize_votes
 
 log = logging.getLogger("StaffBot")
-
-# =============================================================================
-# LEADERBOARD VIEW
-# =============================================================================
-
-RANK_MEDALS = ['🥇', '🥈', '🥉']
-
-
-def _build_leaderboard_embed(
-    records: list,
-    sort_by: str,
-    role_filter: str
-) -> discord.Embed:
-    """
-    Tạo Embed bảng xế hạng từ danh sách records đã lọc/sắp xếp.
-    sort_by: 'rating' | 'replies'
-    role_filter: 'all' | 'owner' | 'admin' | 'recep'
-    """
-    # --- Lọc theo role ---
-    if role_filter != 'all':
-        records = [r for r in records if str(r.get('role', '')).lower().strip() == role_filter]
-
-    # --- Sắp xếp ---
-    if sort_by == 'replies':
-        records = sorted(
-            records,
-            key=lambda r: (-(r.get('weekly_replies') or 0), -(float(r.get('rating') or 0)))
-        )
-    else:  # mặc định: sort by rating, tie-breaker: weekly_replies
-        records = sorted(
-            records,
-            key=lambda r: (-(float(r.get('rating') or 0)), -(r.get('weekly_replies') or 0))
-        )
-
-    top_records = records[:10]
-
-    # --- Tên tiêu đề ---
-    role_label = {
-        'all': 'Tất Cả Chức Vụ',
-        'owner': 'Owner 👑',
-        'admin': 'Admin 🛡️',
-        'recep': 'Recep 🌸'
-    }.get(role_filter, role_filter.upper())
-
-    sort_label = 'Điểm Đánh Giá ⬇️' if sort_by == 'rating' else 'Tin Nhắn Phản Hồi ⬇️'
-
-    embed = discord.Embed(
-        title=f"🏆 Bảng Xế Hạng Staff Angelic",
-        description=(
-            f"🗂️ **Bộ lọc:** {role_label} • 📈 **Sắp xếp theo:** {sort_label}\n"
-            f"――――――――――――――――――――"
-        ),
-        color=0xffb6c1
-    )
-
-    if not top_records:
-        embed.add_field(
-            name="👀 Không có dữ liệu",
-            value="Không tìm thấy nhân sự nào phù hợp với bộ lọc này.",
-            inline=False
-        )
-        embed.set_footer(text="Angelic Bot • Dùng menu bên dưới để thay đổi bộ lọc! 🌸")
-        return embed
-
-    for idx, row in enumerate(top_records):
-        rank_num = idx + 1
-        medal = RANK_MEDALS[idx] if idx < len(RANK_MEDALS) else f"`#{rank_num}`"
-
-        name       = row.get('display_name', 'Unnamed')
-        discord_id = row.get('discord_id', '?')
-        role       = str(row.get('role', '')).upper()
-        rating     = float(row.get('rating') or 0)
-        replies    = int(row.get('weekly_replies') or 0)
-
-        field_name  = f"{medal} #{rank_num} — {name}"
-        field_value = (
-            f"• **Chức vụ:** `{role}` • <@{discord_id}>\n"
-            f"• ⭐ **Điểm TB:** `{rating:.1f}/5.0` • 💬 **Reply tuần:** `{replies}`"
-        )
-        embed.add_field(name=field_name, value=field_value, inline=False)
-
-    embed.set_footer(text=f"Angelic Bot • Hiển thị Top {len(top_records)}/{len(records)} nhân sự 🌸")
-    return embed
-
-
-class LeaderboardFilterSelect(discord.ui.Select):
-    """Menu lọc và sắp xếp Leaderboard"""
-
-    def __init__(self):
-        options = [
-            discord.SelectOption(
-                label="🏆 Xếp theo Điểm Đánh Giá (Mặc định)",
-                description="Tất cả chức vụ, sắp theo rating giảm dần",
-                value="all|rating",
-                emoji="⭐",
-                default=True
-            ),
-            discord.SelectOption(
-                label="💬 Xếp theo Tin Nhắn Phản Hồi",
-                description="Tất cả chức vụ, sắp theo số reply tuần giảm dần",
-                value="all|replies",
-                emoji="💬"
-            ),
-            discord.SelectOption(
-                label="👑 Chỉ hiện Owner — Xếp theo Điểm",
-                description="Lọc chỉ Owner, sắp theo rating",
-                value="owner|rating",
-                emoji="👑"
-            ),
-            discord.SelectOption(
-                label="🛡️ Chỉ hiện Admin — Xếp theo Điểm",
-                description="Lọc chỉ Admin, sắp theo rating",
-                value="admin|rating",
-                emoji="🛡️"
-            ),
-            discord.SelectOption(
-                label="🌸 Chỉ hiện Recep — Xếp theo Điểm",
-                description="Lọc chỉ Recep, sắp theo rating",
-                value="recep|rating",
-                emoji="🌸"
-            ),
-            discord.SelectOption(
-                label="👑 Chỉ hiện Owner — Xếp theo Reply",
-                description="Lọc chỉ Owner, sắp theo reply tuần",
-                value="owner|replies",
-                emoji="👑"
-            ),
-            discord.SelectOption(
-                label="🛡️ Chỉ hiện Admin — Xếp theo Reply",
-                description="Lọc chỉ Admin, sắp theo reply tuần",
-                value="admin|replies",
-                emoji="🛡️"
-            ),
-            discord.SelectOption(
-                label="🌸 Chỉ hiện Recep — Xếp theo Reply",
-                description="Lọc chỉ Recep, sắp theo reply tuần",
-                value="recep|replies",
-                emoji="🌸"
-            ),
-        ]
-        super().__init__(
-            placeholder="🔎 Chọn bộ lọc và tiêu chí sắp xếp...",
-            min_values=1,
-            max_values=1,
-            options=options
-        )
-
-    async def callback(self, interaction: discord.Interaction):
-        bot: Any = interaction.client
-        selected = self.values[0]  # dạng "role_filter|sort_by"
-        role_filter, sort_by = selected.split('|', 1)
-
-        # Cập nhật default để hiển thị tuỳ chọn hiện tại
-        for opt in self.options:
-            opt.default = (opt.value == selected)
-
-        # Real-time: luôn query DB mới nhất
-        try:
-            records = await query_db(
-                bot,
-                "SELECT discord_id, display_name, role, rating, weekly_replies FROM profiles"
-            )
-            records = [dict(r) for r in records] if records else []
-        except Exception as e:
-            log.error(f"Leaderboard DB error: {e}")
-            records = []
-
-        embed = _build_leaderboard_embed(records, sort_by, role_filter)
-        await interaction.response.edit_message(embed=embed, view=self.view)
-
-
-class LeaderboardView(discord.ui.View):
-    """View Leaderboard với menu lọc tương tác"""
-
-    def __init__(self):
-        super().__init__(timeout=300)
-        self.message: Optional[discord.Message] = None
-        self.add_item(LeaderboardFilterSelect())
-
-    async def on_timeout(self):
-        for item in self.children:
-            if isinstance(item, (discord.ui.Button, discord.ui.Select)):
-                item.disabled = True
-        if self.message:
-            try:
-                await self.message.edit(view=self)
-            except Exception:
-                pass
 
 
 class StaffUICog(commands.Cog):
@@ -211,29 +22,6 @@ class StaffUICog(commands.Cog):
         view = MainView(author_id=ctx.author.id)
         view.message = await ctx.send(embed=get_main_embed(), view=view)
         log.info(f"🌸 {ctx.author.display_name} vừa mở bảng Menu Staff.")
-
-    @commands.command(name="top", aliases=["leaderboard", "xephang"])
-    async def leaderboard_cmd(self, ctx: commands.Context):
-        """Lệnh hiển thị Bảng Xế Hạng Nhân Sự xuất sắc nhất"""
-        try:
-            records = await query_db(
-                self.bot,
-                "SELECT discord_id, display_name, role, rating, weekly_replies FROM profiles"
-            )
-            records = [dict(r) for r in records] if records else []
-        except Exception as e:
-            await ctx.send(f"Lỗi truy vấn Database: {e}")
-            return
-
-        if not records:
-            await ctx.send("📭 **Database đang trống!** Chưa có nhân sự nào trong hệ thống.")
-            return
-
-        # Mặc định: xếp theo rating, tie-breaker weekly_replies
-        embed = _build_leaderboard_embed(records, sort_by='rating', role_filter='all')
-        view = LeaderboardView()
-        view.message = await ctx.send(embed=embed, view=view)
-        log.info(f"🏆 {ctx.author.display_name} vừa mở Bảng Xế Hạng.")
 
     @commands.command(name="checkdb")
     async def check_db(self, ctx: commands.Context):
@@ -361,7 +149,7 @@ class StaffUICog(commands.Cog):
             name="🌸 1. Tra Cứu & Đánh Giá (Mọi Thành Viên)",
             value=(
                 "➡️ `y!menu` *(hoặc `y!staff`, `y!bqt`)*: Mở bảng menu tương tác để xem hồ sơ, tags và ảnh của Ban Quản Trị.\n"
-                "➡️ `y!top` *(hoặc `y!leaderboard`, `y!xephang`)*: Xem Bảng Xếp Hạng Staff xuất sắc nhất theo điểm đánh giá và số tin nhắn được phản hồi, có bộ lọc tương tác.\n"
+                "➡️ `y!top` *(hoặc `y!lb`, `y!bxh`, `y!leaderboard`)*: Xem Bảng Xếp Hạng Staff, mặc định tuần hiện tại. Nhấn nút 📅 để lọc theo khoảng ngày tùy chỉnh.\n"
                 "➡️ `y!feedback <@user/ID>` *(hoặc `y!fb`)*: Xem danh sách toàn bộ bài đánh giá chi tiết (số sao và nội dung nhận xét) của một Staff.\n"
                 "➡️ `y!help` *(hoặc `y!huongdan`)*: Hiển thị bảng hướng dẫn câu lệnh này."
             ),

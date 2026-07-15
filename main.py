@@ -62,6 +62,19 @@ class StaffBot(commands.Bot):
                     ALTER TABLE profiles
                     ADD COLUMN IF NOT EXISTS weekly_replies INT DEFAULT 0
                 ''')
+                # Bảng lưu vết lịch sử tin nhắn Staff (phục vụ thống kê theo khoảng thời gian)
+                await conn.execute('''
+                    CREATE TABLE IF NOT EXISTS staff_message_logs (
+                        id SERIAL PRIMARY KEY,
+                        discord_id VARCHAR NOT NULL,
+                        sent_at TIMESTAMP WITH TIME ZONE DEFAULT (CURRENT_TIMESTAMP AT TIME ZONE 'UTC')
+                    )
+                ''')
+                # Index tăng tốc truy vấn COUNT theo khoảng thời gian
+                await conn.execute('''
+                    CREATE INDEX IF NOT EXISTS idx_msg_logs_discord_sent
+                    ON staff_message_logs (discord_id, sent_at)
+                ''')
                 log.info("Database PostgreSQL đã sẵn sàng.")
         else:
             log.error("Không thể khởi tạo db_pool!")
