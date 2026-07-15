@@ -20,7 +20,7 @@ def get_main_embed() -> discord.Embed:
                 "• **Hạn chế tối đa nói tục và đùa giỡn nhạy cảm (sex joke).** Tùy thuộc vào mức độ vi phạm, bot và staff sẽ xử lý từ cảnh cáo, mute (tắt tiếng) cho đến ban (khóa tài khoản) vĩnh viễn.\n\n"
                 
                 "**2. Nội dung nhạy cảm & Cấm kỵ:**\n"
-                "• Tuyệt đối không gửi các nội dung liên quan đến NSFW (đồi trụy) và máu me/kinh dị. Server không phải là không gian chia sẻ các nội dung này. Nếu muốn gửi, bạn chỉ được phép hoạt động trong đúng kênh quy định: <#1512138257771532469> (🔞｜𝐓𝐎𝐗𝐈𝐂).\n\n"
+                "• Tuyệt đối không gửi các nội dung liên quan đến NSFW (đồi trụy) và máu me/kinh dị. Server không phải là không gian chia sẻ các nội dung này. Nếu muốn gửi, bạn chỉ được phép hoạt động trong đúng kênh quy định: <#1512138257771532469>.\n\n"
                 
                 "**3. Các lằn ranh đỏ (BAN THẲNG TAY KHÔNG PHÚC KHẢO):**\n"
                 "• **Phân biệt vùng miền (PBVM):** Khóa tài khoản vĩnh viễn ngay lập tức.\n"
