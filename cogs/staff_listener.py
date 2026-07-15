@@ -1,7 +1,8 @@
 import discord
 from discord.ext import commands
 import logging
-from typing import Any, Dict, Optional
+import time
+from typing import Any, Dict, Optional, Tuple
 
 log = logging.getLogger("StaffListener")
 
@@ -19,15 +20,19 @@ async def query_db(bot: Any, sql: str, *args) -> list:
     return []
 
 # =====================================================================
-# COG LẮNG NGHE SỰ KIỆN REPLY VÀ ĐẾM LƯỢT
+# COG LẮNG NGHE SỰ KIỆN REPLY VÀ ĐẾM LƯỢT THEO KHUNG THỜI GIAN
 # =====================================================================
 class StaffListenerCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        # Bộ nhớ tạm lưu số lần được reply: { discord_id_của_staff: số_lần_được_reply }
-        self.reply_counters: Dict[int, int] = {}
-        # Mốc giới hạn tin nhắn reply để kích hoạt thông báo (Bạn có thể sửa thành 10)
+        # Bộ nhớ tạm lưu số lần reply và mốc thời gian: { staff_id: (count, last_timestamp) }
+        self.reply_tracker: Dict[int, Tuple[int, float]] = {}
+        
+        # Mốc giới hạn số tin nhắn reply để kích hoạt thông báo
         self.threshold = 10
+        
+        # Khung thời gian giới hạn: 10 phút = 600 giây
+        self.time_window = 600.0
 
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
@@ -62,26 +67,33 @@ class StaffListenerCog(commands.Cog):
                 
                 # Chỉ xử lý nếu nhân sự đó thuộc các nhóm role quy định
                 if db_role in ['owner', 'admin', 'recep']:
-                    # Cộng dồn 1 lượt vào bộ đếm của Staff này
-                    current_count = self.reply_counters.get(staff_id, 0) + 1
-                    self.reply_counters[staff_id] = current_count
+                    current_time = time.time()
+                    old_count, last_time = self.reply_tracker.get(staff_id, (0, 0.0))
 
-                    # Khi số lượt reply đạt đúng mốc quy định (ví dụ 10 lần)
+                    # Kiểm tra khoảng cách từ lần reply trước có vượt quá 10 phút (600s) không
+                    if current_time - last_time > self.time_window:
+                        # Đã quá 10 phút từ lần reply trước -> Reset đếm lại từ số 1
+                        current_count = 1
+                    else:
+                        # Vẫn trong khung 10 phút -> Tiếp tục cộng dồn
+                        current_count = old_count + 1
+
+                    # Cập nhật số đếm mới và mốc thời gian mới nhất vào bộ nhớ
+                    self.reply_tracker[staff_id] = (current_count, current_time)
+
+                    # Khi số lượt reply đạt đúng mốc quy định (10 lần trong 10 phút)
                     if current_count >= self.threshold:
-                        # Reset bộ đếm về 0 để bắt đầu một chu kỳ đếm 10 lần mới
-                        self.reply_counters[staff_id] = 0
+                        # Reset bộ đếm về 0 để tránh gửi thông báo liên tục
+                        self.reply_tracker[staff_id] = (0, current_time)
                         
-                        # Tự động chọn chữ hiển thị tương ứng theo nhóm
                         display_role = db_role
-                        
-                        # Gửi tin nhắn nhắc nhở tự động điều hướng bằng mũi tên
                         reminder_text = (
                             f"Nếu bạn thấy {display_role} <@{staff_id}> nhiệt tình, "
                             f"hãy đừng ngần ngại bỏ ra 1 phút sử dụng lệnh `y!menu` chọn đến "
                             f"{display_role} để vote cho họ nhé!"
                         )
                         await message.channel.send(reminder_text)
-                        log.info(f"Đã gửi nhắc nhở vote cho {display_role} với ID {staff_id} sau khi đạt mốc reply.")
+                        log.info(f"Đã gửi nhắc nhở vote cho {display_role} ({staff_id}) sau khi đạt 10 reply/10 phút.")
                         
             except discord.NotFound:
                 # Tin nhắn gốc đã bị xóa trước khi bot kịp đọc, bỏ qua
