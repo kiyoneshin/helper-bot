@@ -170,7 +170,7 @@ class StaffUICog(commands.Cog):
 
             embed = discord.Embed(
                 title=f"📋 Lịch Sử Đánh Giá Của {ctx.author.display_name}",
-                description="Dưới đây là danh sách các bài đánh giá bạn đã viết cho Staff:",
+                description=f"Dưới đây là danh sách các bài đánh giá bạn đã viết cho Staff:\n**Tổng số bài đánh giá:** {len(my_reviews)}",
                 color=0xffb6c1
             )
 
