@@ -138,8 +138,8 @@ class StaffUICog(commands.Cog):
         except Exception as e:
             await ctx.send(f"Lỗi truy vấn Database: {e}")
 
-    @commands.command(name="myfeedback", aliases=["myreviews", "myfb", "myrv"])
-    async def myfeedback_cmd(self, ctx: commands.Context):
+    @commands.command(name="myreviews", aliases=["myfeedbacks", "myfb", "myrv"])
+    async def myreviews_cmd(self, ctx: commands.Context):
         """Lệnh xem lịch sử đánh giá cá nhân của bạn"""
         voter_id = str(ctx.author.id)
 
@@ -185,7 +185,7 @@ class StaffUICog(commands.Cog):
             await ctx.send(embed=embed)
 
         except Exception as e:
-            log.error(f"Lỗi lệnh myfeedback: {e}")
+            log.error(f"Lỗi lệnh myreviews: {e}")
             await ctx.send(f"Lỗi truy vấn Database: {e}")
 
     @commands.command(name="help", aliases=["huongdan"])
@@ -203,7 +203,7 @@ class StaffUICog(commands.Cog):
                 "💠 `y!menu` *(hoặc `y!staff`, `y!bqt`)*: Mở bảng menu tương tác để xem hồ sơ, tags và ảnh của Ban Quản Trị.\n"
                 "💠 `y!top` *(hoặc `y!lb`, `y!bxh`, `y!leaderboard`)*: Xem Bảng Xếp Hạng Staff, mặc định tuần hiện tại. Nhấn nút 📅 để lọc theo khoảng ngày tùy chỉnh.\n"
                 "💠 `y!feedback <@user/ID>` *(hoặc `y!fb`)*: Xem danh sách toàn bộ bài đánh giá chi tiết (số sao và nội dung nhận xét) của một Staff.\n"
-                "💠 `y!myfeedback` *(hoặc `y!myreviews`, `y!myfb`)*: Xem lại lịch sử các bài đánh giá cá nhân của chính bạn.\n"
+                "💠 `y!myreviews` *(hoặc `y!myfeedbacks`, `y!myfb`)*: Xem lại lịch sử các bài đánh giá cá nhân của chính bạn.\n"
                 "💠 `y!help` *(hoặc `y!huongdan`)*: Hiển thị bảng hướng dẫn câu lệnh này."
             ),
             inline=False
