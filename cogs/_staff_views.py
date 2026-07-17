@@ -9,13 +9,6 @@ log = logging.getLogger("StaffViews")
 
 
 def _normalize_votes(v_data: Any) -> dict:
-    """
-    Hàm chuẩn hóa (Backward Compatibility): tự động chuyển đổi dữ liệu votes cũ
-    sang cấu trúc mới: {"voter_id": {"score": float, "review": str}}.
-    - Dữ liệu cũ dạng số trần:  {"voter_id": 4.5}       → {"voter_id": {"score": 4.5, "review": "Không có nội dung"}}
-    - Dữ liệu cũ dạng List:     [4.5, 5.0]               → {"old_voter_0": {"score": 4.5, "review": "Không có nội dung"}, ...}
-    - Dữ liệu mới (đã đúng):    {"voter_id": {"score": ..., "review": ...}} → giữ nguyên
-    """
     if isinstance(v_data, str):
         try:
             v_data = json.loads(v_data)
@@ -86,12 +79,12 @@ async def _fetch_fresh_staff_list(bot: Any, role_name: str) -> list:
 
 def _build_staff_list_embed(role_name: str, staff_records: list) -> discord.Embed:
     """Tạo Embed danh sách nhân sự của một role."""
-    list_text = f"➡️ **Danh sách các {role_name.upper()} đang hoạt động:**\n\n"
+    list_text = f"**Danh sách các {role_name.upper()} đang hoạt động:**\n\n"
     for idx, row in enumerate(staff_records, 1):
         name = row.get('display_name', 'Unnamed')
         doc_id = row.get('discord_id')
         list_text += f"**{idx}. {name}** (<@{doc_id}>)\n"
-    list_text += "\n➡️ *Vui lòng chọn tên nhân sự từ menu thả xuống bên dưới để xem hồ sơ chi tiết và ảnh!*"
+    list_text += "\n⬇️ *Vui lòng chọn tên nhân sự từ menu thả xuống bên dưới để xem hồ sơ chi tiết và ảnh!*"
     return discord.Embed(
         title=f"📋 Danh sách {role_name.upper()}",
         description=list_text,
@@ -136,7 +129,7 @@ class VoteModal(discord.ui.Modal, title="🌟 Đánh Giá Nhân Sự"):
                 raise ValueError()
         except ValueError:
             await interaction.response.send_message(
-                "⚠️ **Điểm đánh giá không hợp lệ!**\n➡️ Vui lòng chỉ nhập điểm từ `0` đến `5`. Chấp nhận dạng số nguyên như `5`, `4` hoặc tối đa 1 chữ số thập phân như `5.0`, `4.5`.",
+                "**Điểm đánh giá không hợp lệ!**\nVui lòng chỉ nhập điểm từ `0` đến `5`. Chấp nhận dạng số nguyên như `5`, `4` hoặc tối đa 1 chữ số thập phân như `5.0`, `4.5`.",
                 ephemeral=True
             )
             return
@@ -152,7 +145,7 @@ class VoteModal(discord.ui.Modal, title="🌟 Đánh Giá Nhân Sự"):
 
         if str(interaction.user.id) == target_id:
             await interaction.response.send_message(
-                "⚠️ **Bạn không thể tự đánh giá (vote) cho chính bản thân mình được nhé!**",
+                "**Bạn không thể tự đánh giá (vote) cho chính bản thân mình được nhé!**",
                 ephemeral=True
             )
             return
@@ -299,9 +292,7 @@ class StaffSelectDropdown(discord.ui.Select):
     """Menu thả xuống chọn từng Staff cụ thể — query DB real-time khi chọn"""
     def __init__(self, author_id: int, staff_records: list, role_name: str):
         self.author_id = author_id
-        # Chỉ giữ role_name và các ID/tên cho options — không dùng staff_records làm nguồn data
         self.role_name = role_name
-        # Map id → display_name để xây options (ổn định, chỉ dùng cho label)
         self._option_map: dict[str, str] = {
             str(row.get('discord_id')): row.get('display_name', 'Staff')
             for row in staff_records
@@ -419,7 +410,7 @@ class ProfileView(BaseStaffView):
         # Query DB lấy dữ liệu mới nhất
         fresh_data = await _fetch_fresh_user_data(bot, self.target_discord_id)
         if not fresh_data:
-            await interaction.response.send_message("⚠️ Không tìm thấy hồ sơ này trong Database!", ephemeral=True)
+            await interaction.response.send_message("Không tìm thấy hồ sơ này trong Database!", ephemeral=True)
             return
 
         photos = fresh_data.get('photos', [])
@@ -478,7 +469,7 @@ class ProfileView(BaseStaffView):
         # Kiểm tra chống tự vote bằng target_discord_id bất biến
         if str(interaction.user.id) == self.target_discord_id:
             await interaction.response.send_message(
-                "⚠️ **Bạn không thể tự đánh giá (vote) cho chính bản thân mình được nhé!**",
+                "**Bạn không thể tự đánh giá (vote) cho chính bản thân mình được nhé!**",
                 ephemeral=True
             )
             return

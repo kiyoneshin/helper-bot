@@ -74,7 +74,7 @@ class StaffUICog(commands.Cog):
 
         if not target_id:
             await ctx.send(
-                "⚠️ **Vui lòng nhập ID hoặc ping nhân sự muốn xem đánh giá!**\n"
+                "❌ **Vui lòng nhập ID hoặc ping nhân sự muốn xem đánh giá!**\n"
                 "Ví dụ chuẩn: `y!fb <@468428368828956692>` hoặc `y!fb 468428368828956692`"
             )
             return
@@ -83,8 +83,8 @@ class StaffUICog(commands.Cog):
             records = await query_db(self.bot, "SELECT display_name, votes, rating FROM profiles WHERE discord_id = $1", target_id)
             if not records:
                 await ctx.send(
-                    "📭 **Không tìm thấy nhân sự này trong Database!**\n"
-                    "➡️ Vui lòng kiểm tra lại chính xác ID hoặc ping lại."
+                    "❌ **Không tìm thấy nhân sự này trong Database!**\n"
+                    "❓ Vui lòng kiểm tra lại chính xác ID hoặc ping lại."
                 )
                 return
 
@@ -148,10 +148,10 @@ class StaffUICog(commands.Cog):
         embed.add_field(
             name="🌸 1. Tra Cứu & Đánh Giá (Mọi Thành Viên)",
             value=(
-                "➡️ `y!menu` *(hoặc `y!staff`, `y!bqt`)*: Mở bảng menu tương tác để xem hồ sơ, tags và ảnh của Ban Quản Trị.\n"
-                "➡️ `y!top` *(hoặc `y!lb`, `y!bxh`, `y!leaderboard`)*: Xem Bảng Xếp Hạng Staff, mặc định tuần hiện tại. Nhấn nút 📅 để lọc theo khoảng ngày tùy chỉnh.\n"
-                "➡️ `y!feedback <@user/ID>` *(hoặc `y!fb`)*: Xem danh sách toàn bộ bài đánh giá chi tiết (số sao và nội dung nhận xét) của một Staff.\n"
-                "➡️ `y!help` *(hoặc `y!huongdan`)*: Hiển thị bảng hướng dẫn câu lệnh này."
+                "💠 `y!menu` *(hoặc `y!staff`, `y!bqt`)*: Mở bảng menu tương tác để xem hồ sơ, tags và ảnh của Ban Quản Trị.\n"
+                "💠 `y!top` *(hoặc `y!lb`, `y!bxh`, `y!leaderboard`)*: Xem Bảng Xếp Hạng Staff, mặc định tuần hiện tại. Nhấn nút 📅 để lọc theo khoảng ngày tùy chỉnh.\n"
+                "💠 `y!feedback <@user/ID>` *(hoặc `y!fb`)*: Xem danh sách toàn bộ bài đánh giá chi tiết (số sao và nội dung nhận xét) của một Staff.\n"
+                "💠 `y!help` *(hoặc `y!huongdan`)*: Hiển thị bảng hướng dẫn câu lệnh này."
             ),
             inline=False
         )
@@ -159,8 +159,8 @@ class StaffUICog(commands.Cog):
         embed.add_field(
             name="🛠️ 2. Đăng Ký & Quản Lý Hồ Sơ (Dành Riêng BQT)",
             value=(
-                "➡️ `y!add`: Bật Form Modal cho phép nhân sự mới tự đăng ký hồ sơ (Tên hiển thị, Giới thiệu, Tags, Liên hệ) và tự động cấp chức vụ theo cấu trúc Role ID của Server, sau đó kích hoạt luồng upload ảnh vĩnh viễn.\n"
-                "➡️ `y!set` *(hoặc `y!editprofile`, `y!suahoso`)*: Mở bảng điều khiển tương tác giúp Staff tự chỉnh sửa thông tin cá nhân hoặc lướt xem/xóa/thêm ảnh hồ sơ hiện có."
+                "💠 `y!add`: Bật Form Modal cho phép nhân sự mới tự đăng ký hồ sơ (Tên hiển thị, Giới thiệu, Tags, Liên hệ) và tự động cấp chức vụ theo cấu trúc Role ID của Server, sau đó kích hoạt luồng upload ảnh vĩnh viễn.\n"
+                "💠 `y!set` *(hoặc `y!editprofile`, `y!suahoso`)*: Mở bảng điều khiển tương tác giúp Staff tự chỉnh sửa thông tin cá nhân hoặc lướt xem/xóa/thêm ảnh hồ sơ hiện có."
             ),
             inline=False
         )
@@ -168,7 +168,7 @@ class StaffUICog(commands.Cog):
         embed.add_field(
             name="🛡️ 3. Quản Trị Hệ Thống (Admin / Owner)",
             value=(
-                "➡️ `y!checkdb`: Kiểm tra nhanh danh sách toàn bộ nhân sự hiện đang được lưu trữ trong Cơ Sở Dữ Liệu PostgreSQL."
+                "💠 `y!checkdb`: Kiểm tra nhanh danh sách toàn bộ nhân sự hiện đang được lưu trữ trong Cơ Sở Dữ Liệu PostgreSQL."
             ),
             inline=False
         )
@@ -176,9 +176,9 @@ class StaffUICog(commands.Cog):
         embed.add_field(
             name="🧪 4. Kiểm Thử & Debug (Chỉ Dành Cho Tester)",
             value=(
-                "➡️ `y!test_reply <@user/ID>`: Giả lập kích hoạt ngay câu nhắc nhở vote trên kênh chat (không cần đợi đủ 10 reply).\n"
-                "➡️ `y!test_vote <@user/ID> <điểm>`: Bơm điểm vote ảo vào hồ sơ để kiểm thử công thức tính và làm tròn điểm trung bình.\n"
-                "➡️ `y!test_reset <@user/ID>`: Lọc và dọn sạch toàn bộ các lượt vote ảo khỏi hồ sơ của Staff, trả lại điểm số thực tế."
+                "💠 `y!test_reply <@user/ID>`: Giả lập kích hoạt ngay câu nhắc nhở vote trên kênh chat (không cần đợi đủ 10 reply).\n"
+                "💠 `y!test_vote <@user/ID> <điểm>`: Bơm điểm vote ảo vào hồ sơ để kiểm thử công thức tính và làm tròn điểm trung bình.\n"
+                "💠 `y!test_reset <@user/ID>`: Lọc và dọn sạch toàn bộ các lượt vote ảo khỏi hồ sơ của Staff, trả lại điểm số thực tế."
             ),
             inline=False
         )

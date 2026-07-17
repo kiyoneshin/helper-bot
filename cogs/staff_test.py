@@ -53,7 +53,7 @@ class StaffTestCog(commands.Cog):
     async def test_reply_trigger(self, ctx: commands.Context, target: Optional[str] = None):
         target_id = extract_id(target)
         if not target_id:
-            await ctx.send("⚠️ **Thiếu thông tin!**\n➡️ Vui lòng ping hoặc nhập ID: `y!test_reply 468428368828956692`")
+            await ctx.send("⚠️ **Thiếu thông tin!**\n Vui lòng ping hoặc nhập ID: `y!test_reply 468428368828956692`")
             return
         
         try:
