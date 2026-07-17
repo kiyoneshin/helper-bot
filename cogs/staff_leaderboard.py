@@ -153,9 +153,9 @@ ROLE_LABELS = {
     "supporter": "Supporter 💜",
 }
 SORT_LABELS = {
-    "rating": "⭐ Điểm Đánh Giá",
-    "messages": "✉️ Tin Nhắn Đã Gửi",
-    "replies": "💬 Tin Nhắn Được Phản Hồi",
+    "rating": "Điểm Đánh Giá",
+    "messages": "Tin Nhắn Đã Gửi",
+    "replies": "Tin Nhắn Được Phản Hồi",
 }
 
 
@@ -205,7 +205,7 @@ def _build_leaderboard_embed(
             name=f"{medal} #{rank_num} — {name}",
             value=(
                 f"• **Chức vụ:** `{role}` • <@{discord_id}>\n"
-                f"• ⭐ **Điểm TB:** `{rating:.1f}/5.0` • ✉️ **Tin nhắn:** `{msg_count}` • 💬 **Reply:** `{replies}`"
+                f"• ⭐ **Điểm TB:** `{rating:.1f}/5.0` • **Tin nhắn:** `{msg_count}` • **Reply:** `{replies}`"
             ),
             inline=False,
         )
@@ -215,46 +215,149 @@ def _build_leaderboard_embed(
 
 
 # =============================================================================
-# DATE SELECTION VIEW — QUY TRÌNH 2 BƯỚC
+# MODAL NHẬP NGÀY
+# =============================================================================
+
+class StartDayModal(discord.ui.Modal, title="Nhập Ngày Bắt Đầu"):
+    """Modal pop-up để người dùng nhập ngày bắt đầu bằng bàn phím."""
+
+    day_input = discord.ui.TextInput(
+        label="Ngày bắt đầu (nhập số nguyên, VD: 15)",
+        placeholder="Nhập một số từ 1 đến 31...",
+        min_length=1,
+        max_length=2,
+        required=True,
+    )
+
+    def __init__(self, date_view: "DateSelectionView"):
+        super().__init__()
+        self.date_view = date_view
+
+    async def on_submit(self, interaction: discord.Interaction):
+        raw = self.day_input.value.strip()
+
+        # Kiểm tra định dạng số nguyên dương
+        try:
+            day = int(raw)
+            if day <= 0:
+                raise ValueError
+        except ValueError:
+            await interaction.response.send_message(
+                f"**Giá trị không hợp lệ:** `{raw}` không phải số nguyên dương. "
+                "Vui lòng bấm lại nút nhập ngày để điền lại.",
+                ephemeral=True,
+            )
+            return
+
+        # Kiểm tra ngày tối đa của tháng
+        month_val = self.date_view.start_month  # type: ignore[union-attr]
+        mm, yyyy = int(month_val.split("-")[0]), int(month_val.split("-")[1])
+        max_day = calendar.monthrange(yyyy, mm)[1]
+
+        if day > max_day:
+            await interaction.response.send_message(
+                f"**Lỗi ngày:** Tháng {mm:02d}/{yyyy} chỉ có tối đa **{max_day}** ngày! "
+                "Vui lòng bấm lại nút nhập ngày để điền lại.",
+                ephemeral=True,
+            )
+            return
+
+        # Hợp lệ → lưu và cập nhật embed panel
+        self.date_view.start_day = day
+        await interaction.response.edit_message(
+            embed=self.date_view._build_status_embed(),
+            view=self.date_view,
+        )
+
+
+class EndDayModal(discord.ui.Modal, title="Nhập Ngày Kết Thúc"):
+    """Modal pop-up để người dùng nhập ngày kết thúc bằng bàn phím."""
+
+    day_input = discord.ui.TextInput(
+        label="Ngày kết thúc (nhập số nguyên, VD: 28)",
+        placeholder="Nhập một số từ 1 đến 31...",
+        min_length=1,
+        max_length=2,
+        required=True,
+    )
+
+    def __init__(self, date_view: "DateSelectionView"):
+        super().__init__()
+        self.date_view = date_view
+
+    async def on_submit(self, interaction: discord.Interaction):
+        raw = self.day_input.value.strip()
+
+        # Kiểm tra định dạng số nguyên dương
+        try:
+            day = int(raw)
+            if day <= 0:
+                raise ValueError
+        except ValueError:
+            await interaction.response.send_message(
+                f"**Giá trị không hợp lệ:** `{raw}` không phải số nguyên dương. "
+                "Vui lòng bấm lại nút nhập ngày để điền lại.",
+                ephemeral=True,
+            )
+            return
+
+        # Kiểm tra ngày tối đa của tháng
+        month_val = self.date_view.end_month  # type: ignore[union-attr]
+        mm, yyyy = int(month_val.split("-")[0]), int(month_val.split("-")[1])
+        max_day = calendar.monthrange(yyyy, mm)[1]
+
+        if day > max_day:
+            await interaction.response.send_message(
+                f"**Lỗi ngày:** Tháng {mm:02d}/{yyyy} chỉ có tối đa **{max_day}** ngày! "
+                "Vui lòng bấm lại nút nhập ngày để điền lại.",
+                ephemeral=True,
+            )
+            return
+
+        # Hợp lệ → lưu và cập nhật embed panel
+        self.date_view.end_day = day
+        await interaction.response.edit_message(
+            embed=self.date_view._build_status_embed(),
+            view=self.date_view,
+        )
+
+
+# =============================================================================
+# DATE SELECTION VIEW — DROPDOWN THÁNG + MODAL NGÀY + 3 NÚT BẤM
 # =============================================================================
 
 class DateSelectionView(discord.ui.View):
     """
-    Panel chọn khoảng ngày 2 bước hoàn toàn bằng Dropdown.
-    Gửi dạng ephemeral, sau khi xác nhận sẽ tự xóa.
+    Panel chọn khoảng ngày trên MỘT màn hình duy nhất, gồm:
+      - Row 0: Dropdown chọn Tháng Bắt Đầu  (độc lập)
+      - Row 1: Dropdown chọn Tháng Kết Thúc (độc lập)
+      - Row 2: [📅 Chọn Ngày Bắt Đầu] [📅 Chọn Ngày Kết Thúc] [🔎 Áp Dụng Bộ Lọc]
 
-    Bước 1: Chọn Tháng Bắt Đầu + Tháng Kết Thúc
-    Bước 2: Chọn Ngày Bắt Đầu + Ngày Kết Thúc (chia trang 1-15 / 16-31)
+    Gửi dạng ephemeral. Sau khi áp dụng thành công sẽ tự xóa.
     """
 
     def __init__(self, leaderboard_view: "LeaderboardView"):
-        super().__init__(timeout=180)
+        super().__init__(timeout=300)
         self.leaderboard_view = leaderboard_view
-        # Trạng thái lựa chọn
+
+        # 4 biến trạng thái HOÀN TOÀN ĐỘC LẬP
         self.start_month: Optional[str] = None   # "MM-YYYY"
         self.end_month: Optional[str] = None     # "MM-YYYY"
         self.start_day: Optional[int] = None
         self.end_day: Optional[int] = None
-        self.day_page: str = "1-15"              # "1-15" hoặc "16-31"
-        self.current_step: int = 1               # 1 hoặc 2
 
-        # Khởi tạo Bước 1
-        self._build_step1()
+        self._build_ui()
 
     # ------------------------------------------------------------------
-    # XÂY DỰNG GIAO DIỆN
+    # XÂY DỰNG GIAO DIỆN (1 LẦN DUY NHẤT)
     # ------------------------------------------------------------------
 
-    def _build_step1(self):
-        """Xóa toàn bộ items hiện tại và dựng lại giao diện Bước 1."""
+    def _build_ui(self):
+        """Dựng toàn bộ giao diện: 2 dropdown tháng + 3 nút bấm."""
         self.clear_items()
-        self.current_step = 1
-        self.start_day = None
-        self.end_day = None
-
         month_opts = _generate_month_options()
 
-        # Dropdown 1: Chọn Tháng Bắt Đầu (row 0)
+        # ── ROW 0: Dropdown Tháng Bắt Đầu ─────────────────────────────
         start_sel = discord.ui.Select(
             placeholder="📅 Chọn Tháng Bắt Đầu...",
             min_values=1, max_values=1,
@@ -264,7 +367,7 @@ class DateSelectionView(discord.ui.View):
         start_sel.callback = self._on_start_month_select
         self.add_item(start_sel)
 
-        # Dropdown 2: Chọn Tháng Kết Thúc (row 1)
+        # ── ROW 1: Dropdown Tháng Kết Thúc ────────────────────────────
         end_sel = discord.ui.Select(
             placeholder="📅 Chọn Tháng Kết Thúc...",
             min_values=1, max_values=1,
@@ -274,211 +377,181 @@ class DateSelectionView(discord.ui.View):
         end_sel.callback = self._on_end_month_select
         self.add_item(end_sel)
 
-        # Nút tiếp tục (row 2)
-        next_btn = discord.ui.Button(
-            label="Tiếp Tục Chọn Ngày ➡️",
-            style=discord.ButtonStyle.primary,
-            row=2,
-        )
-        next_btn.callback = self._on_next_to_step2
-        self.add_item(next_btn)
-
-    def _build_step2(self):
-        """Xóa toàn bộ items và dựng lại giao diện Bước 2."""
-        self.clear_items()
-        self.current_step = 2
-        self.start_day = None
-        self.end_day = None
-
-        # Dropdown chọn Ngày Bắt Đầu (row 0)
-        start_day_opts = _make_day_options(self.start_month, self.day_page)  # type: ignore[arg-type]
-        start_day_sel = discord.ui.Select(
-            placeholder=f"📅 Chọn Ngày Bắt Đầu ({self.day_page})...",
-            min_values=1, max_values=1,
-            options=start_day_opts,
-            row=0,
-        )
-        start_day_sel.callback = self._on_start_day_select
-        self.add_item(start_day_sel)
-
-        # Dropdown chọn Ngày Kết Thúc (row 1)
-        end_day_opts = _make_day_options(self.end_month, self.day_page)  # type: ignore[arg-type]
-        end_day_sel = discord.ui.Select(
-            placeholder=f"📅 Chọn Ngày Kết Thúc ({self.day_page})...",
-            min_values=1, max_values=1,
-            options=end_day_opts,
-            row=1,
-        )
-        end_day_sel.callback = self._on_end_day_select
-        self.add_item(end_day_sel)
-
-        # Nút đổi trang ngày (row 2)
-        toggle_label = "📅 Đổi sang ngày 16-31" if self.day_page == "1-15" else "📅 Đổi sang ngày 01-15"
-        toggle_btn = discord.ui.Button(
-            label=toggle_label,
+        # ── ROW 2: Nút 1 — Chọn Ngày Bắt Đầu ─────────────────────────
+        btn_start_day = discord.ui.Button(
+            label="📅 Chọn Ngày Bắt Đầu",
             style=discord.ButtonStyle.secondary,
             row=2,
         )
-        toggle_btn.callback = self._on_toggle_page
-        self.add_item(toggle_btn)
+        btn_start_day.callback = self._on_open_start_day_modal
+        self.add_item(btn_start_day)
 
-        # Nút Quay Lại Bước 1 (row 3)
-        back_btn = discord.ui.Button(
-            label="⬅️ Quay Lại Chọn Tháng",
-            style=discord.ButtonStyle.danger,
-            row=3,
+        # ── ROW 2: Nút 2 — Chọn Ngày Kết Thúc ────────────────────────
+        btn_end_day = discord.ui.Button(
+            label="📅 Chọn Ngày Kết Thúc",
+            style=discord.ButtonStyle.secondary,
+            row=2,
         )
-        back_btn.callback = self._on_back_to_step1
-        self.add_item(back_btn)
+        btn_end_day.callback = self._on_open_end_day_modal
+        self.add_item(btn_end_day)
 
-        # Nút Áp Dụng (row 3)
-        apply_btn = discord.ui.Button(
+        # ── ROW 2: Nút 3 — Áp Dụng Bộ Lọc ───────────────────────────
+        btn_apply = discord.ui.Button(
             label="🔎 Áp Dụng Bộ Lọc",
             style=discord.ButtonStyle.success,
-            row=3,
+            row=2,
         )
-        apply_btn.callback = self._on_apply
-        self.add_item(apply_btn)
-
-    def _step2_embed(self) -> discord.Embed:
-        """Tạo embed hướng dẫn cho Bước 2."""
-        return discord.Embed(
-            title="📅 Bước 2: Chọn Ngày Cụ Thể",
-            description=(
-                f"Bạn đang chọn khoảng thời gian từ "
-                f"**{_month_label(self.start_month)}** "  # type: ignore[arg-type]
-                f"đến **{_month_label(self.end_month)}**.\n\n"  # type: ignore[arg-type]
-                f"Hãy chọn **Ngày Bắt Đầu** và **Ngày Kết Thúc** trong tháng tương ứng.\n"
-                f"*Dùng nút **Đổi trang** để chuyển giữa ngày 01–15 và 16–{_get_days_in_month(self.start_month)}.*"  # type: ignore[arg-type]
-            ),
-            color=0xffb6c1,
-        )
+        btn_apply.callback = self._on_apply
+        self.add_item(btn_apply)
 
     # ------------------------------------------------------------------
-    # CALLBACK BƯỚC 1
+    # EMBED TRẠNG THÁI (cập nhật realtime sau mỗi hành động)
+    # ------------------------------------------------------------------
+
+    def _build_status_embed(self) -> discord.Embed:
+        """
+        Tạo embed hiển thị trạng thái lựa chọn hiện tại của người dùng.
+        Cập nhật sau mỗi lần chọn tháng hoặc nhập ngày thành công.
+        """
+        def _fmt_part(month: Optional[str], day: Optional[int]) -> str:
+            if month and day:
+                mm, yyyy = month.split("-")
+                return f"Ngày **{day:02d}** Tháng **{mm}/{yyyy}**"
+            elif month:
+                mm, yyyy = month.split("-")
+                return f"Tháng **{mm}/{yyyy}** *(chưa nhập ngày)*"
+            else:
+                return "*Chưa chọn*"
+
+        start_str = _fmt_part(self.start_month, self.start_day)
+        end_str   = _fmt_part(self.end_month, self.end_day)
+
+        lines = [
+            "🗂️ **Hướng dẫn:**",
+            "1️⃣ Chọn **Tháng Bắt Đầu** và **Tháng Kết Thúc** ở menu phía trên.",
+            "2️⃣ Bấm **📅 Chọn Ngày Bắt Đầu** / **📅 Chọn Ngày Kết Thúc** để nhập ngày.",
+            "3️⃣ Bấm **🔎 Áp Dụng Bộ Lọc** khi đã điền đủ 4 trường.",
+            "",
+            "――――――――――――――――――――",
+            f"▶️ **Bắt đầu:** {start_str}",
+            f"⏹️ **Kết thúc:** {end_str}",
+        ]
+
+        embed = discord.Embed(
+            title="📅 Chọn Khoảng Thời Gian Bảng Xếp Hạng",
+            description="\n".join(lines),
+            color=0xffb6c1,
+        )
+        embed.set_footer(text="Bạn có thể chỉnh sửa lại bất cứ lúc nào trước khi áp dụng.")
+        return embed
+
+    # ------------------------------------------------------------------
+    # CALLBACK DROPDOWN THÁNG (ĐỘC LẬP HOÀN TOÀN)
     # ------------------------------------------------------------------
 
     async def _on_start_month_select(self, interaction: discord.Interaction):
-        select: discord.ui.Select = interaction.data  # type: ignore[assignment]
-        # Lấy giá trị từ component
+        """Chỉ cập nhật self.start_month, KHÔNG động đến end_month."""
         self.start_month = interaction.data["values"][0]  # type: ignore[index]
-        # Cập nhật default trên dropdown
+        # Đánh dấu default trên đúng dropdown row=0
         for item in self.children:
             if isinstance(item, discord.ui.Select) and item.row == 0:
                 for opt in item.options:
                     opt.default = (opt.value == self.start_month)
-        await interaction.response.edit_message(view=self)
+        await interaction.response.edit_message(
+            embed=self._build_status_embed(),
+            view=self,
+        )
 
     async def _on_end_month_select(self, interaction: discord.Interaction):
+        """Chỉ cập nhật self.end_month, KHÔNG động đến start_month."""
         self.end_month = interaction.data["values"][0]  # type: ignore[index]
+        # Đánh dấu default trên đúng dropdown row=1
         for item in self.children:
             if isinstance(item, discord.ui.Select) and item.row == 1:
                 for opt in item.options:
                     opt.default = (opt.value == self.end_month)
-        await interaction.response.edit_message(view=self)
-
-    async def _on_next_to_step2(self, interaction: discord.Interaction):
-        """Xử lý nút 'Tiếp Tục Chọn Ngày': validate → chuyển Bước 2."""
-        # Kiểm tra đã chọn đủ chưa
-        if not self.start_month or not self.end_month:
-            await interaction.response.send_message(
-                "⚠️ **Vui lòng chọn đầy đủ cả Tháng Bắt Đầu và Tháng Kết Thúc!**",
-                ephemeral=True,
-            )
-            return
-
-        # Kiểm tra thứ tự tháng
-        first_of_start = _month_val_to_first_day(self.start_month)
-        first_of_end = _month_val_to_first_day(self.end_month)
-        if first_of_start > first_of_end:
-            await interaction.response.send_message(
-                "⚠️ **Lỗi:** Tháng kết thúc phải diễn ra sau hoặc trùng với tháng bắt đầu!\n"
-                f"📌 Bạn chọn: **{_month_label(self.start_month)}** → **{_month_label(self.end_month)}**",
-                ephemeral=True,
-            )
-            return
-
-        # Chuyển sang Bước 2
-        self.day_page = "1-15"
-        self._build_step2()
         await interaction.response.edit_message(
-            content=None,
-            embed=self._step2_embed(),
+            embed=self._build_status_embed(),
             view=self,
         )
 
     # ------------------------------------------------------------------
-    # CALLBACK BƯỚC 2
+    # CALLBACK NÚT MỞ MODAL NHẬP NGÀY
     # ------------------------------------------------------------------
 
-    async def _on_start_day_select(self, interaction: discord.Interaction):
-        self.start_day = int(interaction.data["values"][0])  # type: ignore[index]
-        for item in self.children:
-            if isinstance(item, discord.ui.Select) and item.row == 0:
-                for opt in item.options:
-                    opt.default = (opt.value == str(self.start_day))
-        await interaction.response.edit_message(view=self)
+    async def _on_open_start_day_modal(self, interaction: discord.Interaction):
+        """Bẫy lỗi thiếu tháng → mở StartDayModal nếu đã có tháng."""
+        if not self.start_month:
+            await interaction.response.send_message(
+                "Vui lòng chọn **Tháng Bắt Đầu** ở menu phía trên trước!",
+                ephemeral=True,
+            )
+            return
+        await interaction.response.send_modal(StartDayModal(date_view=self))
 
-    async def _on_end_day_select(self, interaction: discord.Interaction):
-        self.end_day = int(interaction.data["values"][0])  # type: ignore[index]
-        for item in self.children:
-            if isinstance(item, discord.ui.Select) and item.row == 1:
-                for opt in item.options:
-                    opt.default = (opt.value == str(self.end_day))
-        await interaction.response.edit_message(view=self)
+    async def _on_open_end_day_modal(self, interaction: discord.Interaction):
+        """Bẫy lỗi thiếu tháng → mở EndDayModal nếu đã có tháng."""
+        if not self.end_month:
+            await interaction.response.send_message(
+                "Vui lòng chọn **Tháng Kết Thúc** ở menu phía trên trước!",
+                ephemeral=True,
+            )
+            return
+        await interaction.response.send_modal(EndDayModal(date_view=self))
 
-    async def _on_toggle_page(self, interaction: discord.Interaction):
-        """Đổi trang ngày giữa 1-15 và 16-cuối tháng, reset lựa chọn ngày."""
-        self.day_page = "16-31" if self.day_page == "1-15" else "1-15"
-        self.start_day = None
-        self.end_day = None
-        self._build_step2()
-        await interaction.response.edit_message(
-            embed=self._step2_embed(),
-            view=self,
-        )
-
-    async def _on_back_to_step1(self, interaction: discord.Interaction):
-        """Quay lại Bước 1."""
-        self._build_step1()
-        await interaction.response.edit_message(
-            content="📅 **Chọn khoảng thời gian bạn muốn xem Bảng Xếp Hạng:**",
-            embed=None,
-            view=self,
-        )
+    # ------------------------------------------------------------------
+    # CALLBACK NÚT ÁP DỤNG BỘ LỌC
+    # ------------------------------------------------------------------
 
     async def _on_apply(self, interaction: discord.Interaction):
-        """Xử lý nút 'Áp Dụng Bộ Lọc': validate → refresh leaderboard → xóa panel."""
-        # Kiểm tra đã chọn ngày chưa
-        if self.start_day is None or self.end_day is None:
+        """
+        Kiểm tra đầy đủ 4 trường → dựng datetime UTC+7 →
+        kiểm tra start <= end → refresh leaderboard → xóa panel.
+        """
+        # 1. Kiểm tra thiếu dữ liệu
+        missing: list[str] = []
+        if not self.start_month:
+            missing.append("Tháng Bắt Đầu")
+        if self.start_day is None:
+            missing.append("Ngày Bắt Đầu")
+        if not self.end_month:
+            missing.append("Tháng Kết Thúc")
+        if self.end_day is None:
+            missing.append("Ngày Kết Thúc")
+
+        if missing:
+            missing_str = ", ".join(f"**{m}**" for m in missing)
             await interaction.response.send_message(
-                "⚠️ **Vui lòng chọn đầy đủ cả Ngày Bắt Đầu và Ngày Kết Thúc!**",
+                f"Bạn chưa điền đầy đủ thông tin! Còn thiếu: {missing_str}.\n"
+                "Vui lòng hoàn thiện tất cả 4 trường trước khi áp dụng.",
                 ephemeral=True,
             )
             return
 
-        # Ghép datetime đầy đủ UTC+7
-        s_month = int(self.start_month.split("-")[0])   # type: ignore[union-attr]
-        s_year  = int(self.start_month.split("-")[1])   # type: ignore[union-attr]
-        e_month = int(self.end_month.split("-")[0])     # type: ignore[union-attr]
-        e_year  = int(self.end_month.split("-")[1])     # type: ignore[union-attr]
+        # 2. Dựng 2 đối tượng datetime UTC+7
+        s_mm   = int(self.start_month.split("-")[0])   # type: ignore[union-attr]
+        s_yyyy = int(self.start_month.split("-")[1])   # type: ignore[union-attr]
+        e_mm   = int(self.end_month.split("-")[0])     # type: ignore[union-attr]
+        e_yyyy = int(self.end_month.split("-")[1])     # type: ignore[union-attr]
 
-        dt_start = datetime(s_year, s_month, self.start_day, 0, 0, 0, tzinfo=UTC7)
-        dt_end   = datetime(e_year, e_month, self.end_day, 23, 59, 59, tzinfo=UTC7)
+        dt_start = datetime(s_yyyy, s_mm, self.start_day, 0, 0, 0, tzinfo=UTC7)   # type: ignore[arg-type]
+        dt_end   = datetime(e_yyyy, e_mm, self.end_day, 23, 59, 59, tzinfo=UTC7)  # type: ignore[arg-type]
 
-        # Kiểm tra thứ tự ngày
+        # 3. Kiểm tra tính hợp lệ khoảng thời gian (kể cả xuyên năm)
         if dt_start > dt_end:
             await interaction.response.send_message(
-                f"⚠️ **Lỗi:** Ngày kết thúc phải diễn ra sau hoặc trùng với ngày bắt đầu!\n"
+                "**Lỗi cấu hình thời gian:** Khoảng thời gian bắt đầu không hợp lý!\n"
+                "Ngày/Tháng kết thúc phải diễn ra **sau hoặc trùng** với Ngày/Tháng bắt đầu.\n"
                 f"📌 Hiện tại: **{_format_date(dt_start)}** > **{_format_date(dt_end)}**\n"
-                f"Hãy dùng các dropdown phía trên để chọn lại.",
+                "Hãy dùng các dropdown/nút bên trên để điều chỉnh lại.",
                 ephemeral=True,
             )
+            # Giữ nguyên giao diện, KHÔNG xóa panel
             return
 
-        # Cập nhật LeaderboardView gốc và refresh
+        # 4. Mọi kiểm tra qua → cập nhật LeaderboardView gốc và refresh
         self.leaderboard_view.dt_start = dt_start
-        self.leaderboard_view.dt_end = dt_end
+        self.leaderboard_view.dt_end   = dt_end
 
         bot: Any = interaction.client
         data = await _fetch_leaderboard_data(
@@ -493,14 +566,14 @@ class DateSelectionView(discord.ui.View):
             dt_start, dt_end,
         )
 
-        # Cập nhật tin nhắn Leaderboard gốc
+        # Cập nhật tin nhắn Leaderboard gốc trên kênh chung
         if self.leaderboard_view.message:
             try:
                 await self.leaderboard_view.message.edit(embed=embed, view=self.leaderboard_view)
             except Exception as e:
                 log.error(f"Lỗi cập nhật Leaderboard gốc: {e}")
 
-        # Xóa panel chọn ngày ẩn
+        # 5. Xóa panel chọn ngày ephemeral
         try:
             await interaction.response.edit_message(
                 content="✅ **Đã áp dụng thành công!** Panel này sẽ tự đóng.",
@@ -588,11 +661,10 @@ class LeaderboardView(discord.ui.View):
 
     @discord.ui.button(label="📅 Chọn Khoảng Ngày", style=discord.ButtonStyle.secondary, row=2)
     async def date_filter_btn(self, interaction: discord.Interaction, button: discord.ui.Button):
-        """Mở panel chọn khoảng ngày 2 bước dạng ephemeral."""
+        """Mở panel chọn khoảng ngày (Dropdown Tháng + Modal Ngày) dạng ephemeral."""
         panel = DateSelectionView(leaderboard_view=self)
         await interaction.response.send_message(
-            "📅 **Chọn khoảng thời gian bạn muốn xem Bảng Xếp Hạng:**\n"
-            "Chọn **Tháng Bắt Đầu** và **Tháng Kết Thúc**, sau đó nhấn **Tiếp Tục Chọn Ngày ➡️**.",
+            embed=panel._build_status_embed(),
             view=panel,
             ephemeral=True,
         )
