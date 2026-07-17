@@ -138,6 +138,56 @@ class StaffUICog(commands.Cog):
         except Exception as e:
             await ctx.send(f"Lỗi truy vấn Database: {e}")
 
+    @commands.command(name="myfeedback", aliases=["myreviews", "myfb", "myrv"])
+    async def myfeedback_cmd(self, ctx: commands.Context):
+        """Lệnh xem lịch sử đánh giá cá nhân của bạn"""
+        voter_id = str(ctx.author.id)
+
+        try:
+            records = await query_db(self.bot, "SELECT discord_id, display_name, votes FROM profiles")
+            if not records:
+                await ctx.send("📭 **Database profiles đang TRỐNG!**")
+                return
+
+            my_reviews = []
+            for row in records:
+                votes_dict = _normalize_votes(row.get('votes', {}))
+                if voter_id in votes_dict:
+                    entry = votes_dict[voter_id]
+                    if isinstance(entry, dict):
+                        try:
+                            score = round(float(entry.get('score', 0.0)), 1)
+                        except (ValueError, TypeError):
+                            score = 0.0
+                        review = entry.get('review') or "Không có nội dung"
+                        staff_name = row.get('display_name', 'Unnamed Staff')
+                        staff_id = row.get('discord_id')
+                        my_reviews.append((staff_name, staff_id, score, review))
+
+            if not my_reviews:
+                await ctx.send("Bạn chưa từng để lại bài đánh giá nào cho đội ngũ Staff.")
+                return
+
+            embed = discord.Embed(
+                title=f"📋 Lịch Sử Đánh Giá Của {ctx.author.display_name}",
+                description="Dưới đây là danh sách các bài đánh giá bạn đã viết cho Staff:",
+                color=0xffb6c1
+            )
+
+            for staff_name, staff_id, score, review in my_reviews:
+                embed.add_field(
+                    name=f"Đánh giá {staff_name}",
+                    value=f"• **Staff:** <@{staff_id}>\n• **Điểm số:** {score} ⭐\n• **Nhận xét:** {review}",
+                    inline=False
+                )
+
+            embed.set_footer(text="Angelic Bot • Lịch sử đánh giá cá nhân 🌸")
+            await ctx.send(embed=embed)
+
+        except Exception as e:
+            log.error(f"Lỗi lệnh myfeedback: {e}")
+            await ctx.send(f"Lỗi truy vấn Database: {e}")
+
     @commands.command(name="help", aliases=["huongdan"])
     async def help_cmd(self, ctx: commands.Context):
         """Lệnh hiển thị danh sách toàn bộ các câu lệnh của Bot"""
@@ -153,6 +203,7 @@ class StaffUICog(commands.Cog):
                 "💠 `y!menu` *(hoặc `y!staff`, `y!bqt`)*: Mở bảng menu tương tác để xem hồ sơ, tags và ảnh của Ban Quản Trị.\n"
                 "💠 `y!top` *(hoặc `y!lb`, `y!bxh`, `y!leaderboard`)*: Xem Bảng Xếp Hạng Staff, mặc định tuần hiện tại. Nhấn nút 📅 để lọc theo khoảng ngày tùy chỉnh.\n"
                 "💠 `y!feedback <@user/ID>` *(hoặc `y!fb`)*: Xem danh sách toàn bộ bài đánh giá chi tiết (số sao và nội dung nhận xét) của một Staff.\n"
+                "💠 `y!myfeedback` *(hoặc `y!myreviews`, `y!myfb`)*: Xem lại lịch sử các bài đánh giá cá nhân của chính bạn.\n"
                 "💠 `y!help` *(hoặc `y!huongdan`)*: Hiển thị bảng hướng dẫn câu lệnh này."
             ),
             inline=False

@@ -113,9 +113,14 @@ class VoteModal(discord.ui.Modal, title="🌟 Đánh Giá Nhân Sự"):
         max_length=200
     )
 
-    def __init__(self, profile_view: "ProfileView"):
+    def __init__(self, profile_view: "ProfileView", old_score: Optional[str] = None, old_review: Optional[str] = None):
         super().__init__()
         self.profile_view = profile_view
+        self.old_score_value = old_score
+        if old_score is not None:
+            self.score_input.default = old_score
+        if old_review is not None:
+            self.review_input.default = old_review
 
     async def on_submit(self, interaction: discord.Interaction):
         val_str = self.score_input.value.strip().replace(',', '.')
@@ -171,6 +176,8 @@ class VoteModal(discord.ui.Modal, title="🌟 Đánh Giá Nhân Sự"):
 
         # --- Refresh lại embed từ DB sau khi ghi vote thành công ---
         fresh_data = await _fetch_fresh_user_data(bot, target_id)
+        target_name = fresh_data.get('display_name', 'Unnamed Staff') if fresh_data else 'Unnamed Staff'
+        
         if fresh_data and interaction.message:
             member = self.profile_view.member
             embed = build_embed(user_data=fresh_data, member=member, photo_index=self.profile_view.photo_index)
@@ -185,6 +192,31 @@ class VoteModal(discord.ui.Modal, title="🌟 Đánh Giá Nhân Sự"):
             f"💖 **Cảm ơn bạn!** Đã ghi nhận điểm đánh giá **{val} ⭐** và cập nhật lên hệ thống!"
         )
         await interaction.response.send_message(confirm_msg, ephemeral=True)
+
+        # --- Gửi Log Đánh Giá vào kênh ẩn ---
+        try:
+            log_channel_id = 1527697681978495027
+            log_channel = bot.get_channel(log_channel_id) or await bot.fetch_channel(log_channel_id)
+            
+            log_embed = discord.Embed(
+                title="📝 Nhật Ký Đánh Giá Staff",
+                color=0xf1c40f if is_update else 0x2ecc71
+            )
+            log_embed.add_field(name="Voter (Người đánh giá)", value=f"<@{voter_id}> (`{voter_id}`)", inline=False)
+            log_embed.add_field(name="Target Staff (Nhân sự)", value=f"<@{target_id}> ({target_name})", inline=False)
+            
+            rating_str = f"⭐ {val} / 5.0"
+            if is_update and self.old_score_value is not None:
+                rating_str = f"⭐ {self.old_score_value} ➔ {val} / 5.0"
+            log_embed.add_field(name="Rating (Mức điểm)", value=rating_str, inline=False)
+            
+            log_embed.add_field(name="Review Content", value=review_text, inline=False)
+            log_embed.set_footer(text="Hệ thống log tự động")
+            
+            if log_channel:
+                await log_channel.send(embed=log_embed)
+        except Exception as e:
+            log.error(f"Lỗi gửi log đánh giá: {e}")
 
 
 # =====================================================================
@@ -466,14 +498,33 @@ class ProfileView(BaseStaffView):
 
     @discord.ui.button(label="🌟 Đánh giá", style=discord.ButtonStyle.success, row=0)
     async def vote_btn(self, interaction: discord.Interaction, button: discord.ui.Button):
+        voter_id = str(interaction.user.id)
+        target_id = self.target_discord_id
+
         # Kiểm tra chống tự vote bằng target_discord_id bất biến
-        if str(interaction.user.id) == self.target_discord_id:
+        if voter_id == target_id:
             await interaction.response.send_message(
                 "**Bạn không thể tự đánh giá (vote) cho chính bản thân mình được nhé!**",
                 ephemeral=True
             )
             return
-        await interaction.response.send_modal(VoteModal(self))
+
+        bot: Any = interaction.client
+        fresh_data = await _fetch_fresh_user_data(bot, target_id)
+        
+        old_score = None
+        old_review = None
+
+        if fresh_data:
+            votes = _normalize_votes(fresh_data.get('votes', {}))
+            if voter_id in votes:
+                entry = votes[voter_id]
+                old_score = str(round(float(entry.get('score', 0.0)), 1))
+                old_review = entry.get('review')
+                if old_review == "Không có nội dung":
+                    old_review = ""
+
+        await interaction.response.send_modal(VoteModal(self, old_score=old_score, old_review=old_review))
 
     # ------------------------------------------------------------------
     # NÚT QUAY LẠI DANH SÁCH — Real-time sync từ DB
