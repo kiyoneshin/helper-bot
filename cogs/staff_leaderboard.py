@@ -250,7 +250,11 @@ class StartDayModal(discord.ui.Modal, title="Nhập Ngày Bắt Đầu"):
             return
 
         # Kiểm tra ngày tối đa của tháng
-        month_val = self.date_view.start_month  # type: ignore[union-attr]
+        month_val = self.date_view.start_month
+        if not month_val:
+            await interaction.response.send_message("Vui lòng chọn Tháng Bắt Đầu trước!", ephemeral=True)
+            return
+            
         mm, yyyy = int(month_val.split("-")[0]), int(month_val.split("-")[1])
         max_day = calendar.monthrange(yyyy, mm)[1]
 
@@ -302,7 +306,11 @@ class EndDayModal(discord.ui.Modal, title="Nhập Ngày Kết Thúc"):
             return
 
         # Kiểm tra ngày tối đa của tháng
-        month_val = self.date_view.end_month  # type: ignore[union-attr]
+        month_val = self.date_view.end_month
+        if not month_val:
+            await interaction.response.send_message("Vui lòng chọn Tháng Kết Thúc trước!", ephemeral=True)
+            return
+
         mm, yyyy = int(month_val.split("-")[0]), int(month_val.split("-")[1])
         max_day = calendar.monthrange(yyyy, mm)[1]
 
@@ -355,13 +363,12 @@ class DateSelectionView(discord.ui.View):
     def _build_ui(self):
         """Dựng toàn bộ giao diện: 2 dropdown tháng + 3 nút bấm."""
         self.clear_items()
-        month_opts = _generate_month_options()
 
         # ── ROW 0: Dropdown Tháng Bắt Đầu ─────────────────────────────
         start_sel = discord.ui.Select(
             placeholder="📅 Chọn Tháng Bắt Đầu...",
             min_values=1, max_values=1,
-            options=month_opts,
+            options=_generate_month_options(),
             row=0,
         )
         start_sel.callback = self._on_start_month_select
@@ -371,7 +378,7 @@ class DateSelectionView(discord.ui.View):
         end_sel = discord.ui.Select(
             placeholder="📅 Chọn Tháng Kết Thúc...",
             min_values=1, max_values=1,
-            options=month_opts,
+            options=_generate_month_options(),
             row=1,
         )
         end_sel.callback = self._on_end_month_select
@@ -519,7 +526,10 @@ class DateSelectionView(discord.ui.View):
         if self.end_day is None:
             missing.append("Ngày Kết Thúc")
 
-        if missing:
+        start_month_val = self.start_month
+        end_month_val = self.end_month
+
+        if missing or not start_month_val or not end_month_val or self.start_day is None or self.end_day is None:
             missing_str = ", ".join(f"**{m}**" for m in missing)
             await interaction.response.send_message(
                 f"Bạn chưa điền đầy đủ thông tin! Còn thiếu: {missing_str}.\n"
@@ -529,13 +539,13 @@ class DateSelectionView(discord.ui.View):
             return
 
         # 2. Dựng 2 đối tượng datetime UTC+7
-        s_mm   = int(self.start_month.split("-")[0])   # type: ignore[union-attr]
-        s_yyyy = int(self.start_month.split("-")[1])   # type: ignore[union-attr]
-        e_mm   = int(self.end_month.split("-")[0])     # type: ignore[union-attr]
-        e_yyyy = int(self.end_month.split("-")[1])     # type: ignore[union-attr]
+        s_mm   = int(start_month_val.split("-")[0])
+        s_yyyy = int(start_month_val.split("-")[1])
+        e_mm   = int(end_month_val.split("-")[0])
+        e_yyyy = int(end_month_val.split("-")[1])
 
-        dt_start = datetime(s_yyyy, s_mm, self.start_day, 0, 0, 0, tzinfo=UTC7)   # type: ignore[arg-type]
-        dt_end   = datetime(e_yyyy, e_mm, self.end_day, 23, 59, 59, tzinfo=UTC7)  # type: ignore[arg-type]
+        dt_start = datetime(s_yyyy, s_mm, self.start_day, 0, 0, 0, tzinfo=UTC7)
+        dt_end   = datetime(e_yyyy, e_mm, self.end_day, 23, 59, 59, tzinfo=UTC7)
 
         # 3. Kiểm tra tính hợp lệ khoảng thời gian (kể cả xuyên năm)
         if dt_start > dt_end:
@@ -668,6 +678,24 @@ class LeaderboardView(discord.ui.View):
             view=panel,
             ephemeral=True,
         )
+
+    @discord.ui.button(label="🔄 Reset Bộ Lọc", style=discord.ButtonStyle.danger, row=2)
+    async def reset_filter_btn(self, interaction: discord.Interaction, button: discord.ui.Button):
+        """Reset toàn bộ bộ lọc về mặc định (Tuần hiện tại, Xếp hạng: Rating, Chức vụ: Tất cả)."""
+        self.dt_start, self.dt_end = _get_current_week_range()
+        self.current_sort = "rating"
+        self.current_role = "all"
+
+        # Update default options in the selects
+        for item in self.children:
+            if isinstance(item, SortSelect):
+                for opt in item.options:
+                    opt.default = (opt.value == "rating")
+            elif isinstance(item, RoleFilterSelect):
+                for opt in item.options:
+                    opt.default = (opt.value == "all")
+
+        await self.refresh(interaction)
 
     async def on_timeout(self):
         for item in self.children:
