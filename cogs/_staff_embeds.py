@@ -13,10 +13,10 @@ def get_main_embed() -> discord.Embed:
                 "Tiếng chuông nhà thờ khẽ ngân vang, cánh cổng thiên đường đã mở rộng chào đón bạn! ଘ(੭ˊᵕˋ)੭\n"
                 "Hãy biến nơi đây thành mái nhà bình yên để cùng trò chuyện, chơi game, chữa lành và lưu giữ những kỷ niệm đẹp nhé.\n\n"
                 
-                "📜 **ĐIỀU LỆ SERVER ANGERLIC (CẦN ĐỌC VÀ NHỚ KỸ):**\n\n"
+                "📜 **ĐIỀU LỆ SERVER ANGELIC (CẦN ĐỌC VÀ NHỚ KỸ):**\n\n"
                 
                 "**1. Văn hóa ứng xử & Giao tiếp:**\n"
-                "• Tôn trọng tất cả thành viên và Ban Quản Trị. Đùa giỡn có chừng mực, nghiêm cấm các hành vi toxic, nói xấu sau lưng, gây war, drama hoặc lôi kéo mâu thuẫn cá nhân vào server.\n"
+                "• Tôn trọng tất cả thành viên và Ban Quán Trị. Đùa giỡn có chừng mực, nghiêm cấm các hành vi toxic, nói xấu sau lưng, gây war, drama hoặc lôi kéo mâu thuẫn cá nhân vào server.\n"
                 "• **Hạn chế tối đa nói tục và đùa giỡn nhạy cảm (sex joke).** Tùy thuộc vào mức độ vi phạm, bot và staff sẽ xử lý từ cảnh cáo, mute (tắt tiếng) cho đến ban (khóa tài khoản) vĩnh viễn.\n\n"
                 
                 "**2. Nội dung nhạy cảm & Cấm kỵ:**\n"
