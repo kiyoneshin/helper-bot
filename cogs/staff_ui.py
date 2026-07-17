@@ -1,7 +1,9 @@
 import discord
 from discord.ext import commands
 import logging
-from typing import Optional
+import asyncio
+import json
+from typing import Optional, Any
 
 from cogs._staff_db import query_db, extract_id
 from cogs._staff_embeds import get_main_embed
@@ -168,7 +170,9 @@ class StaffUICog(commands.Cog):
         embed.add_field(
             name="🛡️ 3. Quản Trị Hệ Thống (Admin / Owner)",
             value=(
-                "💠 `y!checkdb`: Kiểm tra nhanh danh sách toàn bộ nhân sự hiện đang được lưu trữ trong Cơ Sở Dữ Liệu PostgreSQL."
+                "💠 `y!checkdb`: Kiểm tra nhanh danh sách toàn bộ nhân sự hiện đang được lưu trữ trong Cơ Sở Dữ Liệu PostgreSQL.\n"
+                "💠 `y!renewdb`: Đồng bộ và làm sạch toàn bộ dữ liệu DB với Server thực tế (cập nhật tên, phát hiện thành viên rời server, sửa lỗi dữ liệu).\n"
+                "💠 `y!backup`: Kích hoạt sao lưu Database thủ công ngay lập tức thành file `.sql`."
             ),
             inline=False
         )
@@ -186,6 +190,212 @@ class StaffUICog(commands.Cog):
         embed.set_footer(text="Angelic Bot • Sử dụng mũi tên để điều hướng các menu dễ dàng hơn!")
         await ctx.send(embed=embed)
 
+    # ──────────────────────────────────────────────────────────────────
+    # LỆNH ĐỒNG BỘ VÀ LÀM SẠCH DATABASE: y!renewdb
+    # ──────────────────────────────────────────────────────────────────
+
+    @commands.command(name="renewdb", aliases=["syncdb", "refreshdb"])
+    @commands.has_permissions(administrator=True)
+    async def renewdb_cmd(self, ctx: commands.Context):
+        """
+        [Admin/Owner] Đồng bộ và làm sạch Database với Server Discord thực tế:
+          - Cập nhật display_name theo tên thực trên server
+          - Phát hiện & gắn nhãn hồ sơ thành viên đã rời server
+          - Sửa lỗi giá trị NULL/NaN trong các trường số và JSON
+        """
+        guild = ctx.guild
+        if guild is None:
+            await ctx.send("Lệnh này chỉ dùng được trong Server!")
+            return
+
+        progress_msg = await ctx.send(
+            "Đang đồng bộ Database... Vui lòng chờ trong giây lát."
+        )
+
+        try:
+            records = await query_db(
+                self.bot,
+                "SELECT discord_id, display_name, role, rating, weekly_replies, votes FROM profiles"
+            )
+        except Exception as e:
+            log.error(f"renewdb: Lỗi truy vấn profiles: {e}", exc_info=True)
+            await progress_msg.edit(content=f"Lỗi truy vấn Database: `{e}`")
+            return
+
+        total = len(records)
+        if total == 0:
+            await progress_msg.edit(content="Database profiles đang trống, không có gì để đồng bộ!")
+            return
+
+        # ── Bộ đếm thống kê ──────────────────────────────────────────
+        count_name_updated  = 0   # Hồ sơ được cập nhật biệt danh
+        count_left_server   = 0   # Hồ sơ đã rời server
+        count_data_fixed    = 0   # Hồ sơ có lỗi dữ liệu được sửa
+        left_server_names: list[str] = []
+        errors_in_task: list[str] = []
+
+        # ── Xử lý từng hồ sơ ─────────────────────────────────────────
+        for record in records:
+            discord_id_str: str = str(record["discord_id"])
+            old_name: str = str(record.get("display_name") or "Unnamed")
+            updates: dict[str, Any] = {}  # field → giá trị mới cần cập nhật
+
+            # ── 1. Kiểm tra tồn tại trên Server ──────────────────────
+            member = guild.get_member(int(discord_id_str))
+            if member is None:
+                try:
+                    member = await guild.fetch_member(int(discord_id_str))
+                except discord.NotFound:
+                    member = None
+                except discord.HTTPException as e:
+                    log.warning(f"renewdb: Không fetch được member {discord_id_str}: {e}")
+                    member = None
+
+            if member is None:
+                # Thành viên không còn trong server
+                count_left_server += 1
+                left_server_names.append(old_name)
+                log.info(f"renewdb: {old_name} ({discord_id_str}) đã rời server.")
+                # Gắn nhãn display_name nếu chưa có
+                if not old_name.startswith("[Đã rời Server]"):
+                    updates["display_name"] = f"[Đã rời Server] {old_name}"
+            else:
+                # ── 2. Đồng bộ biệt danh (display_name) ──────────────
+                current_nick = member.display_name
+                if current_nick != old_name and not old_name.startswith("[Đã rời Server]"):
+                    updates["display_name"] = current_nick
+                    count_name_updated += 1
+                    log.info(
+                        f"renewdb: Cập nhật tên {discord_id_str}: "
+                        f"'{old_name}' → '{current_nick}'"
+                    )
+
+            # ── 3. Kiểm tra & sửa lỗi cấu trúc dữ liệu ─────────────
+            data_was_fixed = False
+
+            # rating: phải là số hợp lệ trong [0, 5]
+            raw_rating = record.get("rating")
+            try:
+                r = float(raw_rating)
+                if r != r:  # NaN check
+                    raise ValueError("NaN")
+            except (TypeError, ValueError):
+                updates["rating"] = 0.0
+                data_was_fixed = True
+                log.warning(f"renewdb: Reset rating NULL/NaN → 0.0 cho {discord_id_str}")
+
+            # weekly_replies: phải là số nguyên không âm
+            raw_replies = record.get("weekly_replies")
+            try:
+                rr = int(raw_replies)
+                if rr < 0:
+                    raise ValueError("Âm")
+            except (TypeError, ValueError):
+                updates["weekly_replies"] = 0
+                data_was_fixed = True
+                log.warning(f"renewdb: Reset weekly_replies NULL/invalid → 0 cho {discord_id_str}")
+
+            # votes: phải là dict hợp lệ
+            raw_votes = record.get("votes")
+            try:
+                if raw_votes is None:
+                    raise ValueError("None")
+                if isinstance(raw_votes, str):
+                    parsed = json.loads(raw_votes)
+                    if not isinstance(parsed, dict):
+                        raise ValueError("Không phải dict")
+                elif not isinstance(raw_votes, dict):
+                    raise ValueError("Kiểu sai")
+            except (ValueError, json.JSONDecodeError):
+                updates["votes"] = json.dumps({})
+                data_was_fixed = True
+                log.warning(f"renewdb: Reset votes lỗi → {{}} cho {discord_id_str}")
+
+            if data_was_fixed:
+                count_data_fixed += 1
+
+            # ── 4. Ghi cập nhật vào DB nếu có thay đổi ───────────────
+            if not updates:
+                continue
+
+            set_clauses = []
+            values: list[Any] = []
+            for idx, (col, val) in enumerate(updates.items(), start=1):
+                set_clauses.append(f"{col} = ${idx}")
+                values.append(val)
+            values.append(discord_id_str)
+            sql = (
+                f"UPDATE profiles SET {', '.join(set_clauses)} "
+                f"WHERE discord_id = ${len(values)}"
+            )
+            try:
+                await query_db(self.bot, sql, *values)
+            except Exception as e:
+                err_msg = f"{discord_id_str}: {e}"
+                errors_in_task.append(err_msg)
+                log.error(f"renewdb: Lỗi UPDATE {err_msg}", exc_info=True)
+
+            # Nhường CPU sau mỗi 10 bản ghi
+            await asyncio.sleep(0)
+
+        # ── Xoá tin nhắn chờ ─────────────────────────────────────────
+        try:
+            await progress_msg.delete()
+        except Exception:
+            pass
+
+        # ── Xây dựng Embed báo cáo ───────────────────────────────────
+        embed = discord.Embed(
+            title="Báo Cáo Đồng Bộ Database (renewdb)",
+            color=0x57f287,  # Discord green
+        )
+        embed.add_field(
+            name="Kết Quả Tổng Hợp",
+            value=(
+                f"Tổng số hồ sơ đã kiểm tra: **{total}**\n"
+                f"Số hồ sơ được cập nhật biệt danh: **{count_name_updated}**\n"
+                f"Số hồ sơ phát hiện đã rời server: **{count_left_server}**\n"
+                f"Số lỗi dữ liệu đã được sửa tự động: **{count_data_fixed}**"
+            ),
+            inline=False,
+        )
+
+        if left_server_names:
+            names_str = "\n".join(
+                f"• {n}" for n in left_server_names[:15]
+            )
+            if len(left_server_names) > 15:
+                names_str += f"\n... và {len(left_server_names) - 15} người khác"
+            embed.add_field(
+                name="Danh Sách Thành Viên Đã Rời Server",
+                value=names_str,
+                inline=False,
+            )
+
+        if errors_in_task:
+            err_str = "\n".join(f"• `{e}`" for e in errors_in_task[:5])
+            embed.add_field(
+                name="Lỗi Phát Sinh Khi Cập Nhật",
+                value=err_str,
+                inline=False,
+            )
+
+        embed.set_footer(text=f"Angelic Bot • Đồng bộ bởi {ctx.author.display_name} 🌸")
+        await ctx.send(embed=embed)
+
+        log.info(
+            f"renewdb hoàn tất: {total} hồ sơ, "
+            f"{count_name_updated} tên đổi, "
+            f"{count_left_server} rời server, "
+            f"{count_data_fixed} lỗi dữ liệu sửa."
+        )
+
+    @renewdb_cmd.error
+    async def renewdb_error(self, ctx: commands.Context, error):
+        if isinstance(error, commands.MissingPermissions):
+            await ctx.send("Bạn không có quyền sử dụng lệnh này! Chỉ Admin/Owner mới được dùng `y!renewdb`.")
+
 
 async def setup(bot):
     await bot.add_cog(StaffUICog(bot))
+
