@@ -203,7 +203,7 @@ class StaffUICog(commands.Cog):
                 "💠 `y!menu` *(hoặc `y!staff`, `y!bqt`)*: Mở bảng menu tương tác để xem hồ sơ, tags và ảnh của Ban Quản Trị.\n"
                 "💠 `y!top` *(hoặc `y!lb`, `y!bxh`, `y!leaderboard`)*: Xem Bảng Xếp Hạng Staff, mặc định tuần hiện tại. Nhấn nút 📅 để lọc theo khoảng ngày tùy chỉnh.\n"
                 "💠 `y!feedback <@user/ID>` *(hoặc `y!fb`)*: Xem danh sách toàn bộ bài đánh giá chi tiết (số sao và nội dung nhận xét) của một Staff.\n"
-                "💠 `y!myreviews` *(hoặc `y!myfeedbacks`, `y!myfb`)*: Xem lại lịch sử các bài đánh giá cá nhân của chính bạn.\n"
+                "💠 `y!myreviews` *(hoặc `y!myfeedbacks`, `y!myfb`, `myrv`)*: Xem lại lịch sử các bài đánh giá cá nhân của chính bạn.\n"
                 "💠 `y!help` *(hoặc `y!huongdan`)*: Hiển thị bảng hướng dẫn câu lệnh này."
             ),
             inline=False
