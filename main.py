@@ -57,12 +57,10 @@ class StaffBot(commands.Bot):
                         weekly_replies INT DEFAULT 0
                     )
                 ''')
-                # An toàn với DB cũ: thêm cột weekly_replies nếu chưa tồn tại
                 await conn.execute('''
                     ALTER TABLE profiles
                     ADD COLUMN IF NOT EXISTS weekly_replies INT DEFAULT 0
                 ''')
-                # Bảng lưu vết lịch sử tin nhắn Staff (phục vụ thống kê theo khoảng thời gian)
                 await conn.execute('''
                     CREATE TABLE IF NOT EXISTS staff_message_logs (
                         id SERIAL PRIMARY KEY,
@@ -70,7 +68,6 @@ class StaffBot(commands.Bot):
                         sent_at TIMESTAMP WITH TIME ZONE DEFAULT (CURRENT_TIMESTAMP AT TIME ZONE 'UTC')
                     )
                 ''')
-                # Index tăng tốc truy vấn COUNT theo khoảng thời gian
                 await conn.execute('''
                     CREATE INDEX IF NOT EXISTS idx_msg_logs_discord_sent
                     ON staff_message_logs (discord_id, sent_at)
@@ -80,18 +77,25 @@ class StaffBot(commands.Bot):
             log.error("Không thể khởi tạo db_pool!")
 
         # =====================================================================
-        # NẠP TỰ ĐỘNG (AUTO-LOAD) TOÀN BỘ COGS TRONG THƯ MỤC
+        # NẠP TỰ ĐỘNG (RECURSIVE AUTO-LOAD) TOÀN BỘ COGS TRONG CÁC SUB-FOLDER
         # =====================================================================
         cogs_dir = "./cogs"
         if os.path.exists(cogs_dir):
-            for filename in os.listdir(cogs_dir):
-                if filename.endswith(".py") and not filename.startswith("_"):
-                    cog_name = f"cogs.{filename[:-3]}"
-                    try:
-                        await self.load_extension(cog_name)
-                        log.info(f"Đã nạp thành công Cog: {cog_name}")
-                    except Exception as e:
-                        log.error(f"Lỗi khi nạp Cog {cog_name}: {e}")
+            for root, dirs, files in os.walk(cogs_dir):
+                if "common" in root.split(os.sep) or "utils" in root.split(os.sep):
+                    continue
+                
+                for filename in files:
+                    if filename.endswith(".py") and not filename.startswith("_"):
+                        file_path = os.path.join(root, filename)
+                        rel_path = os.path.relpath(file_path, start=".")
+                        cog_name = rel_path[:-3].replace(os.sep, ".").replace("/", ".").replace("\\", ".")
+                        
+                        try:
+                            await self.load_extension(cog_name)
+                            log.info(f"🌸 Đã nạp thành công Cog: {cog_name}")
+                        except Exception as e:
+                            log.error(f"❌ Lỗi khi nạp Cog [{cog_name}]: {e}", exc_info=True)
         else:
             log.warning("Không tìm thấy thư mục ./cogs để nạp module!")
 
