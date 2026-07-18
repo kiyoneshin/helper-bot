@@ -189,58 +189,111 @@ class StaffUICog(commands.Cog):
             log.error(f"Lỗi lệnh myreviews: {e}")
             await ctx.send(f"Lỗi truy vấn Database: {e}")
 
+class HelpView(discord.ui.View):
+    def __init__(self, author_id: int):
+        super().__init__(timeout=180)
+        self.author_id = author_id
+        self.message: Optional[discord.Message] = None
+
+    async def on_timeout(self):
+        for item in self.children:
+            if isinstance(item, discord.ui.Button):
+                item.disabled = True
+        if self.message:
+            try:
+                await self.message.edit(view=self)
+            except Exception:
+                pass
+
+    async def interaction_check(self, interaction: discord.Interaction) -> bool:
+        if interaction.user.id != self.author_id:
+            await interaction.response.send_message("Bạn không thể sử dụng bảng help của người khác!", ephemeral=True)
+            return False
+        return True
+
+    @discord.ui.button(label="Thành Viên", emoji="👥", style=discord.ButtonStyle.secondary, row=0)
+    async def tab_member(self, interaction: discord.Interaction, button: discord.ui.Button):
+        embed = discord.Embed(
+            title="👥 Lệnh Dành Cho Mọi Thành Viên",
+            description="Các câu lệnh cơ bản mà bất kỳ ai trong server cũng có thể sử dụng:",
+            color=0xffb6c1
+        )
+        embed.add_field(
+            name="Danh sách lệnh",
+            value=(
+                "• `y!menu` | `y!staff` | `y!bqt` ── Xem hồ sơ Ban Quản Trị.\n"
+                "• `y!top` | `y!lb` | `y!bxh` ── Xem Bảng Xếp Hạng Staff.\n"
+                "• `y!feedback <@user/ID>` | `y!fb` ── Xem danh sách bài đánh giá Staff.\n"
+                "• `y!myreviews` | `y!myfb` ── Xem lịch sử các bài review bạn đã viết."
+            ),
+            inline=False
+        )
+        await interaction.response.edit_message(embed=embed, view=self)
+
+    @discord.ui.button(label="Nhân Sự BQT", emoji="🌸", style=discord.ButtonStyle.primary, row=0)
+    async def tab_staff(self, interaction: discord.Interaction, button: discord.ui.Button):
+        embed = discord.Embed(
+            title="🌸 Lệnh Dành Cho Nhân Sự BQT",
+            description="Các câu lệnh quản lý hồ sơ cá nhân dành riêng cho Ban Quản Trị:",
+            color=0xffb6c1
+        )
+        embed.add_field(
+            name="Danh sách lệnh",
+            value=(
+                "• `y!add` ── Đăng ký hồ sơ Staff mới & kích hoạt tải ảnh lên.\n"
+                "• `y!set` | `y!editprofile` ── Chỉnh sửa thông tin cá nhân/quản lý ảnh."
+            ),
+            inline=False
+        )
+        await interaction.response.edit_message(embed=embed, view=self)
+
+    @discord.ui.button(label="Quản Trị Viên", emoji="🛡️", style=discord.ButtonStyle.danger, row=1)
+    async def tab_admin(self, interaction: discord.Interaction, button: discord.ui.Button):
+        embed = discord.Embed(
+            title="🛡️ Lệnh Dành Cho Quản Trị Viên",
+            description="Các câu lệnh quản trị hệ thống (Chỉ Owner/Admin có quyền dùng):",
+            color=0xffb6c1
+        )
+        embed.add_field(
+            name="Danh sách lệnh",
+            value=(
+                "• `y!checkdb` ── Xem nhanh toàn bộ dữ liệu đang lưu trong Database.\n"
+                "• `y!renewdb` ── Đồng bộ, làm sạch DB và cập nhật biệt danh.\n"
+                "• `y!backup` ── Kích hoạt xuất file sao lưu .sql thủ công ngay lập tức."
+            ),
+            inline=False
+        )
+        await interaction.response.edit_message(embed=embed, view=self)
+
+    @discord.ui.button(label="Kiểm Thử & Debug", emoji="🧪", style=discord.ButtonStyle.secondary, row=1)
+    async def tab_tester(self, interaction: discord.Interaction, button: discord.ui.Button):
+        embed = discord.Embed(
+            title="🧪 Lệnh Kiểm Thử & Debug",
+            description="Dành cho Tester kiểm tra chức năng hệ thống:",
+            color=0xffb6c1
+        )
+        embed.add_field(
+            name="Danh sách lệnh",
+            value=(
+                "• `y!test_reply` ── Kích hoạt lời nhắc vote trên chat.\n"
+                "• `y!test_vote` ── Bơm điểm vote ảo để test.\n"
+                "• `y!test_welcome` ── Test module chào mừng tân binh.\n"
+                "• `y!test_reset` ── Xóa các lượt vote ảo để trả về điểm gốc."
+            ),
+            inline=False
+        )
+        await interaction.response.edit_message(embed=embed, view=self)
+
     @commands.command(name="help", aliases=["huongdan"])
     async def help_cmd(self, ctx: commands.Context):
         """Lệnh hiển thị danh sách toàn bộ các câu lệnh của Bot"""
         embed = discord.Embed(
             title="📖 Bảng Hướng Dẫn Câu Lệnh Angelic Bot ໒꒱",
-            description="Dưới đây là toàn bộ các câu lệnh khả dụng mà bạn có thể sử dụng trên server:",
+            description="Chào mừng bạn đến với trung tâm trợ giúp của Angelic! Vui lòng nhấn vào các nút bấm tương tác bên dưới để xem danh sách câu lệnh chi tiết theo nhu cầu sử dụng.",
             color=0xffb6c1
         )
-
-        embed.add_field(
-            name="🌸 1. Tra Cứu & Đánh Giá (Mọi Thành Viên)",
-            value=(
-                "💠 `y!menu` *(hoặc `y!staff`, `y!bqt`)*: Mở bảng menu tương tác để xem hồ sơ, tags và ảnh của Ban Quản Trị.\n"
-                "💠 `y!top` *(hoặc `y!lb`, `y!bxh`, `y!leaderboard`)*: Xem Bảng Xếp Hạng Staff, mặc định tuần hiện tại. Nhấn nút 📅 để lọc theo khoảng ngày tùy chỉnh.\n"
-                "💠 `y!feedback <@user/ID>` *(hoặc `y!fb`)*: Xem danh sách toàn bộ bài đánh giá chi tiết (số sao và nội dung nhận xét) của một Staff.\n"
-                "💠 `y!myreviews` *(hoặc `y!myfeedbacks`, `y!myfb`, `myrv`)*: Xem lại lịch sử các bài đánh giá cá nhân của chính bạn.\n"
-                "💠 `y!help` *(hoặc `y!huongdan`)*: Hiển thị bảng hướng dẫn câu lệnh này."
-            ),
-            inline=False
-        )
-
-        embed.add_field(
-            name="🛠️ 2. Đăng Ký & Quản Lý Hồ Sơ (Dành Riêng BQT)",
-            value=(
-                "💠 `y!add`: Bật Form Modal cho phép nhân sự mới tự đăng ký hồ sơ (Tên hiển thị, Giới thiệu, Tags, Liên hệ) và tự động cấp chức vụ theo cấu trúc Role ID của Server, sau đó kích hoạt luồng upload ảnh vĩnh viễn.\n"
-                "💠 `y!set` *(hoặc `y!editprofile`, `y!suahoso`)*: Mở bảng điều khiển tương tác giúp Staff tự chỉnh sửa thông tin cá nhân hoặc lướt xem/xóa/thêm ảnh hồ sơ hiện có."
-            ),
-            inline=False
-        )
-
-        embed.add_field(
-            name="🛡️ 3. Quản Trị Hệ Thống (Admin / Owner)",
-            value=(
-                "💠 `y!checkdb`: Kiểm tra nhanh danh sách toàn bộ nhân sự hiện đang được lưu trữ trong Cơ Sở Dữ Liệu PostgreSQL.\n"
-                "💠 `y!renewdb`: Đồng bộ và làm sạch toàn bộ dữ liệu DB với Server thực tế (cập nhật tên, phát hiện thành viên rời server, sửa lỗi dữ liệu).\n"
-                "💠 `y!backup`: Kích hoạt sao lưu Database thủ công ngay lập tức thành file `.sql`."
-            ),
-            inline=False
-        )
-
-        embed.add_field(
-            name="🧪 4. Kiểm Thử & Debug (Chỉ Dành Cho Tester)",
-            value=(
-                "💠 `y!test_reply <@user/ID>`: Giả lập kích hoạt ngay câu nhắc nhở vote trên kênh chat (không cần đợi đủ 10 reply).\n"
-                "💠 `y!test_vote <@user/ID> <điểm>`: Bơm điểm vote ảo vào hồ sơ để kiểm thử công thức tính và làm tròn điểm trung bình.\n"
-                "💠 `y!test_reset <@user/ID>`: Lọc và dọn sạch toàn bộ các lượt vote ảo khỏi hồ sơ của Staff, trả lại điểm số thực tế."
-            ),
-            inline=False
-        )
-
-        embed.set_footer(text="Angelic Bot • Sử dụng mũi tên để điều hướng các menu dễ dàng hơn!")
-        await ctx.send(embed=embed)
+        view = HelpView(author_id=ctx.author.id)
+        view.message = await ctx.send(embed=embed, view=view)
 
     # ──────────────────────────────────────────────────────────────────
     # LỆNH ĐỒNG BỘ VÀ LÀM SẠCH DATABASE: y!renewdb
