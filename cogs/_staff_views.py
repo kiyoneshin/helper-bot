@@ -4,6 +4,7 @@ import logging
 from typing import Optional, Any
 from cogs._staff_db import query_db
 from cogs._staff_embeds import get_main_embed, build_embed
+from cogs._staff_log import send_staff_log, build_log_vote
 
 log = logging.getLogger("StaffViews")
 
@@ -193,28 +194,18 @@ class VoteModal(discord.ui.Modal, title="🌟 Đánh Giá Nhân Sự"):
         )
         await interaction.response.send_message(confirm_msg, ephemeral=True)
 
-        # --- Gửi Log Đánh Giá vào kênh ẩn ---
+        # --- Gửi Log Audit vào kênh ẩn ---
         try:
-            log_channel_id = 1527697681978495027
-            log_channel = bot.get_channel(log_channel_id) or await bot.fetch_channel(log_channel_id)
-            
-            log_embed = discord.Embed(
-                title="📝 Nhật Ký Đánh Giá Staff",
-                color=0xf1c40f if is_update else 0x2ecc71
+            log_embed = build_log_vote(
+                voter_id=voter_id,
+                target_id=target_id,
+                target_name=target_name,
+                new_score=val,
+                review_text=review_text,
+                is_update=is_update,
+                old_score=self.old_score_value,
             )
-            log_embed.add_field(name="Voter (Người đánh giá)", value=f"<@{voter_id}> (`{voter_id}`)", inline=False)
-            log_embed.add_field(name="Target Staff (Nhân sự)", value=f"<@{target_id}> ({target_name})", inline=False)
-            
-            rating_str = f"⭐ {val} / 5.0"
-            if is_update and self.old_score_value is not None:
-                rating_str = f"⭐ {self.old_score_value} ➔ {val} / 5.0"
-            log_embed.add_field(name="Rating (Mức điểm)", value=rating_str, inline=False)
-            
-            log_embed.add_field(name="Review Content", value=review_text, inline=False)
-            log_embed.set_footer(text="Hệ thống log tự động")
-            
-            if log_channel:
-                await log_channel.send(embed=log_embed)
+            await send_staff_log(bot, log_embed)
         except Exception as e:
             log.error(f"Lỗi gửi log đánh giá: {e}")
 

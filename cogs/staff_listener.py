@@ -6,6 +6,8 @@ from typing import Any, Dict, List
 
 log = logging.getLogger("StaffListener")
 
+from cogs._staff_log import send_staff_log, build_log_nickname_sync
+
 async def query_db(bot: Any, sql: str, *args) -> list:
     """Tự động quét và tìm biến kết nối Database đang hoạt động trên bot"""
     possible_names = ['db', 'pool', 'database', 'db_pool', 'conn', 'postgres', 'pg', 'connection']
@@ -139,6 +141,14 @@ class StaffListenerCog(commands.Cog):
                 f"[NicknameSync] Đã đồng bộ tên: {before.display_name!r} → {after.display_name!r} "
                 f"cho Staff ID {after.id}"
             )
+
+            # --- Log Audit ---
+            log_embed = build_log_nickname_sync(
+                discord_id=str(after.id),
+                old_name=before.display_name,
+                new_name=after.display_name,
+            )
+            await send_staff_log(self.bot, log_embed)
 
         except Exception as e:
             log.error(f"[NicknameSync] Lỗi khi đồng bộ tên cho {after.id}: {e}")

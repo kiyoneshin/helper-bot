@@ -7,6 +7,8 @@ import asyncio
 
 log = logging.getLogger("StaffEdit")
 
+from cogs._staff_log import send_staff_log, build_log_edit_info, build_log_edit_tags, build_log_edit_photos
+
 # =====================================================================
 # HÀM TỰ ĐỘNG DÒ TÌM DATABASE
 # =====================================================================
@@ -58,9 +60,14 @@ class EditInfoModal(discord.ui.Modal, title="Chỉnh Sửa Hồ Sơ Staff"):
     async def on_submit(self, interaction: discord.Interaction):
         bot: Any = interaction.client
         target_id = str(interaction.user.id)
-        
-        new_name = self.name_input.value.strip()
-        new_desc = self.desc_input.value.strip()
+
+        # Ghi lại giá trị cũ trước khi ghi đè
+        old_name    = str(self.view.user_data.get('display_name') or '')
+        old_desc    = str(self.view.user_data.get('description') or '')
+        old_contact = str(self.view.user_data.get('contact') or '')
+
+        new_name    = self.name_input.value.strip()
+        new_desc    = self.desc_input.value.strip()
         new_contact = self.contact_input.value.strip()
 
         await query_db(
@@ -76,8 +83,17 @@ class EditInfoModal(discord.ui.Modal, title="Chỉnh Sửa Hồ Sơ Staff"):
         embed = self.view.build_preview_embed()
         if interaction.message:
             await interaction.message.edit(embed=embed, view=self.view)
-            
+
         await interaction.response.send_message("**Đã cập nhật thông tin cá nhân thành công!**", ephemeral=True)
+
+        # --- Log Audit ---
+        log_embed = build_log_edit_info(
+            discord_id=target_id,
+            old_name=old_name, new_name=new_name,
+            old_desc=old_desc, new_desc=new_desc,
+            old_contact=old_contact, new_contact=new_contact,
+        )
+        await send_staff_log(bot, log_embed)
 
 
 class EditTagsModal(discord.ui.Modal, title="Chỉnh Sửa Tags Giới Thiệu"):
@@ -100,7 +116,14 @@ class EditTagsModal(discord.ui.Modal, title="Chỉnh Sửa Tags Giới Thiệu")
     async def on_submit(self, interaction: discord.Interaction):
         bot: Any = interaction.client
         target_id = str(interaction.user.id)
-        
+
+        # Ghi lại tags cũ trước khi ghi đè
+        old_tags: list = list(self.view.user_data.get('tags', []))
+        if isinstance(old_tags, str):
+            import json as _json
+            try: old_tags = _json.loads(old_tags)
+            except Exception: old_tags = []
+
         raw_str = self.tags_input.value.strip()
         new_tags = [t.strip() for t in raw_str.split(",") if t.strip()] if raw_str else []
 
@@ -114,8 +137,16 @@ class EditTagsModal(discord.ui.Modal, title="Chỉnh Sửa Tags Giới Thiệu")
         embed = self.view.build_preview_embed()
         if interaction.message:
             await interaction.message.edit(embed=embed, view=self.view)
-            
+
         await interaction.response.send_message("**Đã cập nhật danh sách Tags thành công!**", ephemeral=True)
+
+        # --- Log Audit ---
+        log_embed = build_log_edit_tags(
+            discord_id=target_id,
+            old_tags=old_tags,
+            new_tags=new_tags,
+        )
+        await send_staff_log(bot, log_embed)
 
 
 # =====================================================================
@@ -226,6 +257,15 @@ class StaffPhotoEditView(discord.ui.View):
         await interaction.response.edit_message(embed=self.build_photo_embed(), view=self)
         await interaction.followup.send("Đã xóa bức ảnh này khỏi Database thành công!", ephemeral=True)
 
+        # --- Log Audit ---
+        log_embed = build_log_edit_photos(
+            discord_id=str(self.author_id),
+            action="delete",
+            count=1,
+            total_after=len(photos),
+        )
+        await send_staff_log(interaction.client, log_embed)
+
     @discord.ui.button(label="Thêm ảnh mới", style=discord.ButtonStyle.success, row=0)
     async def add_photo_btn(self, interaction: discord.Interaction, button: discord.ui.Button):
         await interaction.response.send_message(
@@ -284,6 +324,15 @@ class StaffPhotoEditView(discord.ui.View):
                 await interaction.message.edit(embed=self.build_photo_embed(), view=self)
 
             await interaction.followup.send(f"Đã thêm thành công **{len(new_photos)}** bức ảnh mới vào hồ sơ!", ephemeral=True)
+
+            # --- Log Audit ---
+            log_embed = build_log_edit_photos(
+                discord_id=str(self.author_id),
+                action="add",
+                count=len(new_photos),
+                total_after=len(photos),
+            )
+            await send_staff_log(interaction.client, log_embed)
 
         except asyncio.TimeoutError:
             await interaction.followup.send("**Đã hết thời gian 60 giây!** Bạn chưa gửi ảnh nào, vui lòng bấm nút Thêm ảnh mới để thử lại nhé.", ephemeral=True)

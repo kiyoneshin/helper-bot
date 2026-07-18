@@ -8,6 +8,7 @@ from typing import Optional, Any
 from cogs._staff_db import query_db, extract_id
 from cogs._staff_embeds import get_main_embed
 from cogs._staff_views import MainView, _normalize_votes
+from cogs._staff_log import send_staff_log, build_log_delete
 
 log = logging.getLogger("StaffBot")
 

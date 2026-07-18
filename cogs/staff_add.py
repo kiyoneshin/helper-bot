@@ -6,6 +6,7 @@ import asyncio
 from typing import Any
 
 from cogs._staff_db import query_db
+from cogs._staff_log import send_staff_log, build_log_add
 
 log = logging.getLogger("StaffAdd")
 
@@ -103,6 +104,17 @@ class StaffRegisterModal(discord.ui.Modal, title="Đăng Ký Hồ Sơ Staff"):
                 ephemeral=True,
             )
             return
+
+        # --- Gửi Log Audit vào kênh ẩn ---
+        log_embed = build_log_add(
+            discord_id=discord_id,
+            display_name=display_name,
+            role=self.role_name,
+            description=description,
+            contact=contact,
+            tags=tags,
+        )
+        await send_staff_log(bot, log_embed)
 
         # --- Gửi nút thêm ảnh sau khi lưu thành công ---
         view = AddPhotoAfterRegisterView(bot=bot, author_id=user.id)
