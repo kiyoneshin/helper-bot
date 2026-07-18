@@ -184,7 +184,7 @@ class StaffBackupCog(commands.Cog):
         self.daily_backup.start()
         log.info("StaffBackupCog loaded — daily backup task đã khởi động.")
 
-    def cog_unload(self):
+    async def cog_unload(self):
         self.daily_backup.cancel()
 
     # ──────────────────────────────────────────────────────────────────
