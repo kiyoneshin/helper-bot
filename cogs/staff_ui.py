@@ -207,38 +207,38 @@ class HelpView(discord.ui.View):
 
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
         if interaction.user.id != self.author_id:
-            await interaction.response.send_message("Bạn không thể sử dụng bảng help của người khác!", ephemeral=True)
+            await interaction.response.send_message("❌ Bạn không thể sử dụng bảng hướng dẫn của người khác!", ephemeral=True)
             return False
         return True
 
-    @discord.ui.button(label="Thành Viên", emoji="👥", style=discord.ButtonStyle.secondary, row=0)
+    @discord.ui.button(label="Thành Viên", emoji="👥", style=discord.ButtonStyle.secondary)
     async def tab_member(self, interaction: discord.Interaction, button: discord.ui.Button):
         embed = discord.Embed(
-            title="👥 Lệnh Dành Cho Mọi Thành Viên",
-            description="Các câu lệnh cơ bản mà bất kỳ ai trong server cũng có thể sử dụng:",
+            title="👥 TAB THÀNH VIÊN",
+            description="Mọi người đều dùng:",
             color=0xffb6c1
         )
         embed.add_field(
-            name="Danh sách lệnh",
+            name="​",
             value=(
                 "• `y!menu` | `y!staff` | `y!bqt` ── Xem hồ sơ Ban Quản Trị.\n"
                 "• `y!top` | `y!lb` | `y!bxh` ── Xem Bảng Xếp Hạng Staff.\n"
                 "• `y!feedback <@user/ID>` | `y!fb` ── Xem danh sách bài đánh giá Staff.\n"
-                "• `y!myreviews` | `y!myfb` ── Xem lịch sử các bài review bạn đã viết."
+                "• `y!myreviews` | `y!myrv` | `y!myfeedbacks`| `y!myfb` ── Xem lịch sử các bài review bạn đã viết."
             ),
             inline=False
         )
         await interaction.response.edit_message(embed=embed, view=self)
 
-    @discord.ui.button(label="Nhân Sự BQT", emoji="🌸", style=discord.ButtonStyle.primary, row=0)
+    @discord.ui.button(label="Nhân Sự BQT", emoji="🌸", style=discord.ButtonStyle.primary)
     async def tab_staff(self, interaction: discord.Interaction, button: discord.ui.Button):
         embed = discord.Embed(
-            title="🌸 Lệnh Dành Cho Nhân Sự BQT",
-            description="Các câu lệnh quản lý hồ sơ cá nhân dành riêng cho Ban Quản Trị:",
+            title="🌸 TAB NHÂN SỰ BQT",
+            description="Dành riêng cho Staff:",
             color=0xffb6c1
         )
         embed.add_field(
-            name="Danh sách lệnh",
+            name="​",
             value=(
                 "• `y!add` ── Đăng ký hồ sơ Staff mới & kích hoạt tải ảnh lên.\n"
                 "• `y!set` | `y!editprofile` ── Chỉnh sửa thông tin cá nhân/quản lý ảnh."
@@ -247,15 +247,15 @@ class HelpView(discord.ui.View):
         )
         await interaction.response.edit_message(embed=embed, view=self)
 
-    @discord.ui.button(label="Quản Trị Viên", emoji="🛡️", style=discord.ButtonStyle.danger, row=1)
+    @discord.ui.button(label="Quản Trị Viên", emoji="🛡️", style=discord.ButtonStyle.danger)
     async def tab_admin(self, interaction: discord.Interaction, button: discord.ui.Button):
         embed = discord.Embed(
-            title="🛡️ Lệnh Dành Cho Quản Trị Viên",
-            description="Các câu lệnh quản trị hệ thống (Chỉ Owner/Admin có quyền dùng):",
+            title="🛡️ TAB QUẢN TRỊ VIÊN",
+            description="Admin / Owner:",
             color=0xffb6c1
         )
         embed.add_field(
-            name="Danh sách lệnh",
+            name="​",
             value=(
                 "• `y!checkdb` ── Xem nhanh toàn bộ dữ liệu đang lưu trong Database.\n"
                 "• `y!renewdb` ── Đồng bộ, làm sạch DB và cập nhật biệt danh.\n"
@@ -265,20 +265,20 @@ class HelpView(discord.ui.View):
         )
         await interaction.response.edit_message(embed=embed, view=self)
 
-    @discord.ui.button(label="Kiểm Thử & Debug", emoji="🧪", style=discord.ButtonStyle.secondary, row=1)
+    @discord.ui.button(label="Kiểm Thử & Debug", emoji="🧪", style=discord.ButtonStyle.secondary)
     async def tab_tester(self, interaction: discord.Interaction, button: discord.ui.Button):
         embed = discord.Embed(
-            title="🧪 Lệnh Kiểm Thử & Debug",
-            description="Dành cho Tester kiểm tra chức năng hệ thống:",
+            title="🧪 TAB KIỂM THỬ",
+            description="Tester Debug:",
             color=0xffb6c1
         )
         embed.add_field(
-            name="Danh sách lệnh",
+            name="​",
             value=(
-                "• `y!test_reply` ── Kích hoạt lời nhắc vote trên chat.\n"
-                "• `y!test_vote` ── Bơm điểm vote ảo để test.\n"
-                "• `y!test_welcome` ── Test module chào mừng tân binh.\n"
-                "• `y!test_reset` ── Xóa các lượt vote ảo để trả về điểm gốc."
+                "• `y!test_reply` ── Test nhắc nhở vote.\n"
+                "• `y!test_vote` ── Bơm điểm vote ảo.\n"
+                "• `y!test_welcome` ── Test module tân binh.\n"
+                "• `y!test_reset` ── Xóa các vote ảo."
             ),
             inline=False
         )
@@ -294,6 +294,7 @@ class HelpView(discord.ui.View):
         )
         view = HelpView(author_id=ctx.author.id)
         view.message = await ctx.send(embed=embed, view=view)
+
 
     # ──────────────────────────────────────────────────────────────────
     # LỆNH ĐỒNG BỘ VÀ LÀM SẠCH DATABASE: y!renewdb
