@@ -5,8 +5,8 @@ import json
 import asyncio
 from typing import Any
 
-from cogs._staff_db import query_db
-from cogs._staff_log import send_staff_log, build_log_add
+from cogs.common.db import query_db
+from cogs.common.logs import send_staff_log, build_log_add
 
 log = logging.getLogger("StaffAdd")
 

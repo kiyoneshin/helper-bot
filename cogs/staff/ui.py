@@ -5,11 +5,11 @@ import asyncio
 import json
 from typing import Optional, Any
 
-from cogs._staff_db import query_db, extract_id
-from cogs._staff_embeds import get_main_embed
-from cogs._staff_views import MainView, _normalize_votes
-from cogs._staff_log import send_staff_log, build_log_delete
-from cogs._staff_embeds import get_main_embed, get_rules_embed
+from cogs.common.db import query_db, extract_id
+from cogs.common.embeds import get_main_embed
+from cogs.common.views import MainView, _normalize_votes
+from cogs.common.logs import send_staff_log, build_log_delete
+from cogs.common.embeds import get_main_embed, get_rules_embed
 
 log = logging.getLogger("StaffBot")
 
@@ -134,7 +134,7 @@ class StaffUICog(commands.Cog):
         """Lệnh hiển thị Bảng Nội Quy Server Angelic"""
         await ctx.send(embed=get_rules_embed())
         log.info(f"📜 {ctx.author.display_name} vừa xem bảng điều lệ server.")
-        
+
     @commands.command(name="checkdb")
     async def check_db(self, ctx: commands.Context):
         """Lệnh kiểm tra toàn bộ danh sách đang có trong Database"""

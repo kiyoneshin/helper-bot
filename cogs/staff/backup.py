@@ -16,7 +16,7 @@ import json
 from datetime import datetime, timedelta, timezone, time as dt_time
 from typing import Any
 
-from cogs._staff_db import query_db
+from cogs.common.db import query_db
 
 log = logging.getLogger("StaffBackup")
 

@@ -2,9 +2,9 @@ import discord
 import json
 import logging
 from typing import Optional, Any
-from cogs._staff_db import query_db
-from cogs._staff_embeds import get_main_embed, build_embed
-from cogs._staff_log import send_staff_log, build_log_vote
+from cogs.common.db import query_db
+from cogs.common.embeds import get_main_embed, build_embed
+from cogs.common.logs import send_staff_log, build_log_vote
 
 log = logging.getLogger("StaffViews")
 

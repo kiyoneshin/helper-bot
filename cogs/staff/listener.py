@@ -6,7 +6,7 @@ from typing import Any, Dict, List
 
 log = logging.getLogger("StaffListener")
 
-from cogs._staff_log import send_staff_log, build_log_nickname_sync
+from cogs.common.logs import send_staff_log, build_log_nickname_sync
 
 async def query_db(bot: Any, sql: str, *args) -> list:
     """Tự động quét và tìm biến kết nối Database đang hoạt động trên bot"""

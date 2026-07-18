@@ -7,7 +7,7 @@ import asyncio
 
 log = logging.getLogger("StaffEdit")
 
-from cogs._staff_log import send_staff_log, build_log_edit_info, build_log_edit_tags, build_log_edit_photos
+from cogs.common.logs import send_staff_log, build_log_edit_info, build_log_edit_tags, build_log_edit_photos
 
 # =====================================================================
 # HÀM TỰ ĐỘNG DÒ TÌM DATABASE

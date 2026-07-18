@@ -3,7 +3,7 @@ from discord.ext import commands
 import logging
 import json
 from typing import Optional, Any, List
-from cogs._staff_db import query_db, extract_id
+from cogs.common.db import query_db, extract_id
 
 log = logging.getLogger("StaffTest")
 
