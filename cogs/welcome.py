@@ -30,8 +30,8 @@ class WelcomeCog(commands.Cog):
                 selected_message = random.choice(welcome_messages)
                 
                 await channel.send(selected_message)
-                troll_message = f"# 🌿 Một cộng đồng lành mạnh, văn minh và thân thiện. Nói không với toxic, chửi bới hay công kích cá nhân. Tại đây mọi người đều được tôn trọng, thoải mái trò chuyện, kết bạn và cùng nhau tạo nên một không gian tích cực. Chào mừng bạn đến với server! 💚🩷💚❤️💛🩶🤎🩵❣️💙❤️‍🔥💖💝❤️‍🔥❤️‍🩹💖🌵🍀🍀🌱🌿🌴🪵🌵☘️🍃🎄🌸🌷🥀🪷🌹🌻🌺"
-                await channel.send(troll_message)
+                # troll_message = f"# 🌿 Một cộng đồng lành mạnh, văn minh và thân thiện. Nói không với toxic, chửi bới hay công kích cá nhân. Tại đây mọi người đều được tôn trọng, thoải mái trò chuyện, kết bạn và cùng nhau tạo nên một không gian tích cực. Chào mừng bạn đến với server! 💚🩷💚❤️💛🩶🤎🩵❣️💙❤️‍🔥💖💝❤️‍🔥❤️‍🩹💖🌵🍀🍀🌱🌿🌴🪵🌵☘️🍃🎄🌸🌷🥀🪷🌹🌻🌺"
+                # await channel.send(troll_message)
                 log.info(f"Đã gửi text chào mừng tới {member.display_name}")
                 
             except Exception as e:
