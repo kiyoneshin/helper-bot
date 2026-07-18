@@ -13,6 +13,108 @@ from cogs._staff_log import send_staff_log, build_log_delete
 log = logging.getLogger("StaffBot")
 
 
+# ──────────────────────────────────────────────────────────────────
+# CLASS UI VIEW (Đưa lên trên để Cog bên dưới có thể gọi)
+# ──────────────────────────────────────────────────────────────────
+class HelpView(discord.ui.View):
+    def __init__(self, author_id: int):
+        super().__init__(timeout=180)
+        self.author_id = author_id
+        self.message: Optional[discord.Message] = None
+
+    async def on_timeout(self):
+        for item in self.children:
+            if isinstance(item, discord.ui.Button):
+                item.disabled = True
+        if self.message:
+            try:
+                await self.message.edit(view=self)
+            except Exception:
+                pass
+
+    async def interaction_check(self, interaction: discord.Interaction) -> bool:
+        if interaction.user.id != self.author_id:
+            await interaction.response.send_message("❌ Bạn không thể sử dụng bảng hướng dẫn của người khác!", ephemeral=True)
+            return False
+        return True
+
+    @discord.ui.button(label="Thành Viên", emoji="👥", style=discord.ButtonStyle.secondary)
+    async def tab_member(self, interaction: discord.Interaction, button: discord.ui.Button):
+        embed = discord.Embed(
+            title="👥 TAB THÀNH VIÊN",
+            description="Mọi người đều dùng:",
+            color=0xffb6c1
+        )
+        embed.add_field(
+            name="​",
+            value=(
+                "• `y!menu` | `y!staff` | `y!bqt` ── Xem hồ sơ Ban Quản Trị.\n"
+                "• `y!top` | `y!lb` | `y!bxh` ── Xem Bảng Xếp Hạng Staff.\n"
+                "• `y!feedback <@user/ID>` | `y!fb` ── Xem danh sách bài đánh giá Staff.\n"
+                "• `y!myreviews` | `y!myrv` | `y!myfeedbacks`| `y!myfb` ── Xem lịch sử các bài review bạn đã viết."
+            ),
+            inline=False
+        )
+        await interaction.response.edit_message(embed=embed, view=self)
+
+    @discord.ui.button(label="Nhân Sự BQT", emoji="🌸", style=discord.ButtonStyle.primary)
+    async def tab_staff(self, interaction: discord.Interaction, button: discord.ui.Button):
+        embed = discord.Embed(
+            title="🌸 TAB NHÂN SỰ BQT",
+            description="Dành riêng cho Staff:",
+            color=0xffb6c1
+        )
+        embed.add_field(
+            name="​",
+            value=(
+                "• `y!add` ── Đăng ký hồ sơ Staff mới & kích hoạt tải ảnh lên.\n"
+                "• `y!set` | `y!editprofile` ── Chỉnh sửa thông tin cá nhân/quản lý ảnh."
+            ),
+            inline=False
+        )
+        await interaction.response.edit_message(embed=embed, view=self)
+
+    @discord.ui.button(label="Quản Trị Viên", emoji="🛡️", style=discord.ButtonStyle.danger)
+    async def tab_admin(self, interaction: discord.Interaction, button: discord.ui.Button):
+        embed = discord.Embed(
+            title="🛡️ TAB QUẢN TRỊ VIÊN",
+            description="Admin / Owner:",
+            color=0xffb6c1
+        )
+        embed.add_field(
+            name="​",
+            value=(
+                "• `y!checkdb` ── Xem nhanh toàn bộ dữ liệu đang lưu trong Database.\n"
+                "• `y!renewdb` ── Đồng bộ, làm sạch DB và cập nhật biệt danh.\n"
+                "• `y!backup` ── Kích hoạt xuất file sao lưu .sql thủ công ngay lập tức."
+            ),
+            inline=False
+        )
+        await interaction.response.edit_message(embed=embed, view=self)
+
+    @discord.ui.button(label="Kiểm Thử & Debug", emoji="🧪", style=discord.ButtonStyle.secondary)
+    async def tab_tester(self, interaction: discord.Interaction, button: discord.ui.Button):
+        embed = discord.Embed(
+            title="🧪 TAB KIỂM THỬ",
+            description="Tester Debug:",
+            color=0xffb6c1
+        )
+        embed.add_field(
+            name="​",
+            value=(
+                "• `y!test_reply` ── Test nhắc nhở vote.\n"
+                "• `y!test_vote` ── Bơm điểm vote ảo.\n"
+                "• `y!test_welcome` ── Test module tân binh.\n"
+                "• `y!test_reset` ── Xóa các vote ảo."
+            ),
+            inline=False
+        )
+        await interaction.response.edit_message(embed=embed, view=self)
+
+
+# ──────────────────────────────────────────────────────────────────
+# CLASS COG CHÍNH (Chứa toàn bộ lệnh commands của Bot)
+# ──────────────────────────────────────────────────────────────────
 class StaffUICog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -35,14 +137,12 @@ class StaffUICog(commands.Cog):
                 await ctx.send("📭 **Database profiles đang TRỐNG!**\n➡️ Hãy lên Railway kiểm tra lại xem dữ liệu bạn nhập đã được ấn phím **Enter** để xác nhận lưu chưa nhé!")
                 return
 
-            # --- Sắp xếp theo phân cấp chức vụ: owner → admin → recep ---
             role_order = {'owner': 0, 'admin': 1, 'recep': 2}
             sorted_records = sorted(
                 records,
                 key=lambda x: role_order.get(x['role'].lower().strip(), 99)
             )
 
-            # --- Render bảng monospace với căn lề ljust ---
             COL_ID   = 22
             COL_ROLE = 8
             COL_NAME = 25
@@ -189,101 +289,6 @@ class StaffUICog(commands.Cog):
             log.error(f"Lỗi lệnh myreviews: {e}")
             await ctx.send(f"Lỗi truy vấn Database: {e}")
 
-class HelpView(discord.ui.View):
-    def __init__(self, author_id: int):
-        super().__init__(timeout=180)
-        self.author_id = author_id
-        self.message: Optional[discord.Message] = None
-
-    async def on_timeout(self):
-        for item in self.children:
-            if isinstance(item, discord.ui.Button):
-                item.disabled = True
-        if self.message:
-            try:
-                await self.message.edit(view=self)
-            except Exception:
-                pass
-
-    async def interaction_check(self, interaction: discord.Interaction) -> bool:
-        if interaction.user.id != self.author_id:
-            await interaction.response.send_message("❌ Bạn không thể sử dụng bảng hướng dẫn của người khác!", ephemeral=True)
-            return False
-        return True
-
-    @discord.ui.button(label="Thành Viên", emoji="👥", style=discord.ButtonStyle.secondary)
-    async def tab_member(self, interaction: discord.Interaction, button: discord.ui.Button):
-        embed = discord.Embed(
-            title="👥 TAB THÀNH VIÊN",
-            description="Mọi người đều dùng:",
-            color=0xffb6c1
-        )
-        embed.add_field(
-            name="​",
-            value=(
-                "• `y!menu` | `y!staff` | `y!bqt` ── Xem hồ sơ Ban Quản Trị.\n"
-                "• `y!top` | `y!lb` | `y!bxh` ── Xem Bảng Xếp Hạng Staff.\n"
-                "• `y!feedback <@user/ID>` | `y!fb` ── Xem danh sách bài đánh giá Staff.\n"
-                "• `y!myreviews` | `y!myrv` | `y!myfeedbacks`| `y!myfb` ── Xem lịch sử các bài review bạn đã viết."
-            ),
-            inline=False
-        )
-        await interaction.response.edit_message(embed=embed, view=self)
-
-    @discord.ui.button(label="Nhân Sự BQT", emoji="🌸", style=discord.ButtonStyle.primary)
-    async def tab_staff(self, interaction: discord.Interaction, button: discord.ui.Button):
-        embed = discord.Embed(
-            title="🌸 TAB NHÂN SỰ BQT",
-            description="Dành riêng cho Staff:",
-            color=0xffb6c1
-        )
-        embed.add_field(
-            name="​",
-            value=(
-                "• `y!add` ── Đăng ký hồ sơ Staff mới & kích hoạt tải ảnh lên.\n"
-                "• `y!set` | `y!editprofile` ── Chỉnh sửa thông tin cá nhân/quản lý ảnh."
-            ),
-            inline=False
-        )
-        await interaction.response.edit_message(embed=embed, view=self)
-
-    @discord.ui.button(label="Quản Trị Viên", emoji="🛡️", style=discord.ButtonStyle.danger)
-    async def tab_admin(self, interaction: discord.Interaction, button: discord.ui.Button):
-        embed = discord.Embed(
-            title="🛡️ TAB QUẢN TRỊ VIÊN",
-            description="Admin / Owner:",
-            color=0xffb6c1
-        )
-        embed.add_field(
-            name="​",
-            value=(
-                "• `y!checkdb` ── Xem nhanh toàn bộ dữ liệu đang lưu trong Database.\n"
-                "• `y!renewdb` ── Đồng bộ, làm sạch DB và cập nhật biệt danh.\n"
-                "• `y!backup` ── Kích hoạt xuất file sao lưu .sql thủ công ngay lập tức."
-            ),
-            inline=False
-        )
-        await interaction.response.edit_message(embed=embed, view=self)
-
-    @discord.ui.button(label="Kiểm Thử & Debug", emoji="🧪", style=discord.ButtonStyle.secondary)
-    async def tab_tester(self, interaction: discord.Interaction, button: discord.ui.Button):
-        embed = discord.Embed(
-            title="🧪 TAB KIỂM THỬ",
-            description="Tester Debug:",
-            color=0xffb6c1
-        )
-        embed.add_field(
-            name="​",
-            value=(
-                "• `y!test_reply` ── Test nhắc nhở vote.\n"
-                "• `y!test_vote` ── Bơm điểm vote ảo.\n"
-                "• `y!test_welcome` ── Test module tân binh.\n"
-                "• `y!test_reset` ── Xóa các vote ảo."
-            ),
-            inline=False
-        )
-        await interaction.response.edit_message(embed=embed, view=self)
-
     @commands.command(name="help", aliases=["huongdan"])
     async def help_cmd(self, ctx: commands.Context):
         """Lệnh hiển thị danh sách toàn bộ các câu lệnh của Bot"""
@@ -295,11 +300,9 @@ class HelpView(discord.ui.View):
         view = HelpView(author_id=ctx.author.id)
         view.message = await ctx.send(embed=embed, view=view)
 
-
     # ──────────────────────────────────────────────────────────────────
     # LỆNH ĐỒNG BỘ VÀ LÀM SẠCH DATABASE: y!renewdb
     # ──────────────────────────────────────────────────────────────────
-
     @commands.command(name="renewdb", aliases=["syncdb", "refreshdb"])
     @commands.has_permissions(administrator=True)
     async def renewdb_cmd(self, ctx: commands.Context):
@@ -333,20 +336,17 @@ class HelpView(discord.ui.View):
             await progress_msg.edit(content="Database profiles đang trống, không có gì để đồng bộ!")
             return
 
-        # ── Bộ đếm thống kê ──────────────────────────────────────────
-        count_name_updated  = 0   # Hồ sơ được cập nhật biệt danh
-        count_left_server   = 0   # Hồ sơ đã rời server
-        count_data_fixed    = 0   # Hồ sơ có lỗi dữ liệu được sửa
+        count_name_updated  = 0   
+        count_left_server   = 0   
+        count_data_fixed    = 0   
         left_server_names: list[str] = []
         errors_in_task: list[str] = []
 
-        # ── Xử lý từng hồ sơ ─────────────────────────────────────────
         for record in records:
             discord_id_str: str = str(record["discord_id"])
             old_name: str = str(record.get("display_name") or "Unnamed")
-            updates: dict[str, Any] = {}  # field → giá trị mới cần cập nhật
+            updates: dict[str, Any] = {}  
 
-            # ── 1. Kiểm tra tồn tại trên Server ──────────────────────
             member = guild.get_member(int(discord_id_str))
             if member is None:
                 try:
@@ -358,15 +358,12 @@ class HelpView(discord.ui.View):
                     member = None
 
             if member is None:
-                # Thành viên không còn trong server
                 count_left_server += 1
                 left_server_names.append(old_name)
                 log.info(f"renewdb: {old_name} ({discord_id_str}) đã rời server.")
-                # Gắn nhãn display_name nếu chưa có
                 if not old_name.startswith("[Đã rời Server]"):
                     updates["display_name"] = f"[Đã rời Server] {old_name}"
             else:
-                # ── 2. Đồng bộ biệt danh (display_name) ──────────────
                 current_nick = member.display_name
                 if current_nick != old_name and not old_name.startswith("[Đã rời Server]"):
                     updates["display_name"] = current_nick
@@ -376,21 +373,18 @@ class HelpView(discord.ui.View):
                         f"'{old_name}' → '{current_nick}'"
                     )
 
-            # ── 3. Kiểm tra & sửa lỗi cấu trúc dữ liệu ─────────────
             data_was_fixed = False
 
-            # rating: phải là số hợp lệ trong [0, 5]
             raw_rating = record.get("rating")
             try:
                 r = float(raw_rating)
-                if r != r:  # NaN check
+                if r != r:  
                     raise ValueError("NaN")
             except (TypeError, ValueError):
                 updates["rating"] = 0.0
                 data_was_fixed = True
                 log.warning(f"renewdb: Reset rating NULL/NaN → 0.0 cho {discord_id_str}")
 
-            # weekly_replies: phải là số nguyên không âm
             raw_replies = record.get("weekly_replies")
             try:
                 rr = int(raw_replies)
@@ -401,7 +395,6 @@ class HelpView(discord.ui.View):
                 data_was_fixed = True
                 log.warning(f"renewdb: Reset weekly_replies NULL/invalid → 0 cho {discord_id_str}")
 
-            # votes: phải là dict hợp lệ
             raw_votes = record.get("votes")
             try:
                 if raw_votes is None:
@@ -420,7 +413,6 @@ class HelpView(discord.ui.View):
             if data_was_fixed:
                 count_data_fixed += 1
 
-            # ── 4. Ghi cập nhật vào DB nếu có thay đổi ───────────────
             if not updates:
                 continue
 
@@ -441,19 +433,16 @@ class HelpView(discord.ui.View):
                 errors_in_task.append(err_msg)
                 log.error(f"renewdb: Lỗi UPDATE {err_msg}", exc_info=True)
 
-            # Nhường CPU sau mỗi 10 bản ghi
             await asyncio.sleep(0)
 
-        # ── Xoá tin nhắn chờ ─────────────────────────────────────────
         try:
             await progress_msg.delete()
         except Exception:
             pass
 
-        # ── Xây dựng Embed báo cáo ───────────────────────────────────
         embed = discord.Embed(
             title="Báo Cáo Đồng Bộ Database (renewdb)",
-            color=0x57f287,  # Discord green
+            color=0x57f287,  
         )
         embed.add_field(
             name="Kết Quả Tổng Hợp",
@@ -504,4 +493,3 @@ class HelpView(discord.ui.View):
 
 async def setup(bot):
     await bot.add_cog(StaffUICog(bot))
-
