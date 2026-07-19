@@ -55,37 +55,9 @@ class StaffBot(commands.Bot):
         # Khởi tạo kết nối PostgreSQL
         self.db_pool = await asyncpg.create_pool(DATABASE_URL)
         if self.db_pool:
-            async with self.db_pool.acquire() as conn:
-                await conn.execute('''
-                    CREATE TABLE IF NOT EXISTS profiles (
-                        discord_id VARCHAR PRIMARY KEY,
-                        role VARCHAR, 
-                        display_name VARCHAR,
-                        description TEXT,
-                        contact VARCHAR,
-                        tags JSONB DEFAULT '[]'::jsonb,
-                        photos JSONB DEFAULT '[]'::jsonb,
-                        votes JSONB DEFAULT '{}'::jsonb,
-                        rating NUMERIC DEFAULT 0.0,
-                        weekly_replies INT DEFAULT 0
-                    )
-                ''')
-                await conn.execute('''
-                    ALTER TABLE profiles
-                    ADD COLUMN IF NOT EXISTS weekly_replies INT DEFAULT 0
-                ''')
-                await conn.execute('''
-                    CREATE TABLE IF NOT EXISTS staff_message_logs (
-                        id SERIAL PRIMARY KEY,
-                        discord_id VARCHAR NOT NULL,
-                        sent_at TIMESTAMP WITH TIME ZONE DEFAULT (CURRENT_TIMESTAMP AT TIME ZONE 'UTC')
-                    )
-                ''')
-                await conn.execute('''
-                    CREATE INDEX IF NOT EXISTS idx_msg_logs_discord_sent
-                    ON staff_message_logs (discord_id, sent_at)
-                ''')
-                log.info("Database PostgreSQL đã sẵn sàng.")
+            log.info("Kết nối PostgreSQL thành công!")
+            from cogs.common.db import init_all_tables
+            await init_all_tables(self)
         else:
             log.error("Không thể khởi tạo db_pool!")
 
