@@ -33,6 +33,9 @@ class EventCoreCog(commands.Cog):
 
     def __init__(self, bot: commands.Bot):
         self.bot = bot
+        self.is_minigame_running = False
+        self.last_minigame_end = None
+        self.msg_count_after_cooldown = 0
         self.voice_scanner.start()
         log.info("🌸 EventCoreCog loaded — Task quét Voice 15p đã khởi động.")
 
@@ -104,7 +107,23 @@ class EventCoreCog(commands.Cog):
         # =================================================================
         # [HOOK MINIGAME ĐÁNH ÚP]: Kiểm tra tỉ lệ 1% nổ minigame tại đây
         # =================================================================
-        # TODO: Sẽ tích hợp gọi event_minigames ở Giai đoạn 3 của lộ trình.
+        if self.is_minigame_running:
+            return
+
+        if self.last_minigame_end is not None:
+            if (now_utc - self.last_minigame_end).total_seconds() < 15 * 60:
+                return
+
+        self.msg_count_after_cooldown += 1
+
+        if self.msg_count_after_cooldown >= 30:
+            import random
+            if random.random() < 0.01:
+                self.is_minigame_running = True
+                self.msg_count_after_cooldown = 0
+                
+                from cogs.events.minigames.quick_grab import start_quick_grab
+                self.bot.loop.create_task(start_quick_grab(self.bot, message.channel, self))
 
     # =====================================================================
     # 2. TASK QUÉT PHÒNG VOICE MỖI 15 PHÚT (VOICE AFK GUARD)
