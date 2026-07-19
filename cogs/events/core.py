@@ -122,12 +122,16 @@ class EventCoreCog(commands.Cog):
                 self.is_minigame_running = True
                 self.msg_count_after_cooldown = 0
                 import random
-                if random.random() < 0.5:
+                game_choice = random.choice(["quick_grab", "fast_hand", "dice_lobby"])
+                if game_choice == "quick_grab":
                     from cogs.events.minigames.quick_grab import start_quick_grab
                     self.bot.loop.create_task(start_quick_grab(self.bot, message.channel, self))
-                else:
+                elif game_choice == "fast_hand":
                     from cogs.events.minigames.fast_hand import start_fast_words_game
                     self.bot.loop.create_task(start_fast_words_game(self.bot, message.channel, self))
+                else:
+                    from cogs.events.minigames.dice_lobby import start_dice_lobby_game
+                    self.bot.loop.create_task(start_dice_lobby_game(self.bot, message.channel, self))
 
     # =====================================================================
     # 2. TASK QUÉT PHÒNG VOICE MỖI 15 PHÚT (VOICE AFK GUARD)
