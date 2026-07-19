@@ -4,7 +4,8 @@ import logging
 import json
 from typing import Optional, Any
 
-from cogs.common.db import get_or_create_event_profile, deduct_event_points, execute_db, fetchval_db, fetchrow_db
+# Bổ sung thêm query_db vào import để dùng cho lệnh Bảng Xếp Hạng (y!etop)
+from cogs.common.db import get_or_create_event_profile, deduct_event_points, execute_db, fetchval_db, fetchrow_db, query_db
 
 log = logging.getLogger("EventShop")
 
@@ -67,7 +68,7 @@ class ShopSelect(discord.ui.Select):
         success = await deduct_event_points(self.bot, uid, price)
         if not success:
             await interaction.response.send_message(
-                "Số dư không đủ!",
+                "❌ Số dư của bạn không đủ để đổi vật phẩm này!",
                 ephemeral=True
             )
             return
@@ -83,7 +84,7 @@ class ShopSelect(discord.ui.Select):
                 # Hoàn tiền
                 await execute_db(self.bot, "UPDATE event_profiles SET points = points + $2 WHERE discord_id = $1", uid, price)
                 await interaction.response.send_message(
-                    "Rất tiếc, vật phẩm này đã đạt giới hạn! Số điểm đã được hoàn lại.",
+                    "❌ Rất tiếc, vật phẩm này đã đạt giới hạn 5 người đổi! Số điểm đã được hoàn lại vào ví của bạn.",
                     ephemeral=True
                 )
                 return
@@ -93,7 +94,6 @@ class ShopSelect(discord.ui.Select):
         inv = {}
         if row and row['inventory']:
             try:
-                # Xử lý trường hợp db trả về chuỗi JSON hoặc dictionary
                 inv = json.loads(row['inventory']) if isinstance(row['inventory'], str) else row['inventory']
             except Exception as e:
                 log.error(f"Lỗi parse inventory cho {uid}: {e}")
@@ -117,11 +117,11 @@ class ShopSelect(discord.ui.Select):
             embed.description = f"Bạn đã đổi thành công **{name}**!\nYêu cầu của bạn đã được gửi đến Ban Quản Trị."
             await interaction.response.send_message(embed=embed, ephemeral=True)
             
-            # Gửi thông báo public để Admin biết
-            if interaction.channel:
+            # Sửa lỗi Pylance: Dùng isinstance để chứng minh kênh có hỗ trợ gửi tin nhắn
+            if isinstance(interaction.channel, discord.abc.Messageable):
                 await interaction.channel.send(
-                    f"Chúc mừng <@{uid}> vừa đổi thành công **{name}**!\n"
-                    f"Hãy chờ Admin liên hệ và trao giải nhé! 👑"
+                    f"👑 Chúc mừng <@{uid}> vừa đổi thành công **{name}**!\n"
+                    f"Hãy chờ Admin liên hệ và trao giải nhé!"
                 )
         else:
             embed.description = f"Bạn đã đổi thành công **{name}**!\nVật phẩm đã được thêm vào túi đồ (inventory) của bạn."
@@ -146,8 +146,10 @@ class ShopView(discord.ui.View):
         return True
 
     async def on_timeout(self):
+        # Sửa lỗi Pylance: Chỉ disable nếu item là Button hoặc Select (những class có thuộc tính disabled)
         for item in self.children:
-            item.disabled = True
+            if isinstance(item, (discord.ui.Button, discord.ui.Select)):
+                item.disabled = True
         if self.message:
             try:
                 await self.message.edit(view=self)
@@ -207,9 +209,14 @@ class EventShopCog(commands.Cog):
     @commands.hybrid_command(name="shop", aliases=["cuahang", "store"])
     async def shop_cmd(self, ctx: commands.Context):
         """Mở cửa hàng đổi điểm sự kiện lấy quà"""
+        uid = str(ctx.author.id)
+        profile = await get_or_create_event_profile(self.bot, uid)
+        points = profile.get("points", 0) if profile else 0
+
         embed = discord.Embed(
             title="🛒 Cửa Hàng Sự Kiện Angelic",
             description=(
+                f"🪙 **Số dư hiện tại của bạn:** `{points:,}` điểm\n\n"
                 "Chào mừng bạn đến với Cửa Hàng Sự Kiện!\n"
                 "Hãy chọn một vật phẩm từ menu thả xuống bên dưới để đổi quà.\n\n"
                 "**Bảng Giá:**\n"
@@ -224,6 +231,54 @@ class EventShopCog(commands.Cog):
         
         view = ShopView(author_id=ctx.author.id, bot=self.bot)
         view.message = await ctx.send(embed=embed, view=view)
+
+    # =====================================================================
+    # LỆNH ĐUA TOP: Y!ETOP / Y!EVTOP / Y!EVENTOP (MỚI THÊM)
+    # =====================================================================
+    @commands.hybrid_command(name="etop", aliases=["evtop", "eventtop", "eventop"])
+    async def etop_cmd(self, ctx: commands.Context):
+        """Xem Bảng Xếp Hạng Đua Top Điểm Sự Kiện"""
+        # Sắp xếp theo total_earned (tổng điểm kiếm được) để đảm bảo công bằng cho người đã đổi quà
+        sql = """
+            SELECT discord_id, total_earned, points 
+            FROM event_profiles 
+            WHERE total_earned > 0 
+            ORDER BY total_earned DESC 
+            LIMIT 10;
+        """
+        rows = await query_db(self.bot, sql)
+
+        if not rows:
+            await ctx.send("📊 Bảng xếp hạng sự kiện hiện đang trống! Hãy là người đầu tiên chat để lấy điểm nhé.")
+            return
+
+        embed = discord.Embed(
+            title="🏆 Bảng Xếp Hạng Sự Kiện Angelic ໒꒱",
+            color=0xffb6c1
+        )
+
+        medals = ["🥇", "🥈", "🥉"]
+        leaderboard_text = ""
+
+        for idx, row in enumerate(rows):
+            rank_icon = medals[idx] if idx < 3 else f"**#{idx + 1}.**"
+            user_id = row["discord_id"]
+            total_pts = row["total_earned"]
+            current_pts = row["points"]
+
+            leaderboard_text += (
+                f"{rank_icon} <@{user_id}>\n"
+                f"└ 🏆 Tổng cày: **`{total_pts:,}`** điểm *(Dư: `{current_pts:,}`)*\n\n"
+            )
+
+        embed.description = (
+            "Vinh danh Top 10 chiến thần tích lũy nhiều điểm nhất trong sự kiện:\n\n"
+            f"{leaderboard_text}"
+        )
+        embed.set_thumbnail(url=ctx.guild.icon.url if ctx.guild and ctx.guild.icon else None)
+        embed.set_footer(text="Bảng xếp hạng dựa trên tổng điểm cày được (không bị trừ khi mua shop) 🌸")
+
+        await ctx.send(embed=embed)
 
 
 async def setup(bot):
