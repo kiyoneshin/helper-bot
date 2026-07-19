@@ -122,20 +122,20 @@ class StaffUICog(commands.Cog):
         if self.bot.get_command("help"):
             self.bot.remove_command("help")
 
-    @commands.command(name="menu", aliases=["staff", "bqt"])
+    @commands.hybrid_command(name="menu", aliases=["staff", "bqt"], description="Mở bảng menu Ban Quản Trị Angelic ໒꒱")
     async def send_menu(self, ctx: commands.Context):
         """Lệnh hiển thị Menu giới thiệu Ban Quản Trị Angelic"""
         view = MainView(author_id=ctx.author.id)
         view.message = await ctx.send(embed=get_main_embed(), view=view)
         log.info(f"🌸 {ctx.author.display_name} vừa mở bảng Menu Staff.")
 
-    @commands.command(name="rule", aliases=["rules", "luat", "dieule"])
+    @commands.hybrid_command(name="rule", aliases=["rules", "luat", "dieule"], description="Xem bảng điều lệ server Angelic")
     async def rule_cmd(self, ctx: commands.Context):
         """Lệnh hiển thị Bảng Nội Quy Server Angelic"""
         await ctx.send(embed=get_rules_embed())
         log.info(f"📜 {ctx.author.display_name} vừa xem bảng điều lệ server.")
 
-    @commands.command(name="checkdb")
+    @commands.hybrid_command(name="checkdb", description="Kiểm tra toàn bộ danh sách đang có trong Database")
     async def check_db(self, ctx: commands.Context):
         """Lệnh kiểm tra toàn bộ danh sách đang có trong Database"""
         try:
@@ -177,7 +177,7 @@ class StaffUICog(commands.Cog):
         except Exception as e:
             await ctx.send(f"Lỗi truy vấn Database: {e}")
 
-    @commands.command(name="feedback", aliases=["fb"])
+    @commands.hybrid_command(name="feedback", aliases=["fb"], description="Xem danh sách toàn bộ bài đánh giá của một nhân sự")
     async def feedback_cmd(self, ctx: commands.Context, target: Optional[str] = None):
         """Lệnh xem danh sách toàn bộ bài đánh giá của một nhân sự"""
         target_id = extract_id(target)
@@ -246,7 +246,7 @@ class StaffUICog(commands.Cog):
         except Exception as e:
             await ctx.send(f"Lỗi truy vấn Database: {e}")
 
-    @commands.command(name="myreviews", aliases=["myfeedbacks", "myfb", "myrv"])
+    @commands.hybrid_command(name="myreviews", aliases=["myfeedbacks", "myfb", "myrv"], description="Xem lịch sử đánh giá staff của bạn")
     async def myreviews_cmd(self, ctx: commands.Context):
         """Lệnh xem lịch sử đánh giá cá nhân của bạn"""
         voter_id = str(ctx.author.id)
@@ -296,7 +296,7 @@ class StaffUICog(commands.Cog):
             log.error(f"Lỗi lệnh myreviews: {e}")
             await ctx.send(f"Lỗi truy vấn Database: {e}")
 
-    @commands.command(name="help", aliases=["huongdan"])
+    @commands.hybrid_command(name="help", aliases=["huongdan"], description="Hiển thị danh sách toàn bộ các câu lệnh của Bot")
     async def help_cmd(self, ctx: commands.Context):
         """Lệnh hiển thị danh sách toàn bộ các câu lệnh của Bot"""
         embed = discord.Embed(
@@ -310,7 +310,7 @@ class StaffUICog(commands.Cog):
     # ──────────────────────────────────────────────────────────────────
     # LỆNH ĐỒNG BỘ VÀ LÀM SẠCH DATABASE: y!renewdb
     # ──────────────────────────────────────────────────────────────────
-    @commands.command(name="renewdb", aliases=["syncdb", "refreshdb"])
+    @commands.hybrid_command(name="renewdb", aliases=["syncdb", "refreshdb"], description="Đồng bộ và làm sạch Database với Server Discord thực tế")
     @commands.has_permissions(administrator=True)
     async def renewdb_cmd(self, ctx: commands.Context):
         """

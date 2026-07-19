@@ -716,7 +716,7 @@ class StaffLeaderboardCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name="top", aliases=["lb", "bxh", "leaderboard"])
+    @commands.hybrid_command(name="top", aliases=["lb", "bxh", "leaderboard"], description="Xem bảng xếp hạng nhân sự")
     async def leaderboard_cmd(self, ctx: commands.Context):
         """Bảng Xếp Hạng Nhân Sự. Mặc định: Tuần hiện tại. Nhấn 📅 để đổi khoảng ngày."""
         dt_start, dt_end = _get_current_week_range()

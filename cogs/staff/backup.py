@@ -263,7 +263,7 @@ class StaffBackupCog(commands.Cog):
     # LỆNH THỦ CÔNG: y!backup
     # ──────────────────────────────────────────────────────────────────
 
-    @commands.command(name="backup")
+    @commands.hybrid_command(name="backup", description="[Admin/Owner] Kích hoạt backup database thủ công ngay lập tức.")
     @commands.has_permissions(administrator=True)
     async def backup_cmd(self, ctx: commands.Context):
         """[Admin/Owner] Kích hoạt backup database thủ công ngay lập tức."""

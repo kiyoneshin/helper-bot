@@ -27,10 +27,23 @@ intents.guilds = True
 intents.members = True
 intents.message_content = True
 
+def get_custom_prefix(bot, message: discord.Message):
+    """
+    Hàm xác định prefix cho mỗi tin nhắn gửi lên.
+    """
+    prefixes = ["y!", "Y!"]
+    prefixes.extend(commands.when_mentioned(bot, message))
+    
+    if message.reference and isinstance(message.reference.resolved, discord.Message):
+        if message.reference.resolved.author.id == bot.user.id:
+            prefixes.append("")
+            
+    return prefixes
+
 class StaffBot(commands.Bot):
     def __init__(self):
         super().__init__(
-            command_prefix=["y!", "Y!"], 
+            command_prefix=get_custom_prefix,
             intents=intents, 
             help_command=None,
             case_insensitive=True

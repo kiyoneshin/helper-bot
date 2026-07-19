@@ -437,7 +437,7 @@ class StaffEditCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name="set", aliases=["editprofile", "suahoso"])
+    @commands.hybrid_command(name="set", aliases=["editprofile", "suahoso"], description="Chỉnh sửa hồ sơ cá nhân")
     async def set_profile(self, ctx: commands.Context):
         """Lệnh cho phép Staff tự kiểm tra và chỉnh sửa hồ sơ cá nhân trong Database"""
         target_id = str(ctx.author.id)

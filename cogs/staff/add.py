@@ -347,7 +347,7 @@ class StaffAddCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name="add", aliases=["register", "dangky", "themhoso"])
+    @commands.hybrid_command(name="add", aliases=["register", "dangky", "themhoso"], description="Tạo hồ sơ cá nhân mới cho Staff")
     async def add_profile(self, ctx: commands.Context):
         """Lệnh cho phép Staff tự tạo hồ sơ cá nhân lần đầu thông qua Form (Modal)."""
         author = ctx.author

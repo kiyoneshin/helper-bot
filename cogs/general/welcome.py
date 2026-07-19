@@ -40,7 +40,7 @@ class WelcomeCog(commands.Cog):
 # =====================================================================
     # LỆNH KIỂM THỬ GIAO DIỆN WELCOME (CHỈ DÀNH CHO TESTER / STAFF)
     # =====================================================================
-    @commands.command(name="test_welcome")
+    @commands.hybrid_command(name="test_welcome", description="Kiểm tra giao diện chào mừng thành viên mới")
     async def test_welcome_cmd(self, ctx: commands.Context, target: Optional[discord.Member] = None):
         """
         Lệnh giả lập sự kiện thành viên mới vào server để test Welcome.
