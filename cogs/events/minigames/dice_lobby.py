@@ -31,17 +31,19 @@ class DiceLobbyView(discord.ui.View):
             
         self.players.append(interaction.user)
         
-        # Cập nhật danh sách người chơi
-        if self.message:
-            embed = self.message.embeds[0] if self.message.embeds else discord.Embed()
-            player_list = "\n".join([f"• {p.mention}" for p in self.players])
-            embed.set_field_at(0, name=f"👥 Danh sách tham gia ({len(self.players)}/10)", value=player_list, inline=False)
-            try:
-                await interaction.response.edit_message(embed=embed, view=self)
-            except discord.HTTPException:
-                pass
-        else:
+        if not interaction.message or not interaction.message.embeds:
             await interaction.response.defer()
+            return
+
+        embed = interaction.message.embeds[0]
+        player_list = "\n".join([f"• {p.mention}" for p in self.players])
+        
+        embed.set_field_at(0, name=f"👥 Danh sách tham gia ({len(self.players)}/10)", value=player_list, inline=False)
+        
+        try:
+            await interaction.response.edit_message(embed=embed, view=self)
+        except discord.HTTPException:
+            pass
             
         # Kiểm tra đủ 10 người
         if len(self.players) >= 10:
