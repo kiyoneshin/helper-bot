@@ -121,9 +121,13 @@ class EventCoreCog(commands.Cog):
             if random.random() < 0.01:
                 self.is_minigame_running = True
                 self.msg_count_after_cooldown = 0
-                
-                from cogs.events.minigames.quick_grab import start_quick_grab
-                self.bot.loop.create_task(start_quick_grab(self.bot, message.channel, self))
+                import random
+                if random.random() < 0.5:
+                    from cogs.events.minigames.quick_grab import start_quick_grab
+                    self.bot.loop.create_task(start_quick_grab(self.bot, message.channel, self))
+                else:
+                    from cogs.events.minigames.fast_hand import start_fast_words_game
+                    self.bot.loop.create_task(start_fast_words_game(self.bot, message.channel, self))
 
     # =====================================================================
     # 2. TASK QUÉT PHÒNG VOICE MỖI 15 PHÚT (VOICE AFK GUARD)
