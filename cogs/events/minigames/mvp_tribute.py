@@ -10,39 +10,44 @@ log = logging.getLogger("MVPTribute")
 
 async def start_mvp_tribute_game(bot, channel: discord.abc.Messageable, core_cog):
     """Khởi chạy minigame Tôn Vinh MVP 10 Phút"""
-    if not isinstance(channel, discord.abc.Messageable) or not hasattr(channel, 'guild') or not channel.guild:
+    if not isinstance(channel, (discord.TextChannel, discord.Thread, discord.VoiceChannel)):
         core_cog.last_minigame_end = datetime.now(timezone.utc)
         core_cog.is_minigame_running = False
         return
-
     # =================================================================
     # GIAI ĐOẠN 1: TRUY VẤN SQL TÌM MVP 10 PHÚT QUA
     # =================================================================
-    sql = """
-        SELECT discord_id, daily_chat_count, current_streak 
-        FROM event_profiles 
-        WHERE last_chat_time >= (CURRENT_TIMESTAMP AT TIME ZONE 'UTC' - INTERVAL '10 minutes')
-        ORDER BY current_streak DESC, daily_chat_count DESC 
-        LIMIT 1;
-    """
-    row = await fetchrow_db(bot, sql)
     mvp_user = None
-    
+
+    sql_10m = """
+        SELECT discord_id FROM event_profiles 
+        WHERE last_chat_time >= (CURRENT_TIMESTAMP AT TIME ZONE 'UTC' - INTERVAL '10 minutes')
+        ORDER BY current_streak DESC, daily_chat_count DESC LIMIT 1;
+    """
+    row = await fetchrow_db(bot, sql_10m)
+
+    if not row:
+        sql_daily = """
+            SELECT discord_id FROM event_profiles 
+            WHERE daily_chat_count > 0 
+            ORDER BY daily_chat_count DESC LIMIT 1;
+        """
+        row = await fetchrow_db(bot, sql_daily)
+
     if row:
         try:
-            mvp_id = int(row["discord_id"])
-            mvp_user = channel.guild.get_member(mvp_id)
+            mvp_user = channel.guild.get_member(int(row["discord_id"]))
         except Exception:
             pass
 
-    # Chống lỗi (Edge Case): Lấy ngẫu nhiên nếu không tìm thấy ai trong DB
     if not mvp_user:
-        valid_members = [m for m in channel.guild.members if not m.bot]
-        if valid_members:
-            mvp_user = random.choice(valid_members)
+        async for last_msg in channel.history(limit=10):
+            if not last_msg.author.bot and isinstance(last_msg.author, discord.Member):
+                mvp_user = last_msg.author
+                break
             
     if not mvp_user:
-        log.error("Không tìm thấy bất kỳ ai để làm MVP, hủy game.")
+        log.error("Không tìm thấy bất kỳ ai hợp lệ để làm MVP, hủy game.")
         core_cog.last_minigame_end = datetime.now(timezone.utc)
         core_cog.is_minigame_running = False
         return
