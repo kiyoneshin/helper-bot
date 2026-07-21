@@ -45,7 +45,7 @@ class FastHandButton(discord.ui.Button):
         super().__init__(style=discord.ButtonStyle.secondary, emoji=emoji_str, custom_id=custom_id, row=row)
 
     async def callback(self, interaction: discord.Interaction):
-        if isinstance(self.view, FastHandView):
+        if isinstance(self.view, FastHandView) and self.custom_id is not None:
             await self.view.handle_click(interaction, self.custom_id)
 
 class FastHandView(discord.ui.View):
