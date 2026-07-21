@@ -5,7 +5,7 @@ import asyncio
 import json
 from typing import Optional, Any
 
-from cogs.common.db import query_db, extract_id
+from cogs.common.db import query_db, extract_id, execute_db
 from cogs.common.embeds import get_main_embed
 from cogs.common.views import MainView, _normalize_votes
 from cogs.common.logs import send_staff_log, build_log_delete
@@ -319,6 +319,12 @@ class StaffUICog(commands.Cog):
           - Phát hiện & gắn nhãn hồ sơ thành viên đã rời server
           - Sửa lỗi giá trị NULL/NaN trong các trường số và JSON
         """
+        ROLE_ID_MAP = {
+            "owner": 1498711782192189494,  # <-- Thay ID Role Owner vào đây
+            "admin": 1510230255988900002,  # <-- Thay ID Role Admin vào đây
+            "recep": 1498711782192189492,  # <-- Thay ID Role Recep vào đây
+        }
+        
         guild = ctx.guild
         if guild is None:
             await ctx.send("Lệnh này chỉ dùng được trong Server!")
@@ -344,14 +350,15 @@ class StaffUICog(commands.Cog):
             return
 
         count_name_updated  = 0   
-        count_left_server   = 0   
+        count_removed_staff = 0   
         count_data_fixed    = 0   
-        left_server_names: list[str] = []
+        removed_staff_list: list[str] = []
         errors_in_task: list[str] = []
 
         for record in records:
             discord_id_str: str = str(record["discord_id"])
             old_name: str = str(record.get("display_name") or "Unnamed")
+            db_role: str = str(record.get("role", "")).lower().strip()
             updates: dict[str, Any] = {}  
 
             member = guild.get_member(int(discord_id_str))
@@ -364,21 +371,29 @@ class StaffUICog(commands.Cog):
                     log.warning(f"renewdb: Không fetch được member {discord_id_str}: {e}")
                     member = None
 
-            if member is None:
-                count_left_server += 1
-                left_server_names.append(old_name)
-                log.info(f"renewdb: {old_name} ({discord_id_str}) đã rời server.")
-                if not old_name.startswith("[Đã rời Server]"):
-                    updates["display_name"] = f"[Đã rời Server] {old_name}"
-            else:
-                current_nick = member.display_name
-                if current_nick != old_name and not old_name.startswith("[Đã rời Server]"):
-                    updates["display_name"] = current_nick
-                    count_name_updated += 1
-                    log.info(
-                        f"renewdb: Cập nhật tên {discord_id_str}: "
-                        f"'{old_name}' → '{current_nick}'"
-                    )
+
+
+            required_role_id = ROLE_ID_MAP.get(db_role)
+            has_role = False
+            if member is not None and required_role_id:
+                has_role = any(role.id == required_role_id for role in member.roles)
+
+            if member is None or (member is not None and required_role_id and not has_role):
+                log.info(f"renewdb: Xóa staff {discord_id_str} vì rời server hoặc mất role BQT.")
+                await execute_db(self.bot, "DELETE FROM staff_message_logs WHERE discord_id = $1", discord_id_str)
+                await execute_db(self.bot, "DELETE FROM profiles WHERE discord_id = $1", discord_id_str)
+                count_removed_staff += 1
+                removed_staff_list.append(old_name)
+                continue
+
+            current_nick = member.display_name
+            if current_nick != old_name:
+                updates["display_name"] = current_nick
+                count_name_updated += 1
+                log.info(
+                    f"renewdb: Cập nhật tên {discord_id_str}: "
+                    f"'{old_name}' → '{current_nick}'"
+                )
 
             data_was_fixed = False
 
@@ -456,20 +471,20 @@ class StaffUICog(commands.Cog):
             value=(
                 f"Tổng số hồ sơ đã kiểm tra: **{total}**\n"
                 f"Số hồ sơ được cập nhật biệt danh: **{count_name_updated}**\n"
-                f"Số hồ sơ phát hiện đã rời server: **{count_left_server}**\n"
+                f"Số hồ sơ đã bị xóa (Rời server / Mất Role): **{count_removed_staff}**\n"
                 f"Số lỗi dữ liệu đã được sửa tự động: **{count_data_fixed}**"
             ),
             inline=False,
         )
 
-        if left_server_names:
+        if removed_staff_list:
             names_str = "\n".join(
-                f"• {n}" for n in left_server_names[:15]
+                f"• {n}" for n in removed_staff_list[:15]
             )
-            if len(left_server_names) > 15:
-                names_str += f"\n... và {len(left_server_names) - 15} người khác"
+            if len(removed_staff_list) > 15:
+                names_str += f"\n... và {len(removed_staff_list) - 15} người khác"
             embed.add_field(
-                name="Danh Sách Thành Viên Đã Rời Server",
+                name="🗑️ Danh Sách Staff Đã Bị Xóa Khỏi DB",
                 value=names_str,
                 inline=False,
             )
@@ -488,7 +503,7 @@ class StaffUICog(commands.Cog):
         log.info(
             f"renewdb hoàn tất: {total} hồ sơ, "
             f"{count_name_updated} tên đổi, "
-            f"{count_left_server} rời server, "
+            f"{count_removed_staff} bị xóa, "
             f"{count_data_fixed} lỗi dữ liệu sửa."
         )
 
