@@ -310,7 +310,8 @@ class CupsView(discord.ui.View):
 
     async def _resolve(self, interaction: discord.Interaction, chosen: int):
         for item in self.children:
-            item.disabled = True
+            if isinstance(item, discord.ui.Button):
+                item.disabled = True
         self.stop()
 
         correct = random.randint(1, 3)
@@ -366,7 +367,8 @@ class CupsView(discord.ui.View):
 
     async def on_timeout(self):
         for item in self.children:
-            item.disabled = True
+            if isinstance(item, discord.ui.Button):
+                item.disabled = True
         if self.message:
             try:
                 embed = discord.Embed(
@@ -420,7 +422,8 @@ class RouletteView(discord.ui.View):
             await deduct_event_points(self.bot, uid, PENALTY_PTS)
             
             for item in self.children:
-                item.disabled = True
+                if isinstance(item, discord.ui.Button):
+                    item.disabled = True
             self.stop()
             
             embed = discord.Embed(
@@ -446,7 +449,7 @@ class RouletteView(discord.ui.View):
             
             # Kích hoạt nút Rút lui khi đã bóp cò ít nhất 1 lần thành công
             for child in self.children:
-                if getattr(child, "custom_id", "") == "cashout_btn":
+                if isinstance(child, discord.ui.Button) and getattr(child, "custom_id", "") == "cashout_btn":
                     child.disabled = False
             
             current_mult = self.multipliers[self.survived_rounds]
@@ -477,7 +480,8 @@ class RouletteView(discord.ui.View):
         uid = str(self.author.id)
         
         for item in self.children:
-            item.disabled = True
+            if isinstance(item, discord.ui.Button):
+                item.disabled = True
         self.stop()
         
         mult = self.multipliers[self.survived_rounds]
