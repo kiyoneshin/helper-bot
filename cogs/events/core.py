@@ -119,22 +119,34 @@ class EventCoreCog(commands.Cog):
         if self.msg_count_after_cooldown >= 30:
             import random
             if random.random() < 0.01:
+                game_channel = self.bot.get_channel(1498711783223853101)
+                if not game_channel:
+                    try:
+                        game_channel = await self.bot.fetch_channel(1498711783223853101)
+                    except discord.HTTPException:
+                        game_channel = message.channel
+
+                # ── CHỐT CHẶN PYLANCE: Đảm bảo kênh lấy được có quyền gửi tin nhắn ──
+                if not isinstance(game_channel, discord.abc.Messageable):
+                    game_channel = message.channel
+
                 self.is_minigame_running = True
                 self.msg_count_after_cooldown = 0
-                import random
+                
                 game_choice = random.choice(["quick_grab", "fast_hand", "dice_lobby", "mvp_tribute"])
+                
                 if game_choice == "quick_grab":
                     from cogs.events.minigames.quick_grab import start_quick_grab
-                    self.bot.loop.create_task(start_quick_grab(self.bot, message.channel, self))
+                    self.bot.loop.create_task(start_quick_grab(self.bot, game_channel, self))
                 elif game_choice == "fast_hand":
                     from cogs.events.minigames.fast_hand import start_fast_words_game
-                    self.bot.loop.create_task(start_fast_words_game(self.bot, message.channel, self))
+                    self.bot.loop.create_task(start_fast_words_game(self.bot, game_channel, self))
                 elif game_choice == "dice_lobby":
                     from cogs.events.minigames.dice_lobby import start_dice_lobby_game
-                    self.bot.loop.create_task(start_dice_lobby_game(self.bot, message.channel, self))
+                    self.bot.loop.create_task(start_dice_lobby_game(self.bot, game_channel, self))
                 else:
                     from cogs.events.minigames.mvp_tribute import start_mvp_tribute_game
-                    self.bot.loop.create_task(start_mvp_tribute_game(self.bot, message.channel, self))
+                    self.bot.loop.create_task(start_mvp_tribute_game(self.bot, game_channel, self))
 
     # =====================================================================
     # 2. TASK QUÉT PHÒNG VOICE MỖI 15 PHÚT (VOICE AFK GUARD)
@@ -372,6 +384,61 @@ class EventCoreCog(commands.Cog):
         
         await msg.edit(content=None, embed=embed)
         log.info(f"🌪️ [TAKE ALL] {ctx.author.display_name} đã thu hồi {amount:,} điểm từ {len(valid_members)} thành viên.")
+
+    class DummyCore:
+        is_minigame_running = True
+        last_minigame_end = None
+
+    def _get_target_channel(self, ctx: commands.Context) -> discord.abc.Messageable:
+        """Hàm hỗ trợ: Lọc và đảm bảo kênh lấy được 100% có quyền gửi tin nhắn (Chống lỗi Pylance)."""
+        ch = self.bot.get_channel(1498711783223853101)
+        if isinstance(ch, discord.abc.Messageable):
+            return ch
+        return ctx.channel
+
+    @commands.hybrid_command(name="fast_hand")
+    async def force_fast_hand(self, ctx: commands.Context):
+        """[Chỉ dành cho Yon] Kích hoạt thủ công minigame Fast Hand."""
+        if not self._is_bank_owner(ctx):
+            await ctx.send("Bạn không có quyền dùng lệnh này!", ephemeral=True)
+            return
+        game_channel = self._get_target_channel(ctx)
+        from cogs.events.minigames.fast_hand import start_fast_words_game
+        self.bot.loop.create_task(start_fast_words_game(self.bot, game_channel, self.DummyCore()))
+        await ctx.send("Đã kích hoạt thủ công Fast Hand!", ephemeral=True)
+
+    @commands.hybrid_command(name="dice_lobby")
+    async def force_dice_lobby(self, ctx: commands.Context):
+        """[Chỉ dành cho Yon] Kích hoạt thủ công minigame Dice Lobby."""
+        if not self._is_bank_owner(ctx):
+            await ctx.send("Bạn không có quyền dùng lệnh này!", ephemeral=True)
+            return
+        game_channel = self._get_target_channel(ctx)
+        from cogs.events.minigames.dice_lobby import start_dice_lobby_game
+        self.bot.loop.create_task(start_dice_lobby_game(self.bot, game_channel, self.DummyCore()))
+        await ctx.send("Đã kích hoạt thủ công Dice Lobby!", ephemeral=True)
+
+    @commands.hybrid_command(name="quick_grab")
+    async def force_quick_grab(self, ctx: commands.Context):
+        """[Chỉ dành cho Yon] Kích hoạt thủ công minigame Quick Grab."""
+        if not self._is_bank_owner(ctx):
+            await ctx.send("Bạn không có quyền dùng lệnh này!", ephemeral=True)
+            return
+        game_channel = self._get_target_channel(ctx)
+        from cogs.events.minigames.quick_grab import start_quick_grab
+        self.bot.loop.create_task(start_quick_grab(self.bot, game_channel, self.DummyCore()))
+        await ctx.send("Đã kích hoạt thủ công Quick Grab!", ephemeral=True)
+
+    @commands.hybrid_command(name="mvp_tribute")
+    async def force_mvp_tribute(self, ctx: commands.Context):
+        """[Chỉ dành cho Yon] Kích hoạt thủ công minigame MVP Tribute."""
+        if not self._is_bank_owner(ctx):
+            await ctx.send("Bạn không có quyền dùng lệnh này!", ephemeral=True)
+            return
+        game_channel = self._get_target_channel(ctx)
+        from cogs.events.minigames.mvp_tribute import start_mvp_tribute_game
+        self.bot.loop.create_task(start_mvp_tribute_game(self.bot, game_channel, self.DummyCore()))
+        await ctx.send("Đã kích hoạt thủ công MVP Tribute!", ephemeral=True)
 
 
 async def setup(bot: commands.Bot):
