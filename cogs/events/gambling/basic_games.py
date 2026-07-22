@@ -192,7 +192,7 @@ class BasicGames(commands.Cog):
 
         face = random.choices(
             [1, 2, 3, 4, 5, 6, 7],
-            weights=[16.58, 16.58, 16.58, 16.58, 16.58, 16.58, 0.52],
+            weights=[16.75, 16.75, 16.75, 16.5, 16.5, 16.5, 0.25],
             k=1
         )[0]
 
