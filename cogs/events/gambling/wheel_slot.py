@@ -15,7 +15,6 @@ Vòng quay gồm 16 ô theo tỷ lệ:
 
 import random
 import logging
-from collections import deque
 from typing import Optional
 
 import discord
@@ -51,20 +50,16 @@ WHEEL_CONFIG: dict[str, tuple[float, bool, bool, str]] = {
     "🟦": (-0.90, False, False, "Mất 90% tiền cược"),
 }
 
-# Danh sách 16 ô gốc (theo tỷ lệ)
+# Mảng vòng quay CỐ ĐỊNH (16 ô, 4 chu kỳ theo chiều kim đồng hồ)
+# Mỗi chu kỳ kết thúc bằng 1 ô đặc biệt; cơ cấu = 100% chuẩn xác.
 BASE_WHEEL: list[str] = [
-    "🟪",                         # 1 ô Tím
-    "🟩",                         # 1 ô Xanh lá
-    "🟥",                         # 1 ô Đỏ
-    "🟨",                         # 1 ô Vàng
-    "🟧", "🟧", "🟧", "🟧",      # 4 ô Cam
-    "🟫", "🟫", "🟫", "🟫",      # 4 ô Nâu
-    "🟦", "🟦", "🟦", "🟦",      # 4 ô Xanh dương
+    "🟦", "🟧", "🟫", "🟨",   # Chu kỳ 1  → kết thúc: Vàng  (6.25%)
+    "🟦", "🟧", "🟫", "🟪",   # Chu kỳ 2  → kết thúc: Tím   (6.25%)
+    "🟦", "🟧", "🟫", "🟥",   # Chu kỳ 3  → kết thúc: Đỏ    (6.25%)
+    "🟦", "🟧", "🟫", "🟩",   # Chu kỳ 4  → kết thúc: Xanh lá (6.25%)
 ]
-
-# Trọng số tương ứng với thứ tự WHEEL_CONFIG (dùng cho random.choices)
-WHEEL_POPULATION = list(WHEEL_CONFIG.keys())   # ["🟪","🟩","🟥","🟨","🟧","🟫","🟦"]
-WHEEL_WEIGHTS    = [6.25, 6.25, 6.25, 6.25, 25.0, 25.0, 25.0]
+# Tổng: 4× Xanh dương (25%), 4× Cam (25%), 4× Nâu (25%),
+#       1× Vàng, 1× Tím, 1× Đỏ, 1× Xanh lá (mỗi loại 6.25%)
 
 # ─────────────────────────────────────────────────────────────────────────────
 # TỌA ĐỘ 16 Ô TRÊN LƯỚI 7×7 (tính từ (row=0,col=0) ở góc trái-trên của phần body)
@@ -127,41 +122,25 @@ def _parse_bet(raw: str, balance: int) -> tuple[Optional[int], Optional[str]]:
 # THUẬT TOÁN RENDER MA TRẬN VÒNG QUAY 7×8
 # ─────────────────────────────────────────────────────────────────────────────
 
-def _render_wheel(winning_emoji: str) -> str:
+def _render_wheel(stop_idx: int) -> str:
     """
-    Tạo chuỗi văn bản 8 dòng (1 dòng mũi tên + 7 dòng body 7 ô) mô phỏng
-    vòng quay theo phong cách EPIC RPG.
+    Render lưới 7×8 từ mảng BASE_WHEEL cố định với chỉ số dừng `stop_idx`.
 
-    Thuật toán:
-    1. Shuffle bản sao của BASE_WHEEL để tạo bàn quay ngẫu nhiên.
-    2. Xoay deque sao cho winning_emoji nằm tại index 0 (vị trí (0,3) dưới mũi tên).
-    3. Điền 16 emoji đã xoay vào đúng 16 tọa độ TRACK trên lưới 7×7.
-    4. Ô trung tâm (3,3) luôn là ⬜. Ô trống là ▪️.
-    5. Nối hàng mũi tên "▪️ ▪️ ▪️ 🔻 ▪️ ▪️ ▪️" lên đầu.
+    Thuật toán Slice Rotation:
+    1. display_wheel = BASE_WHEEL[stop_idx:] + BASE_WHEEL[:stop_idx]
+       → display_wheel[0] luôn là ô kết quả (nằm ngay dưới mũi tên 🔻).
+    2. Điền 16 emoji theo thứ tự TRACK vào lưới 7×7.
+    3. Ô trung tâm (3,3) = ⬜, ô trống = ⬛.
+    4. Thêm dòng mũi tên "⬛ ⬛ ⬛ 🔻 ⬛ ⬛ ⬛" lên đầu.
     """
-    # Bước 1 — Tạo bàn quay ngẫu nhiên
-    wheel: list[str] = list(BASE_WHEEL)
-    random.shuffle(wheel)
+    # Bước 1 — Xoay mảng cố định bằng slice, không shuffle
+    arranged: list[str] = BASE_WHEEL[stop_idx:] + BASE_WHEEL[:stop_idx]
 
-    # Bước 2 — Xoay sao cho winning_emoji ở index 0
-    # Nếu emoji xuất hiện nhiều lần, chọn lần đầu tiên tìm thấy.
-    try:
-        pivot = wheel.index(winning_emoji)
-    except ValueError:
-        # Trường hợp an toàn: bổ sung emoji vào đầu nếu bị mất trong quá trình shuffle
-        wheel[0] = winning_emoji
-        pivot = 0
-
-    dq: deque[str] = deque(wheel)
-    dq.rotate(-pivot)  # xoay trái pivot bước → index 0 = winning_emoji
-    arranged: list[str] = list(dq)
-
-    # Bước 3 — Xây dựng lưới 7 hàng × 7 cột, mặc định ▪️
-    DARK   = "▪️"
+    # Bước 2 — Xây dựng lưới 7 hàng × 7 cột
+    DARK         = "⬛"
     CENTER_EMOJI = "⬜"
     grid: list[list[str]] = [[DARK] * 7 for _ in range(7)]
 
-    # Điền 16 ô theo TRACK
     for idx, (r, c) in enumerate(TRACK):
         grid[r][c] = arranged[idx]
 
@@ -169,10 +148,9 @@ def _render_wheel(winning_emoji: str) -> str:
     cr, cc = CENTER
     grid[cr][cc] = CENTER_EMOJI
 
-    # Bước 4 — Render thành chuỗi văn bản
-    arrow_row = "▪️ ▪️ ▪️ 🔻 ▪️ ▪️ ▪️"
-    body_rows = [" ".join(row) for row in grid]
-
+    # Bước 3 — Render thành chuỗi
+    arrow_row = "⬛ ⬛ ⬛ 🔻 ⬛ ⬛ ⬛"
+    body_rows  = [" ".join(row) for row in grid]
     return arrow_row + "\n" + "\n".join(body_rows)
 
 
@@ -208,12 +186,9 @@ class WheelSlots(commands.Cog):
             await ctx.send(err, ephemeral=True)
             return
 
-        # ── Quay vòng → chọn kết quả ─────────────────────────────────────
-        winning_emoji: str = random.choices(
-            population=WHEEL_POPULATION,
-            weights=WHEEL_WEIGHTS,
-            k=1,
-        )[0]
+        # ── Quay vòng: chọn chỉ số dừng ngẫu nhiên trên mảng cố định ─────
+        stop_idx: int = random.randint(0, len(BASE_WHEEL) - 1)
+        winning_emoji: str = BASE_WHEEL[stop_idx]
 
         mult, is_win, has_ticket, desc = WHEEL_CONFIG[winning_emoji]
 
@@ -228,8 +203,8 @@ class WheelSlots(commands.Cog):
 
         new_balance = balance + delta
 
-        # ── Render ma trận vòng quay ──────────────────────────────────────
-        wheel_grid = _render_wheel(winning_emoji)
+        # ── Render ma trận vòng quay (slice rotation, không shuffle) ─────
+        wheel_grid = _render_wheel(stop_idx)
 
         # ── Xác định màu Embed & emoji kết quả ───────────────────────────
         if winning_emoji in ("🟪", "🟨"):
