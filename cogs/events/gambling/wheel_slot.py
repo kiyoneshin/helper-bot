@@ -149,8 +149,8 @@ def _render_wheel(stop_idx: int) -> str:
     grid[cr][cc] = CENTER_EMOJI
 
     # Bước 3 — Render thành chuỗi
-    arrow_row = "⬛ ⬛ ⬛ 🔻 ⬛ ⬛ ⬛"
-    body_rows  = [" ".join(row) for row in grid]
+    arrow_row = "⬛⬛⬛🔻⬛⬛⬛"
+    body_rows  = ["".join(row) for row in grid]
     return arrow_row + "\n" + "\n".join(body_rows)
 
 
