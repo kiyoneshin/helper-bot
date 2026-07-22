@@ -266,11 +266,11 @@ class BasicGames(commands.Cog):
                 "Ổ đạn 6 buồng, chỉ có 1 viên đạn thật. Ổ đạn **không** xoay lại sau mỗi lần bóp cò.\n\n"
                 "Sống sót càng lâu, tiền thưởng càng lớn. Dám chơi lớn không? 💥\n\n"
                 "**Hệ số thưởng:**\n"
-                "Lần 1: x1.01\n"
-                "Lần 2: x1.1\n"
-                "Lần 3: x1.5\n"
-                "Lần 4: x2.5\n"
-                "Lần 5: x4"
+                "Lần 1: x1.1\n"
+                "Lần 2: x1.3\n"
+                "Lần 3: x1.8\n"
+                "Lần 4: x2.7\n"
+                "Lần 5: x5"
             ),
             color=0x2b2d31,
         )
@@ -399,11 +399,11 @@ class RouletteView(discord.ui.View):
         
         self.multipliers = {
             0: 1.0,
-            1: 1.01,
-            2: 1.1,
-            3: 1.5,
-            4: 2.5,
-            5: 4.0
+            1: 1.1,
+            2: 1.3,
+            3: 1.8,
+            4: 2.7,
+            5: 5.0
         }
 
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
