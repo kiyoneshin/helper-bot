@@ -405,7 +405,6 @@ class EventCoreCog(commands.Cog):
         game_channel = self._get_target_channel(ctx)
         from cogs.events.minigames.fast_hand import start_fast_words_game
         self.bot.loop.create_task(start_fast_words_game(self.bot, game_channel, self.DummyCore()))
-        await ctx.send("Đã kích hoạt thủ công Fast Hand!", ephemeral=True)
 
     @commands.hybrid_command(name="dice_lobby")
     async def force_dice_lobby(self, ctx: commands.Context):
@@ -416,7 +415,6 @@ class EventCoreCog(commands.Cog):
         game_channel = self._get_target_channel(ctx)
         from cogs.events.minigames.dice_lobby import start_dice_lobby_game
         self.bot.loop.create_task(start_dice_lobby_game(self.bot, game_channel, self.DummyCore()))
-        await ctx.send("Đã kích hoạt thủ công Dice Lobby!", ephemeral=True)
 
     @commands.hybrid_command(name="quick_grab")
     async def force_quick_grab(self, ctx: commands.Context):
@@ -427,7 +425,6 @@ class EventCoreCog(commands.Cog):
         game_channel = self._get_target_channel(ctx)
         from cogs.events.minigames.quick_grab import start_quick_grab
         self.bot.loop.create_task(start_quick_grab(self.bot, game_channel, self.DummyCore()))
-        await ctx.send("Đã kích hoạt thủ công Quick Grab!", ephemeral=True)
 
     @commands.hybrid_command(name="mvp_tribute")
     async def force_mvp_tribute(self, ctx: commands.Context):
@@ -438,7 +435,6 @@ class EventCoreCog(commands.Cog):
         game_channel = self._get_target_channel(ctx)
         from cogs.events.minigames.mvp_tribute import start_mvp_tribute_game
         self.bot.loop.create_task(start_mvp_tribute_game(self.bot, game_channel, self.DummyCore()))
-        await ctx.send("Đã kích hoạt thủ công MVP Tribute!", ephemeral=True)
 
 
 async def setup(bot: commands.Bot):
