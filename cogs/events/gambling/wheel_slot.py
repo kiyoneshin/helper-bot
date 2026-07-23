@@ -41,13 +41,13 @@ COLOR_SPECIAL = 0xFFD700   # 🌟 Tím / Vàng đặc biệt
 
 # Bảng phần thưởng: {emoji: (multiplier, is_win, has_ticket, description)}
 WHEEL_CONFIG: dict[str, tuple[float, bool, bool, str]] = {
-    "🟪": ( 9.00, True,  False, "x9.0 tiền cược — Thắng Lớn!"),
-    "🟩": ( 1.80, True,  False, "x1.8 tiền cược — Thắng Nhẹ"),
-    "🟥": (-1.00, False, False, "Mất 100% tiền cược"),
-    "🟨": (-1.00, False, True,  "Mất 100% tiền cược + 🎟️ +1 Vé Xổ Số"),
-    "🟧": (-0.50, False, False, "Mất 50% tiền cược"),
-    "🟫": (-0.75, False, False, "Mất 75% tiền cược"),
-    "🟦": (-0.90, False, False, "Mất 90% tiền cược"),
+    "🟪": ( 9.00, True,  False, "x9.0 tiền cược — Nổ Hũ Trúng Máng!"),
+    "🟩": ( 1.80, True,  False, "x1.8 tiền cược — Húp Nhẹ"),
+    "🟥": (-1.00, False, False, "Mút Trọn (Mất 100%)"),
+    "🟨": (-1.00, False, True,  "Mút Trọn + 🎟️ An ủi 1 Vé Xổ Số"),
+    "🟧": (-0.50, False, False, "Cắt nửa vầng trăng (Mất 50%)"),
+    "🟫": (-0.75, False, False, "Đi bụi (Mất 75%)"),
+    "🟦": (-0.90, False, False, "Còn đúng cái nịt (Mất 90%)"),
 }
 
 # Mảng vòng quay CỐ ĐỊNH (16 ô, 4 chu kỳ theo chiều kim đồng hồ)
@@ -116,11 +116,10 @@ def _parse_bet(raw: str, balance: int) -> tuple[Optional[int], Optional[str]]:
     except ValueError:
         return None, f"`{raw}` không phải số hợp lệ!"
     if amount <= 0:
-        return None, "Tiền cược phải lớn hơn **0**!"
+        return None, "Tiền cược phải lớn hơn **0** nha mấy khứa!"
     if amount > balance:
         return None, (
-            f"Bạn không đủ số dư!\n"
-            f"Số dư hiện tại: **{balance:,}**, bạn muốn cược: **{amount:,}**."
+            f"Ví còn đúng **{balance:,}** mà đòi cược **{amount:,}**? Nghèo mà ham!"
         )
     return amount, None
 
@@ -201,17 +200,17 @@ def _evaluate_slots(slots_list: list[str]) -> tuple[float, str]:
     if max_count == 5:
         payouts = {"💎": 25.0, "💯": 20.0, "🍀": 18.0, "🎁": 16.0, "✨": 15.0}
         mult = payouts[max_sym]
-        return mult, f"x{mult:.1f} - Nổ hũ 5 {max_sym}!"
+        return mult, f"x{mult:.1f} - JACKPOT 5 {max_sym}! Đổi đời rồiiii!"
     elif max_count == 4:
         payouts = {"💎": 5.0, "💯": 4.5, "🍀": 4.0, "🎁": 3.5, "✨": 3.0}
         mult = payouts[max_sym]
-        return mult, f"x{mult:.1f} - Trúng 4 {max_sym}!"
+        return mult, f"x{mult:.1f} - Lụm 4 {max_sym}!"
     elif max_count == 3:
         payouts = {"💎": 1.8, "💯": 1.6, "🍀": 1.5, "🎁": 1.3, "✨": 1.2}
         mult = payouts[max_sym]
-        return mult, f"x{mult:.1f} - Trúng 3 {max_sym}!"
+        return mult, f"x{mult:.1f} - Vớt vát 3 {max_sym}!"
     else:
-        return -1.0, "Thua sạch"
+        return -1.0, "Thua sạch, nhà cái xin nhẹ!"
 
 
 # =============================================================================
@@ -243,7 +242,7 @@ class WheelSlots(commands.Cog):
         balance = await _get_balance(self.bot, uid)
         bet, err = _parse_bet(bet_raw, balance)
         if err or bet is None:
-            await ctx.send(err, ephemeral=True)
+            await ctx.send(f"❌ {ctx.author.mention} {err}")
             return
 
         # ── Quay vòng: chọn chỉ số dừng ngẫu nhiên trên mảng cố định ─────
@@ -258,7 +257,7 @@ class WheelSlots(commands.Cog):
         # ── Cập nhật DB ───────────────────────────────────────────────────
         ok = await _apply_delta(self.bot, uid, delta)
         if not ok:
-            await ctx.send("Lỗi cập nhật Database, thử lại sau!", ephemeral=True)
+            await ctx.send(f"❌ {ctx.author.mention} Sập nguồn cơ sở dữ liệu, thử lại sau!")
             return
 
         new_balance = balance + delta
@@ -310,10 +309,7 @@ class WheelSlots(commands.Cog):
     @wheel_cmd.error
     async def wheel_error(self, ctx: commands.Context, error: Exception) -> None:
         if isinstance(error, commands.MissingRequiredArgument):
-            await ctx.send(
-                "Thiếu! Cú pháp: `y!wheel <tiền_cược>`",
-                ephemeral=True,
-            )
+            await ctx.send(f"❌ {ctx.author.mention} Quay tay bằng không khí à? Cú pháp: `y!wheel <tiền_cược>`")
 
     # ─────────────────────────────────────────────────────────────────────────
     # LỆNH MÁY XẺNG: y!slots
@@ -333,7 +329,7 @@ class WheelSlots(commands.Cog):
         balance = await _get_balance(self.bot, uid)
         bet, err = _parse_bet(bet_raw, balance)
         if err or bet is None:
-            await ctx.send(err, ephemeral=True)
+            await ctx.send(f"❌ {ctx.author.mention} {err}")
             return
 
         # ── Sinh kết quả & Đánh giá ──────────────────────────────────────
@@ -346,7 +342,7 @@ class WheelSlots(commands.Cog):
         # ── Cập nhật DB ──────────────────────────────────────────────────
         ok = await _apply_delta(self.bot, uid, delta)
         if not ok:
-            await ctx.send("Lỗi cập nhật Database, thử lại sau!", ephemeral=True)
+            await ctx.send(f"❌ {ctx.author.mention} Sập nguồn cơ sở dữ liệu, thử lại sau!")
             return
 
         new_balance = balance + delta
@@ -390,10 +386,7 @@ class WheelSlots(commands.Cog):
     @slots_cmd.error
     async def slots_error(self, ctx: commands.Context, error: Exception) -> None:
         if isinstance(error, commands.MissingRequiredArgument):
-            await ctx.send(
-                "Thiếu! Cú pháp: `y!slots <tiền_cược>`",
-                ephemeral=True,
-            )
+            await ctx.send(f"❌ {ctx.author.mention} Không bỏ tiền vô máy ai cho gạt cần? Cú pháp: `y!slots <tiền_cược>`")
 
 
 # =============================================================================

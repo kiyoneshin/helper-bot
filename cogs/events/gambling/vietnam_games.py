@@ -66,11 +66,10 @@ def _parse_bet(raw: str, balance: int) -> tuple[Optional[int], Optional[str]]:
     except ValueError:
         return None, f"`{raw}` không phải số hợp lệ!"
     if amount <= 0:
-        return None, "Tiền cược phải lớn hơn **0**!"
+        return None, "Tiền cược phải lớn hơn **0** nha mấy khứa!"
     if amount > balance:
         return None, (
-            f"Bạn không đủ số dư!\n"
-            f"Số dư hiện tại: **{balance:,}**, bạn muốn cược: **{amount:,}**."
+            f"Ví còn đúng **{balance:,}** mà đòi cược **{amount:,}**? Nghèo mà ham!"
         )
     return amount, None
 
@@ -83,8 +82,7 @@ async def _check_busy(bot: commands.Bot, ctx: commands.Context) -> bool:
     active_players: set = getattr(bot, 'active_players', set())
     if ctx.author.id in active_players:
         await ctx.send(
-            f"{ctx.author.mention}, bạn đang có trò chơi chưa kết thúc! Hãy hoàn tất hước đó trước.",
-            ephemeral=True
+            f"❌ {ctx.author.mention} Đang ngồi sòng khác rồi cha nội! Chốt kèo bên kia xong đi rồi qua đây đú tiếp."
         )
         return True
     return False
@@ -126,9 +124,8 @@ class VietnamGames(commands.Cog):
         choice = choice.lower().strip()
         if choice not in ("tai", "xiu"):
             await ctx.send(
-                "Lựa chọn không hợp lệ! Hãy dùng `tai` hoặc `xiu`.\n"
-                "Cú pháp: `y!tx <tai/xiu> <tiền_cược>`",
-                ephemeral=True,
+                f"❌ {ctx.author.mention} Bấm bậy bạ gì vậy? Dùng `tai` hoặc `xiu`.\n"
+                "Cú pháp: `y!tx <tai/xiu> <tiền_cược>`"
             )
             return
 
@@ -136,7 +133,7 @@ class VietnamGames(commands.Cog):
         balance = await _get_balance(self.bot, uid)
         bet, err = _parse_bet(bet_raw, balance)
         if err or bet is None:
-            await ctx.send(err, ephemeral=True)
+            await ctx.send(f"❌ {ctx.author.mention} {err}")
             return
 
         # ── Cơ chế xúc xắc ──────────────────────────────────────────────
@@ -172,7 +169,7 @@ class VietnamGames(commands.Cog):
         # ── Cập nhật DB ──────────────────────────────────────────────────
         ok = await _apply_delta(self.bot, uid, delta)
         if not ok:
-            await ctx.send("Lỗi cập nhật Database, thử lại sau!", ephemeral=True)
+            await ctx.send(f"❌ {ctx.author.mention} Sập nguồn cơ sở dữ liệu, thử lại sau!")
             return
 
         new_balance = balance + delta
@@ -185,7 +182,7 @@ class VietnamGames(commands.Cog):
             embed_color = COLOR_LOSE
             dice_desc = f"Kết quả: **[ {d1} ]  [ {d2} ]  [ {d3} ]**  **BÃO ({total})**"
             result_name = "🔴 Kết quả"
-            result_val = f"{delta:,}  *(Mất sạch do dính Bão!)*"
+            result_val = f"{delta:,}  *(Đi bụi do dính Bão!)*"
         else:
             embed_title = "🎲 Tài Xỉu (Sic Bo)"
             embed_color = COLOR_WIN if is_win else COLOR_LOSE
@@ -193,10 +190,10 @@ class VietnamGames(commands.Cog):
             
             if is_win:
                 result_name = "🟢 Kết quả"
-                result_val = f"+{delta:,}  *(+95% tiền cược)*"
+                result_val = f"+{delta:,}  *(Húp +95%)*"
             else:
                 result_name = "🔴 Kết quả"
-                result_val = f"{delta:,}  *(Mất trắng)*"
+                result_val = f"{delta:,}  *(Mút trọn)*"
 
         embed = discord.Embed(
             title=embed_title,
@@ -220,10 +217,7 @@ class VietnamGames(commands.Cog):
     @taixiu_cmd.error
     async def taixiu_error(self, ctx: commands.Context, error: Exception) -> None:
         if isinstance(error, commands.MissingRequiredArgument):
-            await ctx.send(
-                "Thiếu! Cú pháp: `y!tx <tai/xiu> <tiền_cược>`",
-                ephemeral=True,
-            )
+            await ctx.send(f"❌ {ctx.author.mention} Chơi mà không ném tiền à? Cú pháp: `y!tx <tai/xiu> <tiền_cược>`")
 
     # =========================================================================
     # BẦU CUA TÔM CÁ
@@ -258,10 +252,10 @@ class VietnamGames(commands.Cog):
         embed = discord.Embed(
             title="🎲 Bàn Bầu Cua Tôm Cá",
             description=(
-                "Gõ xuống kênh chat để cược: `<tên_con_vật> <số_tiền>`\n"
-                "Bạn có thể cược nhiều con trên 1 dòng (cách nhau dấu phẩy) hoặc gõ từng dòng riêng!\n"
-                "Gồm 6 con vật: **Bầu, Cua, Tôm, Cá, Nai, Gà**\n"
-                "Ví dụ: `bầu 100k, cua 1.5m` hoặc nhắn `cá 500k` vào từng dòng riêng."
+                "Nhanh tay gõ xuống kênh chat để cược: `<tên_con_vật> <số_tiền>`\n"
+                "Tay nhanh hơn não thì cược nhiều con 1 dòng luôn (cách nhau dấu phẩy).\n"
+                "Gồm 6 con: **Bầu, Cua, Tôm, Cá, Nai, Gà**\n"
+                "Ví dụ: `bầu 100k, cua 1.5m` hoặc chốt từng dòng riêng `cá 500k`."
             ),
             color=0xFFD700,
         )
@@ -371,7 +365,7 @@ class VietnamGames(commands.Cog):
                     if not ok:
                         try:
                             await msg.reply(
-                                f"❌ {msg.author.mention} Bạn không đủ số dư để cược **{amount:,}**!",
+                                f"❌ {msg.author.mention} Đỗ nghèo khỉ mà đòi cược thêm **{amount:,}** à?",
                                 delete_after=5,
                             )
                         except discord.HTTPException:
@@ -448,8 +442,8 @@ class VietnamGames(commands.Cog):
 
         # Gửi thông báo kết quả chung
         await ctx.send(
-            f"🎲 **Kết quả Bầu Cua:** {dice_display}\n"
-            f"*(Đang tính toán và gửi kết quả cho {len(player_bets)} người chơi...)*"
+            f"🎲 **Sòng đã mở:** {dice_display}\n"
+            f"*(Đang chia tiền cho {len(player_bets)} con bạc...)*"
         )
 
         # ── Vòng lặp trả thưởng cá nhân từng người ───────────────────────────
@@ -491,8 +485,8 @@ class VietnamGames(commands.Cog):
             embed_color = 0x00FF00 if is_profit else (0x808080 if net_gain == 0 else 0xFF0000)
             result_field_name = "🟢 Kết quả" if is_profit else ("🔴 Kết quả" if net_gain < 0 else "⚪ Kết quả")
             result_field_val = (
-                f"+{net_gain:,}  *(Thắng!)*" if net_gain > 0
-                else (f"{net_gain:,}  *(Thua)*" if net_gain < 0 else "Hoà vốn")
+                f"+{net_gain:,}  *(Húp)*" if net_gain > 0
+                else (f"{net_gain:,}  *(Mút trọn)*" if net_gain < 0 else "Hoà vốn")
             )
 
             # Lấy User object để set_author

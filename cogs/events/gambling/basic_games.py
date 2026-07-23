@@ -35,8 +35,7 @@ async def _check_busy(bot: commands.Bot, ctx: commands.Context) -> bool:
     active_players = getattr(bot, 'active_players', set())
     if ctx.author.id in active_players:
         await ctx.send(
-            f"{ctx.author.mention}, bạn không thể làm điều này! hãy kết thúc lệnh trước đó của bạn.", 
-            ephemeral=True
+            f"❌ {ctx.author.mention} Đang ngồi sòng khác rồi cha nội! Chốt kèo bên kia xong đi rồi qua đây đú tiếp."
         )
         return True
     return False
@@ -88,11 +87,10 @@ def _parse_bet(raw: str, balance: int) -> tuple[Optional[int], Optional[str]]:
     except ValueError:
         return None, f"`{raw}` không phải số hợp lệ!"
     if amount <= 0:
-        return None, "Tiền cược phải lớn hơn **0**!"
+        return None, "Tiền cược phải lớn hơn **0** nha mấy khứa!"
     if amount > balance:
         return None, (
-            f"Bạn không đủ số dư!\n"
-            f"Số dư hiện tại: **{balance:,}**, bạn muốn cược: **{amount:,}**."
+            f"Ví còn đúng **{balance:,}** mà đòi cược **{amount:,}**? Nghèo mà ham!"
         )
     return amount, None
 
@@ -118,14 +116,14 @@ class BasicGames(commands.Cog):
         
         choice = choice.lower().strip()
         if choice not in ("h", "t"):
-            await ctx.send("❌ Lựa chọn không hợp lệ! Dùng `h` (Ngửa) hoặc `t` (Sấp).\nCú pháp: `y!cf <h/t> <tiền_cược>`", ephemeral=False)
+            await ctx.send(f"❌ {ctx.author.mention} Bấm bậy bạ gì vậy? Dùng `h` (Ngửa) hoặc `t` (Sấp).\nCú pháp: `y!cf <h/t> <tiền_cược>`")
             return
 
         uid = str(ctx.author.id)
         balance = await _get_balance(self.bot, uid)
         bet, err = _parse_bet(bet_raw, balance)
         if err or bet is None:
-            await ctx.send(err, ephemeral=True)
+            await ctx.send(f"❌ {ctx.author.mention} {err}")
             return
 
         outcome = random.choices(["win", "lose", "side"], weights=[44.0, 55.0, 1.0], k=1)[0]
@@ -153,7 +151,7 @@ class BasicGames(commands.Cog):
 
         ok = await _apply_delta(self.bot, uid, delta)
         if not ok:
-            await ctx.send("Lỗi cập nhật Database, thử lại sau!", ephemeral=True)
+            await ctx.send(f"❌ {ctx.author.mention} Sập nguồn cơ sở dữ liệu, thử lại sau!")
             return
 
         new_balance = balance + delta
@@ -181,7 +179,7 @@ class BasicGames(commands.Cog):
     @coinflip_cmd.error
     async def coinflip_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, commands.MissingRequiredArgument):
-            await ctx.send("Thiếu! Cú pháp: `y!cf <h/t> <tiền_cược>`", ephemeral=True)
+            await ctx.send(f"❌ {ctx.author.mention} Chơi mà không ném tiền à? Cú pháp: `y!cf <h/t> <tiền_cược>`")
 
     # =========================================================================
     # 2. CUPS (Game tương tác - Cần khóa hành động)
@@ -194,15 +192,15 @@ class BasicGames(commands.Cog):
         balance = await _get_balance(self.bot, uid)
         bet, err = _parse_bet(bet_raw, balance)
         if err or bet is None:
-            await ctx.send(err, ephemeral=True)
+            await ctx.send(f"❌ {ctx.author.mention} {err}")
             return
 
         embed = discord.Embed(
-            description="Cục màu trắng ở đâu? ◽ **1, 2** hay **3** ?\n\n🥤  🥤  🥤\n",
+            description="Cục màu trắng ở đâu? ◽ **1, 2** hay **3** ?\nNhanh tay lẹ mắt nhào vô!\n\n🥤  🥤  🥤\n",
             color=0xffb6c1,
         )
         embed.set_author(name=f"{ctx.author.display_name} — cups", icon_url=ctx.author.display_avatar.url)
-        embed.set_footer(text="Chọn trong 30 giây • Hết giờ sẽ hoàn tiền cược")
+        embed.set_footer(text="Chọn lẹ trong 30 giây • Ngâm quá sòng trả lại tiền")
 
         # Khóa người chơi
         _lock_user(self.bot, ctx.author.id)
@@ -217,7 +215,7 @@ class BasicGames(commands.Cog):
     @cups_cmd.error
     async def cups_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, commands.MissingRequiredArgument):
-            await ctx.send("Thiếu! Cú pháp: `y!cups <tiền_cược>`", ephemeral=True)
+            await ctx.send(f"❌ {ctx.author.mention} Dốc hết hầu bao đi! Cú pháp: `y!cups <tiền_cược>`")
 
     # =========================================================================
     # 3. DICE 7 (Game tức thời)
@@ -230,26 +228,26 @@ class BasicGames(commands.Cog):
         balance = await _get_balance(self.bot, uid)
         bet, err = _parse_bet(bet_raw, balance)
         if err or bet is None:
-            await ctx.send(err, ephemeral=True)
+            await ctx.send(f"❌ {ctx.author.mention} {err}")
             return
 
         face = random.choices([1, 2, 3, 4, 5, 6, 7], weights=[16.75, 16.75, 16.75, 16.5, 16.5, 16.5, 0.25], k=1)[0]
         # ... logic tính điểm ...
         PAYOUT = {
-            1: (-1.00, "1️⃣", COLOR_LOSE,    "Mất 100% tiền cược"),
-            2: (-0.50, "2️⃣", COLOR_LOSE,    "Mất 50% tiền cược"),
-            3: (-0.25, "3️⃣", COLOR_LOSE,    "Mất 25% tiền cược"),
-            4: ( 0.25, "4️⃣", COLOR_WIN,     "Ăn +25% tiền cược"),
-            5: ( 0.50, "5️⃣", COLOR_WIN,     "Ăn +50% tiền cược"),
-            6: ( 1.00, "6️⃣", COLOR_WIN,     "Ăn +100% tiền cược"),
-            7: ( 7.00, "🌟", COLOR_JACKPOT, "JACKPOT +700% tiền cược!"),
+            1: (-1.00, "1️⃣", COLOR_LOSE,    "Mút trọn (Mất 100%)"),
+            2: (-0.50, "2️⃣", COLOR_LOSE,    "Cắt nửa vầng trăng (Mất 50%)"),
+            3: (-0.25, "3️⃣", COLOR_LOSE,    "Rớt miếng thịt (Mất 25%)"),
+            4: ( 0.25, "4️⃣", COLOR_WIN,     "Húp tí xíu (+25%)"),
+            5: ( 0.50, "5️⃣", COLOR_WIN,     "Húp vừa vừa (+50%)"),
+            6: ( 1.00, "6️⃣", COLOR_WIN,     "Lụm chẵn (+100%)"),
+            7: ( 7.00, "🌟", COLOR_JACKPOT, "JACKPOT NỔ HŨ (+700%)!"),
         }
         mult, face_emoji, color, desc = PAYOUT[face]
         delta = round(mult * bet)
 
         ok = await _apply_delta(self.bot, uid, delta)
         if not ok:
-            await ctx.send("Lỗi cập nhật Database, thử lại sau!", ephemeral=True)
+            await ctx.send(f"❌ {ctx.author.mention} Nhà cái đang kẹt mạng, thử lại sau!")
             return
 
         new_balance = balance + delta
@@ -273,7 +271,7 @@ class BasicGames(commands.Cog):
     @dice_cmd.error
     async def dice_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, commands.MissingRequiredArgument):
-            await ctx.send("Thiếu! Cú pháp: `y!dice <tiền_cược>`", ephemeral=True)
+            await ctx.send(f"❌ {ctx.author.mention} Ném tiền vô mâm đi chứ! Cú pháp: `y!dice <tiền_cược>`")
 
     # =========================================================================
     # 4. ROULETTE (Game tương tác - Cần khóa hành động)
@@ -286,12 +284,12 @@ class BasicGames(commands.Cog):
         balance = await _get_balance(self.bot, uid)
         bet, err = _parse_bet(bet_raw, balance)
         if err or bet is None:
-            await ctx.send(err, ephemeral=True)
+            await ctx.send(f"❌ {ctx.author.mention} {err}")
             return
 
         ok = await _apply_delta(self.bot, uid, -bet)
         if not ok:
-            await ctx.send("Lỗi cập nhật Database, không thể tạm giữ tiền cược!", ephemeral=True)
+            await ctx.send(f"❌ {ctx.author.mention} Lỗi DB, không tạm giữ tiền cược được!")
             return
             
         new_balance = balance - bet
@@ -299,8 +297,8 @@ class BasicGames(commands.Cog):
         embed = discord.Embed(
             title="🔫 Cò Quay Tử Thần",
             description=(
-                "Ổ đạn 6 buồng, chỉ có 1 viên đạn thật. Ổ đạn **không** xoay lại sau mỗi lần bóp cò.\n\n"
-                "Sống sót càng lâu, tiền thưởng càng lớn. Dám chơi lớn không? 💥\n\n"
+                "Ổ đạn 6 buồng, chỉ có 1 viên đạn thật. Bóp cò là không có đường lui.\n\n"
+                "Sống sót càng lâu, húp càng đẫm. Dám chơi lớn không? 💥\n\n"
                 "**Hệ số thưởng:**\n"
                 "Lần 1: x1.1\nLần 2: x1.3\nLần 3: x1.8\nLần 4: x2.7\nLần 5: x5"
             ),
@@ -323,7 +321,7 @@ class BasicGames(commands.Cog):
     @roulette_cmd.error
     async def roulette_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, commands.MissingRequiredArgument):
-            await ctx.send("Thiếu! Cú pháp: `y!shot <tiền_cược>`", ephemeral=True)
+            await ctx.send(f"❌ {ctx.author.mention} Không cọc tiền ai cho chơi! Cú pháp: `y!shot <tiền_cược>`")
 
 
 # =============================================================================
@@ -341,7 +339,7 @@ class CupsView(discord.ui.View):
 
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
         if interaction.user.id != self.author.id:
-            await interaction.response.send_message("❌ Bạn không phải người chơi game này!", ephemeral=True)
+            await interaction.response.send_message("❌ Mày đứng xem thôi, không phải sòng của mày!", ephemeral=True)
             return False
         return True
 
@@ -368,15 +366,15 @@ class CupsView(discord.ui.View):
             new_balance = self.balance + delta
             result_line = f"+{delta:,}  *(x2.3)*"
             color = COLOR_WIN
-            title = "🥤 Cups — Đoán Đúng! 🎉"
+            title = "🥤 Cups — Lụm Lúa! 🎉"
             outcome_emoji = "🟢"
         else:
             delta = -self.bet
             await _apply_delta(self.bot, uid, delta)
             new_balance = self.balance + delta
-            result_line = f"-{self.bet:,}  *(Mất trắng)*"
+            result_line = f"-{self.bet:,}  *(Mút trọn)*"
             color = COLOR_LOSE
-            title = "🥤 Cups — Đoán Sai! 😢"
+            title = "🥤 Cups — Bị Lùa! 😢"
             outcome_emoji = "🔴"
 
         embed = discord.Embed(
@@ -414,8 +412,8 @@ class CupsView(discord.ui.View):
         if self.message:
             try:
                 embed = discord.Embed(
-                    title="🥤 Cups — Hết Giờ!",
-                    description=f"Bạn đã không chọn trong 30 giây.\nTiền cược **{self.bet:,}** được **hoàn lại**.\n\n🥤  🥤  🥤",
+                    title="🥤 Cups — Nhát Gan Bỏ Chạy!",
+                    description=f"Ngâm quá 30 giây không dám bốc.\nTiền cược **{self.bet:,}** được **trả lại** nguyên vẹn.\n\n🥤  🥤  🥤",
                     color=0x95a5a6,
                 )
                 embed.set_author(name=f"{self.author.display_name} — cups", icon_url=self.author.display_avatar.url)
@@ -440,7 +438,7 @@ class RouletteView(discord.ui.View):
 
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
         if interaction.user.id != self.author.id:
-            await interaction.response.send_message("❌ Bạn không phải người chơi game này!", ephemeral=True)
+            await interaction.response.send_message("❌ Nín thở ngồi xem thôi, không phải sòng của mày!", ephemeral=True)
             return False
         return True
 
@@ -461,13 +459,13 @@ class RouletteView(discord.ui.View):
             _unlock_user(self.bot, self.author.id)
             
             embed = discord.Embed(
-                title="🔫 Cò Quay Tử Thần — Dính Đạn! 💀",
-                description="***PANG!*** 💥\n\nBạn đã **gục ngã** trong vũng máu!\nToàn bộ tiền cược bị tịch thu, và bạn bị phạt thêm **50** điểm sự kiện vì quá liều lĩnh. 💀",
+                title="🔫 Cò Quay Tử Thần — Đăng Xuất! 💀",
+                description="***PANG!*** 💥\n\nNằm mẹ nó rồi!\nSòng bạc tịch thu cược và cắn thêm **50** điểm vì làm bẩn sàn. 💀",
                 color=COLOR_LOSE,
             )
             embed.set_author(name=f"{self.author.display_name} — roulette", icon_url=self.author.display_avatar.url)
             embed.add_field(name="💰 Tiền cược", value=f"{self.bet:,}", inline=False)
-            embed.add_field(name="🔴 Kết quả", value=f"-{self.bet:,}  *(Mất trắng) & Phạt 50*", inline=False)
+            embed.add_field(name="🔴 Kết quả", value=f"-{self.bet:,}  *(Mút trọn) & Bị phạt 50*", inline=False)
             embed.add_field(name="💳 Số dư mới", value=f"{self.balance:,}", inline=False)
             embed.set_footer(text="Angelic Casino • Cò Quay Tử Thần 🌸")
             
@@ -491,9 +489,9 @@ class RouletteView(discord.ui.View):
                 description=(
                     "*lách cách...* Phew! 😮‍💨\n\n"
                     f"Bạn đã sống sót qua viên thứ **{self.survived_rounds}**!\n\n"
-                    f"👉 **Giải thưởng hiện tại:** {current_win:,}  *(x{current_mult:.2f})*\n"
-                    f"👉 **Nếu bóp cò tiếp (x{next_mult:.2f}):** {round(self.bet * next_mult):,}\n\n"
-                    "Bạn muốn **Rút lui** để ôm tiền về, hay tiếp tục **Bóp cò**?"
+                    f"👉 **Húp ngay:** {current_win:,}  *(x{current_mult:.2f})*\n"
+                    f"👉 **Đánh đổi mạng sống (x{next_mult:.2f}):** {round(self.bet * next_mult):,}\n\n"
+                    "Muốn **Chốt lãi** ôm tiền về, hay tiếp tục **Bóp cò**?"
                 ),
                 color=COLOR_WIN,
             )
@@ -502,7 +500,7 @@ class RouletteView(discord.ui.View):
             
             await interaction.response.edit_message(embed=embed, view=self)
 
-    @discord.ui.button(label="💰 Rút lui", style=discord.ButtonStyle.success, disabled=True, custom_id="cashout_btn")
+    @discord.ui.button(label="💰 Chốt lãi", style=discord.ButtonStyle.success, disabled=True, custom_id="cashout_btn")
     async def cashout_btn(self, interaction: discord.Interaction, button: discord.ui.Button):
         await self.process_cashout(interaction, auto_cashout=False)
 
@@ -531,12 +529,12 @@ class RouletteView(discord.ui.View):
             res_str = f"+0  *(Hoàn tiền)*"
             emo = "🟢"
         else:
-            title = "🔫 Cò Quay Tử Thần — Rút Lui Thành Công!"
-            desc = f"Tuyệt vời! Bạn đã mang về **{payout:,}** sau khi sống sót qua **{self.survived_rounds}** viên đạn."
+            title = "🔫 Cò Quay Tử Thần — Húp An Toàn!"
+            desc = f"Biết điều đấy! Ôm nhẹ **{payout:,}** về sau khi né được **{self.survived_rounds}** phát đạn."
             if auto_cashout and self.survived_rounds == 5:
-                desc = f"HUYỀN THOẠI! Lũy kế 5 viên đạn lép! Tự động rút lui với x5!\n\nBạn đã mang về **{payout:,}**."
+                desc = f"BÀN TAY VÀNG TRONG LÀNG BÓP CÒ! Sống sót qua 5 viên lép!\nNổ hũ ẵm trọn **{payout:,}**."
             elif is_timeout:
-                desc = f"Trò chơi hết giờ! Tự động rút lui an toàn.\n\nBạn đã mang về **{payout:,}**."
+                desc = f"Run tay ngâm lâu quá! Tự động chốt lãi an toàn.\n\nHúp **{payout:,}**."
             
             color = COLOR_WIN
             res_str = f"+{profit:,}  *(x{mult:.2f})*"
