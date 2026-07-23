@@ -73,6 +73,11 @@ def build_casino_embed() -> discord.Embed:
         value="Xúc Xắc Quần Hùng (Multi Dice). Mời nhiều người cùng lắc xúc xắc PvP, chia thưởng tự động.",
         inline=False
     )
+    embed.add_field(
+        name="🦆 y!betvit <màu> <tiền_cược>",
+        value="Đua vịt sự kiện (Chạy tự động mỗi 4 tiếng). Các màu: `do`, `xanh`, `vang`, `hong`, `yon`. (Dùng `y!xemvit` để xem tỷ lệ và `y!huybet` để rút tiền).",
+        inline=False
+    )
     return embed
 
 def build_shop_embed() -> discord.Embed:
