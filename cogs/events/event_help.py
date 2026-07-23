@@ -35,7 +35,7 @@ def build_casino_embed() -> discord.Embed:
     )
     embed.add_field(
         name="🥤 y!cups <tiền_cược>",
-        value="Đoán ly chứa bảo vật (Giao diện nút bấm nhanh tay).",
+        value="Đoán ly chứa bảo vật.",
         inline=False
     )
     embed.add_field(
@@ -50,7 +50,7 @@ def build_casino_embed() -> discord.Embed:
     )
     embed.add_field(
         name="🏮 y!tx <tai/xiu> <tiền_cược>",
-        value="Lắc Tài Xỉu 3 viên xúc xắc. (Lưu ý: Bão nhà cái ăn tất!).",
+        value="Lắc Tài Xỉu 3 viên xúc xắc.",
         inline=False
     )
     embed.add_field(
