@@ -101,13 +101,20 @@ async def _apply_delta(bot: commands.Bot, user_id: str, delta: int) -> bool:
 
 def _parse_bet(raw: str, balance: int) -> tuple[Optional[int], Optional[str]]:
     """
-    Parse chuỗi tiền cược.
+    Parse chuỗi tiền cược. Hỗ trợ hậu tố k (nghìn) và m (triệu).
+    Ví dụ: 50k = 50,000 | 1.5m = 1,500,000 | 100,000
     Trả về (amount, None) nếu hợp lệ, hoặc (None, error_msg) nếu không.
     """
+    cleaned = raw.lower().replace(",", "").strip()
     try:
-        amount = int(raw.replace(",", "").replace(".", ""))
+        if cleaned.endswith("m"):
+            amount = int(float(cleaned[:-1]) * 1_000_000)
+        elif cleaned.endswith("k"):
+            amount = int(float(cleaned[:-1]) * 1_000)
+        else:
+            amount = int(float(cleaned))
     except ValueError:
-        return None, f"`{raw}` không phải số nguyên hợp lệ!"
+        return None, f"`{raw}` không phải số hợp lệ!"
     if amount <= 0:
         return None, "Tiền cược phải lớn hơn **0**!"
     if amount > balance:
