@@ -63,6 +63,16 @@ def build_casino_embed() -> discord.Embed:
         value="Máy xẻng. Cơ hội trúng Nổ hũ siêu to (Jackpot x25).",
         inline=False
     )
+    embed.add_field(
+        name="🦀 y!bc (hoặc y!baucua)",
+        value="Bầu Cua Tôm Cá nhiều người chơi tham gia chung 1 sòng.",
+        inline=False
+    )
+    embed.add_field(
+        name="🎲 y!md <tiền_cược> [@user1...]",
+        value="Xúc Xắc Quần Hùng (Multi Dice). Mời nhiều người cùng lắc xúc xắc PvP, chia thưởng tự động.",
+        inline=False
+    )
     return embed
 
 def build_shop_embed() -> discord.Embed:
