@@ -107,12 +107,12 @@ def _parse_bet(raw: str, balance: int) -> tuple[Optional[int], Optional[str]]:
     try:
         amount = int(raw.replace(",", "").replace(".", ""))
     except ValueError:
-        return None, f"❌ `{raw}` không phải số nguyên hợp lệ!"
+        return None, f"`{raw}` không phải số nguyên hợp lệ!"
     if amount <= 0:
-        return None, "❌ Tiền cược phải lớn hơn **0**!"
+        return None, "Tiền cược phải lớn hơn **0**!"
     if amount > balance:
         return None, (
-            f"❌ Bạn không đủ số dư!\n"
+            f"Bạn không đủ số dư!\n"
             f"Số dư hiện tại: **{balance:,}**, bạn muốn cược: **{amount:,}**."
         )
     return amount, None
@@ -152,6 +152,59 @@ def _render_wheel(stop_idx: int) -> str:
     arrow_row = "⬛⬛⬛🔻⬛⬛⬛"
     body_rows  = ["".join(row) for row in grid]
     return arrow_row + "\n" + "\n".join(body_rows)
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# THUẬT TOÁN MÁY XẺNG (SLOTS)
+# ─────────────────────────────────────────────────────────────────────────────
+
+SLOT_SYMBOLS = ["💎", "💯", "🍀", "🎁", "✨"]
+
+def _generate_slots() -> list[str]:
+    """Sinh mảng 5 emoji cho trò chơi Slots dựa trên tỉ lệ Hạng Giải."""
+    tier = random.choices(['lose', '3_match', '4_match', '5_match'], weights=[81.5, 14.0, 4.0, 0.5], k=1)[0]
+    target = random.choice(SLOT_SYMBOLS)
+    
+    if tier == '5_match':
+        slots = [target] * 5
+    elif tier == '4_match':
+        other = random.choice([s for s in SLOT_SYMBOLS if s != target])
+        slots = [target] * 4 + [other]
+    elif tier == '3_match':
+        others = random.choices([s for s in SLOT_SYMBOLS if s != target], k=2)
+        slots = [target] * 3 + others
+    else:
+        # lose: đảm bảo không có biểu tượng nào xuất hiện >= 3 lần
+        while True:
+            slots = random.choices(SLOT_SYMBOLS, k=5)
+            counts = {s: slots.count(s) for s in set(slots)}
+            if max(counts.values()) < 3:
+                break
+                
+    random.shuffle(slots)
+    return slots
+
+
+def _evaluate_slots(slots_list: list[str]) -> tuple[float, str]:
+    """Đánh giá mảng emoji và trả về hệ số (Multiplier) cùng Mô tả."""
+    counts = {s: slots_list.count(s) for s in set(slots_list)}
+    max_sym = max(counts, key=lambda k: counts[k])
+    max_count = counts[max_sym]
+    
+    if max_count == 5:
+        payouts = {"💎": 25.0, "💯": 20.0, "🍀": 18.0, "🎁": 16.0, "✨": 15.0}
+        mult = payouts[max_sym]
+        return mult, f"x{mult:.1f} - Nổ hũ 5 {max_sym}!"
+    elif max_count == 4:
+        payouts = {"💎": 5.0, "💯": 4.5, "🍀": 4.0, "🎁": 3.5, "✨": 3.0}
+        mult = payouts[max_sym]
+        return mult, f"x{mult:.1f} - Trúng 4 {max_sym}!"
+    elif max_count == 3:
+        payouts = {"💎": 1.8, "💯": 1.6, "🍀": 1.5, "🎁": 1.3, "✨": 1.2}
+        mult = payouts[max_sym]
+        return mult, f"x{mult:.1f} - Trúng 3 {max_sym}!"
+    else:
+        return -1.0, "Thua sạch"
 
 
 # =============================================================================
@@ -198,7 +251,7 @@ class WheelSlots(commands.Cog):
         # ── Cập nhật DB ───────────────────────────────────────────────────
         ok = await _apply_delta(self.bot, uid, delta)
         if not ok:
-            await ctx.send("⚠️ Lỗi cập nhật Database, thử lại sau!", ephemeral=True)
+            await ctx.send("Lỗi cập nhật Database, thử lại sau!", ephemeral=True)
             return
 
         new_balance = balance + delta
@@ -251,7 +304,87 @@ class WheelSlots(commands.Cog):
     async def wheel_error(self, ctx: commands.Context, error: Exception) -> None:
         if isinstance(error, commands.MissingRequiredArgument):
             await ctx.send(
-                "❌ Thiếu tham số! Cú pháp: `y!wheel <tiền_cược>`",
+                "Thiếu! Cú pháp: `y!wheel <tiền_cược>`",
+                ephemeral=True,
+            )
+
+    # ─────────────────────────────────────────────────────────────────────────
+    # LỆNH MÁY XẺNG: y!slots
+    # ─────────────────────────────────────────────────────────────────────────
+
+    @commands.hybrid_command(
+        name="slots",
+        aliases=["slot"],
+        description="Chơi Máy Xẻng (Slots) — y!slots <tiền_cược>",
+    )
+    async def slots_cmd(self, ctx: commands.Context, bet_raw: str) -> None:
+        """
+        Trò chơi Máy Xẻng (Slots).
+        - Đảm bảo tỷ lệ chính xác tuyệt đối bằng thuật toán Outcome-First.
+        """
+        uid = str(ctx.author.id)
+        balance = await _get_balance(self.bot, uid)
+        bet, err = _parse_bet(bet_raw, balance)
+        if err or bet is None:
+            await ctx.send(err, ephemeral=True)
+            return
+
+        # ── Sinh kết quả & Đánh giá ──────────────────────────────────────
+        slots = _generate_slots()
+        mult, desc = _evaluate_slots(slots)
+
+        # ── Tính delta tiền ──────────────────────────────────────────────
+        delta = round(mult * bet)
+
+        # ── Cập nhật DB ──────────────────────────────────────────────────
+        ok = await _apply_delta(self.bot, uid, delta)
+        if not ok:
+            await ctx.send("Lỗi cập nhật Database, thử lại sau!", ephemeral=True)
+            return
+
+        new_balance = balance + delta
+
+        # ── Xây dựng Giao diện Embed ─────────────────────────────────────
+        # Mô tả hiển thị (RPG Style): ◖ 💎 ✨ 💯 💯 💎 ◗
+        slots_display = f"◖ {' '.join(slots)} ◗"
+        
+        if mult >= 15.0:
+            embed_color = COLOR_SPECIAL
+            result_name = "🌟 Kết quả"
+            result_val = f"+{delta:,}  *({desc})*"
+        elif mult > 0:
+            embed_color = COLOR_WIN
+            result_name = "🟢 Kết quả"
+            result_val = f"+{delta:,}  *({desc})*"
+        else:
+            embed_color = COLOR_LOSE
+            result_name = "🔴 Kết quả"
+            result_val = f"{delta:,}  *({desc})*"
+
+        embed = discord.Embed(
+            title="🎰 Máy Xẻng (Slots)",
+            description=f"**Kết quả:**\n\n{slots_display}",
+            color=embed_color,
+        )
+        embed.set_author(
+            name=f"{ctx.author.display_name} — slots",
+            icon_url=ctx.author.display_avatar.url,
+        )
+
+        # 3 Field Hàng Dọc
+        embed.add_field(name="💰 Tiền cược", value=f"{bet:,}", inline=False)
+        embed.add_field(name=result_name, value=result_val, inline=False)
+        embed.add_field(name="💳 Số dư mới", value=f"{new_balance:,}", inline=False)
+
+        embed.set_footer(text="Angelic Casino • Máy Xẻng 🌸")
+
+        await ctx.send(embed=embed)
+
+    @slots_cmd.error
+    async def slots_error(self, ctx: commands.Context, error: Exception) -> None:
+        if isinstance(error, commands.MissingRequiredArgument):
+            await ctx.send(
+                "Thiếu! Cú pháp: `y!slots <tiền_cược>`",
                 ephemeral=True,
             )
 
