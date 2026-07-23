@@ -250,29 +250,36 @@ class VietnamGames(commands.Cog):
 
     def _build_lobby_embed(
         self,
-        bets: dict[str, int],
+        total_pool: dict[str, int],
+        player_count: int,
         time_left: int,
     ) -> discord.Embed:
-        """Dựng Embed Lobby với bảng cược hiện tại và đồng hồ đếm ngược."""
+        """Dựng Embed Lobby với tổng tiền cược toàn bàn và đồng hồ đếm ngược."""
         embed = discord.Embed(
             title="🎲 Bàn Bầu Cua Tôm Cá",
             description=(
                 "Gõ xuống kênh chat để cược: `<tên_con_vật> <số_tiền>`\n"
-                "Bạn có thể cược nhiều con trên 1 dòng (cách nhau dấu phẩy) hoặc gõ từng dòng riêng! *(Hỗ trợ k, m)*\n"
+                "Bạn có thể cược nhiều con trên 1 dòng (cách nhau dấu phẩy) hoặc gõ từng dòng riêng!\n"
+                "Gồm 6 con vật: **Bầu, Cua, Tôm, Cá, Nai, Gà**\n"
                 "Ví dụ: `bầu 100k, cua 1.5m` hoặc nhắn `cá 500k` vào từng dòng riêng."
             ),
             color=0xFFD700,
         )
-        # Bảng cược hiện tại
-        bet_lines = " \u2003 ".join(
-            f"{self.BC_EMOJIS[k]} **{bets[k]:,}**" if bets[k] else f"{self.BC_EMOJIS[k]} `---`"
+        # Bảng tổng cược toàn bàn
+        pool_lines = " \u2003 ".join(
+            f"{self.BC_EMOJIS[k]} **{total_pool[k]:,}**" if total_pool[k] else f"{self.BC_EMOJIS[k]} `---`"
             for k in self.BC_KEYS
         )
-        embed.add_field(name="📊 Bảng Cược", value=bet_lines, inline=False)
+        embed.add_field(name="📊 Tổng Tiền Bàn", value=pool_lines, inline=False)
+        embed.add_field(
+            name="👥 Người tham gia",
+            value=f"**{player_count}** người đã cược",
+            inline=True,
+        )
         embed.add_field(
             name="⏳ Đóng sảnh sau",
-            value=f"**{time_left} giây** — `[ 🎲 ] [ 🎲 ] [ 🎲 ]`",
-            inline=False,
+            value=f"**{time_left} giây**  `[ 🎲 ] [ 🎲 ] [ 🎲 ]`",
+            inline=True,
         )
         embed.set_footer(text="Angelic Casino • Bầu Cua Tôm Cá 🌸")
         return embed
@@ -280,185 +287,233 @@ class VietnamGames(commands.Cog):
     @commands.command(name="baucua", aliases=["bc"])
     async def baucua_cmd(self, ctx: commands.Context) -> None:
         """
-        Trò chơi Bầu Cua Tôm Cá.
-        Giai đoạn 1: Sảnh cược 30 giây nhận lệnh từ chat.
-        Giai đoạn 2: Kết quả 3 xúc xắc và trả thưởng.
+        Trò chơi Bầu Cua Tôm Cá (MULTIPLAYER).
+        Giai đoạn 1: Sảnh cược 30 giây — TOÀN BỘ người dùng trong kênh có thể tham gia.
+        Giai đoạn 2: Tung xúc xắc, trả thưởng cá nhân từng người.
         """
         if await _check_busy(self.bot, ctx):
             return
 
-        uid = str(ctx.author.id)
         _lock_user(self.bot, ctx.author.id)
 
-        # Đặt cược: {kóa: tổng_tiền}
-        bets: dict[str, int] = {k: 0 for k in self.BC_KEYS}
+        # ── Khởi tạo dữ liệu đa người chơi ──────────────────────────────────
+        # player_bets: { user_id → { animal_key → tổng đã cược } }
+        player_bets: dict[int, dict[str, int]] = {}
+        # total_pool: tổng tiền cược của toàn bàn theo từng linh vật
+        total_pool: dict[str, int] = {k: 0 for k in self.BC_KEYS}
+
         LOBBY_DURATION = 30
         start_time = asyncio.get_event_loop().time()
 
         # Gửi lobby lần đầu
-        lobby_msg = await ctx.send(embed=self._build_lobby_embed(bets, LOBBY_DURATION))
-        # Mốc cập nhật: tại giây còn lại 20, 10, 5 (tuyệt đối tới sắt thời gian)
+        lobby_msg = await ctx.send(
+            embed=self._build_lobby_embed(total_pool, 0, LOBBY_DURATION)
+        )
         update_at: set[int] = {20, 10, 5}
-        last_update_secs = LOBBY_DURATION
+        last_update_secs: int = LOBBY_DURATION
 
         try:
             while True:
                 elapsed = asyncio.get_event_loop().time() - start_time
                 time_left = max(0, int(LOBBY_DURATION - elapsed))
-
                 if time_left <= 0:
                     break
 
-                # Đợi tin nhắn mới từ chính người chơi trong kênh đó
-                remaining = max(1.0, LOBBY_DURATION - (asyncio.get_event_loop().time() - start_time))
+                remaining = max(0.5, LOBBY_DURATION - (asyncio.get_event_loop().time() - start_time))
                 try:
                     msg: discord.Message = await self.bot.wait_for(
                         "message",
                         timeout=remaining,
+                        # Lắng nghe TẤT CẢ người thật trong kênh
                         check=lambda m: (
-                            m.author.id == ctx.author.id
+                            not m.author.bot
                             and m.channel.id == ctx.channel.id
                         ),
                     )
                 except asyncio.TimeoutError:
                     break
 
-                # — Parse cược từ nội dung tin nhắn —
-                # Tách theo dấu phẩy hoặc xuống dòng
+                sender_id = msg.author.id
+                sender_uid = str(sender_id)
                 segments = re.split(r"[,\n]", msg.content)
-                placed_any = False
+                placed_any_this_msg = False
 
                 for seg in segments:
                     seg = seg.strip()
                     if not seg:
                         continue
-                    # Tìm cặp (con_vật, số_tiền)
-                    match = re.search(
+
+                    m = re.search(
                         r"(bau|b\u1ea7u|cua|tom|t\u00f4m|ca|c\u00e1|nai|ga|g\u00e0)\s+([0-9km.]+)",
                         seg.lower(),
                     )
-                    if not match:
+                    if not m:
                         continue
 
-                    animal_raw, amount_raw = match.group(1), match.group(2)
+                    animal_raw, amount_raw = m.group(1), m.group(2)
                     key, _ = self.BC_ANIMALS[animal_raw]
 
-                    # Lấy số dư mới nhất trước khi trừ
-                    cur_bal = await _get_balance(self.bot, uid)
+                    # Lấy số dư realtime của người gửi tin
+                    cur_bal = await _get_balance(self.bot, sender_uid)
                     amount, err = _parse_bet(amount_raw, cur_bal)
+
                     if err or amount is None:
                         try:
-                            await msg.add_reaction("❌")
+                            await msg.reply(
+                                f"❌ {msg.author.mention} {err}",
+                                delete_after=5,
+                            )
                         except discord.HTTPException:
                             pass
                         continue
 
-                    ok = await _apply_delta(self.bot, uid, -amount)
+                    ok = await _apply_delta(self.bot, sender_uid, -amount)
                     if not ok:
                         try:
-                            await msg.add_reaction("❌")
+                            await msg.reply(
+                                f"❌ {msg.author.mention} Bạn không đủ số dư để cược **{amount:,}**!",
+                                delete_after=5,
+                            )
                         except discord.HTTPException:
                             pass
                         continue
 
-                    bets[key] += amount
-                    placed_any = True
+                    # Ghi nhận vào player_bets
+                    if sender_id not in player_bets:
+                        player_bets[sender_id] = {k: 0 for k in self.BC_KEYS}
+                    player_bets[sender_id][key] += amount
+                    total_pool[key] += amount
+                    placed_any_this_msg = True
+
                     try:
                         await msg.add_reaction("✅")
                     except discord.HTTPException:
                         pass
 
-                # Cập nhật UI định kỳ (chống rate limit)
+                # Cập nhật UI định kỳ (chống rate limit Discord)
                 now_left = max(0, int(LOBBY_DURATION - (asyncio.get_event_loop().time() - start_time)))
-                should_update = placed_any or (now_left in update_at and now_left != last_update_secs)
+                should_update = placed_any_this_msg or (
+                    now_left in update_at and now_left != last_update_secs
+                )
                 if should_update:
                     last_update_secs = now_left
                     update_at.discard(now_left)
                     try:
-                        await lobby_msg.edit(embed=self._build_lobby_embed(bets, now_left))
+                        await lobby_msg.edit(
+                            embed=self._build_lobby_embed(
+                                total_pool, len(player_bets), now_left
+                            )
+                        )
                     except discord.HTTPException:
                         pass
 
         finally:
             _unlock_user(self.bot, ctx.author.id)
 
-        # ── Giai đoạn 2: Kết quả ───────────────────────────────────────
-        if not any(bets.values()):
-            await lobby_msg.edit(
-                embed=discord.Embed(
-                    title="🎲 Bầu Cua Tôm Cá",
-                    description="Không có ai đặt cược. Trò chơi kết thúc!",
-                    color=0x808080,
+        # ── Giai đoạn 2: Chốt sảnh & Kết quả ────────────────────────────────
+        if not player_bets:
+            try:
+                await lobby_msg.edit(
+                    embed=discord.Embed(
+                        title="🎲 Bầu Cua Tôm Cá",
+                        description="Không có ai đặt cược. Trò chơi kết thúc!",
+                        color=0x808080,
+                    )
                 )
-            )
+            except discord.HTTPException:
+                pass
             return
 
         # Tung 3 xúc xắc
         dice: list[str] = [random.choice(self.BC_KEYS) for _ in range(3)]
         roll_counts: dict[str, int] = {k: dice.count(k) for k in self.BC_KEYS}
-
-        # Tính tổng thắng (lãi net, không tính gốc đã trừ trước)
-        total_payout = 0
-        for key, bet_amount in bets.items():
-            if bet_amount == 0:
-                continue
-            count = roll_counts.get(key, 0)
-            if count > 0:
-                # Trả lại gốc + x (count) lần lãi
-                total_payout += bet_amount + bet_amount * count
-            # Nếu count == 0: tiền gốc đã bị trừ từ trước, không hoàn
-
-        if total_payout > 0:
-            await _apply_delta(self.bot, uid, total_payout)
-
-        total_wagered  = sum(bets.values())
-        net_gain       = total_payout - total_wagered   # lười (+) hoặc lỗ (-)
-        final_balance  = await _get_balance(self.bot, uid)
-
-        # Xây dựng Embed kết quả
         dice_display = "  ".join(f"**[ {self.BC_EMOJIS[d]} ]**" for d in dice)
 
-        # Tóm tắt cược
-        bet_summary_lines: list[str] = []
-        for key in self.BC_KEYS:
-            if bets[key] > 0:
+        # Chốt Embed Lobby — hiển thị kết quả xúc xắc
+        try:
+            closed_embed = discord.Embed(
+                title="🎲 Bầu Cua Tôm Cá — Đã Chốt!",
+                description=f"Kết quả xúc xắc:\n\n{dice_display}",
+                color=0xFF8C00,
+            )
+            pool_lines = " \u2003 ".join(
+                f"{self.BC_EMOJIS[k]} **{total_pool[k]:,}**" if total_pool[k] else f"{self.BC_EMOJIS[k]} `---`"
+                for k in self.BC_KEYS
+            )
+            closed_embed.add_field(name="📊 Tổng Tiền Bàn", value=pool_lines, inline=False)
+            closed_embed.set_footer(text="Angelic Casino • Bầu Cua Tôm Cá 🌸")
+            await lobby_msg.edit(embed=closed_embed)
+        except discord.HTTPException:
+            pass
+
+        # Gửi thông báo kết quả chung
+        await ctx.send(
+            f"🎲 **Kết quả Bầu Cua:** {dice_display}\n"
+            f"*(Đang tính toán và gửi kết quả cho {len(player_bets)} người chơi...)*"
+        )
+
+        # ── Vòng lặp trả thưởng cá nhân từng người ───────────────────────────
+        for player_id, bets in player_bets.items():
+            # Tính tổng payout (gốc + lãi) cho người này
+            total_payout = 0
+            for key, bet_amount in bets.items():
+                if bet_amount == 0:
+                    continue
                 count = roll_counts.get(key, 0)
+                if count > 0:
+                    total_payout += bet_amount + bet_amount * count
+
+            if total_payout > 0:
+                await _apply_delta(self.bot, str(player_id), total_payout)
+
+            total_wagered = sum(bets.values())
+            net_gain = total_payout - total_wagered
+            final_balance = await _get_balance(self.bot, str(player_id))
+
+            # Tóm tắt từng con vật người này đã cược
+            bet_lines: list[str] = []
+            for key in self.BC_KEYS:
+                if bets[key] <= 0:
+                    continue
                 emoji = self.BC_EMOJIS[key]
+                count = roll_counts.get(key, 0)
                 line = f"{emoji} Cược: **{bets[key]:,}**"
                 if count > 0:
                     payout = bets[key] + bets[key] * count
-                    line += f" → ✅ Trúng {count}x ⇒ +**{payout:,}**"
+                    line += f" → ✅ Trúng {count}x → +**{payout:,}**"
                 else:
                     line += " → ❌"
-                bet_summary_lines.append(line)
+                bet_lines.append(line)
 
-        result_desc = (
-            f"{dice_display}\n\n"
-            + "\n".join(bet_summary_lines)
-        )
+            result_desc = f"{dice_display}\n\n" + "\n".join(bet_lines)
 
-        is_profit = net_gain > 0
-        embed_color = 0x00FF00 if is_profit else (0x808080 if net_gain == 0 else 0xFF0000)
-        result_field_name = "🟢 Kết quả" if is_profit else ("🔴 Kết quả" if net_gain < 0 else "⚪ Kết quả")
-        if net_gain >= 0:
-            result_field_val = f"+{net_gain:,}  *(Thắng :-)*"
-        else:
-            result_field_val = f"{net_gain:,}  *(Thua)*"
+            is_profit = net_gain > 0
+            embed_color = 0x00FF00 if is_profit else (0x808080 if net_gain == 0 else 0xFF0000)
+            result_field_name = "🟢 Kết quả" if is_profit else ("🔴 Kết quả" if net_gain < 0 else "⚪ Kết quả")
+            result_field_val = (
+                f"+{net_gain:,}  *(Thắng!)*" if net_gain > 0
+                else (f"{net_gain:,}  *(Thua)*" if net_gain < 0 else "Hoà vốn")
+            )
 
-        result_embed = discord.Embed(
-            title="🎲 Bầu Cua Tôm Cá — Kết Quả",
-            description=result_desc,
-            color=embed_color,
-        )
-        result_embed.set_author(
-            name=f"{ctx.author.display_name} — baucua",
-            icon_url=ctx.author.display_avatar.url,
-        )
-        result_embed.add_field(name=result_field_name, value=result_field_val, inline=False)
-        result_embed.add_field(name="💳 Số dư mới", value=f"{final_balance:,}", inline=False)
-        result_embed.set_footer(text="Angelic Casino • Bầu Cua Tôm Cá 🌸")
+            # Lấy User object để set_author
+            user: discord.User | None = self.bot.get_user(player_id)
+            author_name = user.display_name if user else f"User#{player_id}"
+            author_avatar = user.display_avatar.url if user else discord.Embed.Empty  # type: ignore[attr-defined]
 
-        await ctx.send(embed=result_embed)
+            result_embed = discord.Embed(
+                title="🎲 Bầu Cua Tôm Cá — Kết Quả",
+                description=result_desc,
+                color=embed_color,
+            )
+            result_embed.set_author(name=f"{author_name} — baucua", icon_url=author_avatar)
+            result_embed.add_field(name=result_field_name, value=result_field_val, inline=False)
+            result_embed.add_field(name="💳 Số dư mới", value=f"{final_balance:,}", inline=False)
+            result_embed.set_footer(text="Angelic Casino • Bầu Cua Tôm Cá 🌸")
+
+            try:
+                await ctx.send(embed=result_embed)
+            except discord.HTTPException:
+                pass
 
 # =============================================================================
 # SETUP
