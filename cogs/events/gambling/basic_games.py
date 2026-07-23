@@ -27,30 +27,52 @@ COLOR_WIN     = 0x00FF00   # 🟢 Thắng / Sống sót
 COLOR_LOSE    = 0xFF0000   # 🔴 Thua / Tử trận
 COLOR_JACKPOT = 0xFFD700   # 🌟 Jackpot / Side / Đứng xu
 
+# =============================================================================
+# HỆ THỐNG KHÓA HÀNH ĐỘNG (COMMAND LOCK)
+# =============================================================================
+async def _check_busy(bot: commands.Bot, ctx: commands.Context) -> bool:
+    """Kiểm tra xem người chơi có đang vướng một game tương tác nào không."""
+    active_players = getattr(bot, 'active_players', set())
+    if ctx.author.id in active_players:
+        await ctx.send(
+            f"{ctx.author.mention}, bạn không thể làm điều này! hãy kết thúc lệnh trước đó của bạn.", 
+            ephemeral=True
+        )
+        return True
+    return False
+
+def _lock_user(bot: commands.Bot, user_id: int):
+    """Khóa người chơi (Đưa vào danh sách đang chơi)"""
+    active_players: set = getattr(bot, 'active_players', set())
+    active_players.add(user_id)
+    setattr(bot, 'active_players', active_players)
+
+def _unlock_user(bot: commands.Bot, user_id: int):
+    """Mở khóa người chơi"""
+    active_players: set = getattr(bot, 'active_players', set())
+    active_players.discard(user_id)
+    setattr(bot, 'active_players', active_players)
+
+# =============================================================================
+# DB HELPERS
+# =============================================================================
 async def _get_balance(bot: commands.Bot, user_id: str) -> int:
-    """Lay so du diem hien tai cua user tu event_profiles."""
+    """Lấy số dư hiện tại."""
     row = await get_or_create_event_profile(bot, user_id)
     if row is None:
         return 0
     return int(row["points"] or 0)
 
 async def _apply_delta(bot: commands.Bot, user_id: str, delta: int) -> bool:
-    """
-    Cong (delta > 0) hoac Tru (delta < 0) diem mot cach an toan.
-    Tra ve True neu thanh cong, False neu khong du diem de tru.
-    """
+    """Cộng/Trừ điểm an toàn."""
     if delta > 0:
         return await add_event_points(bot, user_id, delta, is_earned=False)
     elif delta < 0:
         return await deduct_event_points(bot, user_id, abs(delta))
-    return True  # delta == 0
-
+    return True
 
 def _parse_bet(raw: str, balance: int) -> tuple[Optional[int], Optional[str]]:
-    """
-    Parse chuoi tien cuoc.
-    Tra ve (amount, None) neu hop le, hoac (None, error_msg) neu khong hop le.
-    """
+    """Parse số tiền cược."""
     try:
         amount = int(raw.replace(",", ""))
     except ValueError:
@@ -64,9 +86,8 @@ def _parse_bet(raw: str, balance: int) -> tuple[Optional[int], Optional[str]]:
         )
     return amount, None
 
-
 # =============================================================================
-# COG CHINH
+# COG CHÍNH
 # =============================================================================
 
 class BasicGames(commands.Cog):
@@ -74,12 +95,17 @@ class BasicGames(commands.Cog):
 
     def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
+        # Khởi tạo biến lưu danh sách người chơi trên Bot nếu chưa có
+        if not hasattr(self.bot, 'active_players'):
+            setattr(self.bot, 'active_players', set())
 
     # =========================================================================
-    # 1. COINFLIP
+    # 1. COINFLIP (Game tức thời - Không cần khóa, nhưng bị chặn nếu đang khóa)
     # =========================================================================
     @commands.hybrid_command(name="coinflip", aliases=["cf"])
     async def coinflip_cmd(self, ctx: commands.Context, choice: str, bet_raw: str):
+        if await _check_busy(self.bot, ctx): return
+        
         choice = choice.lower().strip()
         if choice not in ("h", "t"):
             await ctx.send("❌ Lựa chọn không hợp lệ! Dùng `h` (Ngửa) hoặc `t` (Sấp).\nCú pháp: `y!cf <h/t> <tiền_cược>`", ephemeral=False)
@@ -93,7 +119,7 @@ class BasicGames(commands.Cog):
             return
 
         outcome = random.choices(["win", "lose", "side"], weights=[44.0, 55.0, 1.0], k=1)[0]
-
+        # ... logic tính delta & color ...
         if outcome == "win":
             payout = round(bet * 1.9)
             delta = payout - bet
@@ -133,16 +159,12 @@ class BasicGames(commands.Cog):
 
         embed = discord.Embed(title=title, color=color)
         embed.set_author(name=f"{ctx.author.display_name} — coinflip", icon_url=ctx.author.display_avatar.url)
-        
         embed.add_field(name="🎯 Lựa chọn của bạn", value=your_pick, inline=True)
         embed.add_field(name="🪙 Kết quả đồng xu", value=landed, inline=True)
         embed.add_field(name="\u200b", value="\u200b", inline=True)
-        
-        # 3 Hàng dọc
         embed.add_field(name="💰 Tiền cược", value=f"{bet:,}", inline=False)
         embed.add_field(name=f"{outcome_emoji} Kết quả", value=result_line, inline=False)
         embed.add_field(name="💳 Số dư mới", value=f"{new_balance:,}", inline=False)
-        
         embed.set_footer(text="Angelic Casino • Coinflip 🌸")
         await ctx.send(embed=embed)
 
@@ -152,10 +174,12 @@ class BasicGames(commands.Cog):
             await ctx.send("Thiếu! Cú pháp: `y!cf <h/t> <tiền_cược>`", ephemeral=True)
 
     # =========================================================================
-    # 2. CUPS
+    # 2. CUPS (Game tương tác - Cần khóa hành động)
     # =========================================================================
     @commands.hybrid_command(name="cups")
     async def cups_cmd(self, ctx: commands.Context, bet_raw: str):
+        if await _check_busy(self.bot, ctx): return
+
         uid = str(ctx.author.id)
         balance = await _get_balance(self.bot, uid)
         bet, err = _parse_bet(bet_raw, balance)
@@ -170,8 +194,15 @@ class BasicGames(commands.Cog):
         embed.set_author(name=f"{ctx.author.display_name} — cups", icon_url=ctx.author.display_avatar.url)
         embed.set_footer(text="Chọn trong 30 giây • Hết giờ sẽ hoàn tiền cược")
 
+        # Khóa người chơi
+        _lock_user(self.bot, ctx.author.id)
+
         view = CupsView(bot=self.bot, author=ctx.author, bet=bet, balance=balance)
-        view.message = await ctx.send(embed=embed, view=view)
+        try:
+            view.message = await ctx.send(embed=embed, view=view)
+        except Exception:
+            # Mở khóa nếu lỗi không gửi được tin nhắn
+            _unlock_user(self.bot, ctx.author.id)
 
     @cups_cmd.error
     async def cups_error(self, ctx: commands.Context, error: Exception):
@@ -179,10 +210,12 @@ class BasicGames(commands.Cog):
             await ctx.send("Thiếu! Cú pháp: `y!cups <tiền_cược>`", ephemeral=True)
 
     # =========================================================================
-    # 3. DICE 7
+    # 3. DICE 7 (Game tức thời)
     # =========================================================================
     @commands.hybrid_command(name="dice")
     async def dice_cmd(self, ctx: commands.Context, bet_raw: str):
+        if await _check_busy(self.bot, ctx): return
+
         uid = str(ctx.author.id)
         balance = await _get_balance(self.bot, uid)
         bet, err = _parse_bet(bet_raw, balance)
@@ -190,12 +223,8 @@ class BasicGames(commands.Cog):
             await ctx.send(err, ephemeral=True)
             return
 
-        face = random.choices(
-            [1, 2, 3, 4, 5, 6, 7],
-            weights=[16.75, 16.75, 16.75, 16.5, 16.5, 16.5, 0.25],
-            k=1
-        )[0]
-
+        face = random.choices([1, 2, 3, 4, 5, 6, 7], weights=[16.75, 16.75, 16.75, 16.5, 16.5, 16.5, 0.25], k=1)[0]
+        # ... logic tính điểm ...
         PAYOUT = {
             1: (-1.00, "1️⃣", COLOR_LOSE,    "Mất 100% tiền cược"),
             2: (-0.50, "2️⃣", COLOR_LOSE,    "Mất 50% tiền cược"),
@@ -205,7 +234,6 @@ class BasicGames(commands.Cog):
             6: ( 1.00, "6️⃣", COLOR_WIN,     "Ăn +100% tiền cược"),
             7: ( 7.00, "🌟", COLOR_JACKPOT, "JACKPOT +700% tiền cược!"),
         }
-
         mult, face_emoji, color, desc = PAYOUT[face]
         delta = round(mult * bet)
 
@@ -226,12 +254,9 @@ class BasicGames(commands.Cog):
         embed = discord.Embed(title="🎲 Dice", color=color)
         embed.set_author(name=f"{ctx.author.display_name} — dice", icon_url=ctx.author.display_avatar.url)
         embed.add_field(name="🎲 Kết quả lắc", value=f"{face_emoji} - {desc}", inline=False)
-        
-        # 3 Hàng dọc
         embed.add_field(name="💰 Tiền cược", value=f"{bet:,}", inline=False)
         embed.add_field(name=f"{outcome_emoji} Kết quả", value=result_line, inline=False)
         embed.add_field(name="💳 Số dư mới", value=f"{new_balance:,}", inline=False)
-
         embed.set_footer(text="Angelic Casino • Dice 7 🌸")
         await ctx.send(embed=embed)
 
@@ -241,10 +266,12 @@ class BasicGames(commands.Cog):
             await ctx.send("Thiếu! Cú pháp: `y!dice <tiền_cược>`", ephemeral=True)
 
     # =========================================================================
-    # 4. ROULETTE (RUSSIAN ROULETTE INTERACTIVE)
+    # 4. ROULETTE (Game tương tác - Cần khóa hành động)
     # =========================================================================
     @commands.hybrid_command(name="roulette", aliases=["shot"])
     async def roulette_cmd(self, ctx: commands.Context, bet_raw: str):
+        if await _check_busy(self.bot, ctx): return
+
         uid = str(ctx.author.id)
         balance = await _get_balance(self.bot, uid)
         bet, err = _parse_bet(bet_raw, balance)
@@ -252,7 +279,6 @@ class BasicGames(commands.Cog):
             await ctx.send(err, ephemeral=True)
             return
 
-        # TRỪ TIỀN CƯỢC NGAY LẬP TỨC ĐỂ GIỮ CHỖ
         ok = await _apply_delta(self.bot, uid, -bet)
         if not ok:
             await ctx.send("Lỗi cập nhật Database, không thể tạm giữ tiền cược!", ephemeral=True)
@@ -266,22 +292,23 @@ class BasicGames(commands.Cog):
                 "Ổ đạn 6 buồng, chỉ có 1 viên đạn thật. Ổ đạn **không** xoay lại sau mỗi lần bóp cò.\n\n"
                 "Sống sót càng lâu, tiền thưởng càng lớn. Dám chơi lớn không? 💥\n\n"
                 "**Hệ số thưởng:**\n"
-                "Lần 1: x1.1\n"
-                "Lần 2: x1.3\n"
-                "Lần 3: x1.8\n"
-                "Lần 4: x2.7\n"
-                "Lần 5: x5"
+                "Lần 1: x1.1\nLần 2: x1.3\nLần 3: x1.8\nLần 4: x2.7\nLần 5: x5"
             ),
             color=0x2b2d31,
         )
         embed.set_author(name=f"{ctx.author.display_name} — roulette", icon_url=ctx.author.display_avatar.url)
-        
         embed.add_field(name="💰 Tiền cược (đang giữ)", value=f"{bet:,}", inline=False)
         embed.add_field(name="💳 Số dư hiện tại", value=f"{new_balance:,}", inline=False)
         embed.set_footer(text="Quá 60 giây không phản hồi sẽ tự động rút lui.")
 
+        # Khóa người chơi
+        _lock_user(self.bot, ctx.author.id)
+
         view = RouletteView(bot=self.bot, author=ctx.author, bet=bet, original_balance=balance)
-        view.message = await ctx.send(embed=embed, view=view)
+        try:
+            view.message = await ctx.send(embed=embed, view=view)
+        except Exception:
+            _unlock_user(self.bot, ctx.author.id)
 
     @roulette_cmd.error
     async def roulette_error(self, ctx: commands.Context, error: Exception):
@@ -290,7 +317,7 @@ class BasicGames(commands.Cog):
 
 
 # =============================================================================
-# VIEWS
+# VIEWS (MỞ KHÓA KHI KẾT THÚC)
 # =============================================================================
 
 class CupsView(discord.ui.View):
@@ -313,6 +340,9 @@ class CupsView(discord.ui.View):
             if isinstance(item, discord.ui.Button):
                 item.disabled = True
         self.stop()
+        
+        # Mở khóa người chơi
+        _unlock_user(self.bot, self.author.id)
 
         correct = random.randint(1, 3)
         cups_display = ["🥤", "🥤", "🥤"]
@@ -345,12 +375,11 @@ class CupsView(discord.ui.View):
             color=color,
         )
         embed.set_author(name=f"{self.author.display_name} — cups", icon_url=self.author.display_avatar.url)
-        
         embed.add_field(name="💰 Tiền cược", value=f"{self.bet:,}", inline=False)
         embed.add_field(name=f"{outcome_emoji} Kết quả", value=result_line, inline=False)
         embed.add_field(name="💳 Số dư mới", value=f"{new_balance:,}", inline=False)
-        
         embed.set_footer(text="Angelic Casino • Cups 🌸")
+        
         await interaction.response.edit_message(embed=embed, view=self)
 
     @discord.ui.button(label="🥤 1", style=discord.ButtonStyle.secondary)
@@ -366,6 +395,9 @@ class CupsView(discord.ui.View):
         await self._resolve(interaction, 3)
 
     async def on_timeout(self):
+        # Mở khóa người chơi khi hết giờ
+        _unlock_user(self.bot, self.author.id)
+
         for item in self.children:
             if isinstance(item, discord.ui.Button):
                 item.disabled = True
@@ -390,21 +422,11 @@ class RouletteView(discord.ui.View):
         self.author = author
         self.bet = bet
         self.balance = original_balance - bet
-        
         self.message: Optional[discord.Message] = None
         self.survived_rounds = 0
-        
         self.chamber = [True] + [False] * 5
         random.shuffle(self.chamber)
-        
-        self.multipliers = {
-            0: 1.0,
-            1: 1.1,
-            2: 1.3,
-            3: 1.8,
-            4: 2.7,
-            5: 5.0
-        }
+        self.multipliers = {0: 1.0, 1: 1.1, 2: 1.3, 3: 1.8, 4: 2.7, 5: 5.0}
 
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
         if interaction.user.id != self.author.id:
@@ -420,11 +442,13 @@ class RouletteView(discord.ui.View):
         if bullet:
             PENALTY_PTS = 50
             await deduct_event_points(self.bot, uid, PENALTY_PTS)
-            
             for item in self.children:
                 if isinstance(item, discord.ui.Button):
                     item.disabled = True
             self.stop()
+            
+            # Chết -> Mở khóa người chơi
+            _unlock_user(self.bot, self.author.id)
             
             embed = discord.Embed(
                 title="🔫 Cò Quay Tử Thần — Dính Đạn! 💀",
@@ -432,22 +456,18 @@ class RouletteView(discord.ui.View):
                 color=COLOR_LOSE,
             )
             embed.set_author(name=f"{self.author.display_name} — roulette", icon_url=self.author.display_avatar.url)
-            
             embed.add_field(name="💰 Tiền cược", value=f"{self.bet:,}", inline=False)
             embed.add_field(name="🔴 Kết quả", value=f"-{self.bet:,}  *(Mất trắng) & Phạt 50*", inline=False)
             embed.add_field(name="💳 Số dư mới", value=f"{self.balance:,}", inline=False)
             embed.set_footer(text="Angelic Casino • Cò Quay Tử Thần 🌸")
             
             await interaction.response.edit_message(embed=embed, view=self)
-            
         else:
             self.survived_rounds += 1
-            
             if self.survived_rounds == 5:
                 await self.process_cashout(interaction, auto_cashout=True)
                 return
             
-            # Kích hoạt nút Rút lui khi đã bóp cò ít nhất 1 lần thành công
             for child in self.children:
                 if isinstance(child, discord.ui.Button) and getattr(child, "custom_id", "") == "cashout_btn":
                     child.disabled = False
@@ -484,12 +504,14 @@ class RouletteView(discord.ui.View):
                 item.disabled = True
         self.stop()
         
+        # Rút lui / Auto Cashout -> Mở khóa người chơi
+        _unlock_user(self.bot, self.author.id)
+        
         mult = self.multipliers[self.survived_rounds]
         payout = round(self.bet * mult)
         
         await _apply_delta(self.bot, uid, payout)
         new_balance = self.balance + payout
-        
         profit = payout - self.bet
         
         if self.survived_rounds == 0:
@@ -502,7 +524,7 @@ class RouletteView(discord.ui.View):
             title = "🔫 Cò Quay Tử Thần — Rút Lui Thành Công!"
             desc = f"Tuyệt vời! Bạn đã mang về **{payout:,}** sau khi sống sót qua **{self.survived_rounds}** viên đạn."
             if auto_cashout and self.survived_rounds == 5:
-                desc = f"HUYỀN THOẠI! Lũy kế 5 viên đạn lép! Tự động rút lui với x4!\n\nBạn đã mang về **{payout:,}**."
+                desc = f"HUYỀN THOẠI! Lũy kế 5 viên đạn lép! Tự động rút lui với x5!\n\nBạn đã mang về **{payout:,}**."
             elif is_timeout:
                 desc = f"Trò chơi hết giờ! Tự động rút lui an toàn.\n\nBạn đã mang về **{payout:,}**."
             
@@ -512,7 +534,6 @@ class RouletteView(discord.ui.View):
 
         embed = discord.Embed(title=title, description=desc, color=color)
         embed.set_author(name=f"{self.author.display_name} — roulette", icon_url=self.author.display_avatar.url)
-        
         embed.add_field(name="💰 Tiền cược", value=f"{self.bet:,}", inline=False)
         embed.add_field(name=f"{emo} Kết quả", value=res_str, inline=False)
         embed.add_field(name="💳 Số dư mới", value=f"{new_balance:,}", inline=False)
@@ -527,6 +548,7 @@ class RouletteView(discord.ui.View):
                 pass
 
     async def on_timeout(self):
+        # Mở khóa người chơi khi hết giờ được gọi qua process_cashout
         await self.process_cashout(interaction=None, auto_cashout=False, is_timeout=True)
 
 
