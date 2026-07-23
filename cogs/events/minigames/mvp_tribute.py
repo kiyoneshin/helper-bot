@@ -53,17 +53,17 @@ async def start_mvp_tribute_game(bot, channel: discord.abc.Messageable, core_cog
         return
 
     # =================================================================
-    # GIAI ĐOẠN 2: THÔNG BÁO VINH DANH & KHỞI ĐỘNG (15 GIÂY)
+    # GIAI ĐOẠN 2: THÔNG BÁO VINH DANH & KHỞI ĐỘNG (30 GIÂY)
     # =================================================================
     embed = discord.Embed(
         title="🌟 VINH DANH MVP CHAT — 10 PHÚT QUA!",
         description=(
             f"Xin được vinh danh chiến thần {mvp_user.mention} — người đã năng nổ buôn chuyện nhiệt huyết nhất trong 10 phút vừa qua!\n\n"
-            f"⏳ **Thử thách chớp nhoáng (15 giây):**\n"
+            f"⏳ **Thử thách chớp nhoáng (30 giây):**\n"
             f"Tất cả thành viên đang online hãy nhanh tay gõ chính xác cú pháp dưới đây lên kênh chat:\n"
-            f"👉 `tôi iu {mvp_user.mention}` (Nhớ tag đúng tài khoản của MVP nhé!)\n\n"
+            f"👉 `tui iu {mvp_user.mention}` (Nhớ tag đúng tài khoản của MVP nhé!)\n\n"
             f"🎁 **Phần thưởng:**\n"
-            f"• Ai gõ đúng và nhanh nhất sẽ được cộng ngay **+50 điểm** sự kiện!\n"
+            f"• Ai gõ đúng và nhanh sẽ được cộng ngay **+50 điểm** sự kiện!\n"
             f"• 👑 **Đặc quyền MVP:** Không cần gõ, ngồi mát ăn bát vàng! Nhận ngay 10% hoa hồng (+5 điểm) từ mỗi câu chúc của mọi người! 🌸"
         ),
         color=0xff80df
@@ -82,7 +82,7 @@ async def start_mvp_tribute_game(bot, channel: discord.abc.Messageable, core_cog
     congrats_list = []
     
     loop = asyncio.get_event_loop()
-    end_time = loop.time() + 15.0
+    end_time = loop.time() + 30.0
 
     def check_func(m: discord.Message) -> bool:
         if m.channel.id != channel.id:
@@ -95,7 +95,7 @@ async def start_mvp_tribute_game(bot, channel: discord.abc.Messageable, core_cog
             return False
             
         content_lower = m.content.lower()
-        if "tôi iu" not in content_lower:
+        if "tui iu" not in content_lower:
             return False
             
         if mvp_user.id not in m.raw_mentions:
@@ -144,8 +144,8 @@ async def start_mvp_tribute_game(bot, channel: discord.abc.Messageable, core_cog
     embed.color = 0x57f287
     embed.description = (
         f"Xin được vinh danh chiến thần {mvp_user.mention} — người đã năng nổ buôn chuyện nhiệt huyết nhất trong 10 phút vừa qua!\n\n"
-        f"🎉 **ĐÃ HẾT GIỜ!** Cảm ơn tình cảm của cả server dành cho MVP!\n"
-        f"👑 **Thu nhập thụ động của MVP:** Nhận được **+{total_commission} điểm** hoa hồng từ {len(congratulators)} lời chúc!"
+        f"**ĐÃ HẾT GIỜ!** Cảm ơn tình cảm của cả server dành cho MVP!\n"
+        f"**MVP:** Nhận được **+{total_commission} điểm** hoa hồng từ {len(congratulators)} lời chúc!"
     )
     
     try:
@@ -153,6 +153,5 @@ async def start_mvp_tribute_game(bot, channel: discord.abc.Messageable, core_cog
     except discord.HTTPException:
         pass
 
-    # Cleanup RAM
     core_cog.last_minigame_end = datetime.now(timezone.utc)
     core_cog.is_minigame_running = False
