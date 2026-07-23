@@ -10,6 +10,7 @@ Bao gồm 4 trò chơi:
 
 import random
 import logging
+import time
 from typing import Optional
 
 import discord
@@ -195,12 +196,13 @@ class BasicGames(commands.Cog):
             await ctx.send(f"❌ {ctx.author.mention} {err}")
             return
 
+        end_time = int(time.time()) + 30
         embed = discord.Embed(
-            description="Cục màu trắng ở đâu? ◽ **1, 2** hay **3** ?\nNhanh tay lẹ mắt nhào vô!\n\n🥤  🥤  🥤\n",
+            description=f"Cục màu trắng ở đâu? ◽ **1, 2** hay **3** ?\nNhanh tay lẹ mắt nhào vô trước <t:{end_time}:R>!\n\n🥤  🥤  🥤\n",
             color=0xffb6c1,
         )
         embed.set_author(name=f"{ctx.author.display_name} — cups", icon_url=ctx.author.display_avatar.url)
-        embed.set_footer(text="Chọn lẹ trong 30 giây • Ngâm quá sòng trả lại tiền")
+        embed.set_footer(text="Ngâm quá sòng trả lại tiền")
 
         # Khóa người chơi
         _lock_user(self.bot, ctx.author.id)
@@ -294,20 +296,22 @@ class BasicGames(commands.Cog):
             
         new_balance = balance - bet
 
+        end_time = int(time.time()) + 60
         embed = discord.Embed(
             title="🔫 Cò Quay Tử Thần",
             description=(
                 "Ổ đạn 6 buồng, chỉ có 1 viên đạn thật. Bóp cò là không có đường lui.\n\n"
                 "Sống sót càng lâu, húp càng đẫm. Dám chơi lớn không? 💥\n\n"
                 "**Hệ số thưởng:**\n"
-                "Lần 1: x1.1\nLần 2: x1.3\nLần 3: x1.8\nLần 4: x2.7\nLần 5: x5"
+                "Lần 1: x1.1\nLần 2: x1.3\nLần 3: x1.8\nLần 4: x2.7\nLần 5: x5\n\n"
+                f"⏳ **Hành động trước:** <t:{end_time}:R>"
             ),
             color=0x2b2d31,
         )
         embed.set_author(name=f"{ctx.author.display_name} — roulette", icon_url=ctx.author.display_avatar.url)
         embed.add_field(name="💰 Tiền cược (đang giữ)", value=f"{bet:,}", inline=False)
         embed.add_field(name="💳 Số dư hiện tại", value=f"{new_balance:,}", inline=False)
-        embed.set_footer(text="Quá 60 giây không phản hồi sẽ tự động rút lui.")
+        embed.set_footer(text="Ngâm quá sòng tự động chốt lãi.")
 
         # Khóa người chơi
         _lock_user(self.bot, ctx.author.id)
@@ -484,6 +488,7 @@ class RouletteView(discord.ui.View):
             next_mult = self.multipliers[self.survived_rounds + 1]
             current_win = round(self.bet * current_mult)
             
+            new_end_time = int(time.time()) + 60
             embed = discord.Embed(
                 title=f"🔫 Cò Quay Tử Thần — Sống Sót Lần {self.survived_rounds}!",
                 description=(
@@ -491,6 +496,7 @@ class RouletteView(discord.ui.View):
                     f"Bạn đã sống sót qua viên thứ **{self.survived_rounds}**!\n\n"
                     f"👉 **Húp ngay:** {current_win:,}  *(x{current_mult:.2f})*\n"
                     f"👉 **Đánh đổi mạng sống (x{next_mult:.2f}):** {round(self.bet * next_mult):,}\n\n"
+                    f"⏳ **Hành động trước:** <t:{new_end_time}:R>\n"
                     "Muốn **Chốt lãi** ôm tiền về, hay tiếp tục **Bóp cò**?"
                 ),
                 color=COLOR_WIN,

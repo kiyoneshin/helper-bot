@@ -165,6 +165,7 @@ class InviteView(discord.ui.View):
         self.confirmed: list[discord.Member] = []
         self.message: Optional[discord.Message] = None
         self._done = asyncio.Event()
+        self.end_time = int(time.time()) + INVITE_TIMEOUT
 
     def _all_decided(self) -> bool:
         return all(v is not None for v in self.statuses.values())
@@ -175,6 +176,7 @@ class InviteView(discord.ui.View):
             description=(
                 f"{self.host.mention} đang kéo mồi!\n"
                 f"Cược: **{self.bet:,}**/người *(trừ 5% thuế vào sảnh)*\n\n"
+                f"⏳ **Chốt kèo:** <t:{self.end_time}:R>\n"
                 "Dám vào thì bấm, nhát thì né:"
             ),
             color=COLOR_INFO,
@@ -185,26 +187,26 @@ class InviteView(discord.ui.View):
             icon = "✅" if s is True else ("❌" if s is False else "⏳")
             lines.append(f"{icon} {m.mention}")
         embed.add_field(name="Danh Sách Được Kéo Mồi", value="\n".join(lines), inline=False)
-        embed.set_footer(text=f"Chốt kèo trong {INVITE_TIMEOUT}s • Bỏ chạy coi chừng mất mặt")
+        embed.set_footer(text=f"Bỏ chạy coi chừng mất mặt")
         return embed
 
     @discord.ui.button(label="✅ Tham Gia", style=discord.ButtonStyle.success, custom_id="md_invite_join")
     async def join_btn(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
         uid = interaction.user.id
         if uid not in self.statuses:
-            await interaction.response.send_message("Mày không nằm trong danh sách, lui ra!", ephemeral=True)
+            await interaction.response.send_message(f"❌ {interaction.user.mention} Mày không nằm trong danh sách, lui ra!")
             return
         if self.statuses[uid] is True:
-            await interaction.response.send_message("Đã vào rồi, bấm loạn làm gì!", ephemeral=True)
+            await interaction.response.send_message(f"❌ {interaction.user.mention} Đã vào rồi, bấm loạn làm gì!")
             return
         if self.statuses[uid] is False:
-            await interaction.response.send_message("Đã bỏ chạy rồi, lần sau đừng hèn!", ephemeral=True)
+            await interaction.response.send_message(f"❌ {interaction.user.mention} Đã bỏ chạy rồi, lần sau đừng hèn!")
             return
 
         # Kiểm tra bận
         if _is_busy(self.bot, uid):
             await interaction.response.send_message(
-                "Đang chơi game khác rồi! Kết thúc game đó trước.", ephemeral=True
+                f"❌ {interaction.user.mention} Đang chơi game khác rồi! Kết thúc game đó trước."
             )
             return
 
@@ -212,16 +214,14 @@ class InviteView(discord.ui.View):
         bal = await _get_balance(self.bot, str(uid))
         if bal < self.bet:
             self.statuses[uid] = False
-            _unlock_user(self.bot, uid)
             await interaction.response.send_message(
-                f"Ví có **{bal:,}** mà đòi cược **{self.bet:,}**? Nghèo mà ham! Gạch tên.", ephemeral=True
+                f"❌ {interaction.user.mention} Ví có **{bal:,}** mà đòi cược **{self.bet:,}**? Nghèo mà ham! Gạch tên."
             )
         else:
             ok = await _apply_delta(self.bot, str(uid), -self.bet)
             if not ok:
                 self.statuses[uid] = False
-                _unlock_user(self.bot, uid)
-                await interaction.response.send_message("Lỗi DB! Thử lại sau.", ephemeral=True)
+                await interaction.response.send_message(f"❌ {interaction.user.mention} Lỗi DB! Thử lại sau.")
             else:
                 self.statuses[uid] = True
                 _lock_user(self.bot, uid)
@@ -229,7 +229,7 @@ class InviteView(discord.ui.View):
                 if isinstance(member, discord.Member):
                     self.confirmed.append(member)
                 await interaction.response.send_message(
-                    f"Chốt! Đã trừ **{self.bet:,}**. Ngồi chờ sảnh mở.", ephemeral=True
+                    f"✅ {interaction.user.mention} Chốt! Đã trừ **{self.bet:,}**. Ngồi chờ sảnh mở."
                 )
 
         try:
@@ -245,15 +245,14 @@ class InviteView(discord.ui.View):
     async def leave_btn(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
         uid = interaction.user.id
         if uid not in self.statuses:
-            await interaction.response.send_message("Không liên quan!", ephemeral=True)
+            await interaction.response.send_message(f"❌ {interaction.user.mention} Không liên quan!")
             return
         if self.statuses[uid] is not None:
-            await interaction.response.send_message("Đã chốt rồi, không thay đổi được!", ephemeral=True)
+            await interaction.response.send_message(f"❌ {interaction.user.mention} Đã chốt rồi, không thay đổi được!")
             return
 
         self.statuses[uid] = False
-        _unlock_user(self.bot, uid)
-        await interaction.response.send_message("Nhát gan thật. Thoát kèo.", ephemeral=True)
+        await interaction.response.send_message(f"🏃 {interaction.user.mention} Nhát gan thật. Thoát kèo.")
 
         try:
             if self.message:
@@ -268,7 +267,6 @@ class InviteView(discord.ui.View):
         for uid, status in self.statuses.items():
             if status is None:
                 self.statuses[uid] = False
-                _unlock_user(self.bot, uid)
         for child in self.children:
             if isinstance(child, discord.ui.Button):
                 child.disabled = True
@@ -300,6 +298,7 @@ class PublicLobbyView(discord.ui.View):
         self.player_ids: set[int] = {m.id for m in initial_players}
         self.message: Optional[discord.Message] = None
         self._closed = asyncio.Event()
+        self.end_time = int(time.time()) + LOBBY_TIMEOUT
 
     def build_embed(self) -> discord.Embed:
         count = len(self.players)
@@ -309,7 +308,7 @@ class PublicLobbyView(discord.ui.View):
             description=(
                 f"Mại dô mại dô! Tay nhanh hơn não!\n"
                 f"Cược: **{self.bet:,}**/người *(trừ 5% thuế vào sảnh)*\n\n"
-                f"**Còn {spots} chỗ trống** — Đủ {MAX_PLAYERS} người hoặc hết {LOBBY_TIMEOUT}s thì chốt!"
+                f"**Còn {spots} chỗ trống** — Đủ {MAX_PLAYERS} người hoặc đến <t:{self.end_time}:R> thì chốt!"
             ),
             color=COLOR_INFO,
         )
@@ -327,27 +326,27 @@ class PublicLobbyView(discord.ui.View):
         uid = interaction.user.id
 
         if uid in self.player_ids:
-            await interaction.response.send_message("Mày đã ngồi bàn rồi, bấm loạn làm gì!", ephemeral=True)
+            await interaction.response.send_message(f"❌ {interaction.user.mention} Mày đã ngồi bàn rồi, bấm loạn làm gì!")
             return
         if len(self.players) >= MAX_PLAYERS:
-            await interaction.response.send_message("Bàn đầy rồi! Trễ mất rồi.", ephemeral=True)
+            await interaction.response.send_message(f"❌ {interaction.user.mention} Bàn đầy rồi! Trễ mất rồi.")
             return
         if _is_busy(self.bot, uid):
             await interaction.response.send_message(
-                "Đang chơi game khác rồi! Kết thúc trước đã.", ephemeral=True
+                f"❌ {interaction.user.mention} Đang chơi game khác rồi! Kết thúc trước đã."
             )
             return
 
         bal = await _get_balance(self.bot, str(uid))
         if bal < self.bet:
             await interaction.response.send_message(
-                f"Ví có **{bal:,}** mà đòi cược **{self.bet:,}**? Nghèo mà ham!", ephemeral=True
+                f"❌ {interaction.user.mention} Ví có **{bal:,}** mà đòi cược **{self.bet:,}**? Nghèo mà ham!"
             )
             return
 
         ok = await _apply_delta(self.bot, str(uid), -self.bet)
         if not ok:
-            await interaction.response.send_message("Lỗi DB! Thử lại sau.", ephemeral=True)
+            await interaction.response.send_message(f"❌ {interaction.user.mention} Lỗi DB! Thử lại sau.")
             return
 
         _lock_user(self.bot, uid)
@@ -357,7 +356,7 @@ class PublicLobbyView(discord.ui.View):
             self.players.append(member)
 
         await interaction.response.send_message(
-            f"Đóng hụi! Trừ **{self.bet:,}**. Ngồi xuống chờ.", ephemeral=True
+            f"✅ {interaction.user.mention} Đóng hụi! Trừ **{self.bet:,}**. Ngồi xuống chờ."
         )
 
         try:
@@ -395,6 +394,7 @@ class RollView(discord.ui.View):
         self.roll_order: list[int] = []  # user_id theo thứ tự bấm
         self.message: Optional[discord.Message] = None
         self._all_rolled = asyncio.Event()
+        self.end_time = int(time.time()) + ROLL_TIMEOUT
 
     def build_embed(self) -> discord.Embed:
         """Render trạng thái animation hiện tại — gọi mỗi ANIM_INTERVAL giây."""
@@ -402,7 +402,7 @@ class RollView(discord.ui.View):
             title="🎲 Xúc Xắc Quần Hùng — Đang Lắc!",
             description=(
                 "Ai dám lắc trước, kẻ đó có lợi thế tie-break!\n"
-                "Không bấm trong 30s thì Bot lắc thay — đừng trách."
+                f"Qua <t:{self.end_time}:R> không bấm thì Bot lắc thay — đừng trách."
             ),
             color=COLOR_WAIT,
         )
@@ -447,12 +447,12 @@ class RollView(discord.ui.View):
     async def roll_btn(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
         uid = interaction.user.id
         if uid not in self.player_infos:
-            await interaction.response.send_message("Mày không ngồi bàn này!", ephemeral=True)
+            await interaction.response.send_message(f"❌ {interaction.user.mention} Mày không ngồi bàn này!")
             return
 
         info = self.player_infos[uid]
         if info.has_rolled:
-            await interaction.response.send_message("Lắc rồi! Nhìn màn hình chờ đi.", ephemeral=True)
+            await interaction.response.send_message(f"❌ {interaction.user.mention} Lắc rồi! Nhìn màn hình chờ đi.")
             return
 
         info.click_time = time.time()
@@ -461,7 +461,7 @@ class RollView(discord.ui.View):
         self.roll_order.append(uid)
 
         await interaction.response.send_message(
-            "🎲 Đã lắc! Xúc xắc đang quay... đợi kết quả hiện ra.", ephemeral=True
+            f"🎲 {interaction.user.mention} Đã lắc! Xúc xắc đang quay... đợi kết quả hiện ra."
         )
 
         if all(p.has_rolled for p in self.player_infos.values()):
@@ -497,8 +497,7 @@ class MultiDice(commands.Cog):
         # ── Kiểm tra host bận ───────────────────────────────────────────
         if _is_busy(self.bot, host.id):
             await ctx.send(
-                f"{host.mention}, đang chơi game khác rồi! Kết thúc trước đã.",
-                ephemeral=True,
+                f"❌ {host.mention}, đang chơi game khác rồi! Kết thúc trước đã."
             )
             return
 
@@ -506,7 +505,7 @@ class MultiDice(commands.Cog):
         host_bal = await _get_balance(self.bot, str(host.id))
         bet, err = _parse_bet(bet_raw, host_bal)
         if err or bet is None:
-            await ctx.send(err or "Tiền cược không hợp lệ!", ephemeral=True)
+            await ctx.send(f"❌ {host.mention} {err or 'Tiền cược không hợp lệ!'}")
             return
 
         # ── Lọc danh sách được mời ──────────────────────────────────────
@@ -526,11 +525,12 @@ class MultiDice(commands.Cog):
             return
 
         # Khóa trước những người được mời (mở lại nếu họ từ chối)
-        for m in invitees:
-            _lock_user(self.bot, m.id)
+        # BỎ KHÓA NHỮNG NGƯỜI ĐƯỢC MỜI ĐỂ HỌ KHÔNG BỊ BUSY KHI BẤM JOIN
+        # for m in invitees:
+        #     _lock_user(self.bot, m.id)
 
         # Theo dõi toàn bộ người đã khóa để mở ở finally
-        locked_set: set[int] = {host.id} | {m.id for m in invitees}
+        locked_set: set[int] = {host.id}
 
         final_players: list[discord.Member] = []
 
@@ -544,7 +544,9 @@ class MultiDice(commands.Cog):
                 invite_view.message = invite_msg
                 await invite_view._done.wait()
                 confirmed_from_invite.extend(invite_view.confirmed)
-                # Ai đã xác nhận ở phase 1 thì đã được khóa trong InviteView
+                # Thêm những người đã bấm Tham Gia vào locked_set để tí nữa mở khóa
+                for m in invite_view.confirmed:
+                    locked_set.add(m.id)
 
             # ── GIAI ĐOẠN 2: PUBLIC LOBBY ────────────────────────────────
             lobby_view = PublicLobbyView(confirmed_from_invite, bet, self.bot)
