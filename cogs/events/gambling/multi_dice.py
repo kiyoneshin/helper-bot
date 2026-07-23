@@ -1,0 +1,749 @@
+"""
+multi_dice.py — Cog Xúc Xắc Quần Hùng (Multi Dice PvP)
+=======================================================
+Lệnh: y!multidice <tiền_cược> [@user1] [@user2]...
+
+4 Giai Đoạn:
+  1. Chiêu mộ: Ping danh sách, bấm nút đồng ý / bỏ chạy (60s).
+  2. Sảnh công khai: Ai thích thì vào (60s, tối đa 10 người).
+  3. Lắc xúc xắc đồng thời: Có animation chống rate-limit (30s + 20s reveal).
+  4. Kết quả: Thuế 2 đầu, chia tiền theo tier (1/2/3 người thắng), mở khóa.
+
+Cơ cấu thuế:
+  - Vào sảnh: Trừ bet, nhưng chỉ bet*0.95 vào pot.
+  - Chia thưởng: Pot*0.95 = DP (distributable pot).
+"""
+
+from __future__ import annotations
+
+import asyncio
+import logging
+import random
+import time
+from typing import Optional
+
+import discord
+from discord.ext import commands
+
+from cogs.common.db import (
+    add_event_points,
+    deduct_event_points,
+    get_or_create_event_profile,
+)
+
+log = logging.getLogger("MultiDice")
+
+# ─────────────────────────────────────────────────────────────────────────────
+# HẰNG SỐ
+# ─────────────────────────────────────────────────────────────────────────────
+DICE_GIF = "<a:Yb_tt_xucxac:1526669924448079955>"
+DICE_NUMS: dict[int, str] = {1: "⚀", 2: "⚁", 3: "⚂", 4: "⚃", 5: "⚄", 6: "⚅"}
+
+MAX_PLAYERS    = 10
+INVITE_TIMEOUT = 60
+LOBBY_TIMEOUT  = 60
+ROLL_TIMEOUT   = 30    # giây trước khi bot tự lắc cho kẻ AFK
+REVEAL_DELAY   = 20    # giây kể từ click_time để cả 2 xúc xắc hiện ra
+ANIM_INTERVAL  = 2     # giây giữa mỗi lần update embed
+
+COLOR_INFO   = 0xFFD700
+COLOR_WIN    = 0x00FF00
+COLOR_LOSE   = 0xFF0000
+COLOR_WAIT   = 0x7289DA
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# DB HELPERS (tự khai báo để không phụ thuộc circular import)
+# ─────────────────────────────────────────────────────────────────────────────
+
+async def _get_balance(bot: commands.Bot, user_id: str) -> int:
+    row = await get_or_create_event_profile(bot, user_id)
+    if row is None:
+        return 0
+    return int(row["points"] or 0)
+
+
+async def _apply_delta(bot: commands.Bot, user_id: str, delta: int) -> bool:
+    if delta > 0:
+        return await add_event_points(bot, user_id, delta, is_earned=False)
+    elif delta < 0:
+        return await deduct_event_points(bot, user_id, abs(delta))
+    return True
+
+
+def _parse_bet(raw: str, balance: int) -> tuple[Optional[int], Optional[str]]:
+    """Hỗ trợ hậu tố k (×1.000) và m (×1.000.000), số thập phân."""
+    cleaned = raw.lower().replace(",", "").strip()
+    try:
+        if cleaned.endswith("m"):
+            amount = int(float(cleaned[:-1]) * 1_000_000)
+        elif cleaned.endswith("k"):
+            amount = int(float(cleaned[:-1]) * 1_000)
+        else:
+            amount = int(float(cleaned))
+    except ValueError:
+        return None, f"`{raw}` không phải số hợp lệ!"
+    if amount <= 0:
+        return None, "Tiền cược phải lớn hơn **0**!"
+    if amount > balance:
+        return None, (
+            f"Ví chỉ có **{balance:,}**, mà đòi cược **{amount:,}**? Nghèo mà ham!"
+        )
+    return amount, None
+
+
+def _is_busy(bot: commands.Bot, user_id: int) -> bool:
+    active: set[int] = getattr(bot, "active_players", set())
+    return user_id in active
+
+
+def _lock_user(bot: commands.Bot, user_id: int) -> None:
+    active: set[int] = getattr(bot, "active_players", set())
+    active.add(user_id)
+    setattr(bot, "active_players", active)
+
+
+def _unlock_user(bot: commands.Bot, user_id: int) -> None:
+    active: set[int] = getattr(bot, "active_players", set())
+    active.discard(user_id)
+    setattr(bot, "active_players", active)
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# DATA
+# ─────────────────────────────────────────────────────────────────────────────
+
+class PlayerInfo:
+    """Dữ liệu một người chơi trong ván Multi Dice."""
+
+    __slots__ = ("user_id", "pot_contribution", "d1", "d2", "click_time", "auto_rolled")
+
+    def __init__(self, user_id: int, pot_contribution: int) -> None:
+        self.user_id = user_id
+        self.pot_contribution = pot_contribution  # bet * 0.95, tiền thực vào pot
+        self.d1: Optional[int] = None
+        self.d2: Optional[int] = None
+        self.click_time: Optional[float] = None
+        self.auto_rolled: bool = False
+
+    @property
+    def total(self) -> int:
+        return (self.d1 or 0) + (self.d2 or 0)
+
+    @property
+    def has_rolled(self) -> bool:
+        return self.click_time is not None
+
+    @property
+    def is_revealed(self) -> bool:
+        if self.click_time is None:
+            return False
+        return (time.time() - self.click_time) >= REVEAL_DELAY
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# VIEW: GIAI ĐOẠN 1 — INVITE
+# ─────────────────────────────────────────────────────────────────────────────
+
+class InviteView(discord.ui.View):
+    """Giai đoạn 1: Những người được ping bấm Tham Gia hoặc Bỏ Chạy."""
+
+    def __init__(
+        self,
+        host: discord.Member,
+        invitees: list[discord.Member],
+        bet: int,
+        bot: commands.Bot,
+    ) -> None:
+        super().__init__(timeout=float(INVITE_TIMEOUT))
+        self.host = host
+        self.invitees = invitees
+        self.bet = bet
+        self.bot = bot
+        # None = chưa quyết, True = đồng ý, False = từ chối
+        self.statuses: dict[int, Optional[bool]] = {m.id: None for m in invitees}
+        self.confirmed: list[discord.Member] = []
+        self.message: Optional[discord.Message] = None
+        self._done = asyncio.Event()
+
+    def _all_decided(self) -> bool:
+        return all(v is not None for v in self.statuses.values())
+
+    def build_embed(self) -> discord.Embed:
+        embed = discord.Embed(
+            title="🎲 Xúc Xắc Quần Hùng — Chiêu Mộ Anh Tài",
+            description=(
+                f"{self.host.mention} đang kéo mồi!\n"
+                f"Cược: **{self.bet:,}**/người *(trừ 5% thuế vào sảnh)*\n\n"
+                "Dám vào thì bấm, nhát thì né:"
+            ),
+            color=COLOR_INFO,
+        )
+        lines: list[str] = []
+        for m in self.invitees:
+            s = self.statuses.get(m.id)
+            icon = "✅" if s is True else ("❌" if s is False else "⏳")
+            lines.append(f"{icon} {m.mention}")
+        embed.add_field(name="Danh Sách Được Kéo Mồi", value="\n".join(lines), inline=False)
+        embed.set_footer(text=f"Chốt kèo trong {INVITE_TIMEOUT}s • Bỏ chạy coi chừng mất mặt")
+        return embed
+
+    @discord.ui.button(label="✅ Tham Gia", style=discord.ButtonStyle.success, custom_id="md_invite_join")
+    async def join_btn(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
+        uid = interaction.user.id
+        if uid not in self.statuses:
+            await interaction.response.send_message("Mày không nằm trong danh sách, lui ra!", ephemeral=True)
+            return
+        if self.statuses[uid] is True:
+            await interaction.response.send_message("Đã vào rồi, bấm loạn làm gì!", ephemeral=True)
+            return
+        if self.statuses[uid] is False:
+            await interaction.response.send_message("Đã bỏ chạy rồi, lần sau đừng hèn!", ephemeral=True)
+            return
+
+        # Kiểm tra bận
+        if _is_busy(self.bot, uid):
+            await interaction.response.send_message(
+                "Đang chơi game khác rồi! Kết thúc game đó trước.", ephemeral=True
+            )
+            return
+
+        # Kiểm tra tiền
+        bal = await _get_balance(self.bot, str(uid))
+        if bal < self.bet:
+            self.statuses[uid] = False
+            _unlock_user(self.bot, uid)
+            await interaction.response.send_message(
+                f"Ví có **{bal:,}** mà đòi cược **{self.bet:,}**? Nghèo mà ham! Gạch tên.", ephemeral=True
+            )
+        else:
+            ok = await _apply_delta(self.bot, str(uid), -self.bet)
+            if not ok:
+                self.statuses[uid] = False
+                _unlock_user(self.bot, uid)
+                await interaction.response.send_message("Lỗi DB! Thử lại sau.", ephemeral=True)
+            else:
+                self.statuses[uid] = True
+                _lock_user(self.bot, uid)
+                member = interaction.user
+                if isinstance(member, discord.Member):
+                    self.confirmed.append(member)
+                await interaction.response.send_message(
+                    f"Chốt! Đã trừ **{self.bet:,}**. Ngồi chờ sảnh mở.", ephemeral=True
+                )
+
+        try:
+            if self.message:
+                await self.message.edit(embed=self.build_embed(), view=self)
+        except discord.HTTPException:
+            pass
+
+        if self._all_decided():
+            self._done.set()
+
+    @discord.ui.button(label="🏃 Bỏ Chạy", style=discord.ButtonStyle.danger, custom_id="md_invite_leave")
+    async def leave_btn(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
+        uid = interaction.user.id
+        if uid not in self.statuses:
+            await interaction.response.send_message("Không liên quan!", ephemeral=True)
+            return
+        if self.statuses[uid] is not None:
+            await interaction.response.send_message("Đã chốt rồi, không thay đổi được!", ephemeral=True)
+            return
+
+        self.statuses[uid] = False
+        _unlock_user(self.bot, uid)
+        await interaction.response.send_message("Nhát gan thật. Thoát kèo.", ephemeral=True)
+
+        try:
+            if self.message:
+                await self.message.edit(embed=self.build_embed(), view=self)
+        except discord.HTTPException:
+            pass
+
+        if self._all_decided():
+            self._done.set()
+
+    async def on_timeout(self) -> None:
+        for uid, status in self.statuses.items():
+            if status is None:
+                self.statuses[uid] = False
+                _unlock_user(self.bot, uid)
+        for child in self.children:
+            if isinstance(child, discord.ui.Button):
+                child.disabled = True
+        self._done.set()
+        try:
+            if self.message:
+                await self.message.edit(embed=self.build_embed(), view=self)
+        except discord.HTTPException:
+            pass
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# VIEW: GIAI ĐOẠN 2 — PUBLIC LOBBY
+# ─────────────────────────────────────────────────────────────────────────────
+
+class PublicLobbyView(discord.ui.View):
+    """Giai đoạn 2: Sảnh công khai, ai thích vào thì bấm."""
+
+    def __init__(
+        self,
+        initial_players: list[discord.Member],
+        bet: int,
+        bot: commands.Bot,
+    ) -> None:
+        super().__init__(timeout=float(LOBBY_TIMEOUT))
+        self.bet = bet
+        self.bot = bot
+        self.players: list[discord.Member] = list(initial_players)
+        self.player_ids: set[int] = {m.id for m in initial_players}
+        self.message: Optional[discord.Message] = None
+        self._closed = asyncio.Event()
+
+    def build_embed(self) -> discord.Embed:
+        count = len(self.players)
+        spots = MAX_PLAYERS - count
+        embed = discord.Embed(
+            title="🎲 Xúc Xắc Quần Hùng — Sòng Đã Mở!",
+            description=(
+                f"Mại dô mại dô! Tay nhanh hơn não!\n"
+                f"Cược: **{self.bet:,}**/người *(trừ 5% thuế vào sảnh)*\n\n"
+                f"**Còn {spots} chỗ trống** — Đủ {MAX_PLAYERS} người hoặc hết {LOBBY_TIMEOUT}s thì chốt!"
+            ),
+            color=COLOR_INFO,
+        )
+        if self.players:
+            embed.add_field(
+                name=f"👥 Danh Sách Hiện Tại ({count}/{MAX_PLAYERS})",
+                value="\n".join(f"• {m.mention}" for m in self.players),
+                inline=False,
+            )
+        embed.set_footer(text="Đóng hụi đi! Chờ lâu mất chỗ.")
+        return embed
+
+    @discord.ui.button(label="🎰 Đóng Hụi (Vào Bàn)", style=discord.ButtonStyle.primary, custom_id="md_lobby_join")
+    async def join_btn(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
+        uid = interaction.user.id
+
+        if uid in self.player_ids:
+            await interaction.response.send_message("Mày đã ngồi bàn rồi, bấm loạn làm gì!", ephemeral=True)
+            return
+        if len(self.players) >= MAX_PLAYERS:
+            await interaction.response.send_message("Bàn đầy rồi! Trễ mất rồi.", ephemeral=True)
+            return
+        if _is_busy(self.bot, uid):
+            await interaction.response.send_message(
+                "Đang chơi game khác rồi! Kết thúc trước đã.", ephemeral=True
+            )
+            return
+
+        bal = await _get_balance(self.bot, str(uid))
+        if bal < self.bet:
+            await interaction.response.send_message(
+                f"Ví có **{bal:,}** mà đòi cược **{self.bet:,}**? Nghèo mà ham!", ephemeral=True
+            )
+            return
+
+        ok = await _apply_delta(self.bot, str(uid), -self.bet)
+        if not ok:
+            await interaction.response.send_message("Lỗi DB! Thử lại sau.", ephemeral=True)
+            return
+
+        _lock_user(self.bot, uid)
+        self.player_ids.add(uid)
+        member = interaction.user
+        if isinstance(member, discord.Member):
+            self.players.append(member)
+
+        await interaction.response.send_message(
+            f"Đóng hụi! Trừ **{self.bet:,}**. Ngồi xuống chờ.", ephemeral=True
+        )
+
+        try:
+            if self.message:
+                await self.message.edit(embed=self.build_embed(), view=self)
+        except discord.HTTPException:
+            pass
+
+        if len(self.players) >= MAX_PLAYERS:
+            self._closed.set()
+            self.stop()
+
+    async def on_timeout(self) -> None:
+        for child in self.children:
+            if isinstance(child, discord.ui.Button):
+                child.disabled = True
+        self._closed.set()
+        try:
+            if self.message:
+                await self.message.edit(embed=self.build_embed(), view=self)
+        except discord.HTTPException:
+            pass
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# VIEW: GIAI ĐOẠN 3 — ROLL
+# ─────────────────────────────────────────────────────────────────────────────
+
+class RollView(discord.ui.View):
+    """Giai đoạn 3: Mỗi người bấm nút lắc; animation hiện ra dần."""
+
+    def __init__(self, player_infos: dict[int, PlayerInfo]) -> None:
+        super().__init__(timeout=float(ROLL_TIMEOUT + REVEAL_DELAY + 10))
+        self.player_infos = player_infos
+        self.roll_order: list[int] = []  # user_id theo thứ tự bấm
+        self.message: Optional[discord.Message] = None
+        self._all_rolled = asyncio.Event()
+
+    def build_embed(self) -> discord.Embed:
+        """Render trạng thái animation hiện tại — gọi mỗi ANIM_INTERVAL giây."""
+        embed = discord.Embed(
+            title="🎲 Xúc Xắc Quần Hùng — Đang Lắc!",
+            description=(
+                "Ai dám lắc trước, kẻ đó có lợi thế tie-break!\n"
+                "Không bấm trong 30s thì Bot lắc thay — đừng trách."
+            ),
+            color=COLOR_WAIT,
+        )
+        now = time.time()
+        lines: list[str] = []
+
+        # Người đã bấm — theo thứ tự bấm
+        shown: set[int] = set()
+        for uid in self.roll_order:
+            info = self.player_infos[uid]
+            shown.add(uid)
+            elapsed = now - (info.click_time or now)
+            if elapsed < 10:
+                dice_str = f"{DICE_GIF} {DICE_GIF}"
+            elif elapsed < REVEAL_DELAY:
+                d1e = DICE_NUMS.get(info.d1 or 1, "?")
+                dice_str = f"**{d1e}** {DICE_GIF}"
+            else:
+                d1e = DICE_NUMS.get(info.d1 or 1, "?")
+                d2e = DICE_NUMS.get(info.d2 or 1, "?")
+                total = info.total
+                auto = " *(bot lắc)*" if info.auto_rolled else ""
+                dice_str = f"**{d1e} + {d2e} = {total}**{auto}"
+            lines.append(f"🎲 <@{uid}> ── {dice_str}")
+
+        # Người chưa bấm
+        for uid in self.player_infos:
+            if uid not in shown:
+                lines.append(f"⏳ <@{uid}> ── *Đang chờ bấm nút...*")
+
+        rolled_count = len(self.roll_order)
+        total_count = len(self.player_infos)
+        embed.add_field(
+            name=f"Bảng Đấu ({rolled_count}/{total_count} đã lắc)",
+            value="\n".join(lines) if lines else "(trống)",
+            inline=False,
+        )
+        embed.set_footer(text="Chờ xúc xắc dừng quay... • Angelic Casino 🌸")
+        return embed
+
+    @discord.ui.button(label="🎲 Lắc Xúc Xắc", style=discord.ButtonStyle.primary, custom_id="md_roll")
+    async def roll_btn(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
+        uid = interaction.user.id
+        if uid not in self.player_infos:
+            await interaction.response.send_message("Mày không ngồi bàn này!", ephemeral=True)
+            return
+
+        info = self.player_infos[uid]
+        if info.has_rolled:
+            await interaction.response.send_message("Lắc rồi! Nhìn màn hình chờ đi.", ephemeral=True)
+            return
+
+        info.click_time = time.time()
+        info.d1 = random.randint(1, 6)
+        info.d2 = random.randint(1, 6)
+        self.roll_order.append(uid)
+
+        await interaction.response.send_message(
+            "🎲 Đã lắc! Xúc xắc đang quay... đợi kết quả hiện ra.", ephemeral=True
+        )
+
+        if all(p.has_rolled for p in self.player_infos.values()):
+            self._all_rolled.set()
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# COG CHÍNH
+# ─────────────────────────────────────────────────────────────────────────────
+
+class MultiDice(commands.Cog):
+    """🎲 Cog Xúc Xắc Quần Hùng — PvP Multi Dice."""
+
+    def __init__(self, bot: commands.Bot) -> None:
+        self.bot = bot
+
+    @commands.command(name="multidice", aliases=["md", "quanhung"])
+    async def multidice_cmd(
+        self,
+        ctx: commands.Context,
+        bet_raw: str,
+        *mentions: discord.Member,
+    ) -> None:
+        """
+        Xúc Xắc Quần Hùng — Cược PvP cùng bạn bè.
+        Cú pháp: y!multidice <tiền_cược> [@user1] [@user2]...
+        """
+        host = ctx.author
+        if not isinstance(host, discord.Member):
+            await ctx.send("Chỉ dùng được trong server!", ephemeral=True)
+            return
+
+        # ── Kiểm tra host bận ───────────────────────────────────────────
+        if _is_busy(self.bot, host.id):
+            await ctx.send(
+                f"{host.mention}, đang chơi game khác rồi! Kết thúc trước đã.",
+                ephemeral=True,
+            )
+            return
+
+        # ── Validate tiền cược ──────────────────────────────────────────
+        host_bal = await _get_balance(self.bot, str(host.id))
+        bet, err = _parse_bet(bet_raw, host_bal)
+        if err or bet is None:
+            await ctx.send(err or "Tiền cược không hợp lệ!", ephemeral=True)
+            return
+
+        # ── Lọc danh sách được mời ──────────────────────────────────────
+        invitees: list[discord.Member] = []
+        seen: set[int] = {host.id}
+        for m in mentions:
+            if not m.bot and m.id not in seen and len(invitees) < MAX_PLAYERS - 1:
+                seen.add(m.id)
+                invitees.append(m)
+
+        # ── Khóa host & trừ tiền ────────────────────────────────────────
+        _lock_user(self.bot, host.id)
+        ok = await _apply_delta(self.bot, str(host.id), -bet)
+        if not ok:
+            _unlock_user(self.bot, host.id)
+            await ctx.send("Lỗi DB! Thử lại sau.", ephemeral=True)
+            return
+
+        # Khóa trước những người được mời (mở lại nếu họ từ chối)
+        for m in invitees:
+            _lock_user(self.bot, m.id)
+
+        # Theo dõi toàn bộ người đã khóa để mở ở finally
+        locked_set: set[int] = {host.id} | {m.id for m in invitees}
+
+        final_players: list[discord.Member] = []
+
+        try:
+            # ── GIAI ĐOẠN 1: INVITE ──────────────────────────────────────
+            confirmed_from_invite: list[discord.Member] = [host]
+
+            if invitees:
+                invite_view = InviteView(host, invitees, bet, self.bot)
+                invite_msg = await ctx.send(embed=invite_view.build_embed(), view=invite_view)
+                invite_view.message = invite_msg
+                await invite_view._done.wait()
+                confirmed_from_invite.extend(invite_view.confirmed)
+                # Ai đã xác nhận ở phase 1 thì đã được khóa trong InviteView
+
+            # ── GIAI ĐOẠN 2: PUBLIC LOBBY ────────────────────────────────
+            lobby_view = PublicLobbyView(confirmed_from_invite, bet, self.bot)
+            lobby_msg = await ctx.send(embed=lobby_view.build_embed(), view=lobby_view)
+            lobby_view.message = lobby_msg
+            await lobby_view._closed.wait()
+
+            final_players = lobby_view.players
+            # Cập nhật locked_set với những người mới vào ở phase 2
+            for m in final_players:
+                locked_set.add(m.id)
+
+            # Kiểm tra đủ 2 người
+            if len(final_players) < 2:
+                for m in final_players:
+                    await _apply_delta(self.bot, str(m.id), bet)
+                await ctx.send(
+                    "Không đủ 2 người tham gia. Hủy kèo! Tiền hoàn lại hết."
+                    "\nThảo nào ế, chẳng ai chịu vào!"
+                )
+                return
+
+            # ── GIAI ĐOẠN 3: ROLL DICE ───────────────────────────────────
+            pot_per = int(bet * 0.95)
+            player_infos: dict[int, PlayerInfo] = {
+                m.id: PlayerInfo(m.id, pot_per) for m in final_players
+            }
+
+            roll_view = RollView(player_infos)
+            roll_msg = await ctx.send(embed=roll_view.build_embed(), view=roll_view)
+            roll_view.message = roll_msg
+
+            roll_start = time.time()
+            auto_triggered = False
+
+            async def _animation_loop() -> None:
+                nonlocal auto_triggered
+                while True:
+                    await asyncio.sleep(ANIM_INTERVAL)
+                    now = time.time()
+
+                    # Auto-roll AFK sau ROLL_TIMEOUT
+                    if not auto_triggered and (now - roll_start) >= ROLL_TIMEOUT:
+                        auto_triggered = True
+                        late_t = now
+                        for uid, info in player_infos.items():
+                            if not info.has_rolled:
+                                info.click_time = late_t
+                                info.d1 = random.randint(1, 6)
+                                info.d2 = random.randint(1, 6)
+                                info.auto_rolled = True
+                                roll_view.roll_order.append(uid)
+                        roll_view._all_rolled.set()
+
+                    # Kiểm tra tất cả đã reveal
+                    all_done = (
+                        all(p.has_rolled for p in player_infos.values())
+                        and all(p.is_revealed for p in player_infos.values())
+                    )
+
+                    try:
+                        new_embed = roll_view.build_embed()
+                        if roll_view.message:
+                            await roll_view.message.edit(embed=new_embed)
+                    except discord.HTTPException:
+                        pass
+
+                    if all_done:
+                        break
+
+            anim_task = asyncio.create_task(_animation_loop())
+            max_wait = ROLL_TIMEOUT + REVEAL_DELAY + 15
+            try:
+                await asyncio.wait_for(anim_task, timeout=max_wait)
+            except asyncio.TimeoutError:
+                anim_task.cancel()
+            except asyncio.CancelledError:
+                pass
+
+            # Khoá nút lắc
+            roll_view.stop()
+            for child in roll_view.children:
+                if isinstance(child, discord.ui.Button):
+                    child.disabled = True
+            try:
+                final_roll_embed = roll_view.build_embed()
+                final_roll_embed.title = "🎲 Xúc Xắc Quần Hùng — Đã Chốt Điểm!"
+                if roll_view.message:
+                    await roll_view.message.edit(embed=final_roll_embed, view=roll_view)
+            except discord.HTTPException:
+                pass
+
+            # ── GIAI ĐOẠN 4: KẾT QUẢ ────────────────────────────────────
+            await self._resolve_game(ctx, final_players, player_infos, bet)
+
+        finally:
+            for uid in locked_set:
+                _unlock_user(self.bot, uid)
+
+    async def _resolve_game(
+        self,
+        ctx: commands.Context,
+        players: list[discord.Member],
+        player_infos: dict[int, PlayerInfo],
+        bet: int,
+    ) -> None:
+        """Giai đoạn 4: Tính thuế, chia tiền, gửi embed tổng kết."""
+        n = len(players)
+        total_pot = sum(info.pot_contribution for info in player_infos.values())
+        dp = int(total_pot * 0.95)  # Distributable Pot sau thuế thắng 5%
+        entry_tax = n * bet - total_pot
+        winner_tax = total_pot - dp
+
+        # Xếp hạng: total DESC, click_time ASC (sớm hơn = ưu tiên khi bằng điểm)
+        ranked: list[PlayerInfo] = sorted(
+            player_infos.values(),
+            key=lambda p: (-p.total, p.click_time or float("inf")),
+        )
+
+        # Cơ cấu giải thưởng
+        if n <= 4:
+            prize_ratios: list[float] = [1.0]
+        elif n <= 7:
+            prize_ratios = [0.7, 0.3]
+        else:
+            prize_ratios = [0.5, 0.3, 0.2]
+
+        winners_data: list[tuple[PlayerInfo, int]] = []
+        for i, ratio in enumerate(prize_ratios):
+            if i >= len(ranked):
+                break
+            prize = int(dp * ratio)
+            winners_data.append((ranked[i], prize))
+            await _apply_delta(self.bot, str(ranked[i].user_id), prize)
+
+        losers: list[PlayerInfo] = ranked[len(winners_data):]
+
+        # ── Xây Embed Tổng Kết ───────────────────────────────────────────
+        embed = discord.Embed(
+            title="🏆 Xúc Xắc Quần Hùng — Bảng Vàng Phong Thần",
+            color=COLOR_WIN,
+        )
+
+        # Bảng điểm toàn sân
+        all_lines: list[str] = []
+        medals = ["🥇", "🥈", "🥉"]
+        for i, info in enumerate(ranked):
+            d1e = DICE_NUMS.get(info.d1 or 1, "?")
+            d2e = DICE_NUMS.get(info.d2 or 1, "?")
+            auto = " *(bot lắc thay)*" if info.auto_rolled else ""
+            medal = medals[i] if i < len(medals) else f"#{i+1}"
+            all_lines.append(
+                f"{medal} <@{info.user_id}> — {d1e}+{d2e} = **{info.total}**{auto}"
+            )
+        embed.add_field(name="📊 Bảng Điểm Toàn Sân", value="\n".join(all_lines), inline=False)
+
+        # Người thắng
+        win_lines: list[str] = []
+        for idx, (info, prize) in enumerate(winners_data):
+            m_icon = medals[idx] if idx < len(medals) else f"#{idx+1}"
+            win_lines.append(f"{m_icon} <@{info.user_id}> ẵm trọn **+{prize:,}**")
+        embed.add_field(name="🎉 Bảng Vàng Phong Thần", value="\n".join(win_lines), inline=False)
+
+        # Người thua
+        if losers:
+            lose_lines = [
+                f"💀 <@{info.user_id}> cúng sạch **{bet:,}**" for info in losers
+            ]
+            embed.add_field(
+                name="😭 Cột Trụ Sòng Bạc — Mút Trọn",
+                value="\n".join(lose_lines),
+                inline=False,
+            )
+
+        # Thuế nhà cái
+        embed.add_field(
+            name="🏦 Nhà Cái Đã Cắn",
+            value=(
+                f"Thuế vào sảnh (5%/người): **{entry_tax:,}**\n"
+                f"Thuế thưởng (5% quỹ): **{winner_tax:,}**\n"
+                f"Tổng phế: **{entry_tax + winner_tax:,}** — Sòng bài luôn thắng!"
+            ),
+            inline=False,
+        )
+        embed.set_footer(text="Angelic Casino • Xúc Xắc Quần Hùng 🌸")
+        await ctx.send(embed=embed)
+
+    @multidice_cmd.error
+    async def multidice_error(self, ctx: commands.Context, error: Exception) -> None:
+        if isinstance(error, commands.MissingRequiredArgument):
+            await ctx.send(
+                "Thiếu! Cú pháp: `y!multidice <tiền_cược> [@user1] [@user2]...`",
+                ephemeral=True,
+            )
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SETUP
+# ─────────────────────────────────────────────────────────────────────────────
+
+async def setup(bot: commands.Bot) -> None:
+    await bot.add_cog(MultiDice(bot))
