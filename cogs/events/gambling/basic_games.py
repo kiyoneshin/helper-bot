@@ -54,12 +54,12 @@ def _parse_bet(raw: str, balance: int) -> tuple[Optional[int], Optional[str]]:
     try:
         amount = int(raw.replace(",", ""))
     except ValueError:
-        return None, f"❌ `{raw}` không phải số nguyên hợp lệ!"
+        return None, f"`{raw}` không phải số nguyên hợp lệ!"
     if amount <= 0:
-        return None, "❌ Tiền cược phải lớn hơn **0**!"
+        return None, "Tiền cược phải lớn hơn **0**!"
     if amount > balance:
         return None, (
-            f"❌ Bạn không đủ số dư!\n"
+            f"Bạn không đủ số dư!\n"
             f"Số dư hiện tại: **{balance:,}**, bạn muốn cược: **{amount:,}**."
         )
     return amount, None
@@ -117,7 +117,7 @@ class BasicGames(commands.Cog):
 
         ok = await _apply_delta(self.bot, uid, delta)
         if not ok:
-            await ctx.send("⚠️ Lỗi cập nhật Database, thử lại sau!", ephemeral=True)
+            await ctx.send("Lỗi cập nhật Database, thử lại sau!", ephemeral=True)
             return
 
         new_balance = balance + delta
@@ -149,7 +149,7 @@ class BasicGames(commands.Cog):
     @coinflip_cmd.error
     async def coinflip_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, commands.MissingRequiredArgument):
-            await ctx.send("❌ Thiếu tham số! Cú pháp: `y!cf <h/t> <tiền_cược>`", ephemeral=True)
+            await ctx.send("Thiếu! Cú pháp: `y!cf <h/t> <tiền_cược>`", ephemeral=True)
 
     # =========================================================================
     # 2. CUPS
@@ -176,7 +176,7 @@ class BasicGames(commands.Cog):
     @cups_cmd.error
     async def cups_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, commands.MissingRequiredArgument):
-            await ctx.send("❌ Thiếu tham số! Cú pháp: `y!cups <tiền_cược>`", ephemeral=True)
+            await ctx.send("Thiếu! Cú pháp: `y!cups <tiền_cược>`", ephemeral=True)
 
     # =========================================================================
     # 3. DICE 7
@@ -211,7 +211,7 @@ class BasicGames(commands.Cog):
 
         ok = await _apply_delta(self.bot, uid, delta)
         if not ok:
-            await ctx.send("⚠️ Lỗi cập nhật Database, thử lại sau!", ephemeral=True)
+            await ctx.send("Lỗi cập nhật Database, thử lại sau!", ephemeral=True)
             return
 
         new_balance = balance + delta
@@ -255,7 +255,7 @@ class BasicGames(commands.Cog):
         # TRỪ TIỀN CƯỢC NGAY LẬP TỨC ĐỂ GIỮ CHỖ
         ok = await _apply_delta(self.bot, uid, -bet)
         if not ok:
-            await ctx.send("⚠️ Lỗi cập nhật Database, không thể tạm giữ tiền cược!", ephemeral=True)
+            await ctx.send("Lỗi cập nhật Database, không thể tạm giữ tiền cược!", ephemeral=True)
             return
             
         new_balance = balance - bet
@@ -286,7 +286,7 @@ class BasicGames(commands.Cog):
     @roulette_cmd.error
     async def roulette_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, commands.MissingRequiredArgument):
-            await ctx.send("❌ Thiếu tham số! Cú pháp: `y!shot <tiền_cược>`", ephemeral=True)
+            await ctx.send("Thiếu! Cú pháp: `y!shot <tiền_cược>`", ephemeral=True)
 
 
 # =============================================================================

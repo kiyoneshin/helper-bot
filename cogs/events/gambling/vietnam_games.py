@@ -184,7 +184,7 @@ class VietnamGames(commands.Cog):
     async def taixiu_error(self, ctx: commands.Context, error: Exception) -> None:
         if isinstance(error, commands.MissingRequiredArgument):
             await ctx.send(
-                "❌ Thiếu tham số! Cú pháp: `y!tx <tai/xiu> <tiền_cược>`",
+                "Thiếu! Cú pháp: `y!tx <tai/xiu> <tiền_cược>`",
                 ephemeral=True,
             )
 
