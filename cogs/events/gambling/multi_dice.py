@@ -40,10 +40,10 @@ DICE_GIF = "<a:Yb_tt_xucxac:1526669924448079955>"
 DICE_NUMS: dict[int, str] = {1: "⚀", 2: "⚁", 3: "⚂", 4: "⚃", 5: "⚄", 6: "⚅"}
 
 MAX_PLAYERS    = 10
-INVITE_TIMEOUT = 60
-LOBBY_TIMEOUT  = 60
-ROLL_TIMEOUT   = 30    # giây trước khi bot tự lắc cho kẻ AFK
-REVEAL_DELAY   = 20    # giây kể từ click_time để cả 2 xúc xắc hiện ra
+INVITE_TIMEOUT = 30
+LOBBY_TIMEOUT  = 45
+ROLL_TIMEOUT   = 20    # giây trước khi bot tự lắc cho kẻ AFK
+REVEAL_DELAY   = 10    # giây kể từ click_time để cả 2 xúc xắc hiện ra
 ANIM_INTERVAL  = 2     # giây giữa mỗi lần update embed
 
 COLOR_INFO   = 0xFFD700
@@ -415,7 +415,7 @@ class RollView(discord.ui.View):
             info = self.player_infos[uid]
             shown.add(uid)
             elapsed = now - (info.click_time or now)
-            if elapsed < 10:
+            if elapsed < 5:
                 dice_str = f"{DICE_GIF} {DICE_GIF}"
             elif elapsed < REVEAL_DELAY:
                 d1e = DICE_NUMS.get(info.d1 or 1, "?")
