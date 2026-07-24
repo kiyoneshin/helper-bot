@@ -39,12 +39,13 @@ log = logging.getLogger("MultiDice")
 DICE_GIF = "<a:Yb_tt_xucxac:1526669924448079955>"
 DICE_NUMS: dict[int, str] = {1: "⚀", 2: "⚁", 3: "⚂", 4: "⚃", 5: "⚄", 6: "⚅"}
 
-MAX_PLAYERS    = 10
-INVITE_TIMEOUT = 30
-LOBBY_TIMEOUT  = 45
-ROLL_TIMEOUT   = 20    # giây trước khi bot tự lắc cho kẻ AFK
-REVEAL_DELAY   = 10    # giây kể từ click_time để cả 2 xúc xắc hiện ra
-ANIM_INTERVAL  = 2     # giây giữa mỗi lần update embed
+MAX_PLAYERS       = 10
+INVITE_TIMEOUT    = 30
+LOBBY_TIMEOUT     = 45
+SPECTATOR_TIMEOUT = 45    # giây cho khán giả đặt cược
+ROLL_TIMEOUT      = 20    # giây trước khi bot tự lắc cho kẻ AFK
+REVEAL_DELAY      = 10    # giây kể từ click_time để cả 2 xúc xắc hiện ra
+ANIM_INTERVAL     = 2     # giây giữa mỗi lần update embed
 
 COLOR_INFO   = 0xFFD700
 COLOR_WIN    = 0x00FF00
@@ -469,6 +470,215 @@ class RollView(discord.ui.View):
 
 
 # ─────────────────────────────────────────────────────────────────────────────
+# VIEW: GIAI ĐOẠN 2.5 — SPECTATOR BETTING (KHÁN GIẢ CÁ CƯỢC)
+# ─────────────────────────────────────────────────────────────────────────────
+
+class SpectatorBetModal(discord.ui.Modal, title="💰 Đặt Cược Khán Đài"):
+    """Modal nhập số tiền cược của khán giả."""
+
+    bet_input = discord.ui.TextInput(
+        label="Số tiền cược",
+        placeholder="VD: 500, 10k, 1.5m...",
+        required=True,
+        max_length=20,
+    )
+
+    def __init__(self, view: "SpectatorBetView", player_id: int) -> None:
+        super().__init__()
+        self.view_ref = view
+        self.player_id = player_id
+
+    async def on_submit(self, interaction: discord.Interaction) -> None:
+        uid = interaction.user.id
+        raw = str(self.bet_input.value)
+
+        balance = await _get_balance(self.view_ref.bot, str(uid))
+        bet, err = _parse_bet(raw, balance)
+        if err or bet is None:
+            await interaction.response.send_message(
+                f"❌ {interaction.user.mention} {err or 'Số tiền không hợp lệ!'}", delete_after=5.0
+            )
+            return
+
+        ok = await _apply_delta(self.view_ref.bot, str(uid), -bet)
+        if not ok:
+            await interaction.response.send_message(
+                f"❌ {interaction.user.mention} Lỗi DB khi trừ tiền — thử lại!", delete_after=5.0
+            )
+            return
+
+        # Cộng dồn vào dictionary
+        if uid not in self.view_ref.spectator_bets:
+            self.view_ref.spectator_bets[uid] = {}
+            _lock_user(self.view_ref.bot, uid)
+            self.view_ref.locked_spectators.add(uid)
+
+        bets_dict = self.view_ref.spectator_bets[uid]
+        bets_dict[self.player_id] = bets_dict.get(self.player_id, 0) + bet
+
+        player_name = self.view_ref.player_names.get(self.player_id, f"<@{self.player_id}>")
+        total_on_player = bets_dict[self.player_id]
+        await interaction.response.send_message(
+            f"✅ {interaction.user.mention} Cược **{bet:,}** vào **{player_name}**! "
+            f"(Tổng trên người này: **{total_on_player:,}**)",
+            delete_after=5.0,
+        )
+
+        # Cập nhật embed
+        try:
+            if self.view_ref.message:
+                await self.view_ref.message.edit(embed=self.view_ref.build_embed(), view=self.view_ref)
+        except discord.HTTPException:
+            pass
+
+
+class SpectatorBetView(discord.ui.View):
+    """Giai đoạn 2.5: Khán giả đặt cược người thắng."""
+
+    def __init__(
+        self,
+        final_players: list[discord.Member],
+        bet: int,
+        bot: commands.Bot,
+    ) -> None:
+        super().__init__(timeout=float(SPECTATOR_TIMEOUT))
+        self.final_players = final_players
+        self.player_ids: set[int] = {m.id for m in final_players}
+        self.player_names: dict[int, str] = {m.id: m.display_name for m in final_players}
+        self.bet = bet
+        self.bot = bot
+        self.message: Optional[discord.Message] = None
+        self._closed = asyncio.Event()
+        self.end_time = int(time.time()) + SPECTATOR_TIMEOUT
+
+        # Key: spectator_user_id, Value: {player_user_id: total_bet}
+        self.spectator_bets: dict[int, dict[int, int]] = {}
+        self.locked_spectators: set[int] = set()
+
+        # Build Select Menu
+        select = discord.ui.Select(
+            placeholder="👉 Chọn người bạn muốn cược...",
+            custom_id="md_spectator_select",
+            min_values=1,
+            max_values=1,
+            options=[
+                discord.SelectOption(
+                    label=m.display_name,
+                    value=str(m.id),
+                    description=f"Cược {m.display_name} sẽ thắng",
+                )
+                for m in final_players
+            ],
+        )
+        select.callback = self._select_callback
+        self.add_item(select)
+
+    def build_embed(self) -> discord.Embed:
+        embed = discord.Embed(
+            title="🎟️ Khán Đài Đỏ Đen — Ai Thắng Ai Thua?",
+            description=(
+                "Người ngoài sàn cũng có thể hốt bạc!\n"
+                "Chọn 1 hoặc nhiều tay chơi bạn nghĩ sẽ thắng, rồi đặt cược vào.\n"
+                + ("🔒 **Đã chốt sổ!**" if self._closed.is_set() else f"⏳ Chốt sổ: <t:{self.end_time}:R>")
+            ),
+            color=COLOR_INFO,
+        )
+
+        # Tổng hợp cược vào từng player
+        pool_by_player: dict[int, int] = {}
+        for spec_bets in self.spectator_bets.values():
+            for pid, amt in spec_bets.items():
+                pool_by_player[pid] = pool_by_player.get(pid, 0) + amt
+
+        lines: list[str] = []
+        total_spec_pool = sum(pool_by_player.values())
+        for m in self.final_players:
+            pool_on = pool_by_player.get(m.id, 0)
+            count = sum(1 for sb in self.spectator_bets.values() if m.id in sb)
+            if pool_on > 0:
+                lines.append(f"• {m.mention} — **{pool_on:,}** (từ {count} khán giả)")
+            else:
+                lines.append(f"• {m.mention} — *chưa ai cược*")
+
+        embed.add_field(
+            name=f"👥 Danh Sách Tay Chơi ({len(self.final_players)} người)",
+            value="\n".join(lines),
+            inline=False,
+        )
+        if total_spec_pool > 0:
+            embed.add_field(
+                name="💰 Tổng Pot Khán Đài",
+                value=f"**{total_spec_pool:,}** points",
+                inline=False,
+            )
+        embed.set_footer(text="Cược bao nhiêu cửa cũng được, cộng dồn tuỳ thích! 🎲")
+        return embed
+
+    async def _select_callback(self, interaction: discord.Interaction) -> None:
+        uid = interaction.user.id
+
+        # Không cho người chơi chính tự cược chính mình
+        if uid in self.player_ids:
+            await interaction.response.send_message(
+                f"❌ {interaction.user.mention} Mày đang trên sàn, đặt cược cái gì!",
+                delete_after=5.0,
+            )
+            return
+
+        # Kiểm tra bận (chỉ chặn nếu đang chơi game KHÁC, không phải đang cược khán đài)
+        if _is_busy(self.bot, uid) and uid not in self.locked_spectators:
+            await interaction.response.send_message(
+                f"❌ {interaction.user.mention} Đang bận game khác rồi!",
+                delete_after=5.0,
+            )
+            return
+
+        selected_player_id = int(interaction.data["values"][0])  # type: ignore[index]
+        modal = SpectatorBetModal(view=self, player_id=selected_player_id)
+        await interaction.response.send_modal(modal)
+
+    @discord.ui.button(label="🗑️ Hủy cược (Hoàn tiền)", style=discord.ButtonStyle.danger, custom_id="md_spectator_cancel")
+    async def cancel_btn(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
+        uid = interaction.user.id
+        if uid not in self.spectator_bets or not self.spectator_bets[uid]:
+            await interaction.response.send_message(
+                f"❌ {interaction.user.mention} Mày có cược gì đâu mà hủy!",
+                delete_after=5.0,
+            )
+            return
+
+        total_refund = sum(self.spectator_bets[uid].values())
+        await _apply_delta(self.bot, str(uid), total_refund)
+        del self.spectator_bets[uid]
+
+        if uid in self.locked_spectators:
+            _unlock_user(self.bot, uid)
+            self.locked_spectators.discard(uid)
+
+        await interaction.response.send_message(
+            f"♻️ {interaction.user.mention} Rút hết cược, hoàn **{total_refund:,}** vào ví!",
+            delete_after=5.0,
+        )
+
+        try:
+            if self.message:
+                await self.message.edit(embed=self.build_embed(), view=self)
+        except discord.HTTPException:
+            pass
+
+    async def on_timeout(self) -> None:
+        for child in self.children:
+            if isinstance(child, (discord.ui.Button, discord.ui.Select)):
+                child.disabled = True  # type: ignore[union-attr]
+        self._closed.set()
+        try:
+            if self.message:
+                await self.message.edit(embed=self.build_embed(), view=self)
+        except discord.HTTPException:
+            pass
+
+
+# ─────────────────────────────────────────────────────────────────────────────
 # COG CHÍNH
 # ─────────────────────────────────────────────────────────────────────────────
 
@@ -569,6 +779,32 @@ class MultiDice(commands.Cog):
                 )
                 return
 
+            # ── GIAI ĐOẠN 2.5: SPECTATOR BETTING ─────────────────────────
+            spec_view = SpectatorBetView(final_players, bet, self.bot)
+            spec_msg = await ctx.send(embed=spec_view.build_embed(), view=spec_view)
+            spec_view.message = spec_msg
+
+            try:
+                await asyncio.wait_for(spec_view._closed.wait(), timeout=float(SPECTATOR_TIMEOUT + 5))
+            except asyncio.TimeoutError:
+                spec_view._closed.set()
+
+            spec_view.stop()
+            spectator_bets = dict(spec_view.spectator_bets)
+            spec_locked = set(spec_view.locked_spectators)
+            locked_set.update(spec_locked)
+
+            # Chốt embed khán đài
+            try:
+                for child in spec_view.children:
+                    if isinstance(child, (discord.ui.Button, discord.ui.Select)):
+                        child.disabled = True  # type: ignore[union-attr]
+                if spec_view.message:
+                    final_spec_embed = spec_view.build_embed()
+                    await spec_view.message.edit(embed=final_spec_embed, view=spec_view)
+            except discord.HTTPException:
+                pass
+
             # ── GIAI ĐOẠN 3: ROLL DICE ───────────────────────────────────
             pot_per = int(bet * 0.95)
             player_infos: dict[int, PlayerInfo] = {
@@ -640,7 +876,7 @@ class MultiDice(commands.Cog):
                 pass
 
             # ── GIAI ĐOẠN 4: KẾT QUẢ ────────────────────────────────────
-            await self._resolve_game(ctx, final_players, player_infos, bet)
+            await self._resolve_game(ctx, final_players, player_infos, bet, spectator_bets)
 
         finally:
             for uid in locked_set:
@@ -652,6 +888,7 @@ class MultiDice(commands.Cog):
         players: list[discord.Member],
         player_infos: dict[int, PlayerInfo],
         bet: int,
+        spectator_bets: Optional[dict[int, dict[int, int]]] = None,
     ) -> None:
         """Giai đoạn 4: Tính thuế, chia tiền, gửi embed tổng kết."""
         n = len(players)
@@ -721,6 +958,54 @@ class MultiDice(commands.Cog):
                 inline=False,
             )
 
+        # ── Trả Thưởng Khán Giả ──────────────────────────────────────────
+        rank1_id = ranked[0].user_id if ranked else None
+        if spectator_bets and rank1_id is not None:
+            total_spec_pool = 0
+            for sb in spectator_bets.values():
+                total_spec_pool += sum(sb.values())
+
+            if total_spec_pool > 0:
+                spec_dp = int(total_spec_pool * 0.95)
+                spec_tax = total_spec_pool - spec_dp
+
+                # Tổng tiền cược vào người Rank 1
+                total_on_winner = 0
+                for sb in spectator_bets.values():
+                    total_on_winner += sb.get(rank1_id, 0)
+
+                spec_lines: list[str] = []
+                if total_on_winner > 0:
+                    spec_odds = spec_dp / total_on_winner
+                    for spec_uid, sb in spectator_bets.items():
+                        bet_on_winner = sb.get(rank1_id, 0)
+                        if bet_on_winner > 0:
+                            payout = int(bet_on_winner * spec_odds)
+                            await _apply_delta(self.bot, str(spec_uid), payout)
+                            profit = payout - sum(sb.values())
+                            sign = "+" if profit >= 0 else ""
+                            spec_lines.append(
+                                f"🎟️ <@{spec_uid}> cược **{bet_on_winner:,}** → nhận **{payout:,}** ({sign}{profit:,})"
+                            )
+                        else:
+                            lost = sum(sb.values())
+                            spec_lines.append(f"💸 <@{spec_uid}> cược lệch — mất trọn **{lost:,}**")
+                else:
+                    for spec_uid, sb in spectator_bets.items():
+                        lost = sum(sb.values())
+                        spec_lines.append(f"💸 <@{spec_uid}> cược lệch — mất trọn **{lost:,}**")
+                    spec_odds = 0.0
+
+                spec_header = f"Tổng Pot Khán Đài: **{total_spec_pool:,}** — Thuế (5%): **{spec_tax:,}**"
+                if total_on_winner > 0:
+                    spec_header += f" — Odds: **{spec_odds:.2f}x**"
+
+                embed.add_field(
+                    name="🎟️ Khán Đài Đỏ Đen",
+                    value=spec_header + "\n" + "\n".join(spec_lines[:10]),
+                    inline=False,
+                )
+
         # Thuế nhà cái
         embed.add_field(
             name="🏦 Nhà Cái Đã Cắn",
@@ -733,6 +1018,11 @@ class MultiDice(commands.Cog):
         )
         embed.set_footer(text="Angelic Casino • Xúc Xắc Quần Hùng 🌸")
         await ctx.send(embed=embed)
+
+        # Mở khóa khán giả
+        if spectator_bets:
+            for spec_uid in spectator_bets:
+                _unlock_user(self.bot, spec_uid)
 
     @multidice_cmd.error
     async def multidice_error(self, ctx: commands.Context, error: Exception) -> None:
