@@ -176,7 +176,7 @@ class InviteView(discord.ui.View):
             description=(
                 f"{self.host.mention} đang kéo mồi!\n"
                 f"Cược: **{self.bet:,}**/người *(trừ 5% thuế vào sảnh)*\n\n"
-                f"⏳ **Chốt kèo:** <t:{self.end_time}:R>\n"
+                "🔒 **Sảnh đã chốt!**\n" if self._done.is_set() else f"⏳ **Chốt kèo:** <t:{self.end_time}:R>\n"
                 "Dám vào thì bấm, nhát thì né:"
             ),
             color=COLOR_INFO,
@@ -194,20 +194,20 @@ class InviteView(discord.ui.View):
     async def join_btn(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
         uid = interaction.user.id
         if uid not in self.statuses:
-            await interaction.response.send_message(f"❌ {interaction.user.mention} Mày không nằm trong danh sách, lui ra!")
+            await interaction.response.send_message(f"❌ {interaction.user.mention} Mày không nằm trong danh sách, lui ra!", delete_after=5.0)
             return
         if self.statuses[uid] is True:
-            await interaction.response.send_message(f"❌ {interaction.user.mention} Đã vào rồi, bấm loạn làm gì!")
+            await interaction.response.send_message(f"❌ {interaction.user.mention} Đã vào rồi, bấm loạn làm gì!", delete_after=5.0)
             return
         if self.statuses[uid] is False:
-            await interaction.response.send_message(f"❌ {interaction.user.mention} Đã bỏ chạy rồi, lần sau đừng hèn!")
+            await interaction.response.send_message(f"❌ {interaction.user.mention} Đã bỏ chạy rồi, lần sau đừng hèn!", delete_after=5.0)
             return
 
         # Kiểm tra bận
         if _is_busy(self.bot, uid):
             await interaction.response.send_message(
                 f"❌ {interaction.user.mention} Đang chơi game khác rồi! Kết thúc game đó trước."
-            )
+            , delete_after=5.0)
             return
 
         # Kiểm tra tiền
@@ -216,12 +216,12 @@ class InviteView(discord.ui.View):
             self.statuses[uid] = False
             await interaction.response.send_message(
                 f"❌ {interaction.user.mention} Ví có **{bal:,}** mà đòi cược **{self.bet:,}**? Nghèo mà ham! Gạch tên."
-            )
+            , delete_after=5.0)
         else:
             ok = await _apply_delta(self.bot, str(uid), -self.bet)
             if not ok:
                 self.statuses[uid] = False
-                await interaction.response.send_message(f"❌ {interaction.user.mention} Lỗi DB! Thử lại sau.")
+                await interaction.response.send_message(f"❌ {interaction.user.mention} Lỗi DB! Thử lại sau.", delete_after=5.0)
             else:
                 self.statuses[uid] = True
                 _lock_user(self.bot, uid)
@@ -230,7 +230,7 @@ class InviteView(discord.ui.View):
                     self.confirmed.append(member)
                 await interaction.response.send_message(
                     f"✅ {interaction.user.mention} Chốt! Đã trừ **{self.bet:,}**. Ngồi chờ sảnh mở."
-                )
+                , delete_after=5.0)
 
         try:
             if self.message:
@@ -245,14 +245,14 @@ class InviteView(discord.ui.View):
     async def leave_btn(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
         uid = interaction.user.id
         if uid not in self.statuses:
-            await interaction.response.send_message(f"❌ {interaction.user.mention} Không liên quan!")
+            await interaction.response.send_message(f"❌ {interaction.user.mention} Không liên quan!", delete_after=5.0)
             return
         if self.statuses[uid] is not None:
-            await interaction.response.send_message(f"❌ {interaction.user.mention} Đã chốt rồi, không thay đổi được!")
+            await interaction.response.send_message(f"❌ {interaction.user.mention} Đã chốt rồi, không thay đổi được!", delete_after=5.0)
             return
 
         self.statuses[uid] = False
-        await interaction.response.send_message(f"🏃 {interaction.user.mention} Nhát gan thật. Thoát kèo.")
+        await interaction.response.send_message(f"🏃 {interaction.user.mention} Nhát gan thật. Thoát kèo.", delete_after=5.0)
 
         try:
             if self.message:
@@ -308,7 +308,7 @@ class PublicLobbyView(discord.ui.View):
             description=(
                 f"Mại dô mại dô! Tay nhanh hơn não!\n"
                 f"Cược: **{self.bet:,}**/người *(trừ 5% thuế vào sảnh)*\n\n"
-                f"**Còn {spots} chỗ trống** — Đủ {MAX_PLAYERS} người hoặc đến <t:{self.end_time}:R> thì chốt!"
+                "🔒 **Sảnh đã chốt!**" if self._closed.is_set() else f"**Còn {spots} chỗ trống** — Đủ {MAX_PLAYERS} người hoặc đến <t:{self.end_time}:R> thì chốt!"
             ),
             color=COLOR_INFO,
         )
@@ -326,27 +326,27 @@ class PublicLobbyView(discord.ui.View):
         uid = interaction.user.id
 
         if uid in self.player_ids:
-            await interaction.response.send_message(f"❌ {interaction.user.mention} Mày đã ngồi bàn rồi, bấm loạn làm gì!")
+            await interaction.response.send_message(f"❌ {interaction.user.mention} Mày đã ngồi bàn rồi, bấm loạn làm gì!", delete_after=5.0)
             return
         if len(self.players) >= MAX_PLAYERS:
-            await interaction.response.send_message(f"❌ {interaction.user.mention} Bàn đầy rồi! Trễ mất rồi.")
+            await interaction.response.send_message(f"❌ {interaction.user.mention} Bàn đầy rồi! Trễ mất rồi.", delete_after=5.0)
             return
         if _is_busy(self.bot, uid):
             await interaction.response.send_message(
                 f"❌ {interaction.user.mention} Đang chơi game khác rồi! Kết thúc trước đã."
-            )
+            , delete_after=5.0)
             return
 
         bal = await _get_balance(self.bot, str(uid))
         if bal < self.bet:
             await interaction.response.send_message(
                 f"❌ {interaction.user.mention} Ví có **{bal:,}** mà đòi cược **{self.bet:,}**? Nghèo mà ham!"
-            )
+            , delete_after=5.0)
             return
 
         ok = await _apply_delta(self.bot, str(uid), -self.bet)
         if not ok:
-            await interaction.response.send_message(f"❌ {interaction.user.mention} Lỗi DB! Thử lại sau.")
+            await interaction.response.send_message(f"❌ {interaction.user.mention} Lỗi DB! Thử lại sau.", delete_after=5.0)
             return
 
         _lock_user(self.bot, uid)
@@ -357,7 +357,7 @@ class PublicLobbyView(discord.ui.View):
 
         await interaction.response.send_message(
             f"✅ {interaction.user.mention} Đóng hụi! Trừ **{self.bet:,}**. Ngồi xuống chờ."
-        )
+        , delete_after=5.0)
 
         try:
             if self.message:
@@ -447,12 +447,12 @@ class RollView(discord.ui.View):
     async def roll_btn(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
         uid = interaction.user.id
         if uid not in self.player_infos:
-            await interaction.response.send_message(f"❌ {interaction.user.mention} Mày không ngồi bàn này!")
+            await interaction.response.send_message(f"❌ {interaction.user.mention} Mày không ngồi bàn này!", delete_after=5.0)
             return
 
         info = self.player_infos[uid]
         if info.has_rolled:
-            await interaction.response.send_message(f"❌ {interaction.user.mention} Lắc rồi! Nhìn màn hình chờ đi.")
+            await interaction.response.send_message(f"❌ {interaction.user.mention} Lắc rồi! Nhìn màn hình chờ đi.", delete_after=5.0)
             return
 
         info.click_time = time.time()
@@ -462,7 +462,7 @@ class RollView(discord.ui.View):
 
         await interaction.response.send_message(
             f"🎲 {interaction.user.mention} Đã lắc! Xúc xắc đang quay... đợi kết quả hiện ra."
-        )
+        , delete_after=5.0)
 
         if all(p.has_rolled for p in self.player_infos.values()):
             self._all_rolled.set()
