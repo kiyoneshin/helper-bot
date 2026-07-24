@@ -176,7 +176,7 @@ class DuckRace(commands.Cog):
         self._race_fired: set[int] = set()
         self._scheduler.start()
 
-    def cog_unload(self) -> None:
+    async def cog_unload(self) -> None:
         self._scheduler.cancel()
 
     @tasks.loop(minutes=1)
@@ -185,17 +185,23 @@ class DuckRace(commands.Cog):
         hour = now.hour
         minute = now.minute
 
-        if hour not in RACE_HOURS_UTC7:
-            return
+        if minute == LOCK_MINUTE:
+            target_race_hour = (hour + 1) % 24
+            
+            if target_race_hour in RACE_HOURS_UTC7 and target_race_hour not in self._lock_fired:
+                self._lock_fired.add(target_race_hour)
+                await self._do_lock(target_race_hour)
 
-        if minute == LOCK_MINUTE and hour not in self._lock_fired:
-            self._lock_fired.add(hour)
-            await self._do_lock(hour)
-        elif minute == START_MINUTE and hour not in self._race_fired:
-            self._race_fired.add(hour)
-            prev_hour = (hour - 4) % 24
-            self._lock_fired.discard(prev_hour)
-            await self._do_race()
+        elif minute == START_MINUTE:
+            if hour in RACE_HOURS_UTC7 and hour not in self._race_fired:
+                self._race_fired.add(hour)
+                
+                # Dọn dẹp trạng thái khóa của ca đua trước (4 tiếng trước) để chuẩn bị cho chu kỳ sau
+                prev_race_hour = (hour - 4) % 24
+                self._lock_fired.discard(prev_race_hour)
+                self._race_fired.discard(prev_race_hour)
+                
+                await self._do_race()
 
     @_scheduler.before_loop
     async def _before_scheduler(self) -> None:
