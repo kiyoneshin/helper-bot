@@ -78,6 +78,11 @@ def build_casino_embed() -> discord.Embed:
         value="Đua vịt sự kiện (Chạy tự động mỗi 4 tiếng). Các màu: `do`, `xanh`, `vang`, `hong`, `yon`. (Dùng `y!xemvit` để xem tỷ lệ và `y!huybet` để rút tiền).",
         inline=False
     )
+    embed.add_field(
+        name="🎟️ y!xoso (hoặc y!lottery)",
+        value="Xổ Số Kiến Thiết! Dùng `y!xoso mua <sl>` hoặc `y!xoso ban <sl>` để giao dịch vé.",
+        inline=False
+    )
     return embed
 
 def build_shop_embed() -> discord.Embed:

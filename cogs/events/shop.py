@@ -220,6 +220,7 @@ class EventShopCog(commands.Cog):
                 "Chào mừng bạn đến với Cửa Hàng Sự Kiện!\n"
                 "Hãy chọn một vật phẩm từ menu thả xuống bên dưới để đổi quà.\n\n"
                 "**Bảng Giá:**\n"
+                "🎟️ **50 điểm** ── Vé số Xổ Số (Dùng `y!xoso mua <sl>`)\n"
                 "🎁 **1,500 điểm** ── Hộp Quà Bí Ẩn (Gacha)\n"
                 "🎭 **3,500 điểm** ── Role Màu Sự Kiện (7 ngày)\n"
                 "🎨 **10,000 điểm** ── Role Màu Thiết Kế Riêng (30 ngày)\n"
