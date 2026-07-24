@@ -322,7 +322,7 @@ class StaffUICog(commands.Cog):
         ROLE_ID_MAP = {
             "owner": 1498711782192189494,  # <-- Thay ID Role Owner vào đây
             "admin": 1510230255988900002,  # <-- Thay ID Role Admin vào đây
-            "recep": 1498711782192189492,  # <-- Thay ID Role Recep vào đây
+            "recep": 1511010582826848520,  # <-- Thay ID Role Recep vào đây
         }
         
         guild = ctx.guild
