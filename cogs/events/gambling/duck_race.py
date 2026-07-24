@@ -147,7 +147,7 @@ def _build_pool_embed(stats: dict[str, int], title: str, color: int, footer: str
     return embed
 
 
-def _build_race_track(positions: dict[str, int], finished: Optional[str] = None) -> str:
+def _build_race_track(positions: dict[str, int], finished: Optional[list[str]] = None) -> str:
     lines = ["```", "🏁 VẠCH ĐÍCH", "=" * (TRACK_LENGTH + 10)]
     for key, label in DUCKS.items():
         pos = positions[key]
@@ -155,7 +155,7 @@ def _build_race_track(positions: dict[str, int], finished: Optional[str] = None)
         name_part = f"{emoji} {label:<6}"
         if pos >= TRACK_LENGTH:
             bar = "=" * TRACK_LENGTH + " 🏁"
-            crown = " 🏆" if key == finished else " ✅"
+            crown = " 🏆" if (finished and key in finished) else " ✅"
             row = f"{name_part}: {bar}{crown}"
         else:
             bar = "=" * pos + "🦆" + "-" * (TRACK_LENGTH - pos)
@@ -261,7 +261,7 @@ class DuckRace(commands.Cog):
 
         positions: dict[str, int] = {k: 0 for k in DUCKS}
         speeds: dict[str, float] = {k: random.uniform(0.55, 1.0) for k in DUCKS}
-        winner: Optional[str] = None
+        winners: list[str] = []
 
         try:
             race_msg = await channel.send(_build_race_track(positions))
@@ -271,7 +271,7 @@ class DuckRace(commands.Cog):
             return
 
         step = 0
-        while winner is None:
+        while not winners:
             await asyncio.sleep(ANIM_INTERVAL)
             step += 1
 
@@ -282,51 +282,53 @@ class DuckRace(commands.Cog):
 
             finishers = [k for k, p in positions.items() if p >= TRACK_LENGTH]
             if finishers:
-                winner = random.choice(finishers)
+                winners = finishers
 
             # Safeguard: tối đa 60 bước
-            if step >= 60 and winner is None:
-                winner = max(positions, key=lambda k: positions[k])
-                positions[winner] = TRACK_LENGTH
+            if step >= 60 and not winners:
+                max_pos = max(positions.values())
+                winners = [k for k, p in positions.items() if p == max_pos]
+                for w in winners:
+                    positions[w] = TRACK_LENGTH
 
             try:
-                await race_msg.edit(content=_build_race_track(positions, winner))
+                await race_msg.edit(content=_build_race_track(positions, winners if winners else None))
             except discord.HTTPException:
                 pass
 
         await asyncio.sleep(2)
-        await self._payout(channel, winner, stats, total_pool, all_bets)
+        await self._payout(channel, winners, stats, total_pool, all_bets)
 
         await execute_db(self.bot, "DELETE FROM duck_bets")
         self.is_locked = False
         self.is_racing = False
-        log.info(f"🦆 Đua vịt kết thúc. Winner: {winner}")
+        log.info(f"🦆 Đua vịt kết thúc. Winners: {winners}")
 
     async def _payout(
         self,
         channel: discord.TextChannel,
-        winner: str,
+        winners: list[str],
         stats: dict[str, int],
         total_pool: int,
         all_bets: list,
     ) -> None:
-        winner_pool = stats.get(winner, 0)
-        winner_label = DUCKS[winner]
-        winner_emoji = DUCK_EMOJI[winner]
+        total_winner_pool = sum(stats.get(w, 0) for w in winners)
+        winners_labels = " & ".join([DUCKS[w] for w in winners])
+        winners_emojis = "".join([DUCK_EMOJI[w] for w in winners])
 
         embed = discord.Embed(
-            title=f"{winner_emoji} {winner_label} VỀ ĐÍCH NHẤT! 🏆",
+            title=f"{winners_emojis} {winners_labels} VỀ ĐÍCH NHẤT! 🏆",
             description=(
-                f"Con vịt **{winner_label}** vừa cán đích trong vinh quang!\n"
+                f"Vịt **{winners_labels}** vừa cán đích trong vinh quang!\n"
                 f"Tổng Pool: **{total_pool:,}** — Thuế nhà cái (5%): **{int(total_pool * 0.05):,}**\n"
                 f"Quỹ thưởng khả dụng (DP): **{int(total_pool * 0.95):,}**"
             ),
             color=COLOR_WIN,
         )
 
-        if winner_pool == 0:
+        if total_winner_pool == 0:
             embed.add_field(
-                name="😭 Không ai cược con này",
+                name="😭 Không ai cược phe này",
                 value="Quỹ thưởng không chia được — tiền bay về trời!",
                 inline=False,
             )
@@ -334,11 +336,11 @@ class DuckRace(commands.Cog):
             return
 
         dp = int(total_pool * 0.95)
-        odds = dp / winner_pool
+        odds = dp / total_winner_pool
 
         embed.add_field(
             name="📊 Hệ Số Thực Tế",
-            value=f"1 ăn **{odds:.3f}x** *(Tổng DP {dp:,} / Pool vịt thắng {winner_pool:,})*",
+            value=f"1 ăn **{odds:.3f}x** *(Tổng DP {dp:,} / Pool vịt thắng {total_winner_pool:,})*",
             inline=False,
         )
         await channel.send(embed=embed)
@@ -346,7 +348,7 @@ class DuckRace(commands.Cog):
 
         winners_notified: list[str] = []
         for row in all_bets:
-            if row["duck_color"] != winner:
+            if row["duck_color"] not in winners:
                 continue
             uid = str(row["discord_id"])
             bet_amount = int(row["bet_amount"])
@@ -362,7 +364,7 @@ class DuckRace(commands.Cog):
             for i in range(0, len(winners_notified), chunk_size):
                 chunk = winners_notified[i : i + chunk_size]
                 payout_embed = discord.Embed(
-                    title=f"💰 Bảng Vàng Thắng Cược — {winner_label}",
+                    title=f"💰 Bảng Vàng Thắng Cược — {winners_labels}",
                     description="\n".join(chunk),
                     color=COLOR_WIN,
                 )
@@ -407,15 +409,47 @@ class DuckRace(commands.Cog):
             uid,
         )
         if existing is not None:
-            ex_label = DUCKS.get(str(existing["duck_color"]), str(existing["duck_color"]))
-            ex_emoji = DUCK_EMOJI.get(str(existing["duck_color"]), "🦆")
-            await ctx.send(
-                f"⚠️ {ctx.author.mention} Mày đã cược vào {ex_emoji} **{ex_label}** "
-                f"({int(existing['bet_amount']):,}) rồi!\n"
-                "Muốn đổi thì `y!huybet` để rút về trước, rồi cược lại."
-            )
-            return
+            ex_color = str(existing["duck_color"])
+            ex_label = DUCKS.get(ex_color, ex_color)
+            ex_emoji = DUCK_EMOJI.get(ex_color, "🦆")
+            ex_bet = int(existing['bet_amount'])
+            
+            if ex_color != color_key:
+                await ctx.send(
+                    f"⚠️ {ctx.author.mention} Mày đã cược vào {ex_emoji} **{ex_label}** "
+                    f"({ex_bet:,}) rồi!\n"
+                    "Muốn đổi con khác thì `y!huybet` để rút về trước đã."
+                )
+                return
+            else:
+                ok = await _apply_delta(self.bot, uid, -bet)
+                if not ok:
+                    await ctx.send(f"❌ {ctx.author.mention} Lỗi DB khi trừ tiền — thử lại sau!")
+                    return
 
+                new_bet = ex_bet + bet
+                status = await execute_db(
+                    self.bot,
+                    "UPDATE duck_bets SET bet_amount = $1 WHERE discord_id = $2",
+                    new_bet, uid
+                )
+                if status is None:
+                    await _apply_delta(self.bot, uid, bet)
+                    await ctx.send(f"❌ {ctx.author.mention} Lỗi DB khi ghi cược — tiền đã hoàn lại!")
+                    return
+                    
+                embed = discord.Embed(
+                    title=f"💉 Đã Bơm Thêm Máu!",
+                    description=(
+                        f"{ctx.author.mention} vừa dồn thêm **{bet:,}** vào {ex_emoji} **{ex_label}**.\n"
+                        f"Tổng cược hiện tại vào con này là: **{new_bet:,}** points."
+                    ),
+                    color=COLOR_INFO,
+                )
+                await ctx.send(embed=embed)
+                return
+
+        # (Trường hợp cược mới tinh)
         ok = await _apply_delta(self.bot, uid, -bet)
         if not ok:
             await ctx.send(f"❌ {ctx.author.mention} Lỗi DB khi trừ tiền — thử lại sau!")
