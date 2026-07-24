@@ -375,7 +375,7 @@ class DuckRace(commands.Cog):
 
     # ── LỆNH NGƯỜI CHƠI ───────────────────────────────────────────────────
 
-    @commands.command(name="betvit", aliases=["bv"])
+    @commands.command(name="betvit", aliases=["bv", "bevit"])
     async def betvit_cmd(self, ctx: commands.Context, color_raw: str, bet_raw: str) -> None:
         """Đặt cược vào một chú vịt. Cú pháp: y!betvit <màu> <tiền>"""
         if self.is_locked:
