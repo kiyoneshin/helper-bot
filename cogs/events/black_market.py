@@ -114,20 +114,39 @@ class BlackMarketCog(commands.Cog):
     @commands.hybrid_command(name="choden", aliases=["chodem", "blackmarket", "bm"])
     async def black_market_cmd(self, ctx: commands.Context) -> None:
         """🌙 Xem Chợ Đêm hôm nay — 3 vật phẩm bí ẩn, số lượng có hạn!"""
+        now_vn = datetime.now(UTC7)
+        
+        # Kiểm tra thời gian mở cửa (00:00 -> 01:59)
+        if not (0 <= now_vn.hour < 2):
+            # Tính thời gian mở cửa tiếp theo (00:00 UTC+7 ngày mai)
+            next_open = (now_vn + timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
+            reset_ts = int(next_open.timestamp())
+            embed = discord.Embed(
+                title="🌙 Chợ Đêm Đã Đóng Cửa",
+                description=(
+                    "Chợ đêm chỉ hoạt động từ **00:00 đến 02:00 sáng** mỗi ngày.\n\n"
+                    f"⏳ Phiên chợ tiếp theo sẽ mở cửa vào lúc <t:{reset_ts}:F> (tức là **<t:{reset_ts}:R>**).\n"
+                    "Hãy trở lại sau nhé!"
+                ),
+                color=0x2b2d31,
+            )
+            embed.set_thumbnail(url="https://cdn.discordapp.com/attachments/1513465012344193088/1530634452357742733/pepe-evil.gif?ex=6a6649eb&is=6a64f86b&hm=be3d5c561533f9f25e490ab00930c0a8a12aab0813351080116ee9e19a7c2808&")
+            await ctx.send(embed=embed)
+            return
+
         shop_data = await _get_or_refresh_daily_shop(self.bot)
 
-        # Tính thời gian reset tiếp theo (00:00 UTC+7 ngày mai)
-        now_vn = datetime.now(UTC7)
-        next_reset = (now_vn + timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
-        reset_ts = int(next_reset.timestamp())
+        # Tính thời gian đóng cửa hôm nay (02:00 UTC+7 hôm nay)
+        close_time = now_vn.replace(hour=2, minute=0, second=0, microsecond=0)
+        close_ts = int(close_time.timestamp())
 
         embed = discord.Embed(
             title="🌙 Chợ Đêm Angelic — Hàng Hiếm Độc Quyền",
             description=(
                 "Chợ Đêm chỉ mở mỗi ngày với **3 vật phẩm ngẫu nhiên** và số lượng cực hạn.\n"
-                f"Hàng mới sẽ vào lúc <t:{reset_ts}:R>.\n\n"
+                f"Sẽ đóng cửa sau **<t:{close_ts}:R>**.\n\n"
                 "💡 Mua nhanh: `y!ebuy <mã số> [số lượng]`\n"
-                "🎒 Xài item: `y!use <item_id> [@mục tiêu]`\n\u200b"
+                "🎒 Xài item: `y!use <mã số> [@mục tiêu]`\n\u200b"
             ),
             color=0x2b2d31,
         )
@@ -157,6 +176,11 @@ class BlackMarketCog(commands.Cog):
     @commands.hybrid_command(name="ebuy", aliases=["muadem", "bmbuy"])
     async def event_buy_cmd(self, ctx: commands.Context, slot_id: str, quantity: int = 1) -> None:
         """🛒 Mua vật phẩm từ Chợ Đêm theo mã số (1, 2, hoặc 3)"""
+        now_vn = datetime.now(UTC7)
+        if not (0 <= now_vn.hour < 2):
+            await ctx.send("❌ Chợ Đêm hiện đang đóng cửa! Gõ `y!choden` để xem thời gian mở lại.", delete_after=5.0)
+            return
+
         uid = str(ctx.author.id)
 
         # 1. Kiểm tra đầu vào
