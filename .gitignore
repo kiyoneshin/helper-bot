@@ -173,3 +173,4 @@ pyrightconfig.json
 *.pem
 *.ppk
 *.key
+repomix-output.xml
