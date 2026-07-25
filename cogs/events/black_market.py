@@ -10,19 +10,19 @@ from cogs.common.db import fetchrow_db, execute_db
 log = logging.getLogger("BlackMarket")
 
 # =====================================================================
-# I. DANH SÁCH VẬT PHẨM CHỢ ĐEN
+# I. DANH SÁCH VẬT PHẨM CHỢ ĐEN (Đã thêm Giá chuẩn theo mốc 1,640đ/ngày)
 # =====================================================================
 BLACK_MARKET_ITEMS = {
-    "jail_card": {"name": "Thẻ Tống Giam 🚔", "description": "Gửi 1 người vào chuồng chó (tương đương y!phattu)"},
-    "free_card": {"name": "Thẻ Đặc Xá 🕊️", "description": "Cứu người khác khỏi tù hoặc tự cứu mình (tương đương y!thatu)"},
-    "timeout_1m": {"name": "Búa Gõ 1 Phút 🔨", "description": "Timeout mục tiêu 1 phút"},
-    "timeout_5m": {"name": "Búa Gõ 5 Phút 🔨", "description": "Timeout mục tiêu 5 phút"},
-    "nickname_change": {"name": "Thẻ Đổi Tên 🤡", "description": "Buộc mục tiêu đổi biệt danh thành một tên tấu hài ngẫu nhiên"},
-    "disconnect_card": {"name": "Thẻ Rút Phích Cắm 🔌", "description": "Đá văng mục tiêu khỏi Voice Channel ngay lập tức"},
-    "shield_card": {"name": "Thẻ Miễn Nhiễm 🛡️", "description": "Tự động chặn 1 lần bị người khác dùng thẻ xấu lên mình"},
-    "thief_card": {"name": "Bao Tay Đạo Chích 🧤", "description": "Trộm ngẫu nhiên 50-500 điểm sự kiện của mục tiêu"},
-    "fake_ban_card": {"name": "Trát Hầu Tòa 📜", "description": "Gửi một Embed dọa ban vĩnh viễn cực kỳ nghiêm trọng rồi chốt là đùa"},
-    "ghost_ping_card": {"name": "Bom Ảo Giác 💣", "description": "Bot gửi tin nhắn tag mục tiêu rồi xóa ngay lập tức 3 lần liên tục"}
+    "timeout_1m": {"name": "Búa Gõ 1 Phút 🔨", "price": 2500, "description": "Timeout mục tiêu 1 phút"},
+    "ghost_ping_card": {"name": "Bom Ảo Giác 💣", "price": 3000, "description": "Bot gửi tin nhắn tag mục tiêu rồi xóa ngay lập tức 3 lần liên tục"},
+    "timeout_5m": {"name": "Búa Gõ 5 Phút 🔨", "price": 5000, "description": "Timeout mục tiêu 5 phút"},
+    "thief_card": {"name": "Bao Tay Đạo Chích 🧤", "price": 6500, "description": "Trộm ngẫu nhiên 50-500 điểm sự kiện của mục tiêu"},
+    "nickname_change": {"name": "Thẻ Đổi Tên 🤡", "price": 8000, "description": "Buộc mục tiêu đổi biệt danh thành một tên tấu hài ngẫu nhiên"},
+    "shield_card": {"name": "Thẻ Miễn Nhiễm 🛡️", "price": 10000, "description": "Tự động chặn 1 lần bị người khác dùng thẻ xấu lên mình"},
+    "disconnect_card": {"name": "Thẻ Rút Phích Cắm 🔌", "price": 12000, "description": "Đá văng mục tiêu khỏi Voice Channel ngay lập tức"},
+    "free_card": {"name": "Thẻ Đặc Xá 🕊️", "price": 12000, "description": "Cứu người khác khỏi tù hoặc tự cứu mình (tương đương y!thatu)"},
+    "jail_card": {"name": "Thẻ Tống Giam 🚔", "price": 15000, "description": "Gửi 1 người vào chuồng chó (tương đương y!phattu)"},
+    "fake_ban_card": {"name": "Trát Hầu Tòa 📜", "price": 20000, "description": "Gửi một Embed dọa ban vĩnh viễn cực kỳ nghiêm trọng rồi chốt là đùa"}
 }
 
 

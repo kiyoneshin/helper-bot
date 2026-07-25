@@ -4,17 +4,19 @@ import logging
 import json
 from typing import Optional, Any
 
-# Bổ sung thêm query_db vào import để dùng cho lệnh Bảng Xếp Hạng (y!etop)
 from cogs.common.db import get_or_create_event_profile, deduct_event_points, execute_db, fetchval_db, fetchrow_db, query_db
 
 log = logging.getLogger("EventShop")
 
+# =====================================================================
+# BẢNG GIÁ SHOP (Dựa trên mốc cày max 125k điểm trong 21 ngày)
+# =====================================================================
 SHOP_ITEMS = {
-    "item_1": {"name": "🎁 Hộp Quà Bí Ẩn (Gacha)", "price": 1500},
-    "item_2": {"name": "🎭 Role Màu Sự Kiện (Hạn 7 ngày)", "price": 3500},
-    "item_3": {"name": "🎨 Role Màu Thiết Kế Riêng (Hạn 30 ngày)", "price": 10000},
-    "item_4": {"name": "👑 Role Biểu Tượng Vĩnh Viễn", "price": 25000},
-    "item_5": {"name": "🏆 Vật Phẩm Tối Cao (Nitro / Custom Đặc Quyền)", "price": 50000}
+    "item_1": {"name": "🎁 Hộp Quà Bí Ẩn (Gacha)", "price": 2500},
+    "item_2": {"name": "🎭 Role Màu Sự Kiện (Hạn 7 ngày)", "price": 10000},
+    "item_3": {"name": "🎨 Role Màu Thiết Kế Riêng (Hạn 30 ngày)", "price": 30000},
+    "item_4": {"name": "👑 Role Biểu Tượng Vĩnh Viễn", "price": 70000},
+    "item_5": {"name": "🏆 Vật Phẩm Tối Cao (Nitro / Custom Đặc Quyền)", "price": 110000}
 }
 
 
@@ -24,27 +26,27 @@ class ShopSelect(discord.ui.Select):
         options = [
             discord.SelectOption(
                 label="🎁 Hộp Quà Bí Ẩn (Gacha)",
-                description="Giá: 1,500 điểm",
+                description="Giá: 2,500 điểm",
                 value="item_1"
             ),
             discord.SelectOption(
                 label="🎭 Role Màu Sự Kiện (7 ngày)",
-                description="Giá: 3,500 điểm",
+                description="Giá: 10,000 điểm",
                 value="item_2"
             ),
             discord.SelectOption(
                 label="🎨 Role Màu Thiết Kế (30 ngày)",
-                description="Giá: 10,000 điểm",
+                description="Giá: 30,000 điểm",
                 value="item_3"
             ),
             discord.SelectOption(
                 label="👑 Role Biểu Tượng Vĩnh Viễn",
-                description="Giá: 25,000 điểm (Giới hạn: 5 slot)",
+                description="Giá: 70,000 điểm (Giới hạn: 5 slot)",
                 value="item_4"
             ),
             discord.SelectOption(
                 label="🏆 Vật Phẩm Tối Cao",
-                description="Giá: 50,000 điểm (Nitro / Custom)",
+                description="Giá: 110,000 điểm (Nitro / Custom)",
                 value="item_5"
             ),
         ]
@@ -117,10 +119,9 @@ class ShopSelect(discord.ui.Select):
             embed.description = f"Bạn đã đổi thành công **{name}**!\nYêu cầu của bạn đã được gửi đến Ban Quản Trị."
             await interaction.response.send_message(embed=embed, ephemeral=True)
             
-            # Sửa lỗi Pylance: Dùng isinstance để chứng minh kênh có hỗ trợ gửi tin nhắn
             if isinstance(interaction.channel, discord.abc.Messageable):
                 await interaction.channel.send(
-                    f"👑 Chúc mừng <@{uid}> vừa đổi thành công **{name}**!\n"
+                    f"👑 Chúc mừng <@{uid}> vừa đổi thành công **{name}** (với giá {price:,} điểm)!\n"
                     f"Hãy chờ Admin liên hệ và trao giải nhé!"
                 )
         else:
@@ -130,7 +131,7 @@ class ShopSelect(discord.ui.Select):
 
 class ShopView(discord.ui.View):
     def __init__(self, author_id: int, bot: Any):
-        super().__init__(timeout=120)  # Tự động vô hiệu hóa sau 2 phút
+        super().__init__(timeout=120)
         self.author_id = author_id
         self.bot = bot
         self.message: Optional[discord.Message] = None
@@ -146,7 +147,6 @@ class ShopView(discord.ui.View):
         return True
 
     async def on_timeout(self):
-        # Sửa lỗi Pylance: Chỉ disable nếu item là Button hoặc Select (những class có thuộc tính disabled)
         for item in self.children:
             if isinstance(item, (discord.ui.Button, discord.ui.Select)):
                 item.disabled = True
@@ -221,11 +221,11 @@ class EventShopCog(commands.Cog):
                 "Hãy chọn một vật phẩm từ menu thả xuống bên dưới để đổi quà.\n\n"
                 "**Bảng Giá:**\n"
                 "🎟️ **50 điểm** ── Vé số Xổ Số (Dùng `y!xoso mua <sl>`)\n"
-                "🎁 **1,500 điểm** ── Hộp Quà Bí Ẩn (Gacha)\n"
-                "🎭 **3,500 điểm** ── Role Màu Sự Kiện (7 ngày)\n"
-                "🎨 **10,000 điểm** ── Role Màu Thiết Kế Riêng (30 ngày)\n"
-                "👑 **25,000 điểm** ── Role Biểu Tượng Vĩnh Viễn (Tối đa 5 slot)\n"
-                "🏆 **50,000 điểm** ── Vật Phẩm Tối Cao (Nitro / Custom Đặc Quyền)"
+                "🎁 **2,500 điểm** ── Hộp Quà Bí Ẩn (Gacha)\n"
+                "🎭 **10,000 điểm** ── Role Màu Sự Kiện (7 ngày)\n"
+                "🎨 **30,000 điểm** ── Role Màu Thiết Kế Riêng (30 ngày)\n"
+                "👑 **70,000 điểm** ── Role Biểu Tượng Vĩnh Viễn (Tối đa 5 slot)\n"
+                "🏆 **110,000 điểm** ── Vật Phẩm Tối Cao (Nitro / Custom Đặc Quyền)"
             ),
             color=0xffb6c1
         )
@@ -233,13 +233,9 @@ class EventShopCog(commands.Cog):
         view = ShopView(author_id=ctx.author.id, bot=self.bot)
         view.message = await ctx.send(embed=embed, view=view)
 
-    # =====================================================================
-    # LỆNH ĐUA TOP: Y!ETOP / Y!EVTOP / Y!EVENTOP (MỚI THÊM)
-    # =====================================================================
     @commands.hybrid_command(name="etop", aliases=["evtop", "eventtop", "eventop"])
     async def etop_cmd(self, ctx: commands.Context):
         """Xem Bảng Xếp Hạng Đua Top Điểm Sự Kiện"""
-        # Sắp xếp theo total_earned (tổng điểm kiếm được) để đảm bảo công bằng cho người đã đổi quà
         sql = """
             SELECT discord_id, total_earned, points 
             FROM event_profiles 
