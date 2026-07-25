@@ -752,7 +752,13 @@ class MultiDice(commands.Cog):
                 invite_view = InviteView(host, invitees, bet, self.bot)
                 invite_msg = await ctx.send(embed=invite_view.build_embed(), view=invite_view)
                 invite_view.message = invite_msg
-                await invite_view._done.wait()
+                
+                try:
+                    await asyncio.wait_for(invite_view._done.wait(), timeout=float(INVITE_TIMEOUT))
+                except asyncio.TimeoutError:
+                    invite_view.stop()
+                    await invite_view.on_timeout()
+
                 confirmed_from_invite.extend(invite_view.confirmed)
                 # Thêm những người đã bấm Tham Gia vào locked_set để tí nữa mở khóa
                 for m in invite_view.confirmed:
@@ -762,7 +768,12 @@ class MultiDice(commands.Cog):
             lobby_view = PublicLobbyView(confirmed_from_invite, bet, self.bot)
             lobby_msg = await ctx.send(embed=lobby_view.build_embed(), view=lobby_view)
             lobby_view.message = lobby_msg
-            await lobby_view._closed.wait()
+            
+            try:
+                await asyncio.wait_for(lobby_view._closed.wait(), timeout=float(LOBBY_TIMEOUT))
+            except asyncio.TimeoutError:
+                lobby_view.stop()
+                await lobby_view.on_timeout()
 
             final_players = lobby_view.players
             # Cập nhật locked_set với những người mới vào ở phase 2
@@ -785,25 +796,14 @@ class MultiDice(commands.Cog):
             spec_view.message = spec_msg
 
             try:
-                await asyncio.wait_for(spec_view._closed.wait(), timeout=float(SPECTATOR_TIMEOUT + 5))
+                await asyncio.wait_for(spec_view._closed.wait(), timeout=float(SPECTATOR_TIMEOUT))
             except asyncio.TimeoutError:
-                spec_view._closed.set()
+                spec_view.stop()
+                await spec_view.on_timeout()
 
-            spec_view.stop()
             spectator_bets = dict(spec_view.spectator_bets)
             spec_locked = set(spec_view.locked_spectators)
             locked_set.update(spec_locked)
-
-            # Chốt embed khán đài
-            try:
-                for child in spec_view.children:
-                    if isinstance(child, (discord.ui.Button, discord.ui.Select)):
-                        child.disabled = True  # type: ignore[union-attr]
-                if spec_view.message:
-                    final_spec_embed = spec_view.build_embed()
-                    await spec_view.message.edit(embed=final_spec_embed, view=spec_view)
-            except discord.HTTPException:
-                pass
 
             # ── GIAI ĐOẠN 3: ROLL DICE ───────────────────────────────────
             pot_per = int(bet * 0.95)
@@ -816,27 +816,32 @@ class MultiDice(commands.Cog):
             roll_view.message = roll_msg
 
             roll_start = time.time()
-            auto_triggered = False
+
+            async def _auto_roll_task() -> None:
+                try:
+                    await asyncio.wait_for(roll_view._all_rolled.wait(), timeout=float(ROLL_TIMEOUT))
+                except asyncio.TimeoutError:
+                    late_t = time.time()
+                    for uid, info in player_infos.items():
+                        if not info.has_rolled:
+                            info.click_time = late_t
+                            info.d1 = random.randint(1, 6)
+                            info.d2 = random.randint(1, 6)
+                            info.auto_rolled = True
+                            roll_view.roll_order.append(uid)
+                    roll_view._all_rolled.set()
+                    
+                    try:
+                        new_embed = roll_view.build_embed()
+                        if roll_view.message:
+                            await roll_view.message.edit(embed=new_embed)
+                    except discord.HTTPException:
+                        pass
 
             async def _animation_loop() -> None:
-                nonlocal auto_triggered
                 while True:
                     await asyncio.sleep(ANIM_INTERVAL)
-                    now = time.time()
-
-                    # Auto-roll AFK sau ROLL_TIMEOUT
-                    if not auto_triggered and (now - roll_start) >= ROLL_TIMEOUT:
-                        auto_triggered = True
-                        late_t = now
-                        for uid, info in player_infos.items():
-                            if not info.has_rolled:
-                                info.click_time = late_t
-                                info.d1 = random.randint(1, 6)
-                                info.d2 = random.randint(1, 6)
-                                info.auto_rolled = True
-                                roll_view.roll_order.append(uid)
-                        roll_view._all_rolled.set()
-
+                    
                     # Kiểm tra tất cả đã reveal
                     all_done = (
                         all(p.has_rolled for p in player_infos.values())
@@ -853,14 +858,17 @@ class MultiDice(commands.Cog):
                     if all_done:
                         break
 
+            auto_task = asyncio.create_task(_auto_roll_task())
             anim_task = asyncio.create_task(_animation_loop())
+            
             max_wait = ROLL_TIMEOUT + REVEAL_DELAY + 15
             try:
                 await asyncio.wait_for(anim_task, timeout=max_wait)
             except asyncio.TimeoutError:
-                anim_task.cancel()
-            except asyncio.CancelledError:
                 pass
+            finally:
+                auto_task.cancel()
+                anim_task.cancel()
 
             # Khoá nút lắc
             roll_view.stop()
