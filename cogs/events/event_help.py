@@ -30,52 +30,52 @@ def build_casino_embed() -> discord.Embed:
     )
     embed.add_field(
         name="🪙 y!cf <h/t> <tiền_cược>",
-        value="Tung đồng xu (h = Ngửa / t = Sấp). Thắng nhận x2 tiền cược.",
+        value="Tung đồng xu (h = Ngửa / t = Sấp). Thắng x1.9, đứng xu nhận Jackpot x5.0.",
         inline=False
     )
     embed.add_field(
         name="🥤 y!cups <tiền_cược>",
-        value="Đoán ly chứa bảo vật.",
+        value="Đoán ly chứa bảo vật trong 3 ly (có 30s). Chọn đúng nhận x2.3.",
         inline=False
     )
     embed.add_field(
         name="🎲 y!dice <tiền_cược>",
-        value="Lắc xúc xắc 7 mặt đặc biệt (Có cơ hội nổ Jackpot x7).",
+        value="Lắc xúc xắc 7 mặt đặc biệt. Mặt 4,5,6 thắng (x1.25, x1.5, x2.0), mặt 7 nổ Hũ (x8).",
         inline=False
     )
     embed.add_field(
         name="🔫 y!shot <tiền_cược>",
-        value="Cò quay tử thần (Nga). Chơi nhiều vòng, sống sót càng lâu tiền thưởng càng khủng.",
+        value="Cò quay tử thần (1 đạn thật, 5 lép). Sống sót nhận thưởng tăng dần (x1.1, x1.3, x1.8, x2.7, x5.0). Chết mất sạch và bị phạt 50 điểm.",
         inline=False
     )
     embed.add_field(
         name="🏮 y!tx <tai/xiu> <tiền_cược>",
-        value="Lắc Tài Xỉu 3 viên xúc xắc.",
+        value="Lắc Tài Xỉu 3 viên xúc xắc. (Tài 11-17, Xỉu 4-10). Thắng ăn x1.95. Bão (3 viên giống nhau) nhà cái lụm tất.",
         inline=False
     )
     embed.add_field(
         name="🎡 y!wheel <tiền_cược>",
-        value="Vòng quay may mắn 16 ô với nhiều hệ số thưởng và hiệu ứng khác nhau.",
+        value="Vòng quay may mắn 16 ô. Trúng ô Tím x9.0, Xanh lá x1.8. Thua ở ô Vàng được an ủi +1 Vé Xổ Số.",
         inline=False
     )
     embed.add_field(
         name="🎰 y!slots <tiền_cược>",
-        value="Máy xẻng. Cơ hội trúng Nổ hũ siêu to (Jackpot x25).",
+        value="Máy xẻng. Cơ hội trúng Nổ hũ siêu to: 5 biểu tượng giống nhau x25, 4 biểu tượng x3-x5, 3 biểu tượng x1.2-x1.8.",
         inline=False
     )
     embed.add_field(
         name="🦀 y!bc (hoặc y!baucua)",
-        value="Bầu Cua Tôm Cá nhiều người chơi tham gia chung 1 sòng.",
+        value="Bầu Cua Tôm Cá (Sảnh 30s). Gõ xuống chat `<tên_con_vật> <tiền>`. Thắng nhận Gốc + Lãi (Gốc × số mặt xuất hiện).",
         inline=False
     )
     embed.add_field(
         name="🎲 y!md <tiền_cược> [@user1...]",
-        value="Xúc Xắc Quần Hùng (Multi Dice). Mời nhiều người cùng lắc xúc xắc PvP, chia thưởng tự động.",
+        value="Xúc Xắc Quần Hùng (Multi Dice). Mời nhiều người cùng lắc xúc xắc PvP, tự động chia thưởng cho người cao điểm.",
         inline=False
     )
     embed.add_field(
         name="🦆 y!betvit <màu> <tiền_cược>",
-        value="Đua vịt sự kiện (Chạy tự động mỗi 4 tiếng). Các màu: `do`, `xanh`, `vang`, `hong`, `yon`. (Dùng `y!xemvit` để xem tỷ lệ và `y!huybet` để rút tiền).",
+        value="Đua vịt sự kiện. Các màu: `do`, `xanh`, `vang`, `hong`, `yon`. (Dùng `y!xemvit` để xem tỷ lệ, `y!huybet` rút tiền).",
         inline=False
     )
     embed.add_field(
@@ -102,8 +102,64 @@ def build_shop_embed() -> discord.Embed:
         inline=False
     )
     embed.add_field(
-        name="🏆 y!etop (hoặc y!evtop, y!eventop, y!eventtop)",
+        name="🏆 y!etop (hoặc y!evtop, y!eventop)",
         value="Xem bảng xếp hạng 10 đại gia sự kiện có tổng điểm cày nhiều nhất.",
+        inline=False
+    )
+    embed.add_field(
+        name="🎁 y!daily (hoặc y!diemdanh)",
+        value="Điểm danh nhận thưởng hàng ngày.",
+        inline=False
+    )
+    embed.add_field(
+        name="🎁 y!weekly (hoặc y!luongtuan)",
+        value="Nhận lương thưởng mỗi tuần.",
+        inline=False
+    )
+    return embed
+
+def build_blackmarket_embed() -> discord.Embed:
+    embed = discord.Embed(
+        title="🕵️‍♂️ Chợ Đen & Hành Trang",
+        description="Giao dịch vật phẩm ngầm và quản lý túi đồ cá nhân.",
+        color=COLOR_THEME
+    )
+    embed.add_field(
+        name="🏪 y!choden (hoặc y!bm, y!blackmarket)",
+        value="Mở Chợ Đen để xem các vật phẩm người chơi khác đang rao bán.",
+        inline=False
+    )
+    embed.add_field(
+        name="🛒 y!ebuy (hoặc y!muadem, y!bmbuy)",
+        value="Mua vật phẩm đang được rao bán trên chợ đen.",
+        inline=False
+    )
+    embed.add_field(
+        name="🎒 y!inv (hoặc y!tuido, y!bag, y!inventory)",
+        value="Kiểm tra các vật phẩm hiện có trong hành trang của bạn.",
+        inline=False
+    )
+    embed.add_field(
+        name="🔮 y!use (hoặc y!dung, y!xai)",
+        value="Sử dụng vật phẩm trong túi đồ của bạn.",
+        inline=False
+    )
+    return embed
+
+def build_admin_event_embed() -> discord.Embed:
+    embed = discord.Embed(
+        title="⚙️ Quản Trị Sự Kiện",
+        description="Lệnh dành cho Admin/Owner sự kiện.",
+        color=COLOR_THEME
+    )
+    embed.add_field(
+        name="Lệnh Tiền Tệ",
+        value="• `y!give` | `y!giveall` ── Bơm tiền sự kiện.\n• `y!take` | `y!takeall` ── Trừ tiền sự kiện.",
+        inline=False
+    )
+    embed.add_field(
+        name="Lệnh Trigger Minigame",
+        value="• `y!fast_hand` ── Kích hoạt Nhanh Tay Lẹ Mắt.\n• `y!dice_lobby` ── Kích hoạt Lắc Xúc Xắc Sảnh.\n• `y!quick_grab` ── Kích hoạt Giật Lì Xì.\n• `y!mvp_tribute` ── Tri ân đại gia P2W.",
         inline=False
     )
     return embed
@@ -128,7 +184,19 @@ class EventHelpSelect(discord.ui.Select):
                 label="Kinh Tế & Cửa Hàng",
                 value="shop",
                 emoji="🛒",
-                description="Lệnh về số dư, cửa hàng, BXH"
+                description="Lệnh về số dư, điểm danh, cửa hàng, BXH"
+            ),
+            discord.SelectOption(
+                label="Chợ Đen & Hành Trang",
+                value="blackmarket",
+                emoji="🕵️‍♂️",
+                description="Giao dịch chợ đen và sử dụng túi đồ"
+            ),
+            discord.SelectOption(
+                label="Quản Trị Sự Kiện",
+                value="admin",
+                emoji="⚙️",
+                description="Các lệnh điều hành sự kiện (Admin)"
             )
         ]
         super().__init__(
@@ -146,6 +214,10 @@ class EventHelpSelect(discord.ui.Select):
             embed = build_casino_embed()
         elif selected == "shop":
             embed = build_shop_embed()
+        elif selected == "blackmarket":
+            embed = build_blackmarket_embed()
+        elif selected == "admin":
+            embed = build_admin_event_embed()
         else:
             embed = build_home_embed()
 

@@ -79,7 +79,7 @@ class HelpView(discord.ui.View):
     async def tab_admin(self, interaction: discord.Interaction, button: discord.ui.Button):
         embed = discord.Embed(
             title="🛡️ TAB QUẢN TRỊ VIÊN",
-            description="Admin / Owner:",
+            description="Admin / Owner / Moderation:",
             color=0xffb6c1
         )
         embed.add_field(
@@ -87,7 +87,9 @@ class HelpView(discord.ui.View):
             value=(
                 "• `y!checkdb` ── Xem nhanh toàn bộ dữ liệu đang lưu trong Database.\n"
                 "• `y!renewdb` ── Đồng bộ, làm sạch DB và cập nhật biệt danh.\n"
-                "• `y!backup` ── Kích hoạt xuất file sao lưu .sql thủ công ngay lập tức."
+                "• `y!backup` ── Kích hoạt xuất file sao lưu .sql thủ công ngay lập tức.\n"
+                "• `y!phattu <@user> <lý do>` | `y!jail` ── Giam giữ thành viên vi phạm.\n"
+                "• `y!thatu <@user>` | `y!unjail` ── Thả tự do thành viên khỏi nhà giam."
             ),
             inline=False
         )
