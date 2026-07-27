@@ -76,16 +76,20 @@ def _parse_bet(raw: str, balance: int) -> tuple[Optional[int], Optional[str]]:
     return amount, None
 
 
-def _compute_multiplier(elapsed: float) -> float:
-    return math.exp(MULTIPLIER_RATE * elapsed)
-
-
-def _compute_crash_point() -> float:
-    r = random.random()
-    if r == 0:
-        r = 1e-9
-    cp = 0.95 / r
-    return max(1.00, cp)
+def _generate_market_path(house_edge: float = 0.05) -> list[float]:
+    path = [1.00]
+    while True:
+        change = random.uniform(0.60, 1.70)
+        next_val = path[-1] * change
+        path.append(next_val)
+        
+        if random.random() < house_edge:
+            break
+            
+        if next_val <= 0.10:
+            break
+            
+    return path
 
 
 class BetModal(discord.ui.Modal, title="💰 Đặt Cược - Quả Bóng Tham Lam"):
@@ -225,7 +229,7 @@ class CrashActiveView(discord.ui.View):
         self._lock: asyncio.Lock       = asyncio.Lock()
 
     @discord.ui.button(
-        label="🏃 CHỐT LỜI NGAY",
+        label="📉 CẮT LỖ / CHỐT LỜI 📈",
         style=discord.ButtonStyle.success,
         custom_id="crash_cashout",
     )
@@ -279,12 +283,18 @@ class CrashActiveView(discord.ui.View):
             )
 
         profit_display = payout - bet
-        await interaction.response.send_message(
-            f"✅ **Chốt lời thành công** nhảy dù kịp ở hệ số **x{snapshot_mult:.2f}**!\n"
-            f"Vốn: **{bet:,}** -> Lụm lúa: **{payout:,}** "
-            f"(+**{profit_display:,}** lãi) 🎉",
-            ephemeral=True,
-        )
+        if snapshot_mult < 1.0:
+            await interaction.response.send_message(
+                f"⚠️ Bạn đã Cắt Lỗ ở hệ số **x{snapshot_mult:.2f}** (Lỗ **{abs(profit_display):,}** điểm). Còn hơn là mất trắng!",
+                ephemeral=True,
+            )
+        else:
+            await interaction.response.send_message(
+                f"✅ **Chốt lời thành công** nhảy dù kịp ở hệ số **x{snapshot_mult:.2f}**!\n"
+                f"Vốn: **{bet:,}** -> Lụm lúa: **{payout:,}** "
+                f"(+**{profit_display:,}** lãi) 🎉",
+                ephemeral=True,
+            )
 
     def mark_crashed(self) -> None:
         self.is_crashed = True
@@ -321,20 +331,35 @@ def _build_lobby_embed(
 
 def _build_flight_embed(
     current_multiplier: float,
+    prev_multiplier: float,
     players_bets: dict[int, int],
     cashed_out: dict[int, int],
 ) -> discord.Embed:
-    bar_len    = min(20, int(current_multiplier * 3))
-    bar_filled = "🟦" * bar_len + "⬜" * (20 - bar_len)
+    if current_multiplier >= 1.0:
+        bar_len    = min(20, int(current_multiplier * 3))
+        bar_filled = "🟩" * bar_len + "⬜" * (20 - bar_len)
+    else:
+        bar_len    = min(20, int((1.0 - current_multiplier) * 10))
+        bar_filled = "🟥" * bar_len + "⬜" * (20 - bar_len)
+
+    if current_multiplier > prev_multiplier:
+        icon = "📈"
+        color = 0x00FF00
+    elif current_multiplier < prev_multiplier:
+        icon = "📉"
+        color = 0xFF4500
+    else:
+        icon = "➖"
+        color = COLOR_FLIGHT
 
     embed = discord.Embed(
-        title="🚀 Bóng Đang Bay...",
+        title=f"🚀 Bóng Đang Bay... {icon}",
         description=(
             f"## x{current_multiplier:.2f}\n"
             f"`{bar_filled}`\n\n"
-            "Nhấn **🏃 CHỐT LỜI NGAY** để bỏ túi nhảy dù an toàn!"
+            "Nhấn **📉 CẮT LỖ / CHỐT LỜI 📈** để bỏ túi an toàn!"
         ),
-        color=COLOR_FLIGHT,
+        color=color,
     )
 
     if cashed_out:
@@ -358,8 +383,13 @@ def _build_crash_embed(
     players_bets: dict[int, int],
     cashed_out: dict[int, int],
 ) -> discord.Embed:
+    if crash_point < 1.00:
+        title = "📉 BÙM! CHÁY TÀI KHOẢN📉"
+    else:
+        title = "💥 BÙM! BÓNG ĐÃ NỔ 💥"
+
     embed = discord.Embed(
-        title="💥 BÙM! BÓNG ĐÃ NỔ 💥",
+        title=title,
         description=(
             f"Hệ số nổ chính thức: **x{crash_point:.2f}**\n\n"
             "Những kẻ tham lam đã bị trừng phạt. Ai chốt kịp thì mở champagne gáy thôi!"
@@ -372,9 +402,14 @@ def _build_crash_embed(
         for uid, payout in cashed_out.items():
             bet    = players_bets.get(uid, 0)
             profit = payout - bet
-            gold_lines.append(
-                f"<@{uid}> • Vốn **{bet:,}** → Thu về **{payout:,}** (+**{profit:,}** húp đẫm)"
-            )
+            if payout >= bet:
+                gold_lines.append(
+                    f"<@{uid}> • Vốn **{bet:,}** → Thu về **{payout:,}** (+**{profit:,}** húp đẫm)"
+                )
+            else:
+                gold_lines.append(
+                    f"<@{uid}> • Vốn **{bet:,}** → Còn **{payout:,}** (Cắt lỗ **{abs(profit):,}**)"
+                )
         embed.add_field(
             name="🏅 Bảng Vàng — Nhảy Dù Kịp",
             value="\n".join(gold_lines),
@@ -422,14 +457,14 @@ class CrashGame(commands.Cog):
             return
 
         self.active_games.add(channel_id)
-        crash_point: float = _compute_crash_point()
-        log.info("Crash game bat dau: channel=%d crash_point=%.4f", channel_id, crash_point)
+        market_path: list[float] = _generate_market_path()
+        log.info("Crash game bat dau: channel=%d path_len=%d", channel_id, len(market_path))
 
         players_bets: dict[int, int] = {}
         cashed_out:   dict[int, int] = {}
 
         try:
-            await self._run_lobby(ctx, players_bets, cashed_out, crash_point)
+            await self._run_lobby(ctx, players_bets, cashed_out, market_path)
         finally:
             self.active_games.discard(channel_id)
             log.info("Crash game ket thuc: channel=%d", channel_id)
@@ -439,7 +474,7 @@ class CrashGame(commands.Cog):
         ctx: commands.Context,
         players_bets: dict[int, int],
         cashed_out: dict[int, int],
-        crash_point: float,
+        market_path: list[float],
     ) -> None:
         lobby_message_ref: list = []
 
@@ -506,7 +541,7 @@ class CrashGame(commands.Cog):
                 pass
             return
 
-        await self._run_flight(ctx, lobby_msg, players_bets, cashed_out, crash_point)
+        await self._run_flight(ctx, lobby_msg, players_bets, cashed_out, market_path)
 
     async def _run_flight(
         self,
@@ -514,7 +549,7 @@ class CrashGame(commands.Cog):
         game_message: discord.Message,
         players_bets: dict[int, int],
         cashed_out: dict[int, int],
-        crash_point: float,
+        market_path: list[float],
     ) -> None:
         active_view = CrashActiveView(
             bot=self.bot,
@@ -522,37 +557,35 @@ class CrashGame(commands.Cog):
             cashed_out=cashed_out,
         )
 
+        prev_multiplier = 1.00
         try:
             await game_message.edit(
-                embed=_build_flight_embed(1.00, players_bets, cashed_out),
+                embed=_build_flight_embed(1.00, prev_multiplier, players_bets, cashed_out),
                 view=active_view,
             )
         except discord.HTTPException as exc:
             log.warning("Khong the chuyen sang Flight View: %s", exc)
 
-        flight_start = time.monotonic()
-
-        while True:
-            await asyncio.sleep(LOOP_SLEEP)
-
-            elapsed            = time.monotonic() - flight_start
-            current_multiplier = _compute_multiplier(elapsed)
+        for i, current_multiplier in enumerate(market_path):
             active_view.current_multiplier = current_multiplier
 
-            if current_multiplier >= crash_point:
+            if i == len(market_path) - 1:
                 active_view.mark_crashed()
                 await self._resolve_crash(
-                    game_message, players_bets, cashed_out, crash_point, active_view
+                    game_message, players_bets, cashed_out, current_multiplier, active_view
                 )
                 return
 
             try:
                 await game_message.edit(
-                    embed=_build_flight_embed(current_multiplier, players_bets, cashed_out),
+                    embed=_build_flight_embed(current_multiplier, prev_multiplier, players_bets, cashed_out),
                     view=active_view,
                 )
             except discord.HTTPException:
                 pass
+
+            prev_multiplier = current_multiplier
+            await asyncio.sleep(LOOP_SLEEP)
 
     async def _resolve_crash(
         self,
