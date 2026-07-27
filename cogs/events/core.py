@@ -27,6 +27,24 @@ def _to_utc_aware(dt: Optional[datetime]) -> Optional[datetime]:
         return dt.replace(tzinfo=timezone.utc)
     return dt.astimezone(timezone.utc)
 
+def _parse_amount(raw: str) -> float:
+    cleaned = raw.lower().replace(",", "").strip()
+    try:
+        if cleaned.endswith("m"):
+            return float(cleaned[:-1]) * 1_000_000
+        elif cleaned.endswith("k"):
+            return float(cleaned[:-1]) * 1_000
+        else:
+            return float(cleaned)
+    except ValueError:
+        return -1.0
+
+def _fmt(val: float) -> str:
+    s = f"{val:,.2f}"
+    if s.endswith(".00"): return s[:-3]
+    if s.endswith("0"): return s[:-1]
+    return s
+
 
 class EventCoreCog(commands.Cog):
     """Cog quản lý dòng tiền, cày điểm Chat/Voice và lệnh Admin Ngân Hàng."""
@@ -91,7 +109,7 @@ class EventCoreCog(commands.Cog):
         else:
             new_streak = 1
 
-        final_pts = int(base_pts * p2w)
+        final_pts = float(base_pts * p2w)
 
         sql_update = """
             UPDATE event_profiles
@@ -198,7 +216,7 @@ class EventCoreCog(commands.Cog):
                         base_pts = 5
 
                     p2w = float(row["p2w_multiplier"] or 1.0)
-                    final_pts = int(base_pts * p2w)
+                    final_pts = float(base_pts * p2w)
 
                     sql_voice = """
                         UPDATE event_profiles
@@ -215,7 +233,7 @@ class EventCoreCog(commands.Cog):
 
         if total_members_rewarded > 0:
             log.info(
-                f"🎙️ [Voice Scanner] Đã phát tổng {total_points_distributed:,} điểm "
+                f"🎙️ [Voice Scanner] Đã phát tổng {_fmt(total_points_distributed)} điểm "
                 f"cho {total_members_rewarded} thành viên đang treo voice hợp lệ."
             )
 
@@ -231,7 +249,7 @@ class EventCoreCog(commands.Cog):
         return ctx.author.id == YON_ID
 
     @commands.hybrid_command(name="give", aliases=["givepoints", "addpoints"])
-    async def give_cmd(self, ctx: commands.Context, target: discord.Member, amount: int):
+    async def give_cmd(self, ctx: commands.Context, target: discord.Member, amount: str):
         """[Chỉ dành cho Yon] Bơm điểm sự kiện cho một thành viên bất kỳ."""
         if not ctx.guild:
             await ctx.send("Lệnh này chỉ có thể sử dụng bên trong Server!", ephemeral=True)
@@ -241,26 +259,27 @@ class EventCoreCog(commands.Cog):
             await ctx.send("Bạn không có quyền can thiệp vào Ngân Hàng Sự Kiện!", ephemeral=True)
             return
 
-        if amount == 0:
-            await ctx.send("Số điểm cần bơm phải khác 0!", ephemeral=True)
+        val = _parse_amount(amount)
+        if val <= 0:
+            await ctx.send("Số điểm cần bơm phải lớn hơn 0 và hợp lệ (vd: 10, 10.5, 1.5k)!", ephemeral=True)
             return
         
-        success = await add_event_points(self.bot, target.id, amount, is_earned=False)
+        success = await add_event_points(self.bot, target.id, val, is_earned=False)
         
         if success:
             embed = discord.Embed(
                 title="🏦 Ngân Hàng Sự Kiện Angelic",
-                description=f"Đã chuyển thành công **{amount:,} điểm** vào tài khoản của {target.mention}!",
+                description=f"Đã chuyển thành công **{_fmt(val)} điểm** vào tài khoản của {target.mention}!",
                 color=0x57f287
             )
             embed.set_footer(text=f"Thực hiện bởi: {ctx.author.display_name} ໒꒱")
             await ctx.send(embed=embed)
-            log.info(f"[GIVE] {ctx.author.display_name} đã bơm {amount:,} điểm cho {target.display_name} ({target.id}).")
+            log.info(f"[GIVE] {ctx.author.display_name} đã bơm {_fmt(val)} điểm cho {target.display_name} ({target.id}).")
         else:
             await ctx.send("Giao dịch thất bại! Có lỗi xảy ra khi cập nhật Database.", ephemeral=True)
 
     @commands.hybrid_command(name="giveall")
-    async def giveall_cmd(self, ctx: commands.Context, amount: int):
+    async def giveall_cmd(self, ctx: commands.Context, amount: str):
         """[Chỉ dành cho Yon] Phát lương/lì xì điểm sự kiện cho TOÀN BỘ thành viên trong Server."""
         if not ctx.guild:
             await ctx.send("Lệnh này chỉ có thể sử dụng bên trong Server!", ephemeral=True)
@@ -270,7 +289,8 @@ class EventCoreCog(commands.Cog):
             await ctx.send("Bạn không có quyền can thiệp vào Ngân Hàng Sự Kiện!", ephemeral=True)
             return
 
-        if amount <= 0:
+        val = _parse_amount(amount)
+        if val <= 0:
             await ctx.send("Số điểm phát cho toàn server phải lớn hơn 0!", ephemeral=True)
             return
 
@@ -287,13 +307,13 @@ class EventCoreCog(commands.Cog):
             SET points = points + $1
             WHERE discord_id = ANY($2::text[]);
         """
-        await execute_db(self.bot, sql_batch, amount, member_ids)
+        await execute_db(self.bot, sql_batch, val, member_ids)
 
         embed = discord.Embed(
             title="🎉 Lì Xì Toàn Server Angelic ໒꒱",
             description=(
                 f"**{ctx.author.display_name}** vừa phát lương cho toàn thể server!\n\n"
-                f"Mỗi thành viên nhận được: **+{amount:,} điểm**\n"
+                f"Mỗi thành viên nhận được: **+{_fmt(val)} điểm**\n"
                 f"Tổng số người nhận: **{len(valid_members)} thành viên**"
             ),
             color=0xffb6c1
@@ -302,13 +322,13 @@ class EventCoreCog(commands.Cog):
         embed.set_footer(text="Hãy dùng điểm này để đổi quà trong y!shop nhé! 🌸")
         
         await msg.edit(content=None, embed=embed)
-        log.info(f"🎉 [GIVE ALL] {ctx.author.display_name} đã phát {amount:,} điểm cho {len(valid_members)} thành viên.")
+        log.info(f"🎉 [GIVE ALL] {ctx.author.display_name} đã phát {_fmt(val)} điểm cho {len(valid_members)} thành viên.")
 
     # =====================================================================
     # 4. LỆNH THU HỒI / ROLLBACK: Y!TAKE VÀ Y!TAKEALL (MỚI THÊM)
     # =====================================================================
     @commands.hybrid_command(name="take", aliases=["takepoints", "removepoints", "rmpoints"])
-    async def take_cmd(self, ctx: commands.Context, target: discord.Member, amount: int):
+    async def take_cmd(self, ctx: commands.Context, target: discord.Member, amount: str):
         """[Chỉ dành cho Yon] Tịch thu/rút điểm sự kiện của một thành viên."""
         if not ctx.guild:
             await ctx.send("Lệnh này chỉ có thể sử dụng bên trong Server!", ephemeral=True)
@@ -318,8 +338,9 @@ class EventCoreCog(commands.Cog):
             await ctx.send("Bạn không có quyền can thiệp vào Ngân Hàng Sự Kiện!", ephemeral=True)
             return
 
-        if amount <= 0:
-            await ctx.send("Số điểm cần rút phải lớn hơn 0!", ephemeral=True)
+        val = _parse_amount(amount)
+        if val <= 0:
+            await ctx.send("Số điểm cần rút phải lớn hơn 0 và hợp lệ!", ephemeral=True)
             return
 
         # Dùng GREATEST(0, points - $2) để tuyệt đối không làm số dư bị âm (không bị nợ điểm)
@@ -329,22 +350,22 @@ class EventCoreCog(commands.Cog):
             WHERE discord_id = $1;
         """
         await get_or_create_event_profile(self.bot, target.id)
-        res = await execute_db(self.bot, sql_take, str(target.id), amount)
+        res = await execute_db(self.bot, sql_take, str(target.id), val)
 
         if res is not None:
             embed = discord.Embed(
                 title="⚖️ Ngân Hàng Sự Kiện Angelic — Tịch Thu",
-                description=f"Đã rút **{amount:,} điểm** từ tài khoản của {target.mention}!\n*(Số dư được chạm đáy ở mức 0 điểm)*",
+                description=f"Đã rút **{_fmt(val)} điểm** từ tài khoản của {target.mention}!\n*(Số dư được chạm đáy ở mức 0 điểm)*",
                 color=0xed4245  # Màu đỏ cảnh báo / xử phạt
             )
             embed.set_footer(text=f"Thực hiện bởi: {ctx.author.display_name} ໒꒱")
             await ctx.send(embed=embed)
-            log.info(f"⚖️ [TAKE] {ctx.author.display_name} đã rút {amount:,} điểm từ {target.display_name} ({target.id}).")
+            log.info(f"⚖️ [TAKE] {ctx.author.display_name} đã rút {_fmt(val)} điểm từ {target.display_name} ({target.id}).")
         else:
             await ctx.send("Giao dịch thất bại! Có lỗi xảy ra khi cập nhật Database.", ephemeral=True)
 
     @commands.hybrid_command(name="takeall", aliases=["removeall", "rmall"])
-    async def takeall_cmd(self, ctx: commands.Context, amount: int):
+    async def takeall_cmd(self, ctx: commands.Context, amount: str):
         """[Chỉ dành cho Yon] Thu hồi điểm sự kiện của TOÀN BỘ thành viên trong Server."""
         if not ctx.guild:
             await ctx.send("Lệnh này chỉ có thể sử dụng bên trong Server!", ephemeral=True)
@@ -354,7 +375,8 @@ class EventCoreCog(commands.Cog):
             await ctx.send("Bạn không có quyền can thiệp vào Ngân Hàng Sự Kiện!", ephemeral=True)
             return
 
-        if amount <= 0:
+        val = _parse_amount(amount)
+        if val <= 0:
             await ctx.send("Số điểm cần thu hồi phải lớn hơn 0!", ephemeral=True)
             return
 
@@ -368,13 +390,13 @@ class EventCoreCog(commands.Cog):
             SET points = GREATEST(0, points - $1)
             WHERE discord_id = ANY($2::text[]);
         """
-        await execute_db(self.bot, sql_batch_take, amount, member_ids)
+        await execute_db(self.bot, sql_batch_take, val, member_ids)
 
         embed = discord.Embed(
             title="🌪️ Thu Hồi Điểm Toàn Server Angelic ໒꒱",
             description=(
                 f"**{ctx.author.display_name}** vừa thực hiện thu hồi điểm của toàn thể server!\n\n"
-                f"Mỗi thành viên bị trừ: **-{amount:,} điểm** *(tối đa về 0)*\n"
+                f"Mỗi thành viên bị trừ: **-{_fmt(val)} điểm** *(tối đa về 0)*\n"
                 f"Tổng số bị ảnh hưởng: **{len(valid_members)} thành viên**"
             ),
             color=0xed4245
@@ -383,7 +405,7 @@ class EventCoreCog(commands.Cog):
         embed.set_footer(text="Hệ thống Ngân Hàng Angelic • Cân bằng lại dòng tiền 🌸")
         
         await msg.edit(content=None, embed=embed)
-        log.info(f"🌪️ [TAKE ALL] {ctx.author.display_name} đã thu hồi {amount:,} điểm từ {len(valid_members)} thành viên.")
+        log.info(f"🌪️ [TAKE ALL] {ctx.author.display_name} đã thu hồi {_fmt(val)} điểm từ {len(valid_members)} thành viên.")
 
     class DummyCore:
         is_minigame_running = True

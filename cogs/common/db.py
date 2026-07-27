@@ -122,8 +122,8 @@ async def init_all_tables(bot: Any) -> bool:
             await conn.execute('''
                 CREATE TABLE IF NOT EXISTS event_profiles (
                     discord_id VARCHAR PRIMARY KEY,
-                    points BIGINT DEFAULT 0,
-                    total_earned BIGINT DEFAULT 0,
+                    points FLOAT DEFAULT 0.0,
+                    total_earned FLOAT DEFAULT 0.0,
                     p2w_multiplier NUMERIC(3, 2) DEFAULT 1.00,
                     
                     -- Phục vụ cày Chat & Combo Cooldown
@@ -144,6 +144,16 @@ async def init_all_tables(bot: Any) -> bool:
             await conn.execute('''
                 CREATE INDEX IF NOT EXISTS idx_event_leaderboard ON event_profiles (total_earned DESC);
             ''')
+            
+            # Khắc phục/chuyển đổi kiểu dữ liệu cũ (BIGINT -> FLOAT) nếu cần
+            try:
+                await conn.execute('''
+                    ALTER TABLE event_profiles ALTER COLUMN points TYPE FLOAT USING points::double precision;
+                    ALTER TABLE event_profiles ALTER COLUMN total_earned TYPE FLOAT USING total_earned::double precision;
+                ''')
+            except Exception as e:
+                log.warning(f"Bỏ qua convert type points (có thể đã là FLOAT): {e}")
+                
             
         log.info("🌸 Toàn bộ Database (Staff + Event) đã được khởi tạo và cấu trúc chuẩn xác!")
         return True
@@ -188,7 +198,7 @@ async def check_and_reset_daily(bot: Any, discord_id: Union[str, int]) -> None:
     '''
     await execute_db(bot, sql_reset, uid)
 
-async def add_event_points(bot: Any, discord_id: Union[str, int], amount: int, is_earned: bool = True) -> bool:
+async def add_event_points(bot: Any, discord_id: Union[str, int], amount: float, is_earned: bool = True) -> bool:
     """
     Cộng điểm cho user.
     - is_earned=True (Mặc định): Cộng vào cả `points` (tiêu xài) lẫn `total_earned` (đua top). Dùng khi cày chat, voice, thắng game.
@@ -216,7 +226,7 @@ async def add_event_points(bot: Any, discord_id: Union[str, int], amount: int, i
     res = await execute_db(bot, sql, uid, amount)
     return res is not None
 
-async def deduct_event_points(bot: Any, discord_id: Union[str, int], amount: int) -> bool:
+async def deduct_event_points(bot: Any, discord_id: Union[str, int], amount: float) -> bool:
     """Trừ điểm an toàn (Mua đồ shop, đặt cược thua). Trả về True nếu thành công, False nếu không đủ tiền."""
     if amount <= 0: return False
     uid = str(discord_id)
