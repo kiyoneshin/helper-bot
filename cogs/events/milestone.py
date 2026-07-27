@@ -27,6 +27,17 @@ log = logging.getLogger("Milestone")
 ROLE_DOI_CAO_PHIM = 111111111111111111
 ROLE_HUYEN_THOAI = 222222222222222222
 
+ITEM_NAMES = {
+    "timeout_1m": "Thẻ Cấm Ngôn (1p)",
+    "item_1": "Thẻ Bí Ẩn",
+    "shield_card": "Thẻ Bảo Hộ",
+    "disconnect_card": "Thẻ Sút Voice",
+    "fake_ban_card": "Thẻ Ban Ảo",
+    "thief_card": "Thẻ Đạo Tặc",
+    "ghost_ping_card": "Thẻ Trêu Ghẹo",
+    "jail_card": "Thẻ Bỏ Tù",
+}
+
 EVENT_MILESTONES = {
     5000: {"name": "Khởi Động", "points": 0, "items": {"timeout_1m": 1}, "tickets": 10},
     12000: {"name": "Nông Dân Chăm Chỉ", "points": 0, "items": {"item_1": 1, "shield_card": 1}, "tickets": 0},
@@ -108,7 +119,8 @@ class MilestoneCog(commands.Cog):
             if data.get("role_id"):
                 rewards.append("Role Độc Quyền")
             for item, qty in data.get("items", {}).items():
-                rewards.append(f"**{qty}x** {item}")
+                item_name = ITEM_NAMES.get(item, item)
+                rewards.append(f"**{qty}x** {item_name}")
                 
             reward_str = " • ".join(rewards) if rewards else "Không có"
             
@@ -255,7 +267,7 @@ class MilestoneCog(commands.Cog):
                 embed.add_field(name="Danh Hiệu", value=", ".join(role_mentions), inline=True)
             
         if received_items:
-            item_list = [f"**{qty}x** {item}" for item, qty in received_items.items()]
+            item_list = [f"**{qty}x** {ITEM_NAMES.get(item, item)}" for item, qty in received_items.items()]
             embed.add_field(name="Vật Phẩm", value="\n".join(item_list), inline=False)
             
         embed.set_footer(text="Tiếp tục cày cuốc để chinh phục những cột mốc tiếp theo nhé! 🌸")
