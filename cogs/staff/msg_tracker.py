@@ -4,29 +4,9 @@ import logging
 import time
 from typing import Any, Dict
 
+from cogs.common.db import query_db, execute_db
+
 log = logging.getLogger("StaffMsgTracker")
-
-
-async def _query_db(bot: Any, sql: str, *args) -> list:
-    """Tự động tìm biến kết nối DB trên bot (chỉ dùng nội bộ trong file này)"""
-    possible_names = ['db', 'pool', 'database', 'db_pool', 'conn', 'postgres', 'pg', 'connection']
-    for name in possible_names:
-        if hasattr(bot, name):
-            db_obj = getattr(bot, name)
-            if hasattr(db_obj, 'fetch'):
-                return await db_obj.fetch(sql, *args)
-    return []
-
-
-async def _execute_db(bot: Any, sql: str, *args) -> None:
-    """Thực thi câu lệnh SQL không trả về kết quả (INSERT/UPDATE)"""
-    possible_names = ['db', 'pool', 'database', 'db_pool', 'conn', 'postgres', 'pg', 'connection']
-    for name in possible_names:
-        if hasattr(bot, name):
-            db_obj = getattr(bot, name)
-            if hasattr(db_obj, 'execute'):
-                await db_obj.execute(sql, *args)
-                return
 
 
 class StaffMsgTrackerCog(commands.Cog):
@@ -53,7 +33,7 @@ class StaffMsgTrackerCog(commands.Cog):
 
         # Kiểm tra nhanh: người này có phải Staff trong DB không?
         try:
-            records = await _query_db(
+            records = await query_db(
                 self.bot,
                 "SELECT discord_id FROM profiles WHERE discord_id = $1",
                 staff_id_str
@@ -78,9 +58,9 @@ class StaffMsgTrackerCog(commands.Cog):
 
         # --- Ghi nhận tin nhắn hợp lệ vào DB ---
         try:
-            await _execute_db(
+            await execute_db(
                 self.bot,
-                "INSERT INTO staff_message_logs (discord_id) VALUES ($1)",
+                "INSERT INTO staff_message_logs (discord_id, sent_at) VALUES ($1, CURRENT_TIMESTAMP)",
                 staff_id_str
             )
         except Exception as e:
