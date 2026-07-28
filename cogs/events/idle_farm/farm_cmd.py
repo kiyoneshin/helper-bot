@@ -28,7 +28,7 @@ class IdleFarmCog(commands.Cog):
         embed = build_farm_embed(ctx.author, farm_data)
         
         # 3. Khởi tạo Giao Diện View (Select + Button)
-        view = FarmView(self.bot, user_id)
+        view = FarmView(self.bot, user_id, ctx.author)
         
         # 4. Gửi kết quả
         await ctx.send(embed=embed, view=view)
