@@ -164,6 +164,33 @@ def build_admin_event_embed() -> discord.Embed:
     )
     return embed
 
+def build_farm_embed() -> discord.Embed:
+    embed = discord.Embed(
+        title="🌻 Nông Trại Nhàn Rỗi",
+        description="Chào mừng bạn đến với khu vườn nhàn rỗi! Hãy chăm chỉ trồng trọt, thu hoạch nông sản chất lượng để kiếm thật nhiều điểm.",
+        color=COLOR_THEME
+    )
+    embed.add_field(
+        name="🚜 y!farm (hoặc y!nongtrai)",
+        value="Mở giao diện Nông Trại. Nơi tương tác chính để chăm sóc cây trồng (Tưới, Thu Hoạch, Dọn cỏ).",
+        inline=False
+    )
+    embed.add_field(
+        name="🛒 y!shop",
+        value="Mở cửa hàng hạt giống Nông nghiệp (Đang phát triển).",
+        inline=False
+    )
+    embed.add_field(
+        name="🎒 y!bag (hoặc y!khodo)",
+        value="Xem Túi đồ. Nông sản thu hoạch được chia làm 4 phẩm chất: Normal, Silver 🥈, Gold 🥇, Iridium 🌟. Bán nông sản để nhận điểm sự kiện.",
+        inline=False
+    )
+    embed.add_field(
+        name="🏭 y!machine",
+        value="Khu vực Chế biến nông sản thành hàng nghệ nhân (Đang phát triển).",
+        inline=False
+    )
+    return embed
 
 class EventHelpSelect(discord.ui.Select):
     def __init__(self):
@@ -193,6 +220,12 @@ class EventHelpSelect(discord.ui.Select):
                 description="Giao dịch chợ đen và sử dụng túi đồ"
             ),
             discord.SelectOption(
+                label="Nông Trại Nhàn Rỗi",
+                value="farm",
+                emoji="🌻",
+                description="Hệ thống trồng trọt kiếm điểm"
+            ),
+            discord.SelectOption(
                 label="Quản Trị Sự Kiện",
                 value="admin",
                 emoji="⚙️",
@@ -214,6 +247,8 @@ class EventHelpSelect(discord.ui.Select):
             embed = build_casino_embed()
         elif selected == "shop":
             embed = build_shop_embed()
+        elif selected == "farm":
+            embed = build_farm_embed()
         elif selected == "blackmarket":
             embed = build_blackmarket_embed()
         elif selected == "admin":

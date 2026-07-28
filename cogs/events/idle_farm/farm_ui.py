@@ -3,7 +3,7 @@ from typing import Any, Dict
 import discord
 from discord.ext import commands
 
-from .config import SEEDS, STATUS_GROWING, STATUS_READY, STATUS_WITHERED, WATER_BONUS
+from .config import SEEDS, STATUS_GROWING, STATUS_READY, STATUS_WITHERED, WATER_BONUS, QUALITY_EMOJIS
 from .farm_db import plant_seed, water_all, harvest_all, calculate_crop_status, get_farm_data, remove_crop
 from cogs.common.db import fetchval_db, deduct_event_points, add_event_points
 
@@ -118,22 +118,32 @@ class FarmView(discord.ui.View):
             return
             
         ok, report = await harvest_all(self.bot, self.user_id)
-        profit = report.get("profit", 0)
+        harvested = report.get("harvested", {})
         withered = report.get("withered", 0)
         
-        if profit == 0 and withered == 0:
+        if not harvested and withered == 0:
             await interaction.response.send_message("🧺 Không có cây nào sẵn sàng để thu hoạch hoặc bị héo!", ephemeral=True)
             return
-            
-        if profit > 0:
-            await add_event_points(self.bot, self.user_id, float(profit), is_earned=True)
             
         new_farm_data = await get_farm_data(self.bot, self.user_id)
         new_embed = build_farm_embed(self.author, new_farm_data)
         
         msg = []
-        if profit > 0:
-            msg.append(f"✅ Thu hoạch thành công! Bạn nhận được **{profit} điểm**.")
+        if harvested:
+            details = []
+            for item_id, qty in harvested.items():
+                parts = item_id.split("_")
+                quality = parts[-1] if len(parts) > 1 else "normal"
+                seed_id = "_".join(parts[:-1]) if len(parts) > 1 else item_id
+                
+                seed_info = SEEDS.get(seed_id, {})
+                seed_name = seed_info.get("name", seed_id)
+                emoji = QUALITY_EMOJIS.get(quality, "")
+                
+                details.append(f"**{qty}x** {seed_name} {emoji}".strip())
+                
+            msg.append(f"✅ Thu hoạch thành công: " + ", ".join(details))
+            
         if withered > 0:
             msg.append(f"🥀 Đã dọn dẹp **{withered}** cây bị héo.")
             

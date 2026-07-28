@@ -12,7 +12,7 @@ from typing import Any, Dict, Tuple
 
 from discord.ext import commands
 
-from cogs.common.db import fetchval_db, execute_db, get_or_create_event_profile
+from cogs.common.db import fetchval_db, execute_db, get_or_create_event_profile, add_event_points
 from . import config
 
 log = logging.getLogger("FarmDB")
@@ -22,7 +22,7 @@ async def get_farm_data(bot: commands.Bot, user_id: str) -> Dict[str, Any]:
     Lấy dữ liệu farm của user từ Database (cột farm_data kiểu JSONB).
     Nếu chưa có, trả về cấu trúc mặc định: {"slots": 3, "crops": {}}
     """
-    default_data = {"slots": 3, "crops": {}}
+    default_data = {"slots": 3, "crops": {}, "inventory": {}}
     
     try:
         # Đảm bảo profile tồn tại trước khi select
@@ -48,6 +48,8 @@ async def get_farm_data(bot: commands.Bot, user_id: str) -> Dict[str, Any]:
             data["slots"] = 3
         if "crops" not in data:
             data["crops"] = {}
+        if "inventory" not in data:
+            data["inventory"] = {}
             
         return data
     except (json.JSONDecodeError, TypeError, KeyError) as e:
@@ -160,14 +162,16 @@ async def water_all(bot: commands.Bot, user_id: str) -> Tuple[bool, int]:
         
     return True, watered_count
 
-async def harvest_all(bot: commands.Bot, user_id: str) -> Tuple[bool, Dict[str, int]]:
+async def harvest_all(bot: commands.Bot, user_id: str) -> Tuple[bool, Dict[str, Any]]:
     """
     Thu hoạch toàn bộ cây có trạng thái READY.
+    Lưu vật phẩm vào inventory thay vì cộng tiền trực tiếp.
     """
     farm_data = await get_farm_data(bot, user_id)
     crops = farm_data.get("crops", {})
+    inventory = farm_data.setdefault("inventory", {})
     
-    total_profit = 0
+    harvest_report = {}
     withered_count = 0
     slots_to_remove = []
     
@@ -176,10 +180,27 @@ async def harvest_all(bot: commands.Bot, user_id: str) -> Tuple[bool, Dict[str, 
         
         if status == config.STATUS_READY:
             seed_id = crop.get("seed")
+            watered = crop.get("watered", False)
             seed_config = config.SEEDS.get(seed_id)
+            
             if seed_config:
-                profit = random.randint(seed_config["reward_min"], seed_config["reward_max"])
-                total_profit += profit
+                # Tính phẩm chất
+                roll = random.random()
+                if watered:
+                    if roll < 0.40: quality = "normal"
+                    elif roll < 0.70: quality = "silver"
+                    elif roll < 0.95: quality = "gold"
+                    else: quality = "iridium"
+                else:
+                    if roll < 0.70: quality = "normal"
+                    else: quality = "silver"
+                    
+                item_id = f"{seed_id}_{quality}"
+                inventory[item_id] = inventory.get(item_id, 0) + 1
+                
+                # Cập nhật báo cáo
+                harvest_report[item_id] = harvest_report.get(item_id, 0) + 1
+                
             slots_to_remove.append(slot_id)
             
         elif status == config.STATUS_WITHERED:
@@ -193,7 +214,46 @@ async def harvest_all(bot: commands.Bot, user_id: str) -> Tuple[bool, Dict[str, 
     if slots_to_remove:
         await save_farm_data(bot, user_id, farm_data)
         
-    return True, {"profit": total_profit, "withered": withered_count}
+    return True, {"harvested": harvest_report, "withered": withered_count}
+
+async def sell_all_inventory(bot: commands.Bot, user_id: str) -> int:
+    """
+    Bán toàn bộ kho đồ, quy ra điểm và cộng vào DB. Trả về tổng số tiền.
+    """
+    farm_data = await get_farm_data(bot, user_id)
+    inventory = farm_data.get("inventory", {})
+    
+    if not inventory:
+        return 0
+        
+    total_profit = 0
+    
+    for item_id, count in inventory.items():
+        parts = item_id.split("_")
+        if len(parts) >= 2:
+            seed_id = "_".join(parts[:-1])
+            quality = parts[-1]
+        else:
+            seed_id = item_id
+            quality = "normal"
+            
+        seed_config = config.SEEDS.get(seed_id)
+        if not seed_config:
+            continue
+            
+        base_cost = seed_config["reward_min"]
+        multiplier = config.QUALITY_MULTIPLIERS.get(quality, 1.0)
+        
+        profit_per_item = int(base_cost * multiplier)
+        total_profit += profit_per_item * count
+        
+    if total_profit > 0:
+        await add_event_points(bot, user_id, float(total_profit), is_earned=True)
+        
+    farm_data["inventory"] = {}
+    await save_farm_data(bot, user_id, farm_data)
+    
+    return total_profit
 
 async def remove_crop(bot: commands.Bot, user_id: str, slot_id: str) -> Tuple[bool, str]:
     """

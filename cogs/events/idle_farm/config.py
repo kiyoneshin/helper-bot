@@ -25,6 +25,10 @@ STATUS_WITHERED = "WITHERED"
 WATER_BONUS = 0.20  # Giảm 20% thời gian sinh trưởng nếu được tưới
 WITHER_TIME = 12 * 60 * 60  # Cây sẽ héo sau 12 tiếng kể từ lúc chín
 
+# Hệ thống phẩm chất
+QUALITY_MULTIPLIERS = {"normal": 1.0, "silver": 1.25, "gold": 1.5, "iridium": 2.0}
+QUALITY_EMOJIS = {"normal": "", "silver": "🥈", "gold": "🥇", "iridium": "🌟"}
+
 SEEDS: Dict[str, SeedConfig] = {
     "wheat": {
         "name": "Lúa Mì",
