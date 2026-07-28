@@ -194,3 +194,20 @@ async def harvest_all(bot: commands.Bot, user_id: str) -> Tuple[bool, Dict[str, 
         await save_farm_data(bot, user_id, farm_data)
         
     return True, {"profit": total_profit, "withered": withered_count}
+
+async def remove_crop(bot: commands.Bot, user_id: str, slot_id: str) -> Tuple[bool, str]:
+    """
+    Cuốc bỏ cây trồng ở một ô đất cụ thể.
+    """
+    farm_data = await get_farm_data(bot, user_id)
+    crops = farm_data.get("crops", {})
+    
+    slot_id_str = str(slot_id)
+    
+    if slot_id_str not in crops:
+        return False, "Ô đất này đang trống hoặc không tồn tại!"
+        
+    del crops[slot_id_str]
+    await save_farm_data(bot, user_id, farm_data)
+    
+    return True, "Đã dọn dẹp ô đất!"

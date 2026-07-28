@@ -4,7 +4,7 @@ import discord
 from discord.ext import commands
 
 from .config import SEEDS, STATUS_GROWING, STATUS_READY, STATUS_WITHERED, WATER_BONUS
-from .farm_db import plant_seed, water_all, harvest_all, calculate_crop_status, get_farm_data
+from .farm_db import plant_seed, water_all, harvest_all, calculate_crop_status, get_farm_data, remove_crop
 from cogs.common.db import fetchval_db, deduct_event_points, add_event_points
 
 class FarmShopSelect(discord.ui.Select):
@@ -94,9 +94,6 @@ class FarmView(discord.ui.View):
         self.user_id = user_id
         self.author = author
         
-        # Gắn Dropdown Menu (Cửa hàng) vào View
-        self.add_item(FarmShopSelect(bot))
-        
     @discord.ui.button(label="Tưới Nước Tất Cả", emoji="💧", style=discord.ButtonStyle.primary, row=1)
     async def water_btn(self, interaction: discord.Interaction, button: discord.ui.Button):
         if str(interaction.user.id) != self.user_id:
@@ -142,6 +139,60 @@ class FarmView(discord.ui.View):
             
         await interaction.response.edit_message(embed=new_embed, view=self)
         await interaction.followup.send("\n".join(msg), ephemeral=True)
+
+    @discord.ui.button(label="Cuốc Bỏ", emoji="⛏️", style=discord.ButtonStyle.danger, row=1)
+    async def clear_btn(self, interaction: discord.Interaction, button: discord.ui.Button):
+        if str(interaction.user.id) != self.user_id:
+            await interaction.response.send_message("❌ Bạn không thể tương tác với nông trại của người khác!", ephemeral=True)
+            return
+            
+        await interaction.response.send_modal(ClearSlotModal(self.bot, self.user_id, self.author, self))
+
+    @discord.ui.button(label="Làm Mới", emoji="🔄", style=discord.ButtonStyle.secondary, row=1)
+    async def refresh_btn(self, interaction: discord.Interaction, button: discord.ui.Button):
+        if str(interaction.user.id) != self.user_id:
+            await interaction.response.send_message("❌ Bạn không thể tương tác với nông trại của người khác!", ephemeral=True)
+            return
+            
+        new_farm_data = await get_farm_data(self.bot, self.user_id)
+        new_embed = build_farm_embed(self.author, new_farm_data)
+        
+        await interaction.response.edit_message(embed=new_embed, view=self)
+
+
+class ClearSlotModal(discord.ui.Modal, title="Cuốc Bỏ Cây Trồng"):
+    slot_input = discord.ui.TextInput(
+        label="Nhập số thứ tự ô đất (VD: 1, 2, 3)",
+        placeholder="Chỉ nhập số nguyên...",
+        min_length=1,
+        max_length=2,
+        required=True
+    )
+    
+    def __init__(self, bot: commands.Bot, user_id: str, author: discord.Member, view: FarmView):
+        super().__init__()
+        self.bot = bot
+        self.user_id = user_id
+        self.author = author
+        self.view_obj = view
+        
+    async def on_submit(self, interaction: discord.Interaction):
+        try:
+            slot_id = int(self.slot_input.value.strip())
+        except ValueError:
+            await interaction.response.send_message("❌ Giá trị không hợp lệ! Vui lòng chỉ nhập số.", ephemeral=True)
+            return
+            
+        ok, msg = await remove_crop(self.bot, self.user_id, str(slot_id))
+        if not ok:
+            await interaction.response.send_message(f"❌ {msg}", ephemeral=True)
+            return
+            
+        new_farm_data = await get_farm_data(self.bot, self.user_id)
+        new_embed = build_farm_embed(self.author, new_farm_data)
+        
+        await interaction.response.edit_message(embed=new_embed, view=self.view_obj)
+        await interaction.followup.send(f"✅ {msg} (Tại Ô {slot_id})", ephemeral=True)
 
 
 def build_farm_embed(author: discord.Member, farm_data: Dict[str, Any]) -> discord.Embed:

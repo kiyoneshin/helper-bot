@@ -27,11 +27,27 @@ class IdleFarmCog(commands.Cog):
         # 2. Xây dựng Embed trực quan
         embed = build_farm_embed(ctx.author, farm_data)
         
-        # 3. Khởi tạo Giao Diện View (Select + Button)
+        # 3. Khởi tạo Giao Diện View
         view = FarmView(self.bot, user_id, ctx.author)
         
         # 4. Gửi kết quả
         await ctx.send(embed=embed, view=view)
+
+    @commands.hybrid_command(name="shop", aliases=["cuahang"])
+    async def shop_cmd(self, ctx: commands.Context) -> None:
+        """🛒 Mở cửa hàng Nông nghiệp."""
+        # TODO: Chuyển FarmShopSelect sang đây
+        await ctx.send("Đang phát triển", ephemeral=True)
+
+    @commands.hybrid_command(name="bag", aliases=["khodo", "inventory"])
+    async def bag_cmd(self, ctx: commands.Context) -> None:
+        """🎒 Xem kho đồ Nông trại của bạn."""
+        await ctx.send("Đang phát triển", ephemeral=True)
+
+    @commands.hybrid_command(name="machine", aliases=["chebien", "maymoc"])
+    async def machine_cmd(self, ctx: commands.Context) -> None:
+        """🏭 Khu vực Chế biến Nông sản."""
+        await ctx.send("Đang phát triển", ephemeral=True)
 
 
 async def setup(bot: commands.Bot) -> None:
