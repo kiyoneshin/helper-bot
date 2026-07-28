@@ -137,6 +137,7 @@ async def init_all_tables(bot: Any) -> bool:
                     
                     -- Kho đồ (Thẻ bỏ tù, bảo hiểm...) & Ngày reset
                     inventory JSONB DEFAULT '{}'::jsonb,
+                    farm_data JSONB DEFAULT '{"slots": 3, "crops": {}, "inventory": {}}'::jsonb,
                     last_reset_date DATE DEFAULT (CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Ho_Chi_Minh')::date
                 );
             ''')
@@ -150,6 +151,7 @@ async def init_all_tables(bot: Any) -> bool:
                 await conn.execute('''
                     ALTER TABLE event_profiles ALTER COLUMN points TYPE FLOAT USING points::double precision;
                     ALTER TABLE event_profiles ALTER COLUMN total_earned TYPE FLOAT USING total_earned::double precision;
+                    ALTER TABLE event_profiles ADD COLUMN IF NOT EXISTS farm_data JSONB DEFAULT '{"slots": 3, "crops": {}, "inventory": {}}'::jsonb;
                 ''')
             except Exception as e:
                 log.warning(f"Bỏ qua convert type points (có thể đã là FLOAT): {e}")

@@ -265,8 +265,9 @@ class BlackMarketCog(commands.Cog):
 
     # ------------------------------------------------------------------
     # LỆNH XEM TÚI ĐỒ: y!inv / y!tuido
+    # LỆNH XEM TÚI ĐỒ (BLACK MARKET): y!inv / y!tuido
     # ------------------------------------------------------------------
-    @commands.hybrid_command(name="inv", aliases=["tuido", "inventory", "bag"])
+    @commands.hybrid_command(name="inv", aliases=["tuido", "bminv", "bminventory"])
     async def inventory_cmd(self, ctx: commands.Context) -> None:
         """🎒 Xem túi đồ (inventory) của bản thân"""
         uid = str(ctx.author.id)

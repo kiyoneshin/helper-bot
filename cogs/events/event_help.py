@@ -176,7 +176,7 @@ def build_farm_embed() -> discord.Embed:
         inline=False
     )
     embed.add_field(
-        name="🛒 y!shop",
+        name="🛒 y!farmshop (hoặc y!muahat)",
         value="Mở cửa hàng hạt giống Nông nghiệp (Đang phát triển).",
         inline=False
     )

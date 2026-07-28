@@ -34,13 +34,13 @@ class IdleFarmCog(commands.Cog):
         # 4. Gửi kết quả
         await ctx.send(embed=embed, view=view)
 
-    @commands.hybrid_command(name="shop", aliases=["cuahang"])
+    @commands.hybrid_command(name="farmshop", aliases=["muahat", "seedshop", "fshop"])
     async def shop_cmd(self, ctx: commands.Context) -> None:
         """🛒 Mở cửa hàng Nông nghiệp."""
         # TODO: Chuyển FarmShopSelect sang đây
         await ctx.send("Đang phát triển", ephemeral=True)
 
-    @commands.hybrid_command(name="bag", aliases=["khodo", "inventory"])
+    @commands.hybrid_command(name="bag", aliases=["khodo", "farmbag"])
     async def bag_cmd(self, ctx: commands.Context) -> None:
         """🎒 Xem kho đồ Nông trại của bạn."""
         user_id = str(ctx.author.id)
