@@ -7,48 +7,57 @@ from .config import SEEDS, STATUS_GROWING, STATUS_READY, STATUS_WITHERED, WATER_
 from .farm_db import plant_seed, water_all, harvest_all, calculate_crop_status, get_farm_data, remove_crop
 from cogs.common.db import fetchval_db, deduct_event_points, add_event_points
 
-class FarmShopSelect(discord.ui.Select):
-    """Dropdown Menu cho phép chọn mua hạt giống."""
+class PlantSeedSelect(discord.ui.Select):
+    """Dropdown Menu hiển thị hạt giống đang có trong túi đồ để trồng."""
     
-    def __init__(self, bot: commands.Bot):
+    def __init__(self, bot: commands.Bot, farm_data: Dict[str, Any]):
         self.bot = bot
         options = []
-        for seed_id, seed_data in SEEDS.items():
+        inventory = farm_data.get("inventory", {})
+        
+        has_seeds = False
+        for item_id, count in inventory.items():
+            if item_id.startswith("seed_") and count > 0:
+                seed_id = item_id[5:] # bỏ "seed_"
+                seed_info = SEEDS.get(seed_id)
+                if seed_info:
+                    has_seeds = True
+                    options.append(
+                        discord.SelectOption(
+                            label=f"Gieo: {seed_info['name']} (Còn {count})",
+                            value=seed_id,
+                            emoji=seed_info['icon']
+                        )
+                    )
+                    
+        if not has_seeds:
             options.append(
                 discord.SelectOption(
-                    label=f"Mua: {seed_data['name']} ({seed_data['cost']} pts)",
-                    value=seed_id,
-                    description=seed_data['description'],
-                    emoji=seed_data['icon']
+                    label="Túi đồ rỗng! (Dùng y!farmshop để mua)",
+                    value="empty",
+                    emoji="🪹"
                 )
             )
             
         super().__init__(
-            placeholder="🛒 Chọn mua hạt giống để trồng...",
+            placeholder="🌱 Chọn hạt giống để gieo trồng...",
             min_values=1,
             max_values=1,
-            options=options,
-            row=0
+            options=options[:25], # Max 25 options
+            row=0,
+            disabled=not has_seeds
         )
         
     async def callback(self, interaction: discord.Interaction):
-        """Xử lý sự kiện khi người dùng chọn mua hạt giống."""
-        # Fix typing cho view
         view: "FarmView" = self.view  # type: ignore
-        
         user_id = str(interaction.user.id)
+        
         if user_id != view.user_id:
             await interaction.response.send_message("❌ Bạn không thể tương tác với nông trại của người khác!", ephemeral=True)
             return
 
         selected_seed = self.values[0]
-        seed_info = SEEDS[selected_seed]
-        cost = seed_info["cost"]
-        
-        # Kiểm tra tiền
-        user_points = await fetchval_db(self.bot, "SELECT points FROM event_profiles WHERE discord_id = $1", user_id)
-        if user_points is None or float(user_points) < cost:
-            await interaction.response.send_message(f"❌ Bạn không có đủ điểm! (Cần **{cost} điểm**)", ephemeral=True)
+        if selected_seed == "empty":
             return
             
         farm_data = await get_farm_data(self.bot, user_id)
@@ -62,37 +71,37 @@ class FarmShopSelect(discord.ui.Select):
                 break
                 
         if not empty_slot:
-            await interaction.response.send_message("❌ Nông trại của bạn đã hết đất trống! Vui lòng thu hoạch trước.", ephemeral=True)
+            await interaction.response.send_message("❌ Nông trại của bạn đã hết đất trống! Vui lòng thu hoạch hoặc cuốc bỏ cây héo.", ephemeral=True)
             return
             
-        ok, msg = await plant_seed(self.bot, user_id, empty_slot, selected_seed)
+        ok, msg = await plant_seed(self.bot, user_id, str(empty_slot), selected_seed)
         if not ok:
             await interaction.response.send_message(f"❌ {msg}", ephemeral=True)
             return
             
-        # Trừ tiền
-        await deduct_event_points(self.bot, user_id, cost)
-        
-        # Cập nhật Embed
+        # Cập nhật Embed & View
         new_farm_data = await get_farm_data(self.bot, user_id)
         new_embed = build_farm_embed(view.author, new_farm_data)
         
-        # Reset dropdown
-        for opt in self.options:
-            opt.default = False
-            
-        await interaction.response.edit_message(embed=new_embed, view=view)
-        await interaction.followup.send(f"✅ Bạn đã mua và trồng **{seed_info['name']}** tại Ô {empty_slot}! (-{cost} điểm)", ephemeral=True)
+        # Tạo View mới để cập nhật số lượng hạt giống trong dropdown
+        new_view = FarmView(self.bot, user_id, view.author, new_farm_data)
+        
+        await interaction.response.edit_message(embed=new_embed, view=new_view)
+        
+        seed_info = SEEDS.get(selected_seed, {})
+        seed_name = seed_info.get('name', selected_seed)
+        await interaction.followup.send(f"✅ Bạn đã gieo **{seed_name}** tại Ô {empty_slot}!", ephemeral=True)
 
 
 class FarmView(discord.ui.View):
     """View chính của Nông Trại chứa các nút tương tác."""
     
-    def __init__(self, bot: commands.Bot, user_id: str, author: discord.Member):
+    def __init__(self, bot: commands.Bot, user_id: str, author: discord.Member, farm_data: Dict[str, Any]):
         super().__init__(timeout=120)
         self.bot = bot
         self.user_id = user_id
         self.author = author
+        self.add_item(PlantSeedSelect(bot, farm_data))
         
     @discord.ui.button(label="Tưới Nước Tất Cả", emoji="💧", style=discord.ButtonStyle.primary, row=1)
     async def water_btn(self, interaction: discord.Interaction, button: discord.ui.Button):
@@ -108,7 +117,9 @@ class FarmView(discord.ui.View):
         new_farm_data = await get_farm_data(self.bot, self.user_id)
         new_embed = build_farm_embed(self.author, new_farm_data)
         
-        await interaction.response.edit_message(embed=new_embed, view=self)
+        new_view = FarmView(self.bot, self.user_id, self.author, new_farm_data)
+        
+        await interaction.response.edit_message(embed=new_embed, view=new_view)
         await interaction.followup.send(f"💦 Đã tưới nước cho **{count}** cây! (Thời gian sinh trưởng giảm {int(WATER_BONUS * 100)}%)", ephemeral=True)
         
     @discord.ui.button(label="Thu Hoạch", emoji="🧺", style=discord.ButtonStyle.success, row=1)
@@ -147,7 +158,8 @@ class FarmView(discord.ui.View):
         if withered > 0:
             msg.append(f"🥀 Đã dọn dẹp **{withered}** cây bị héo.")
             
-        await interaction.response.edit_message(embed=new_embed, view=self)
+        new_view = FarmView(self.bot, self.user_id, self.author, new_farm_data)
+        await interaction.response.edit_message(embed=new_embed, view=new_view)
         await interaction.followup.send("\n".join(msg), ephemeral=True)
 
     @discord.ui.button(label="Cuốc Bỏ", emoji="⛏️", style=discord.ButtonStyle.danger, row=1)
@@ -167,7 +179,8 @@ class FarmView(discord.ui.View):
         new_farm_data = await get_farm_data(self.bot, self.user_id)
         new_embed = build_farm_embed(self.author, new_farm_data)
         
-        await interaction.response.edit_message(embed=new_embed, view=self)
+        new_view = FarmView(self.bot, self.user_id, self.author, new_farm_data)
+        await interaction.response.edit_message(embed=new_embed, view=new_view)
 
 
 class ClearSlotModal(discord.ui.Modal, title="Cuốc Bỏ Cây Trồng"):
@@ -201,7 +214,8 @@ class ClearSlotModal(discord.ui.Modal, title="Cuốc Bỏ Cây Trồng"):
         new_farm_data = await get_farm_data(self.bot, self.user_id)
         new_embed = build_farm_embed(self.author, new_farm_data)
         
-        await interaction.response.edit_message(embed=new_embed, view=self.view_obj)
+        new_view = FarmView(self.bot, self.user_id, self.author, new_farm_data)
+        await interaction.response.edit_message(embed=new_embed, view=new_view)
         await interaction.followup.send(f"✅ {msg} (Tại Ô {slot_id})", ephemeral=True)
 
 

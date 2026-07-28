@@ -8,8 +8,10 @@ import discord
 from discord.ext import commands
 
 from .farm_db import get_farm_data
+from cogs.common.db import fetchval_db
 from .farm_ui import FarmView, build_farm_embed
 from .bag_ui import BagView, build_bag_embed
+from .farm_shop_ui import SeedShopView, build_farmshop_embed
 
 class IdleFarmCog(commands.Cog):
     """🌻 Cog Mini-game Idle Farm (Nông Trại Nhàn Rỗi)."""
@@ -37,8 +39,14 @@ class IdleFarmCog(commands.Cog):
     @commands.hybrid_command(name="farmshop", aliases=["muahat", "seedshop", "fshop"])
     async def shop_cmd(self, ctx: commands.Context) -> None:
         """🛒 Mở cửa hàng Nông nghiệp."""
-        # TODO: Chuyển FarmShopSelect sang đây
-        await ctx.send("Đang phát triển", ephemeral=True)
+        user_id = str(ctx.author.id)
+        user_points = await fetchval_db(self.bot, "SELECT points FROM event_profiles WHERE discord_id = $1", user_id)
+        points = float(user_points) if user_points else 0.0
+        
+        embed = build_farmshop_embed(ctx.author, points)
+        view = SeedShopView(self.bot, user_id, ctx.author)
+        
+        await ctx.send(embed=embed, view=view)
 
     @commands.hybrid_command(name="bag", aliases=["khodo", "farmbag"])
     async def bag_cmd(self, ctx: commands.Context) -> None:

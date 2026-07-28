@@ -106,13 +106,19 @@ def calculate_crop_status(crop_data: Dict[str, Any]) -> Tuple[str, int]:
 
 async def plant_seed(bot: commands.Bot, user_id: str, slot_id: str, seed_type: str) -> Tuple[bool, str]:
     """
-    Xử lý logic trồng cây vào 1 ô đất cụ thể.
+    Xử lý logic trồng cây vào 1 ô đất cụ thể. Hạt giống sẽ được trừ vào inventory.
     """
     if seed_type not in config.SEEDS:
         return False, "Hạt giống không tồn tại!"
         
     farm_data = await get_farm_data(bot, user_id)
+    inventory = farm_data.get("inventory", {})
     crops = farm_data.get("crops", {})
+    
+    seed_item_id = f"seed_{seed_type}"
+    if inventory.get(seed_item_id, 0) < 1:
+        return False, "Bạn không có hạt giống này trong túi đồ!"
+
     
     # Ép slot_id về string để key json đồng nhất
     slot_id_str = str(slot_id)
@@ -134,8 +140,43 @@ async def plant_seed(bot: commands.Bot, user_id: str, slot_id: str, seed_type: s
         "watered": False
     }
     
+    # Trừ hạt giống trong kho
+    inventory[seed_item_id] -= 1
+    if inventory[seed_item_id] <= 0:
+        del inventory[seed_item_id]
+    
     await save_farm_data(bot, user_id, farm_data)
     return True, "Trồng thành công!"
+
+async def buy_seed(bot: commands.Bot, user_id: str, seed_type: str, amount: int = 1) -> Tuple[bool, str]:
+    """
+    Mua hạt giống và thêm vào inventory.
+    """
+    if seed_type not in config.SEEDS:
+        return False, "Hạt giống không tồn tại!"
+        
+    seed_config = config.SEEDS[seed_type]
+    total_cost = seed_config["cost"] * amount
+    
+    user_points = await fetchval_db(bot, "SELECT points FROM event_profiles WHERE discord_id = $1", user_id)
+    if user_points is None or float(user_points) < total_cost:
+        return False, f"Không đủ điểm sự kiện (Cần {total_cost:,} điểm)!"
+        
+    # Trừ tiền
+    from cogs.common.db import deduct_event_points
+    success = await deduct_event_points(bot, user_id, total_cost)
+    if not success:
+        return False, f"Không đủ điểm sự kiện (Cần {total_cost:,} điểm)!"
+        
+    # Thêm vào kho đồ
+    farm_data = await get_farm_data(bot, user_id)
+    inventory = farm_data.setdefault("inventory", {})
+    seed_item_id = f"seed_{seed_type}"
+    
+    inventory[seed_item_id] = inventory.get(seed_item_id, 0) + amount
+    await save_farm_data(bot, user_id, farm_data)
+    
+    return True, f"Mua thành công {amount}x {seed_config['name']}!"
 
 async def water_all(bot: commands.Bot, user_id: str) -> Tuple[bool, int]:
     """
@@ -227,8 +268,13 @@ async def sell_all_inventory(bot: commands.Bot, user_id: str) -> int:
         return 0
         
     total_profit = 0
+    items_to_keep = {}
     
     for item_id, count in inventory.items():
+        if item_id.startswith("seed_"):
+            items_to_keep[item_id] = count
+            continue
+            
         parts = item_id.split("_")
         if len(parts) >= 2:
             seed_id = "_".join(parts[:-1])
@@ -250,7 +296,7 @@ async def sell_all_inventory(bot: commands.Bot, user_id: str) -> int:
     if total_profit > 0:
         await add_event_points(bot, user_id, float(total_profit), is_earned=True)
         
-    farm_data["inventory"] = {}
+    farm_data["inventory"] = items_to_keep
     await save_farm_data(bot, user_id, farm_data)
     
     return total_profit

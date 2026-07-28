@@ -44,34 +44,51 @@ def build_bag_embed(author: discord.Member, farm_data: Dict[str, Any]) -> discor
         embed.set_thumbnail(url=author.display_avatar.url)
         return embed
 
-    desc_lines = []
+    seed_lines = []
+    crop_lines = []
     total_worth = 0
 
     for item_id, count in inventory.items():
-        parts = item_id.split("_")
-        quality = parts[-1] if len(parts) > 1 else "normal"
-        seed_id = "_".join(parts[:-1]) if len(parts) > 1 else item_id
+        if count <= 0: continue
         
-        seed_info = SEEDS.get(seed_id)
-        if not seed_info:
-            continue
+        if item_id.startswith("seed_"):
+            seed_id = item_id[5:]
+            seed_info = SEEDS.get(seed_id)
+            if seed_info:
+                seed_name = seed_info["name"]
+                seed_icon = seed_info["icon"]
+                seed_lines.append(f"{seed_icon} Hạt giống {seed_name} x{count}")
+        else:
+            parts = item_id.split("_")
+            quality = parts[-1] if len(parts) > 1 else "normal"
+            seed_id = "_".join(parts[:-1]) if len(parts) > 1 else item_id
             
-        seed_name = seed_info["name"]
-        seed_icon = seed_info["icon"]
-        emoji = QUALITY_EMOJIS.get(quality, "")
+            seed_info = SEEDS.get(seed_id)
+            if seed_info:
+                seed_name = seed_info["name"]
+                seed_icon = seed_info["icon"]
+                emoji = QUALITY_EMOJIS.get(quality, "")
+                
+                base_cost = seed_info["reward_min"]
+                multiplier = QUALITY_MULTIPLIERS.get(quality, 1.0)
+                item_worth = int(base_cost * multiplier)
+                total_worth += item_worth * count
+                
+                crop_lines.append(f"{seed_icon} **{seed_name}** {emoji} x{count} `({item_worth:,.0f} pts/cái)`")
         
-        base_cost = seed_info["reward_min"]
-        multiplier = QUALITY_MULTIPLIERS.get(quality, 1.0)
-        item_worth = int(base_cost * multiplier)
-        total_worth += item_worth * count
-        
-        desc_lines.append(f"{seed_icon} **{seed_name}** {emoji} x{count} `({item_worth:,.0f} pts/cái)`")
-        
-    if not desc_lines:
+    if not seed_lines and not crop_lines:
         embed.description = "Túi đồ của bạn hiện đang trống rỗng."
     else:
-        embed.description = "**Danh sách Vật Phẩm:**\n\n" + "\n".join(desc_lines)
-        embed.add_field(name="Tổng Giá Trị Ước Tính", value=f"💰 **{total_worth:,.0f} điểm**", inline=False)
+        desc = ""
+        if seed_lines:
+            desc += "**🌱 Hạt giống:**\n" + "\n".join(seed_lines) + "\n\n"
+        if crop_lines:
+            desc += "**📦 Nông sản:**\n" + "\n".join(crop_lines)
+            
+        embed.description = desc.strip()
+        
+    if total_worth > 0:
+        embed.add_field(name="Tổng Giá Trị Nông Sản", value=f"💰 **{total_worth:,.0f} điểm**\n*(Nút Bán Tất Cả bên dưới chỉ bán Nông sản)*", inline=False)
         
     embed.set_thumbnail(url=author.display_avatar.url)
     return embed
