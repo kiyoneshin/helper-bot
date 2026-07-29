@@ -22,7 +22,13 @@ async def get_farm_data(bot: commands.Bot, user_id: str) -> Dict[str, Any]:
     Lấy dữ liệu farm của user từ Database (cột farm_data kiểu JSONB).
     Nếu chưa có, trả về cấu trúc mặc định: {"slots": 3, "crops": {}}
     """
-    default_data = {"slots": 3, "crops": {}, "inventory": {}}
+    default_data: Dict[str, Any] = {
+        "slots": 3,
+        "crops": {},
+        "inventory": {},
+        "stamina": 100,
+        "last_stamina_update": int(time.time()),
+    }
     
     try:
         # Đảm bảo profile tồn tại trước khi select
@@ -50,11 +56,43 @@ async def get_farm_data(bot: commands.Bot, user_id: str) -> Dict[str, Any]:
             data["crops"] = {}
         if "inventory" not in data:
             data["inventory"] = {}
+        if "stamina" not in data:
+            data["stamina"] = 100
+        if "last_stamina_update" not in data:
+            data["last_stamina_update"] = int(time.time())
             
         return data
     except (json.JSONDecodeError, TypeError, KeyError) as e:
         log.warning(f"Lỗi parse farm_data cho {user_id}: {e}")
         return default_data
+
+async def get_and_update_stamina(bot: commands.Bot, user_id: str) -> int:
+    """
+    Tính toán và cập nhật thể lực hiện tại dựa trên thời gian đã trôi qua.
+    Chống gian lận: elapsed time bị kẹp tối đa bằng thời gian cần để đầy thể lực.
+    Trả về stamina hiện tại sau khi đã hồi.
+    """
+    from cogs.events.mining.mining_config import MAX_STAMINA, STAMINA_REGEN_RATE, STAMINA_REGEN_INTERVAL_SECONDS
+
+    farm_data = await get_farm_data(bot, user_id)
+    now = int(time.time())
+
+    current_stamina: int = int(farm_data.get("stamina", MAX_STAMINA))
+    last_update: int    = int(farm_data.get("last_stamina_update", now))
+
+    # Anti-cheat: clamp elapsed thành tối đa đủ để fill hết thể lực
+    max_seconds_needed = (MAX_STAMINA - current_stamina) * STAMINA_REGEN_INTERVAL_SECONDS
+    elapsed = min(now - last_update, max_seconds_needed)
+    elapsed = max(elapsed, 0)   # không âm
+
+    regen_ticks = elapsed // STAMINA_REGEN_INTERVAL_SECONDS
+    new_stamina = min(current_stamina + regen_ticks * STAMINA_REGEN_RATE, MAX_STAMINA)
+
+    farm_data["stamina"] = new_stamina
+    farm_data["last_stamina_update"] = now
+    await save_farm_data(bot, user_id, farm_data)
+
+    return new_stamina
 
 async def save_farm_data(bot: commands.Bot, user_id: str, farm_data: Dict[str, Any]) -> None:
     """
