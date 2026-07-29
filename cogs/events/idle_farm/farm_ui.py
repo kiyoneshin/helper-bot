@@ -60,38 +60,59 @@ class PlantSeedSelect(discord.ui.Select):
         if selected_seed == "empty":
             return
             
-        farm_data = await get_farm_data(self.bot, user_id)
+        seed_info = SEEDS.get(selected_seed, {})
+        await interaction.response.send_modal(PlantSlotModal(self.bot, user_id, view.author, selected_seed, seed_info, view))
+
+class PlantSlotModal(discord.ui.Modal):
+    slot_input = discord.ui.TextInput(
+        label="Nhập số thứ tự ô đất (1-9)",
+        placeholder="Chỉ nhập số nguyên...",
+        min_length=1,
+        max_length=2,
+        required=True
+    )
+    
+    def __init__(self, bot: commands.Bot, user_id: str, author: discord.Member, seed_id: str, seed_info: dict, view: "FarmView"):
+        super().__init__(title=f"Gieo: {seed_info.get('name', seed_id)}")
+        self.bot = bot
+        self.user_id = user_id
+        self.author = author
+        self.seed_id = seed_id
+        self.seed_info = seed_info
+        self.view_obj = view
+        
+    async def on_submit(self, interaction: discord.Interaction):
+        try:
+            slot_id = int(self.slot_input.value.strip())
+        except ValueError:
+            await interaction.response.send_message("❌ Số ô không hợp lệ! Vui lòng chỉ nhập số.", ephemeral=True)
+            return
+            
+        farm_data = await get_farm_data(self.bot, self.user_id)
         max_slots = farm_data.get("slots", 3)
         crops = farm_data.get("crops", {})
         
-        empty_slot = None
-        for i in range(1, max_slots + 1):
-            if str(i) not in crops:
-                empty_slot = i
-                break
-                
-        if not empty_slot:
-            await interaction.response.send_message("❌ Nông trại của bạn đã hết đất trống! Vui lòng thu hoạch hoặc cuốc bỏ cây héo.", ephemeral=True)
+        if slot_id < 1 or slot_id > max_slots:
+            await interaction.response.send_message(f"❌ Ô số {slot_id} chưa được mở khóa! (Bạn đang có {max_slots} ô)", ephemeral=True)
             return
             
-        ok, msg = await plant_seed(self.bot, user_id, str(empty_slot), selected_seed)
+        if str(slot_id) in crops:
+            await interaction.response.send_message(f"❌ Ô số {slot_id} đã có cây trồng rồi!", ephemeral=True)
+            return
+            
+        ok, msg = await plant_seed(self.bot, self.user_id, str(slot_id), self.seed_id)
         if not ok:
             await interaction.response.send_message(f"❌ {msg}", ephemeral=True)
             return
             
-        # Cập nhật Embed & View
-        new_farm_data = await get_farm_data(self.bot, user_id)
-        new_embed = build_farm_embed(view.author, new_farm_data)
+        new_farm_data = await get_farm_data(self.bot, self.user_id)
+        new_embed = build_farm_embed(self.author, new_farm_data)
         
-        # Tạo View mới để cập nhật số lượng hạt giống trong dropdown
-        new_view = FarmView(self.bot, user_id, view.author, new_farm_data)
-        
+        new_view = FarmView(self.bot, self.user_id, self.author, new_farm_data)
         await interaction.response.edit_message(embed=new_embed, view=new_view)
         
-        seed_info = SEEDS.get(selected_seed, {})
-        seed_name = seed_info.get('name', selected_seed)
-        await interaction.followup.send(f"✅ Bạn đã gieo **{seed_name}** tại Ô {empty_slot}!", ephemeral=True)
-
+        seed_name = self.seed_info.get('name', self.seed_id)
+        await interaction.followup.send(f"✅ Bạn đã gieo **{seed_name}** tại Ô {slot_id}!", ephemeral=True)
 
 class FarmView(discord.ui.View):
     """View chính của Nông Trại chứa các nút tương tác."""
@@ -233,68 +254,102 @@ def build_farm_embed(author: discord.Member, farm_data: Dict[str, Any]) -> disco
     slots = farm_data.get("slots", 3)
     crops = farm_data.get("crops", {})
     
-    farm_display = []
     current_time = int(time.time())
     
-    for i in range(1, slots + 1):
+    # 1. Tạo Ma Trận 3x3
+    grid_cells = []
+    crop_details = []
+    
+    for i in range(1, 10): # Từ 1 đến 9
+        if i > slots:
+            grid_cells.append(f"[{i}] 🔒")
+            continue
+            
         slot_key = str(i)
-        if slot_key in crops:
-            crop = crops[slot_key]
-            seed_id = crop.get("seed")
-            seed_info = SEEDS.get(seed_id)
+        if slot_key not in crops:
+            grid_cells.append(f"[{i}] 🟫")
+            continue
             
-            if not seed_info:
-                farm_display.append(f"🟫 **[ Ô {i}: Lỗi dữ liệu hạt giống ]**")
-                continue
-                
-            status, remaining = calculate_crop_status(crop)
-            seed_name = seed_info["name"]
-            seed_icon = seed_info["icon"]
+        crop = crops[slot_key]
+        seed_id = crop.get("seed")
+        seed_info = SEEDS.get(seed_id)
+        
+        if not seed_info:
+            grid_cells.append(f"[{i}] ❓")
+            continue
             
-            if status == STATUS_GROWING:
-                planted_at = crop.get("planted_at", 0)
-                watered = crop.get("watered", False)
-                
-                req_time = seed_info["grow_time_seconds"]
-                if watered:
-                    req_time -= int(req_time * WATER_BONUS)
-                
-                elapsed = current_time - planted_at
-                progress = elapsed / req_time if req_time > 0 else 1.0
-                
-                if progress < 0.3:
-                    icon = "🌱"
-                    desc = "Mới trồng"
-                elif progress < 0.8:
-                    icon = "🌿"
-                    desc = "Đang lớn"
-                else:
-                    icon = seed_icon
-                    desc = "Sắp chín"
-                
-                # Format thời gian còn lại (giờ/phút/giây)
-                mins, secs = divmod(remaining, 60)
-                hours, mins = divmod(mins, 60)
-                if hours > 0:
-                    time_str = f"{hours}h {mins}m"
-                else:
-                    time_str = f"{mins}m {secs}s"
-                    
-                water_status = "💧" if watered else "🏜️"
-                farm_display.append(f"{icon} **[ Ô {i}: {seed_name} - {desc} ]** — Còn {time_str} {water_status}")
-                
-            elif status == STATUS_READY:
-                farm_display.append(f"{seed_icon} **[ Ô {i}: {seed_name} - Sẵn sàng ]** 🧺")
-                
-            elif status == STATUS_WITHERED:
-                farm_display.append(f"🥀 **[ Ô {i}: {seed_name} - Đã héo ]** (Thu hoạch để dọn dẹp)")
-                
+        status, remaining = calculate_crop_status(crop, slot_key, crops)
+        seed_name = seed_info["name"]
+        seed_icon = seed_info["icon"]
+        
+        if status == STATUS_GROWING:
+            planted_at = crop.get("planted_at", 0)
+            watered = crop.get("watered", False)
+            
+            req_time = seed_info["grow_time_seconds"]
+            if watered:
+                req_time -= int(req_time * WATER_BONUS)
+            
+            # Tính Bonus Adjacency
+            has_star = False
+            ADJACENCY_MAP = {
+                "1": ["2", "4"], "2": ["1", "3", "5"], "3": ["2", "6"],
+                "4": ["1", "5", "7"], "5": ["2", "4", "6", "8"], "6": ["3", "5", "9"],
+                "7": ["4", "8"], "8": ["5", "7", "9"], "9": ["6", "8"]
+            }
+            if slot_key in ADJACENCY_MAP:
+                for neighbor_id in ADJACENCY_MAP[slot_key]:
+                    if neighbor_id in crops and crops[neighbor_id].get("seed") == "star":
+                        has_star = True
+                        break
+            if has_star:
+                req_time -= int(req_time * 0.20)
+            
+            elapsed = current_time - planted_at
+            progress = elapsed / req_time if req_time > 0 else 1.0
+            
+            if progress < 0.3:
+                icon = "🌱"
+            elif progress < 0.8:
+                icon = "🌿"
             else:
-                farm_display.append(f"🟫 **[ Ô {i}: Lỗi trạng thái ]**")
-        else:
-            farm_display.append(f"🟫 **[ Ô {i}: Đất Trống ]**")
+                icon = seed_icon
+                
+            grid_cells.append(f"[{i}] {icon}")
             
-    embed.add_field(name="Mảnh Đất Của Bạn", value="\n".join(farm_display), inline=False)
+            # Thêm vào danh sách chi tiết
+            mins, secs = divmod(remaining, 60)
+            hours, mins = divmod(mins, 60)
+            if hours > 0:
+                time_str = f"{hours}h {mins}m"
+            else:
+                time_str = f"{mins}m {secs}s"
+                
+            water_status = "💧" if watered else "🏜️"
+            bonus_str = " (🌟 Cộng Hưởng)" if has_star else ""
+            crop_details.append(f"**Ô {i}**: {seed_icon} {seed_name} — Còn {time_str} {water_status}{bonus_str}")
+            
+        elif status == STATUS_READY:
+            grid_cells.append(f"[{i}] 🧺")
+            crop_details.append(f"**Ô {i}**: {seed_icon} {seed_name} — **Sẵn sàng** 🧺")
+            
+        elif status == STATUS_WITHERED:
+            grid_cells.append(f"[{i}] 🥀")
+            crop_details.append(f"**Ô {i}**: {seed_icon} {seed_name} — **Đã héo** 🥀")
+            
+        else:
+            grid_cells.append(f"[{i}] ❓")
+            
+    # Render Ma Trận
+    matrix_str = f"**{grid_cells[0]}** | **{grid_cells[1]}** | **{grid_cells[2]}**\n"
+    matrix_str += f"**{grid_cells[3]}** | **{grid_cells[4]}** | **{grid_cells[5]}**\n"
+    matrix_str += f"**{grid_cells[6]}** | **{grid_cells[7]}** | **{grid_cells[8]}**\n"
+    
+    embed.add_field(name="Mảnh Đất Của Bạn", value=matrix_str, inline=False)
+    
+    if crop_details:
+        embed.add_field(name="Chi tiết sinh trưởng", value="\n".join(crop_details), inline=False)
+        
     embed.set_thumbnail(url=author.display_avatar.url)
     embed.set_footer(text="Dùng menu bên dưới để mua hạt giống hoặc tương tác với cây trồng.")
     

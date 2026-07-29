@@ -70,11 +70,22 @@ async def save_farm_data(bot: commands.Bot, user_id: str, farm_data: Dict[str, A
     except Exception as e:
         log.error(f"Lỗi khi save_farm_data cho {user_id}: {e}")
 
-def calculate_crop_status(crop_data: Dict[str, Any]) -> Tuple[str, int]:
+def calculate_crop_status(crop_data: Dict[str, Any], slot_id: str = None, crops: Dict[str, Any] = None) -> Tuple[str, int]:
     """
     Tính toán trạng thái cây trồng (sync).
     Trả về (Trạng Thái, Thời Gian Còn Lại/Quá Hạn tính bằng giây).
     """
+    ADJACENCY_MAP = {
+        "1": ["2", "4"],
+        "2": ["1", "3", "5"],
+        "3": ["2", "6"],
+        "4": ["1", "5", "7"],
+        "5": ["2", "4", "6", "8"],
+        "6": ["3", "5", "9"],
+        "7": ["4", "8"],
+        "8": ["5", "7", "9"],
+        "9": ["6", "8"]
+    }
     try:
         seed_id = crop_data.get("seed")
         planted_at = crop_data.get("planted_at", 0)
@@ -90,6 +101,17 @@ def calculate_crop_status(crop_data: Dict[str, Any]) -> Tuple[str, int]:
         required_time = seed_config["grow_time_seconds"]
         if watered:
             required_time -= int(required_time * config.WATER_BONUS)
+            
+        # Adjacency Bonus: Nếu gần cây Ngôi Sao (star), giảm thêm 20% thời gian
+        if slot_id and crops and slot_id in ADJACENCY_MAP:
+            has_star_neighbor = False
+            for neighbor_id in ADJACENCY_MAP[slot_id]:
+                if neighbor_id in crops and crops[neighbor_id].get("seed") == "star":
+                    has_star_neighbor = True
+                    break
+            
+            if has_star_neighbor:
+                required_time -= int(required_time * 0.20)
             
         if elapsed_time < required_time:
             remaining = required_time - elapsed_time
@@ -192,7 +214,7 @@ async def water_all(bot: commands.Bot, user_id: str) -> Tuple[bool, int]:
         if crop.get("watered"):
             continue
             
-        status, _ = calculate_crop_status(crop)
+        status, _ = calculate_crop_status(crop, slot_id, crops)
         if status == config.STATUS_GROWING:
             crop["watered"] = True
             watered_count += 1
@@ -205,8 +227,7 @@ async def water_all(bot: commands.Bot, user_id: str) -> Tuple[bool, int]:
 
 async def harvest_all(bot: commands.Bot, user_id: str) -> Tuple[bool, Dict[str, Any]]:
     """
-    Thu hoạch toàn bộ cây có trạng thái READY.
-    Lưu vật phẩm vào inventory thay vì cộng tiền trực tiếp.
+    Thu hoạch toàn bộ cây có trạng thái READY. Có cơ chế Cây Khổng Lồ (Giant Crops).
     """
     farm_data = await get_farm_data(bot, user_id)
     crops = farm_data.get("crops", {})
@@ -214,10 +235,58 @@ async def harvest_all(bot: commands.Bot, user_id: str) -> Tuple[bool, Dict[str, 
     
     harvest_report = {}
     withered_count = 0
-    slots_to_remove = []
+    slots_to_remove = set()
     
+    # 1. Quét Cây Khổng Lồ (Giant Crops) trên ma trận 3x3
+    LINES = [
+        ("1", "2", "3"), ("4", "5", "6"), ("7", "8", "9"), # Hàng ngang
+        ("1", "4", "7"), ("2", "5", "8"), ("3", "6", "9")  # Hàng dọc
+    ]
+    
+    for line in LINES:
+        s1, s2, s3 = line
+        if s1 in crops and s2 in crops and s3 in crops:
+            if s1 in slots_to_remove or s2 in slots_to_remove or s3 in slots_to_remove:
+                continue # Đã bị thu hoạch bởi tuyến khác
+                
+            c1, c2, c3 = crops[s1], crops[s2], crops[s3]
+            if c1.get("seed") == c2.get("seed") == c3.get("seed"):
+                st1, _ = calculate_crop_status(c1, s1, crops)
+                st2, _ = calculate_crop_status(c2, s2, crops)
+                st3, _ = calculate_crop_status(c3, s3, crops)
+                
+                if st1 == config.STATUS_READY and st2 == config.STATUS_READY and st3 == config.STATUS_READY:
+                    seed_id = c1.get("seed")
+                    seed_config = config.SEEDS.get(seed_id)
+                    if seed_config:
+                        # Rơi ngẫu nhiên 5-8 vật phẩm
+                        drop_count = random.randint(5, 8)
+                        
+                        for _ in range(drop_count):
+                            # Tỉ lệ phẩm chất dựa trên cây thứ 1 (để đơn giản)
+                            watered = c1.get("watered", False)
+                            roll = random.random()
+                            if watered:
+                                if roll < 0.40: quality = "normal"
+                                elif roll < 0.70: quality = "silver"
+                                elif roll < 0.95: quality = "gold"
+                                else: quality = "iridium"
+                            else:
+                                if roll < 0.70: quality = "normal"
+                                else: quality = "silver"
+                                
+                            item_id = f"{seed_id}_{quality}"
+                            inventory[item_id] = inventory.get(item_id, 0) + 1
+                            harvest_report[item_id] = harvest_report.get(item_id, 0) + 1
+                            
+                    slots_to_remove.update([s1, s2, s3])
+    
+    # 2. Quét các cây đơn lẻ còn lại
     for slot_id, crop in crops.items():
-        status, _ = calculate_crop_status(crop)
+        if slot_id in slots_to_remove:
+            continue
+            
+        status, _ = calculate_crop_status(crop, slot_id, crops)
         
         if status == config.STATUS_READY:
             seed_id = crop.get("seed")
@@ -242,13 +311,13 @@ async def harvest_all(bot: commands.Bot, user_id: str) -> Tuple[bool, Dict[str, 
                 # Cập nhật báo cáo
                 harvest_report[item_id] = harvest_report.get(item_id, 0) + 1
                 
-            slots_to_remove.append(slot_id)
+            slots_to_remove.add(slot_id)
             
         elif status == config.STATUS_WITHERED:
             withered_count += 1
-            slots_to_remove.append(slot_id)
+            slots_to_remove.add(slot_id)
             
-    # Xoá các cây đã thu hoạch hoặc bị héo
+    # 3. Xoá các cây đã thu hoạch hoặc bị héo
     for slot in slots_to_remove:
         del crops[slot]
         
