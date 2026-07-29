@@ -317,3 +317,29 @@ async def remove_crop(bot: commands.Bot, user_id: str, slot_id: str) -> Tuple[bo
     await save_farm_data(bot, user_id, farm_data)
     
     return True, "Đã dọn dẹp ô đất!"
+
+async def expand_farm_slot(bot: commands.Bot, user_id: str) -> Tuple[bool, str]:
+    """
+    Mở rộng thêm 1 ô đất cho Nông trại. Tối đa đạt MAX_SLOTS.
+    """
+    farm_data = await get_farm_data(bot, user_id)
+    current_slots = farm_data.get("slots", 3)
+    
+    if current_slots >= config.MAX_SLOTS:
+        return False, "Nông trại của bạn đã đạt kích thước tối đa!"
+        
+    price = config.get_slot_price(current_slots)
+    
+    user_points = await fetchval_db(bot, "SELECT points FROM event_profiles WHERE discord_id = $1", user_id)
+    if user_points is None or float(user_points) < price:
+        return False, f"Không đủ điểm sự kiện để mở rộng (Cần {price:,} điểm)!"
+        
+    from cogs.common.db import deduct_event_points
+    success = await deduct_event_points(bot, user_id, price)
+    if not success:
+        return False, f"Không đủ điểm sự kiện để mở rộng (Cần {price:,} điểm)!"
+        
+    farm_data["slots"] = current_slots + 1
+    await save_farm_data(bot, user_id, farm_data)
+    
+    return True, f"Mở rộng thành công lên {current_slots + 1} ô đất!"
