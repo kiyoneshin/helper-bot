@@ -11,7 +11,7 @@ from typing import Tuple
 # ---------------------------------------------------------------------------
 
 MAX_STAMINA: int = 100
-STAMINA_PER_HIT: int = 10
+STAMINA_PER_HIT: int = 4
 STAMINA_REGEN_RATE: int = 1
 STAMINA_REGEN_INTERVAL_SECONDS: int = 18  # 18 giây hồi 1 điểm -> 100 điểm mất 30 phút
 

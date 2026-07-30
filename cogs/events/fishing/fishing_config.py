@@ -10,7 +10,7 @@ from typing import Tuple
 # CẤU HÌNH
 # ---------------------------------------------------------------------------
 
-STAMINA_PER_FISH: int = 15
+STAMINA_PER_FISH: int = 3
 CATCH_WINDOW_SECONDS: float = 4.5   # Tăng lên 4.5s để bù lag mạng
 PERFECT_CATCH_THRESHOLD: float = 2 # < 2s = Perfect Catch (x2 rare)
 WAIT_MIN_SECONDS: float = 2.0
