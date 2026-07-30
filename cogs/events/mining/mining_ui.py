@@ -1,17 +1,17 @@
 """
 mining_ui.py — Giao diện Khu Mỏ (Mining)
 ==========================================
-Thanh thể lực, nút đập đá, xử lý loot và cập nhật inventory.
+Thanh thể lực, nút đập đá, xử lý loot theo cấp cuốc và cập nhật inventory.
 """
-import random
 import discord
 from discord.ext import commands
 from typing import Any, Dict
 
 from .mining_config import (
     MAX_STAMINA, STAMINA_PER_HIT,
-    MINING_LOOT, _LOOT_KEYS, _LOOT_WEIGHTS,
+    MINING_LOOT, PICKAXE_NAMES,
     STAMINA_REGEN_INTERVAL_SECONDS,
+    get_mining_loot,
 )
 from cogs.events.idle_farm.farm_db import get_farm_data, save_farm_data, get_and_update_stamina
 
@@ -21,12 +21,10 @@ from cogs.events.idle_farm.farm_db import get_farm_data, save_farm_data, get_and
 # ---------------------------------------------------------------------------
 
 def _stamina_bar(stamina: int, max_stamina: int = MAX_STAMINA, bar_len: int = 10) -> str:
-    """Render thanh thể lực bằng emoji."""
     filled = round(stamina / max_stamina * bar_len)
     return "🟩" * filled + "⬛" * (bar_len - filled)
 
 def _mins_to_full(stamina: int) -> str:
-    """Tính thời gian để hồi đủ thể lực từ stamina hiện tại."""
     missing = MAX_STAMINA - stamina
     if missing <= 0:
         return "Đầy"
@@ -43,20 +41,19 @@ def _mins_to_full(stamina: int) -> str:
 # ---------------------------------------------------------------------------
 
 def build_mining_embed(author: discord.Member, stamina: int, farm_data: Dict[str, Any]) -> discord.Embed:
-    """
-    Render giao diện Hang Động với thanh thể lực trực quan.
-    """
+    """Render giao diện Hang Động với thanh thể lực và thông tin cuốc hiện tại."""
+    pickaxe_level = int(farm_data.get("pickaxe_level", 1))
+    pickaxe_name  = PICKAXE_NAMES.get(pickaxe_level, f"Lv{pickaxe_level}")
+
     embed = discord.Embed(
         title="⛏️ Khu Mỏ Hang Động",
         description=(
             f"Chào mừng **{author.display_name}** đến với hang động bí ẩn!\n"
-            "Hãy đập đá để tìm quặng quý. Mỗi lần đập tốn "
-            f"**{STAMINA_PER_HIT}** thể lực.\n"
+            f"Hãy đập đá để tìm quặng quý. Mỗi lần đập tốn **{STAMINA_PER_HIT}** thể lực.\n"
         ),
         color=0x7f8c8d,
     )
 
-    # Thanh thể lực
     bar = _stamina_bar(stamina)
     regen_info = f"(Hồi đầy sau: {_mins_to_full(stamina)})" if stamina < MAX_STAMINA else "✅ Đã đầy"
     embed.add_field(
@@ -64,25 +61,29 @@ def build_mining_embed(author: discord.Member, stamina: int, farm_data: Dict[str
         value=f"{bar} **{stamina}/{MAX_STAMINA}** {regen_info}",
         inline=False,
     )
+    embed.add_field(
+        name="⛏️ Cuốc Hiện Tại",
+        value=f"**{pickaxe_name}** (Lv{pickaxe_level})",
+        inline=True,
+    )
 
-    # Danh sách tỉ lệ rơi
-    loot_lines = []
-    for ore_id, ore in MINING_LOOT.items():
-        loot_lines.append(f"{ore['icon']} **{ore['name']}** — {ore['weight']}%")
-    embed.add_field(name="📊 Tỉ Lệ Rớt Đồ", value="\n".join(loot_lines), inline=True)
+    loot_lines = [
+        f"{ore['icon']} **{ore['name']}** — {ore['weight']}%"
+        for ore in MINING_LOOT.values()
+    ]
+    embed.add_field(name="📊 Tỉ Lệ Rớt Đồ (Base)", value="\n".join(loot_lines), inline=True)
 
-    # Quặng trong inventory
     inventory = farm_data.get("inventory", {})
-    ore_lines = []
-    for ore_id, ore in MINING_LOOT.items():
-        count = inventory.get(ore_id, 0)
-        if count > 0:
-            ore_lines.append(f"{ore['icon']} {ore['name']}: **{count}**")
+    ore_lines = [
+        f"{ore['icon']} {ore['name']}: **{inventory.get(ore_id, 0)}**"
+        for ore_id, ore in MINING_LOOT.items()
+        if inventory.get(ore_id, 0) > 0
+    ]
     if ore_lines:
-        embed.add_field(name="🎒 Kho Quặng Của Bạn", value="\n".join(ore_lines), inline=True)
+        embed.add_field(name="🎒 Kho Quặng Của Bạn", value="\n".join(ore_lines), inline=False)
 
     embed.set_thumbnail(url=author.display_avatar.url)
-    embed.set_footer(text="Dùng y!bag để bán quặng. Thể lực hồi 1 điểm mỗi 3 phút.")
+    embed.set_footer(text="Dùng y!bag để bán quặng | y!upgrade để nâng cấp cuốc.")
     return embed
 
 
@@ -98,8 +99,6 @@ class MiningView(discord.ui.View):
         self.bot = bot
         self.user_id = user_id
         self.author = author
-
-        # Disable nút nếu hết thể lực
         self.mine_btn.disabled = (stamina < STAMINA_PER_HIT)
 
     @discord.ui.button(label="Đập Đá", emoji="⛏️", style=discord.ButtonStyle.primary)
@@ -110,45 +109,46 @@ class MiningView(discord.ui.View):
             )
             return
 
-        # --- 1. Cập nhật & kiểm tra thể lực ---
+        # 1. Kiểm tra thể lực
         current_stamina = await get_and_update_stamina(self.bot, self.user_id)
-
         if current_stamina < STAMINA_PER_HIT:
             button.disabled = True
             farm_data = await get_farm_data(self.bot, self.user_id)
-            new_embed = build_mining_embed(self.author, current_stamina, farm_data)
-            await interaction.response.edit_message(embed=new_embed, view=self)
+            await interaction.response.edit_message(
+                embed=build_mining_embed(self.author, current_stamina, farm_data), view=self
+            )
             await interaction.followup.send(
-                f"😓 Bạn đã **kiệt sức**! Hãy đợi thể lực hồi phục nhé.\n"
+                f"😓 Bạn đã **kiệt sức**! Hãy đợi thể lực hồi phục.\n"
                 f"*(Hồi đầy sau: {_mins_to_full(current_stamina)})*",
                 ephemeral=True,
             )
             return
 
-        # --- 2. Trừ thể lực ---
+        # 2. Trừ thể lực
         farm_data = await get_farm_data(self.bot, self.user_id)
         new_stamina = current_stamina - STAMINA_PER_HIT
         farm_data["stamina"] = new_stamina
-        # Không cập nhật last_stamina_update ở đây để tránh reset timer hồi
+        pickaxe_level = int(farm_data.get("pickaxe_level", 1))
 
-        # --- 3. Quay RNG lấy quặng ---
-        loot_id: str = random.choices(_LOOT_KEYS, weights=_LOOT_WEIGHTS, k=1)[0]
+        # 3. Random quặng theo cấp cuốc
+        loot_id, quantity = get_mining_loot(pickaxe_level)
         loot_info = MINING_LOOT[loot_id]
 
         inventory = farm_data.setdefault("inventory", {})
-        inventory[loot_id] = inventory.get(loot_id, 0) + 1
+        inventory[loot_id] = inventory.get(loot_id, 0) + quantity
 
-        # --- 4. Lưu DB ---
+        # 4. Lưu DB
         await save_farm_data(self.bot, self.user_id, farm_data)
 
-        # --- 5. Cập nhật UI ---
+        # 5. Cập nhật UI
         if new_stamina < STAMINA_PER_HIT:
             button.disabled = True
 
+        double_str = " **(x2 Cuốc Sắt!)**" if quantity == 2 else ""
         new_embed = build_mining_embed(self.author, new_stamina, farm_data)
         await interaction.response.edit_message(embed=new_embed, view=self)
         await interaction.followup.send(
-            f"⛏️ Bạn vừa đào được **1x {loot_info['icon']} {loot_info['name']}**! "
+            f"⛏️ Bạn vừa đào được **{quantity}x {loot_info['icon']} {loot_info['name']}**!{double_str} "
             f"(Thể lực: {new_stamina}/{MAX_STAMINA})",
             ephemeral=True,
         )
