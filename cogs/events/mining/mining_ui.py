@@ -83,7 +83,7 @@ def build_mining_embed(author: discord.Member, stamina: int, farm_data: Dict[str
         embed.add_field(name="🎒 Kho Quặng Của Bạn", value="\n".join(ore_lines), inline=False)
 
     embed.set_thumbnail(url=author.display_avatar.url)
-    embed.set_footer(text="Dùng y!bag để bán quặng | y!upgrade để nâng cấp cuốc.")
+    embed.set_footer(text="Dùng y!bag để bán quặng. Thể lực hồi 1 điểm mỗi 18 giây.")
     return embed
 
 
