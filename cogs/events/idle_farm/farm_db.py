@@ -28,6 +28,8 @@ async def get_farm_data(bot: commands.Bot, user_id: str) -> Dict[str, Any]:
         "inventory": {},
         "stamina": 100,
         "last_stamina_update": int(time.time()),
+        "pickaxe_level": 1,
+        "rod_level": 1,
     }
     
     try:
@@ -60,6 +62,10 @@ async def get_farm_data(bot: commands.Bot, user_id: str) -> Dict[str, Any]:
             data["stamina"] = 100
         if "last_stamina_update" not in data:
             data["last_stamina_update"] = int(time.time())
+        if "pickaxe_level" not in data:
+            data["pickaxe_level"] = 1
+        if "rod_level" not in data:
+            data["rod_level"] = 1
             
         return data
     except (json.JSONDecodeError, TypeError, KeyError) as e:

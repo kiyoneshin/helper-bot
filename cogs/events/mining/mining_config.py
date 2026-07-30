@@ -3,55 +3,68 @@ mining_config.py — Cấu hình hệ thống Khu Mỏ
 ==============================================
 Định nghĩa thể lực, tốc độ hồi phục, và bảng tỉ lệ rớt quặng.
 """
+import random
+from typing import Tuple
 
 # ---------------------------------------------------------------------------
 # CẤU HÌNH THỂ LỰC (STAMINA)
 # ---------------------------------------------------------------------------
 
 MAX_STAMINA: int = 100
-"""Thể lực tối đa."""
-
 STAMINA_PER_HIT: int = 10
-"""Số thể lực tiêu hao mỗi lần đập đá."""
-
 STAMINA_REGEN_RATE: int = 1
-"""Số thể lực hồi phục mỗi khoảng thời gian."""
-
 STAMINA_REGEN_INTERVAL_SECONDS: int = 3 * 60
-"""Khoảng thời gian (giây) để hồi 1 điểm thể lực (3 phút/1 điểm)."""
+
+# ---------------------------------------------------------------------------
+# CẤU HÌNH NÂNG CẤP CUỐC
+# ---------------------------------------------------------------------------
+
+MAX_PICKAXE_LEVEL: int = 3
+
+PICKAXE_UPGRADE_COST: dict = {
+    # level_hiện_tại -> (điểm_cần, {item_id: số_lượng})
+    1: (10_000, {"copper_ore": 10}),  # Lên Lv2: Cuốc Đồng
+    2: (25_000, {"iron_ore": 10}),    # Lên Lv3: Cuốc Sắt
+}
+
+PICKAXE_NAMES: dict = {
+    1: "Cuốc Đá 🪨",
+    2: "Cuốc Đồng 🟠",
+    3: "Cuốc Sắt ⚙️",
+}
 
 # ---------------------------------------------------------------------------
 # BẢNG TỶ LỆ RỚT QUẶNG (MINING_LOOT)
-# Tổng weight = 100 để dễ đọc như phần trăm.
 # ---------------------------------------------------------------------------
 
 MINING_LOOT: dict = {
-    "stone": {
-        "name": "Đá",
-        "icon": "🪨",
-        "weight": 60,   # 60% cơ hội
-        "category": "ore",
-    },
-    "coal": {
-        "name": "Than Đá",
-        "icon": "⬛",
-        "weight": 20,   # 20% cơ hội
-        "category": "ore",
-    },
-    "copper_ore": {
-        "name": "Quặng Đồng",
-        "icon": "🟠",
-        "weight": 15,   # 15% cơ hội
-        "category": "ore",
-    },
-    "iron_ore": {
-        "name": "Quặng Sắt",
-        "icon": "⚙️",
-        "weight": 5,    # 5% cơ hội
-        "category": "ore",
-    },
+    "stone":      {"name": "Đá",          "icon": "🪨", "weight": 60, "category": "ore"},
+    "coal":       {"name": "Than Đá",     "icon": "⬛", "weight": 20, "category": "ore"},
+    "copper_ore": {"name": "Quặng Đồng",  "icon": "🟠", "weight": 15, "category": "ore"},
+    "iron_ore":   {"name": "Quặng Sắt",   "icon": "⚙️", "weight": 5,  "category": "ore"},
 }
 
-# Danh sách tuần tự để dùng với random.choices() (trích trọng số)
-_LOOT_KEYS:   list[str] = list(MINING_LOOT.keys())
-_LOOT_WEIGHTS: list[int] = [v["weight"] for v in MINING_LOOT.values()]
+# Weights theo cấp cuốc
+_WEIGHTS_BY_LEVEL: dict[int, list[int]] = {
+    1: [60, 20, 15, 5],  # Đá 60%, Than 20%, Đồng 15%, Sắt 5%
+    2: [45, 25, 20, 10], # Cuốc Đồng: ít Đá hơn, nhiều quặng hơn
+    3: [40, 25, 22, 13], # Cuốc Sắt: cao nhất (+ bonus x2 riêng)
+}
+
+_LOOT_KEYS: list[str] = list(MINING_LOOT.keys())
+
+
+def get_mining_loot(pickaxe_level: int) -> Tuple[str, int]:
+    """
+    Random loot dựa theo cấp Cuốc.
+    Trả về (item_id, số_lượng).
+    - Lv3 (Cuốc Sắt): 15% cơ hội nhận x2 quặng.
+    """
+    weights = _WEIGHTS_BY_LEVEL.get(pickaxe_level, _WEIGHTS_BY_LEVEL[1])
+    item_id: str = random.choices(_LOOT_KEYS, weights=weights, k=1)[0]
+
+    quantity = 1
+    if pickaxe_level >= 3 and random.random() < 0.15:
+        quantity = 2  # Cuốc Sắt: 15% x2
+
+    return item_id, quantity
