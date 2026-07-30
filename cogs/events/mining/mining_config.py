@@ -53,6 +53,10 @@ _WEIGHTS_BY_LEVEL: dict[int, list[int]] = {
 
 _LOOT_KEYS: list[str] = list(MINING_LOOT.keys())
 
+def get_mining_display_weights(pickaxe_level: int) -> dict[str, int]:
+    weights = _WEIGHTS_BY_LEVEL.get(pickaxe_level, _WEIGHTS_BY_LEVEL[1])
+    return dict(zip(_LOOT_KEYS, weights))
+
 
 def get_mining_loot(pickaxe_level: int) -> Tuple[str, int]:
     """

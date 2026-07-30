@@ -11,7 +11,7 @@ from .mining_config import (
     MAX_STAMINA, STAMINA_PER_HIT,
     MINING_LOOT, PICKAXE_NAMES,
     STAMINA_REGEN_INTERVAL_SECONDS,
-    get_mining_loot,
+    get_mining_loot, get_mining_display_weights
 )
 from cogs.events.idle_farm.farm_db import get_farm_data, save_farm_data, get_and_update_stamina
 
@@ -67,9 +67,10 @@ def build_mining_embed(author: discord.Member, stamina: int, farm_data: Dict[str
         inline=True,
     )
 
+    display_weights = get_mining_display_weights(pickaxe_level)
     loot_lines = [
-        f"{ore['icon']} **{ore['name']}** — {ore['weight']}%"
-        for ore in MINING_LOOT.values()
+        f"{ore['icon']} **{ore['name']}** — {display_weights[ore_id]}%"
+        for ore_id, ore in MINING_LOOT.items()
     ]
     embed.add_field(name="📊 Tỉ Lệ Rớt Đồ (Base)", value="\n".join(loot_lines), inline=True)
 

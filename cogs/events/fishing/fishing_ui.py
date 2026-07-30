@@ -20,7 +20,7 @@ from typing import Any, Dict
 from .fishing_config import (
     STAMINA_PER_FISH, CATCH_WINDOW_SECONDS,
     WAIT_MIN_SECONDS, WAIT_MAX_SECONDS,
-    FISH_LOOT, get_fishing_loot,
+    FISH_LOOT, get_fishing_loot, get_fishing_display_weights
 )
 from cogs.events.idle_farm.farm_db import get_farm_data, save_farm_data, get_and_update_stamina
 from cogs.events.mining.mining_config import MAX_STAMINA
@@ -53,7 +53,7 @@ def build_fishing_embed(author: discord.Member, stamina: int, farm_data: Dict[st
             f"Mỗi lần quăng cần tốn **{STAMINA_PER_FISH}** thể lực.\n"
             f"Khi thấy `⚠️ CÁ CẮN CÂU!!`, hãy bấm **nhanh nhất có thể** trong "
             f"**{CATCH_WINDOW_SECONDS:.1f} giây** để không bị trượt!\n"
-            f"*(Phản xạ < 1.5s = ⚡ **Perfect Catch** — x2 cá hiếm!)*\n"
+            f"*(Phản xạ < 2s = ⚡ **Perfect Catch** — x2 cá hiếm!)*\n"
         ),
         color=0x1abc9c,
     )
@@ -70,9 +70,10 @@ def build_fishing_embed(author: discord.Member, stamina: int, farm_data: Dict[st
         inline=True,
     )
 
+    display_weights = get_fishing_display_weights(rod_level)
     fish_lines = [
-        f"{info['icon']} **{info['name']}** — {info['weight']}%"
-        for info in FISH_LOOT.values()
+        f"{info['icon']} **{info['name']}** — {display_weights[fish_id]}%"
+        for fish_id, info in FISH_LOOT.items()
     ]
     embed.add_field(name="🐠 Các Loài Trong Hồ", value="\n".join(fish_lines), inline=False)
 
@@ -194,7 +195,8 @@ class FishingView(discord.ui.View):
 
             self.cast_btn.disabled = (new_stamina < STAMINA_PER_FISH)
             new_embed = build_fishing_embed(self.author, new_stamina, farm_data)
-            await interaction.edit_original_response(
+            await interaction.delete_original_response()
+            await interaction.followup.send(
                 content=result_msg,
                 embed=new_embed,
                 view=self,
@@ -204,7 +206,8 @@ class FishingView(discord.ui.View):
             # Hết giờ — cá chạy mất
             self.cast_btn.disabled = (new_stamina < STAMINA_PER_FISH)
             new_embed = build_fishing_embed(self.author, new_stamina, farm_data)
-            await interaction.edit_original_response(
+            await interaction.delete_original_response()
+            await interaction.followup.send(
                 content="💦 **Trượt rồi!** Cá đã chạy mất. Hãy thả mồi lại!",
                 embed=new_embed,
                 view=self,

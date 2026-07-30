@@ -46,9 +46,18 @@ FISH_LOOT: dict = {
     "legendary_fish":{"name": "Cá Huyền Thoại","icon": "🐉", "weight": 2,  "category": "fish", "rare_rank": 5, "price": 5000},
 }
 
-# Base weights (level 1)
 _BASE_WEIGHTS: list[int] = [40, 30, 20, 8, 2]
 _FISH_KEYS:    list[str] = list(FISH_LOOT.keys())
+
+def get_fishing_display_weights(rod_level: int) -> dict[str, int]:
+    trash_w = max(40 - (rod_level - 1) * 10, 20)
+    bonus   = (40 - trash_w)
+    carp_w  = 30 + int(bonus * 0.3)
+    tuna_w  = 20 + int(bonus * 0.4)
+    squid_w = 8  + int(bonus * 0.15)
+    legend_w= 2  + int(bonus * 0.15)
+    weights = [trash_w, carp_w, tuna_w, squid_w, legend_w]
+    return dict(zip(_FISH_KEYS, weights))
 
 
 def get_fishing_loot(rod_level: int, reaction_time: float) -> Tuple[str, bool]:
