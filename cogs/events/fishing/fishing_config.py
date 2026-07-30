@@ -39,11 +39,11 @@ ROD_NAMES: dict = {
 # ---------------------------------------------------------------------------
 
 FISH_LOOT: dict = {
-    "trash":         {"name": "Rác",            "icon": "🥫", "weight": 40, "category": "fish", "rare_rank": 0},
-    "carp":          {"name": "Cá Chép",        "icon": "🐟", "weight": 30, "category": "fish", "rare_rank": 1},
-    "tuna":          {"name": "Cá Ngừ",         "icon": "🐡", "weight": 20, "category": "fish", "rare_rank": 2},
-    "squid":         {"name": "Mực",            "icon": "🦑", "weight": 8,  "category": "fish", "rare_rank": 3},
-    "legendary_fish":{"name": "Cá Huyền Thoại","icon": "🐉", "weight": 2,  "category": "fish", "rare_rank": 5},
+    "trash":         {"name": "Rác",            "icon": "🥫", "weight": 40, "category": "fish", "rare_rank": 0, "price": 10},
+    "carp":          {"name": "Cá Chép",        "icon": "🐟", "weight": 30, "category": "fish", "rare_rank": 1, "price": 200},
+    "tuna":          {"name": "Cá Ngừ",         "icon": "🐡", "weight": 20, "category": "fish", "rare_rank": 2, "price": 600},
+    "squid":         {"name": "Mực",            "icon": "🦑", "weight": 8,  "category": "fish", "rare_rank": 3, "price": 1500},
+    "legendary_fish":{"name": "Cá Huyền Thoại","icon": "🐉", "weight": 2,  "category": "fish", "rare_rank": 5, "price": 5000},
 }
 
 # Base weights (level 1)

@@ -370,10 +370,14 @@ async def harvest_all(bot: commands.Bot, user_id: str) -> Tuple[bool, Dict[str, 
         
     return True, {"harvested": harvest_report, "withered": withered_count}
 
-async def sell_all_inventory(bot: commands.Bot, user_id: str) -> int:
+async def sell_inventory(bot: commands.Bot, user_id: str, category: str) -> int:
     """
-    Bán toàn bộ kho đồ, quy ra điểm và cộng vào DB. Trả về tổng số tiền.
+    Bán kho đồ theo danh mục: 'crops' (Nông sản), 'ores' (Khoáng sản), 'fish' (Cá).
+    Quy ra điểm và cộng vào DB. Trả về tổng số tiền.
     """
+    from cogs.events.mining.mining_config import MINING_LOOT
+    from cogs.events.fishing.fishing_config import FISH_LOOT
+    
     farm_data = await get_farm_data(bot, user_id)
     inventory = farm_data.get("inventory", {})
     
@@ -384,26 +388,50 @@ async def sell_all_inventory(bot: commands.Bot, user_id: str) -> int:
     items_to_keep = {}
     
     for item_id, count in inventory.items():
+        # Hạt giống thì không bao giờ bán qua nút này
         if item_id.startswith("seed_"):
             items_to_keep[item_id] = count
             continue
             
-        parts = item_id.split("_")
-        if len(parts) >= 2:
-            seed_id = "_".join(parts[:-1])
-            quality = parts[-1]
-        else:
-            seed_id = item_id
-            quality = "normal"
+        is_ore = item_id in MINING_LOOT
+        is_fish = item_id in FISH_LOOT
+        is_crop = not (is_ore or is_fish)
+        
+        should_sell = False
+        if category == "crops" and is_crop:
+            should_sell = True
+        elif category == "ores" and is_ore:
+            should_sell = True
+        elif category == "fish" and is_fish:
+            should_sell = True
             
-        seed_config = config.SEEDS.get(seed_id)
-        if not seed_config:
+        if not should_sell:
+            items_to_keep[item_id] = count
             continue
             
-        base_cost = seed_config["reward_min"]
-        multiplier = config.QUALITY_MULTIPLIERS.get(quality, 1.0)
-        
-        profit_per_item = int(base_cost * multiplier)
+        # Tính tiền
+        if is_ore:
+            profit_per_item = MINING_LOOT[item_id].get("price", 0)
+        elif is_fish:
+            profit_per_item = FISH_LOOT[item_id].get("price", 0)
+        else:
+            # Là crop
+            parts = item_id.split("_")
+            if len(parts) >= 2:
+                seed_id = "_".join(parts[:-1])
+                quality = parts[-1]
+            else:
+                seed_id = item_id
+                quality = "normal"
+                
+            seed_config = config.SEEDS.get(seed_id)
+            if seed_config:
+                base_cost = seed_config["reward_min"]
+                multiplier = config.QUALITY_MULTIPLIERS.get(quality, 1.0)
+                profit_per_item = int(base_cost * multiplier)
+            else:
+                profit_per_item = 0
+                
         total_profit += profit_per_item * count
         
     if total_profit > 0:

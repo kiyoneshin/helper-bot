@@ -38,10 +38,10 @@ PICKAXE_NAMES: dict = {
 # ---------------------------------------------------------------------------
 
 MINING_LOOT: dict = {
-    "stone":      {"name": "Đá",          "icon": "🪨", "weight": 60, "category": "ore"},
-    "coal":       {"name": "Than Đá",     "icon": "⬛", "weight": 20, "category": "ore"},
-    "copper_ore": {"name": "Quặng Đồng",  "icon": "🟠", "weight": 15, "category": "ore"},
-    "iron_ore":   {"name": "Quặng Sắt",   "icon": "⚙️", "weight": 5,  "category": "ore"},
+    "stone":      {"name": "Đá",          "icon": "🪨", "weight": 60, "category": "ore", "price": 50},
+    "coal":       {"name": "Than Đá",     "icon": "⬛", "weight": 20, "category": "ore", "price": 150},
+    "copper_ore": {"name": "Quặng Đồng",  "icon": "🟠", "weight": 15, "category": "ore", "price": 500},
+    "iron_ore":   {"name": "Quặng Sắt",   "icon": "⚙️", "weight": 5,  "category": "ore", "price": 1500},
 }
 
 # Weights theo cấp cuốc
