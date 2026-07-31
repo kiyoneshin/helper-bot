@@ -28,6 +28,23 @@ EHELP_CATEGORY_MAP = {
     }
 }
 
+CUSTOM_CMD_DESC = {
+    "coinflip": "Tung đồng xu (h = Ngửa / t = Sấp). Thắng x1.9, đứng xu nhận Jackpot x5.0.\nCú pháp: `y!cf <h/t> <tiền_cược>`",
+    "cups": "Đoán ly chứa bảo vật trong 3 ly. Chọn đúng nhận x2.3.\nCú pháp: `y!cups <tiền_cược>`",
+    "dice": "Lắc xúc xắc đặc biệt. Mặt 4,5,6 thắng (x1.25 đến x2.0), mặt 7 nổ Hũ (x8).\nCú pháp: `y!dice <tiền_cược>`",
+    "roulette": "Cò quay tử thần (1 đạn, 5 lép). Sống sót nhận thưởng tăng dần (tối đa x5.0).\nCú pháp: `y!shot <tiền_cược>`",
+    "crash": "Tàu bay Crash, nhảy dù trước khi tàu nổ để ăn hệ số nhân (x1.1 đến x99).\nCú pháp: `y!crash <tiền_cược>`",
+    "betvit": "Đua vịt sự kiện. Các màu: do, xanh, vang, hong, yon.\nCú pháp: `y!betvit <màu> <tiền>`",
+    "huybet": "Hủy cược vịt hiện tại và nhận lại 100% tiền.\nCú pháp: `y!huybet`",
+    "xemvit": "Xem tổng số tiền cược và ước tính tỷ lệ thưởng của các chú vịt.\nCú pháp: `y!xemvit`",
+    "xoso": "Xổ Số Kiến Thiết! Mua vé số để chờ kết quả xổ cuối ngày.\nCú pháp: `y!xoso mua <số_lượng>`",
+    "multidice": "Xúc Xắc PvP. Mời nhiều người cùng lắc xúc xắc, tự động chia thưởng cho người cao điểm.\nCú pháp: `y!md <tiền_cược> [@user1...]`",
+    "taixiu": "Lắc 3 viên xúc xắc. (Tài 11-17, Xỉu 4-10). Thắng ăn x1.95. Bão (3 viên giống) nhà cái lụm.\nCú pháp: `y!tx <tai/xiu> <tiền_cược>`",
+    "baucua": "Sảnh Bầu Cua Tôm Cá chung. Gõ tên linh vật xuống chat để đặt cược.\nCú pháp: Gõ `y!bc` để mở sảnh.",
+    "wheel": "Vòng quay 16 ô. Trúng ô Tím x9.0, Xanh lá x1.8. Thua ở ô Vàng được +1 Vé Xổ Số.\nCú pháp: `y!wheel <tiền_cược>`",
+    "slots": "Quay Máy Xẻng. Cơ hội trúng Nổ hũ siêu to nếu quay ra 5 biểu tượng giống nhau.\nCú pháp: `y!slots <tiền_cược>`"
+}
+
 def build_ehelp_home(bot: commands.Bot, author: discord.Member | discord.User) -> discord.Embed:
     embed = discord.Embed(
         title=f"🌸 Cẩm Nang Sự Kiện Của {author.display_name} ໒꒱",
@@ -79,7 +96,7 @@ def build_ehelp_category(bot: commands.Bot, category_name: str) -> discord.Embed
                     continue
                 
                 aliases_str = f" (hoặc {', '.join(cmd.aliases)})" if cmd.aliases else ""
-                desc = cmd.help or cmd.description or "Không có mô tả chi tiết."
+                desc = CUSTOM_CMD_DESC.get(cmd.name, cmd.help or cmd.description or "Không có mô tả chi tiết.")
                 embed.add_field(
                     name=f"y!{cmd.name}{aliases_str}",
                     value=desc,

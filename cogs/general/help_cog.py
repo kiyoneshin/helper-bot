@@ -158,6 +158,8 @@ class HelpCog(commands.Cog):
     """Cog Hỗ trợ hướng dẫn lệnh chung."""
     def __init__(self, bot: commands.Bot):
         self.bot = bot
+        if self.bot.get_command("help"):
+            self.bot.remove_command("help")
 
     @commands.hybrid_command(
         name="help",
