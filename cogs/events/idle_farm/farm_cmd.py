@@ -8,7 +8,7 @@ import discord
 from discord.ext import commands
 
 from .farm_db import get_farm_data
-from cogs.common.db import fetchval_db
+from cogs.common.db import fetchval_db, check_not_locked
 from .farm_ui import FarmView, build_farm_embed
 from .upgrade_ui import UpgradeView, build_upgrade_embed
 
@@ -19,7 +19,12 @@ class IdleFarmCog(commands.Cog):
     def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
 
-    @commands.hybrid_command(name="farm", aliases=["nongtrai"])
+    @commands.hybrid_command(
+        name="farm",
+        aliases=["nongtrai"],
+        description="Quản lý nông trại của bạn (Trồng trọt, thu hoạch, nâng cấp).",
+    )
+    @check_not_locked()
     async def farm_cmd(self, ctx: commands.Context) -> None:
         """🚜 Mở giao diện Nông Trại của bạn."""
         user_id = str(ctx.author.id)

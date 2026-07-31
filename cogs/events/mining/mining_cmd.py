@@ -8,6 +8,7 @@ from discord.ext import commands
 
 from cogs.events.idle_farm.farm_db import get_farm_data, get_and_update_stamina
 from .mining_ui import MiningView, build_mining_embed
+from cogs.common.db import check_not_locked
 
 
 class MiningCog(commands.Cog, name="Mining"):
@@ -17,6 +18,7 @@ class MiningCog(commands.Cog, name="Mining"):
         self.bot = bot
 
     @commands.hybrid_command(name="mine", aliases=["dao", "khoamo", "mining"])
+    @check_not_locked()
     async def mine_cmd(self, ctx: commands.Context) -> None:
         """⛏️ Vào Khu Mỏ để đào quặng."""
         user_id = str(ctx.author.id)

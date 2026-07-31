@@ -138,7 +138,13 @@ async def init_all_tables(bot: Any) -> bool:
                     -- Kho đồ (Thẻ bỏ tù, bảo hiểm...) & Ngày reset
                     inventory JSONB DEFAULT '{}'::jsonb,
                     farm_data JSONB DEFAULT '{"slots": 3, "crops": {}, "inventory": {}}'::jsonb,
-                    last_reset_date DATE DEFAULT (CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Ho_Chi_Minh')::date
+                    last_reset_date DATE DEFAULT (CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Ho_Chi_Minh')::date,
+                    
+                    -- Phục vụ hệ thống Ngân Hàng (Vay nợ)
+                    debt FLOAT DEFAULT 0.0,
+                    last_interest_date DATE DEFAULT (CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Ho_Chi_Minh')::date,
+                    is_locked BOOLEAN DEFAULT FALSE,
+                    negative_streak INT DEFAULT 0
                 );
             ''')
             # Index phục vụ cho lệnh đua top y!etop cực nhanh
@@ -152,6 +158,12 @@ async def init_all_tables(bot: Any) -> bool:
                     ALTER TABLE event_profiles ALTER COLUMN points TYPE FLOAT USING points::double precision;
                     ALTER TABLE event_profiles ALTER COLUMN total_earned TYPE FLOAT USING total_earned::double precision;
                     ALTER TABLE event_profiles ADD COLUMN IF NOT EXISTS farm_data JSONB DEFAULT '{"slots": 3, "crops": {}, "inventory": {}}'::jsonb;
+                    
+                    -- Thêm các cột cho hệ thống Ngân hàng
+                    ALTER TABLE event_profiles ADD COLUMN IF NOT EXISTS debt FLOAT DEFAULT 0.0;
+                    ALTER TABLE event_profiles ADD COLUMN IF NOT EXISTS last_interest_date DATE DEFAULT (CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Ho_Chi_Minh')::date;
+                    ALTER TABLE event_profiles ADD COLUMN IF NOT EXISTS is_locked BOOLEAN DEFAULT FALSE;
+                    ALTER TABLE event_profiles ADD COLUMN IF NOT EXISTS negative_streak INT DEFAULT 0;
                 ''')
             except Exception as e:
                 log.warning(f"Bỏ qua convert type points (có thể đã là FLOAT): {e}")
@@ -242,3 +254,19 @@ async def deduct_event_points(bot: Any, discord_id: Union[str, int], amount: flo
     res = await execute_db(bot, sql, uid, amount)
     # res sẽ có dạng "UPDATE 1" nếu trừ thành công, "UPDATE 0" nếu số dư không đủ
     return res == "UPDATE 1"
+
+def check_not_locked():
+    """
+    Decorator kiểm tra xem người dùng có bị khóa tài khoản do vỡ nợ không.
+    Gắn vào các lệnh quan trọng.
+    """
+    from discord.ext import commands
+    
+    async def predicate(ctx: commands.Context) -> bool:
+        row = await fetchrow_db(ctx.bot, "SELECT is_locked FROM event_profiles WHERE discord_id = $1", str(ctx.author.id))
+        if row and row["is_locked"]:
+            await ctx.send(f"❌ {ctx.author.mention} **Tài khoản của bạn đã bị khóa do vỡ nợ ngân hàng!**\n"
+                           f"Vui lòng sử dụng lệnh `y!trano` để thanh toán nợ và mở khóa.")
+            return False
+        return True
+    return commands.check(predicate)

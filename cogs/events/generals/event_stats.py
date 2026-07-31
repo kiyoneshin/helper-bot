@@ -58,6 +58,21 @@ class EventStatsCog(commands.Cog):
             inline=True
         )
         
+        debt = profile.get("debt", 0.0)
+        max_loan = total_earned * 0.5
+        
+        if debt > 0:
+            embed.add_field(
+                name="💸 Nợ ngân hàng",
+                value=f"`{debt:,.0f}` điểm",
+                inline=False
+            )
+        embed.add_field(
+            name="🏦 Hạn mức vay",
+            value=f"`{max_loan:,.0f}` điểm",
+            inline=True if debt == 0 else False
+        )
+        
         embed.set_footer(text="Gõ y!shop để xem cửa hàng đổi quà nhé! 🌸")
         await ctx.send(embed=embed)
 

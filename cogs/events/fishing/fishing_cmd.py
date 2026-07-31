@@ -7,6 +7,7 @@ from discord.ext import commands
 
 from cogs.events.idle_farm.farm_db import get_and_update_stamina, get_farm_data
 from .fishing_ui import FishingView, build_fishing_embed
+from cogs.common.db import check_not_locked
 
 
 class FishingCog(commands.Cog, name="Fishing"):
@@ -16,6 +17,7 @@ class FishingCog(commands.Cog, name="Fishing"):
         self.bot = bot
 
     @commands.hybrid_command(name="fish", aliases=["cauca", "fishing", "caca"])
+    @check_not_locked()
     async def fish_cmd(self, ctx: commands.Context) -> None:
         """🎣 Đến Hồ Câu Cá để thử vận may!"""
         user_id = str(ctx.author.id)
