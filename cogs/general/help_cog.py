@@ -163,7 +163,7 @@ class HelpCog(commands.Cog):
 
     @commands.hybrid_command(
         name="help",
-        aliases=["menu", "trogiup"],
+        aliases=["trogiup", "hd"],
         description="Xem danh sách toàn bộ các lệnh (UI Dropdown)"
     )
     async def help_cmd(self, ctx: commands.Context):
