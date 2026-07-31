@@ -484,3 +484,76 @@ async def expand_farm_slot(bot: commands.Bot, user_id: str) -> Tuple[bool, str]:
     await save_farm_data(bot, user_id, farm_data)
     
     return True, f"Mở rộng thành công lên {current_slots + 1} ô đất!"
+
+
+async def sell_items_partial(
+    bot: commands.Bot,
+    user_id: str,
+    item_id: str,
+    amount: int,
+) -> Tuple[bool, int, str]:
+    """
+    Bán một lượng cụ thể của một loại vật phẩm trong túi đồ nông trại.
+
+    Args:
+        bot: Bot instance.
+        user_id: Discord ID (string).
+        item_id: Key trong farm_data.inventory (VD: "tomato_normal", "ore_iron_common").
+        amount: Số lượng muốn bán (-1 = bán hết).
+
+    Returns:
+        (success, total_profit, message)
+    """
+    from cogs.events.mining.mining_config import MINING_LOOT
+    from cogs.events.fishing.fishing_config import FISH_LOOT
+
+    farm_data = await get_farm_data(bot, user_id)
+    inventory = farm_data.get("inventory", {})
+
+    current_qty = inventory.get(item_id, 0)
+    if current_qty <= 0:
+        return False, 0, "Bạn không có vật phẩm này trong túi đồ!"
+
+    # -1 nghĩa là bán hết
+    sell_qty = current_qty if amount == -1 else min(amount, current_qty)
+    if sell_qty <= 0:
+        return False, 0, "Số lượng không hợp lệ!"
+
+    # Tính giá trị
+    if item_id in MINING_LOOT:
+        profit_per = MINING_LOOT[item_id].get("price", 0)
+    elif item_id in FISH_LOOT:
+        profit_per = FISH_LOOT[item_id].get("price", 0)
+    elif item_id.startswith("seed_"):
+        return False, 0, "Hạt giống không thể bán — hãy dùng để trồng cây!"
+    else:
+        # Crop — tách seed_id và quality
+        parts = item_id.split("_")
+        if len(parts) >= 2:
+            seed_id = "_".join(parts[:-1])
+            quality = parts[-1]
+        else:
+            seed_id, quality = item_id, "normal"
+
+        seed_cfg = config.SEEDS.get(seed_id)
+        if not seed_cfg:
+            return False, 0, f"Vật phẩm `{item_id}` không xác định được giá!"
+        multiplier = config.QUALITY_MULTIPLIERS.get(quality, 1.0)
+        profit_per = int(seed_cfg["reward_min"] * multiplier)
+
+    total_profit = profit_per * sell_qty
+
+    # Cập nhật inventory
+    new_qty = current_qty - sell_qty
+    if new_qty <= 0:
+        inventory.pop(item_id, None)
+    else:
+        inventory[item_id] = new_qty
+
+    farm_data["inventory"] = inventory
+    await save_farm_data(bot, user_id, farm_data)
+
+    if total_profit > 0:
+        await add_event_points(bot, user_id, float(total_profit), is_earned=True)
+
+    return True, total_profit, f"Đã bán **{sell_qty}** vật phẩm, thu về **{total_profit:,}** điểm!"
