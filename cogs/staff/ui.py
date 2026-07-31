@@ -25,8 +25,6 @@ log = logging.getLogger("StaffBot")
 class StaffUICog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        if self.bot.get_command("help"):
-            self.bot.remove_command("help")
 
     @commands.hybrid_command(name="menu", aliases=["staff", "bqt"], description="Mở bảng menu Ban Quản Trị Angelic ໒꒱")
     async def send_menu(self, ctx: commands.Context):
