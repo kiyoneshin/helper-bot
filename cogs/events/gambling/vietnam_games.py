@@ -297,111 +297,96 @@ class VietnamGames(commands.Cog):
         total_pool: dict[str, int] = {k: 0 for k in self.BC_KEYS}
 
         LOBBY_DURATION = 30
-        start_time = asyncio.get_event_loop().time()
 
         # Gửi lobby lần đầu
         lobby_msg = await ctx.send(
             embed=self._build_lobby_embed(total_pool, 0, LOBBY_DURATION)
         )
-        update_at: set[int] = {20, 10, 5}
-        last_update_secs: int = LOBBY_DURATION
 
-        try:
-            while True:
-                elapsed = asyncio.get_event_loop().time() - start_time
-                time_left = max(0, int(LOBBY_DURATION - elapsed))
-                if time_left <= 0:
-                    break
+        async def baucua_listener(msg: discord.Message):
+            # Bỏ qua tin nhắn từ bot hoặc ngoài kênh
+            if msg.author.bot or msg.channel.id != ctx.channel.id:
+                return
 
-                remaining = max(0.5, LOBBY_DURATION - (asyncio.get_event_loop().time() - start_time))
-                try:
-                    msg: discord.Message = await self.bot.wait_for(
-                        "message",
-                        timeout=remaining,
-                        # Lắng nghe TẤT CẢ người thật trong kênh
-                        check=lambda m: (
-                            not m.author.bot
-                            and m.channel.id == ctx.channel.id
-                        ),
-                    )
-                except asyncio.TimeoutError:
-                    break
+            # Dùng findall để bắt mọi cược trong một tin nhắn (ví dụ: bầu 10k cua 20k)
+            # \s* giúp bắt được cả trường hợp dính liền như "bầu10k"
+            matches = re.findall(
+                r"(bau|b\u1ea7u|cua|tom|t\u00f4m|ca|c\u00e1|nai|ga|g\u00e0)\s*([0-9km.]+)",
+                msg.content.lower(),
+            )
+            if not matches:
+                return
 
-                sender_id = msg.author.id
-                sender_uid = str(sender_id)
-                segments = re.split(r"[,\n]", msg.content)
-                placed_any_this_msg = False
+            sender_id = msg.author.id
+            sender_uid = str(sender_id)
+            placed_any = False
 
-                for seg in segments:
-                    seg = seg.strip()
-                    if not seg:
-                        continue
+            for animal_raw, amount_raw in matches:
+                key_tuple = self.BC_ANIMALS.get(animal_raw)
+                if not key_tuple:
+                    continue
+                key = key_tuple[0]
 
-                    m = re.search(
-                        r"(bau|b\u1ea7u|cua|tom|t\u00f4m|ca|c\u00e1|nai|ga|g\u00e0)\s+([0-9km.]+)",
-                        seg.lower(),
-                    )
-                    if not m:
-                        continue
+                # Lấy số dư realtime
+                cur_bal = await _get_balance(self.bot, sender_uid)
+                amount, err = _parse_bet(amount_raw, cur_bal)
 
-                    animal_raw, amount_raw = m.group(1), m.group(2)
-                    key, _ = self.BC_ANIMALS[animal_raw]
-
-                    # Lấy số dư realtime của người gửi tin
-                    cur_bal = await _get_balance(self.bot, sender_uid)
-                    amount, err = _parse_bet(amount_raw, cur_bal)
-
-                    if err or amount is None:
-                        try:
-                            await msg.reply(
-                                f"❌ {msg.author.mention} {err}",
-                                delete_after=5,
-                            )
-                        except discord.HTTPException:
-                            pass
-                        continue
-
-                    ok = await _apply_delta(self.bot, sender_uid, -amount)
-                    if not ok:
-                        try:
-                            await msg.reply(
-                                f"❌ {msg.author.mention} Đỗ nghèo khỉ mà đòi cược thêm **{amount:,}** à?",
-                                delete_after=5,
-                            )
-                        except discord.HTTPException:
-                            pass
-                        continue
-
-                    # Ghi nhận vào player_bets
-                    if sender_id not in player_bets:
-                        player_bets[sender_id] = {k: 0 for k in self.BC_KEYS}
-                    player_bets[sender_id][key] += amount
-                    total_pool[key] += amount
-                    placed_any_this_msg = True
-
+                if err or amount is None:
                     try:
-                        await msg.add_reaction("✅")
-                    except discord.HTTPException:
-                        pass
-
-                # Cập nhật UI định kỳ (chống rate limit Discord)
-                now_left = max(0, int(LOBBY_DURATION - (asyncio.get_event_loop().time() - start_time)))
-                should_update = placed_any_this_msg or (
-                    now_left in update_at and now_left != last_update_secs
-                )
-                if should_update:
-                    last_update_secs = now_left
-                    update_at.discard(now_left)
-                    try:
-                        await lobby_msg.edit(
-                            embed=self._build_lobby_embed(
-                                total_pool, len(player_bets), now_left
-                            )
+                        await msg.reply(
+                            f"❌ {msg.author.mention} {err}",
+                            delete_after=5,
                         )
                     except discord.HTTPException:
                         pass
+                    continue
 
+                ok = await _apply_delta(self.bot, sender_uid, -amount)
+                if not ok:
+                    try:
+                        await msg.reply(
+                            f"❌ {msg.author.mention} Đỗ nghèo khỉ mà đòi cược thêm **{amount:,}** à?",
+                            delete_after=5,
+                        )
+                    except discord.HTTPException:
+                        pass
+                    continue
+
+                # Ghi nhận cược (cập nhật dict an toàn trong asyncio)
+                if sender_id not in player_bets:
+                    player_bets[sender_id] = {k: 0 for k in self.BC_KEYS}
+                player_bets[sender_id][key] += amount
+                total_pool[key] += amount
+                placed_any = True
+
+            if placed_any:
+                try:
+                    await msg.add_reaction("✅")
+                except discord.HTTPException:
+                    pass
+
+        # Đăng ký listener lắng nghe song song
+        self.bot.add_listener(baucua_listener, "on_message")
+
+        try:
+            # Vòng lặp cập nhật UI 5 giây 1 lần
+            for i in range(6):
+                await asyncio.sleep(5)
+                now_left = LOBBY_DURATION - (i + 1) * 5
+                try:
+                    await lobby_msg.edit(
+                        embed=self._build_lobby_embed(
+                            total_pool, len(player_bets), now_left
+                        )
+                    )
+                except discord.HTTPException:
+                    pass
+                
+            # Đợi một chút để các tin nhắn cuối cùng xử lý xong
+            await asyncio.sleep(0.5)
+            
         finally:
+            self.bot.remove_listener(baucua_listener, "on_message")
             _unlock_user(self.bot, ctx.author.id)
 
         # ── Giai đoạn 2: Chốt sảnh & Kết quả ────────────────────────────────
