@@ -174,4 +174,5 @@ class HelpCog(commands.Cog):
 
 
 async def setup(bot: commands.Bot):
+    bot.remove_command("help")
     await bot.add_cog(HelpCog(bot))
