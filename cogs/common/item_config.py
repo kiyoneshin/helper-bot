@@ -1,0 +1,229 @@
+"""
+item_config.py — Bảng cấu hình trung tâm cho toàn bộ vật phẩm của bot.
+======================================================================
+Là nguồn sự thật duy nhất (single source of truth) cho tất cả items.
+
+Quy ước ID:
+  0  –  9 : Sự kiện / Event   (lottery, event items)
+  10 – 19 : Nông trại / Farm  (hạt giống)
+  20 – 29 : Chợ đen / Black Market
+
+Cấu trúc mỗi item:
+  id          (int)          : ID số duy nhất.
+  name        (str)          : Tên hiển thị.
+  icon        (str)          : Emoji đại diện.
+  price       (int | None)   : Giá mua (None = không thể mua).
+  description (str)          : Mô tả vật phẩm.
+  db_key      (str)          : Key lưu trong Database.
+  category    (str)          : "event" | "farm" | "blackmarket"
+  usable      (bool)         : Có dùng bằng y!use không.
+"""
+
+from typing import TypedDict
+
+class ItemEntry(TypedDict):
+    id: int
+    name: str
+    icon: str
+    price: int | None
+    description: str
+    db_key: str
+    category: str
+    usable: bool
+
+# ============================================================
+# REGISTRY CHÍNH — Dict[int, ItemEntry]
+# ============================================================
+ITEM_REGISTRY: dict[int, ItemEntry] = {
+
+    # ──────────────────────────────────────────────────────────
+    # ID 0–9 : SỰ KIỆN (EVENT)
+    # ──────────────────────────────────────────────────────────
+    0: {
+        "id":          0,
+        "name":        "Vé Xổ Số",
+        "icon":        "🎟️",
+        "price":       50,
+        "description": "Vé tham gia xổ số hàng ngày. Tối đa 200 vé/người.",
+        "db_key":      "lottery_ticket",   # xử lý đặc biệt qua bảng lottery_tickets
+        "category":    "event",
+        "usable":      False,
+    },
+    1: {
+        "id":          1,
+        "name":        "Thẻ Tăng Tốc",
+        "icon":        "⚡",
+        "price":       None,              # Không bán trong shop — chỉ nhận qua sự kiện
+        "description": "Giảm 50% thời gian hồi thể lực trong 30 phút.",
+        "db_key":      "boost_card",
+        "category":    "event",
+        "usable":      True,
+    },
+
+    # ──────────────────────────────────────────────────────────
+    # ID 10–19 : NÔNG TRẠI (FARM — Hạt giống)
+    # ──────────────────────────────────────────────────────────
+    10: {
+        "id":          10,
+        "name":        "Hạt Giống Lúa Mì",
+        "icon":        "🌾",
+        "price":       100,
+        "description": "Cây cơ bản, thu hoạch sau 30 phút.",
+        "db_key":      "seed_wheat",       # key trong farm_data.inventory
+        "category":    "farm",
+        "usable":      False,              # Dùng qua y!farm, không y!use
+    },
+    11: {
+        "id":          11,
+        "name":        "Hạt Giống Hướng Dương",
+        "icon":        "🌻",
+        "price":       500,
+        "description": "Lợi nhuận cao, thu hoạch sau 12 tiếng.",
+        "db_key":      "seed_sunflower",
+        "category":    "farm",
+        "usable":      False,
+    },
+    12: {
+        "id":          12,
+        "name":        "Hạt Giống Ngôi Sao",
+        "icon":        "⭐",
+        "price":       2000,
+        "description": "Cây hiếm với phần thưởng ngẫu nhiên, thu hoạch sau 24 tiếng.",
+        "db_key":      "seed_star",
+        "category":    "farm",
+        "usable":      False,
+    },
+
+    # ──────────────────────────────────────────────────────────
+    # ID 20–29 : CHỢ ĐEN (BLACK MARKET)
+    # ──────────────────────────────────────────────────────────
+    20: {
+        "id":          20,
+        "name":        "Búa Gõ 1 Phút",
+        "icon":        "🔨",
+        "price":       2500,
+        "description": "Timeout mục tiêu 1 phút.",
+        "db_key":      "timeout_1m",
+        "category":    "blackmarket",
+        "usable":      True,
+    },
+    21: {
+        "id":          21,
+        "name":        "Bom Ảo Giác",
+        "icon":        "💣",
+        "price":       3000,
+        "description": "Bot tag mục tiêu 3 lần liên tiếp rồi xóa ngay lập tức.",
+        "db_key":      "ghost_ping_card",
+        "category":    "blackmarket",
+        "usable":      True,
+    },
+    22: {
+        "id":          22,
+        "name":        "Búa Gõ 5 Phút",
+        "icon":        "🔨",
+        "price":       5000,
+        "description": "Timeout mục tiêu 5 phút.",
+        "db_key":      "timeout_5m",
+        "category":    "blackmarket",
+        "usable":      True,
+    },
+    23: {
+        "id":          23,
+        "name":        "Bao Tay Đạo Chích",
+        "icon":        "🧤",
+        "price":       6500,
+        "description": "Trộm ngẫu nhiên 50–500 điểm sự kiện của mục tiêu.",
+        "db_key":      "thief_card",
+        "category":    "blackmarket",
+        "usable":      True,
+    },
+    24: {
+        "id":          24,
+        "name":        "Thẻ Đổi Tên",
+        "icon":        "🤡",
+        "price":       8000,
+        "description": "Buộc mục tiêu đổi biệt danh thành tên tấu hài ngẫu nhiên.",
+        "db_key":      "nickname_change",
+        "category":    "blackmarket",
+        "usable":      True,
+    },
+    25: {
+        "id":          25,
+        "name":        "Thẻ Miễn Nhiễm",
+        "icon":        "🛡️",
+        "price":       10000,
+        "description": "Tự động chặn 1 lần bị người khác dùng thẻ xấu lên mình.",
+        "db_key":      "shield_card",
+        "category":    "blackmarket",
+        "usable":      True,
+    },
+    26: {
+        "id":          26,
+        "name":        "Thẻ Rút Phích Cắm",
+        "icon":        "🔌",
+        "price":       12000,
+        "description": "Đá văng mục tiêu khỏi Voice Channel ngay lập tức.",
+        "db_key":      "disconnect_card",
+        "category":    "blackmarket",
+        "usable":      True,
+    },
+    27: {
+        "id":          27,
+        "name":        "Thẻ Đặc Xá",
+        "icon":        "🕊️",
+        "price":       12000,
+        "description": "Cứu người khác khỏi tù hoặc tự cứu mình.",
+        "db_key":      "free_card",
+        "category":    "blackmarket",
+        "usable":      True,
+    },
+    28: {
+        "id":          28,
+        "name":        "Thẻ Tống Giam",
+        "icon":        "🚔",
+        "price":       15000,
+        "description": "Gửi 1 người vào chuồng chó.",
+        "db_key":      "jail_card",
+        "category":    "blackmarket",
+        "usable":      True,
+    },
+    29: {
+        "id":          29,
+        "name":        "Trát Hầu Tòa",
+        "icon":        "📜",
+        "price":       20000,
+        "description": "Gửi một Embed dọa ban vĩnh viễn cực kỳ nghiêm trọng rồi chốt là đùa.",
+        "db_key":      "fake_ban_card",
+        "category":    "blackmarket",
+        "usable":      True,
+    },
+}
+
+# ============================================================
+# LOOKUP HELPERS — Tiện ích tra cứu ngược
+# ============================================================
+
+def get_item_by_id(item_id: int) -> ItemEntry | None:
+    """Tra cứu item theo ID số."""
+    return ITEM_REGISTRY.get(item_id)
+
+def get_item_by_db_key(db_key: str) -> ItemEntry | None:
+    """Tra cứu item theo db_key (tên cột/key trong DB)."""
+    for item in ITEM_REGISTRY.values():
+        if item["db_key"] == db_key:
+            return item
+    return None
+
+def get_items_by_category(category: str) -> list[ItemEntry]:
+    """Lấy danh sách items theo category, sắp xếp theo ID."""
+    return sorted(
+        [item for item in ITEM_REGISTRY.values() if item["category"] == category],
+        key=lambda x: x["id"],
+    )
+
+def get_buyable_items(category: str) -> list[ItemEntry]:
+    """Lấy danh sách items CÓ THỂ MUA (price != None) theo category."""
+    return [
+        item for item in get_items_by_category(category)
+        if item["price"] is not None
+    ]

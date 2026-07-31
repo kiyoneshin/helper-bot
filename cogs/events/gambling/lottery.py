@@ -44,6 +44,54 @@ LOTTERY_CHANNEL_ID = 1529937900031054028
 COLOR_GOLD = 0xFFD700
 
 
+# =====================================================================
+# HELPER RIÊNG — Gọi được từ shop_cog.py mà không lặp code
+# =====================================================================
+async def buy_lottery_tickets(
+    bot: commands.Bot,
+    uid: str,
+    amount: int,
+    is_locked: bool,
+) -> tuple[bool, str]:
+    """
+    Thực hiện mua vé xổ số. Tách khỏi Cog để dùng lại ở shop_cog.py.
+    Returns: (success: bool, message: str)
+    """
+    if is_locked:
+        return False, "🔒 Sòng đang đóng cửa quay số, chen ngang làm gì!"
+
+    if amount <= 0:
+        return False, "❌ Mua 0 vé thì trúng gió à? Nhập số đàng hoàng vô!"
+
+    current_tickets = await fetchval_db(bot, "SELECT tickets FROM lottery_tickets WHERE discord_id = $1", uid)
+    current_tickets = int(current_tickets) if current_tickets else 0
+
+    if current_tickets + amount > MAX_TICKETS_PER_USER:
+        return False, (
+            f"❌ Tham lam vừa thôi! Đang có **{current_tickets}** vé rồi, mua thêm **{amount}** là lố luật "
+            f"{MAX_TICKETS_PER_USER} vé của sòng!"
+        )
+
+    cost = amount * TICKET_PRICE
+    ok = await deduct_event_points(bot, uid, cost)
+    if not ok:
+        return False, f"❌ Ví rỗng tuẼh mà đòi đú **{amount}** vé? Kiếm thêm **{cost:,}** points rồi quay lại!"
+
+    await execute_db(
+        bot,
+        """
+        INSERT INTO lottery_tickets (discord_id, tickets) VALUES ($1, $2)
+        ON CONFLICT (discord_id) DO UPDATE SET tickets = lottery_tickets.tickets + EXCLUDED.tickets
+        """,
+        uid, amount
+    )
+
+    return True, (
+        f"✅ Chốt kèo! Đã múc **{amount:,}** vé (bay mất **{cost:,}** points).\n"
+        f"Trong tay đang có **{current_tickets + amount:,}** vé, chuẩn bị đổi đời thôi!"
+    )
+
+
 async def _init_lottery_tables(bot: commands.Bot) -> None:
     """Khởi tạo bảng Xổ Số nếu chưa có."""
     await execute_db(
@@ -254,50 +302,10 @@ class Lottery(commands.Cog):
     @xoso_cmd.command(name="mua", aliases=["buy"])
     async def mua_cmd(self, ctx: commands.Context, amount: int) -> None:
         """Mua vé số. Cú pháp: y!xoso mua <số_lượng>"""
-        if self.is_locked:
-            await ctx.send(f"🔒 {ctx.author.mention} Sòng đang đóng cửa quay số, chen ngang làm gì!", delete_after=5.0)
-            return
-
-        if amount <= 0:
-            await ctx.send(f"❌ {ctx.author.mention} Mua 0 vé thì trúng gió à? Nhập số đàng hoàng vô!", delete_after=5.0)
-            return
-
         uid = str(ctx.author.id)
-        
-        # Lấy số vé hiện tại
-        current_tickets = await fetchval_db(self.bot, "SELECT tickets FROM lottery_tickets WHERE discord_id = $1", uid)
-        current_tickets = int(current_tickets) if current_tickets else 0
-
-        if current_tickets + amount > MAX_TICKETS_PER_USER:
-            await ctx.send(
-                f"❌ {ctx.author.mention} Tham lam vừa thôi! Đang có **{current_tickets}** vé rồi, mua thêm **{amount}** là lố luật {MAX_TICKETS_PER_USER} vé của sòng!",
-                delete_after=5.0
-            )
-            return
-
-        cost = amount * TICKET_PRICE
-        
-        # Trừ tiền
-        ok = await deduct_event_points(self.bot, uid, cost)
-        if not ok:
-            await ctx.send(f"❌ {ctx.author.mention} Ví rỗng tuếch mà đòi đú **{amount}** vé? Kiếm thêm **{cost:,}** points rồi quay lại!", delete_after=5.0)
-            return
-
-        # Cập nhật DB
-        await execute_db(
-            self.bot,
-            """
-            INSERT INTO lottery_tickets (discord_id, tickets) VALUES ($1, $2)
-            ON CONFLICT (discord_id) DO UPDATE SET tickets = lottery_tickets.tickets + EXCLUDED.tickets
-            """,
-            uid, amount
-        )
-
-        await ctx.send(
-            f"✅ {ctx.author.mention} Chốt kèo! Đã múc **{amount:,}** vé (bay mất **{cost:,}** points).\n"
-            f"Trong tay đang có **{current_tickets + amount:,}** vé, chuẩn bị đổi đời thôi!",
-            delete_after=5.0
-        )
+        # Gọi helper dùng chung với shop_cog.py để không lặp code
+        ok, msg = await buy_lottery_tickets(self.bot, uid, amount, self.is_locked)
+        await ctx.send(f"{ctx.author.mention} {msg}", delete_after=8.0)
 
     @xoso_cmd.command(name="ban", aliases=["sell"])
     async def ban_cmd(self, ctx: commands.Context, amount: int) -> None:
