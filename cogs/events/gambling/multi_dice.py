@@ -1025,7 +1025,8 @@ class MultiDice(commands.Cog):
             inline=False,
         )
         embed.set_footer(text="Angelic Casino • Xúc Xắc Quần Hùng 🌸")
-        await ctx.send(embed=embed)
+        delay = 10.0 if ctx.channel.id == 1498711783223853101 else None
+        await ctx.send(embed=embed, delete_after=delay)
 
         # Mở khóa khán giả
         if spectator_bets:

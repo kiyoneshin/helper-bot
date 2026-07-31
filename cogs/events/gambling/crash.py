@@ -604,10 +604,14 @@ class CrashGame(commands.Cog):
 
         try:
             await game_message.edit(embed=crash_embed, view=active_view)
+            if game_message.channel.id == 1498711783223853101:
+                await game_message.delete(delay=10.0)
         except discord.HTTPException as exc:
             log.warning("Khong the update Crash Embed cuoi: %s", exc)
             try:
-                await game_message.channel.send(embed=crash_embed)
+                msg = await game_message.channel.send(embed=crash_embed)
+                if msg.channel.id == 1498711783223853101:
+                    await msg.delete(delay=10.0)
             except discord.HTTPException:
                 pass
 

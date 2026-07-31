@@ -211,8 +211,8 @@ class VietnamGames(commands.Cog):
         embed.add_field(name="💳 Số dư mới", value=f"{new_balance:,}", inline=False)
 
         embed.set_footer(text="Angelic Casino • Tài Xỉu 🌸")
-
-        await ctx.send(embed=embed)
+        delay = 10.0 if ctx.channel.id == 1498711783223853101 else None
+        await ctx.send(embed=embed, delete_after=delay)
 
     @taixiu_cmd.error
     async def taixiu_error(self, ctx: commands.Context, error: Exception) -> None:
@@ -490,7 +490,8 @@ class VietnamGames(commands.Cog):
             result_embed.set_footer(text="Angelic Casino • Bầu Cua Tôm Cá 🌸")
 
             try:
-                await ctx.send(embed=result_embed)
+                delay = 10.0 if ctx.channel.id == 1498711783223853101 else None
+                await ctx.send(embed=result_embed, delete_after=delay)
             except discord.HTTPException:
                 pass
 
