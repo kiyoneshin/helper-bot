@@ -263,43 +263,7 @@ class BlackMarketCog(commands.Cog):
             f"Hãy dùng `y!use {item_id}` để xài!"
         )
 
-    # ------------------------------------------------------------------
-    # LỆNH XEM TÚI ĐỒ: y!inv / y!tuido
-    # LỆNH XEM TÚI ĐỒ (BLACK MARKET): y!inv / y!tuido
-    # ------------------------------------------------------------------
-    @commands.hybrid_command(name="inv", aliases=["tuido", "bminv", "bminventory"])
-    async def inventory_cmd(self, ctx: commands.Context) -> None:
-        """🎒 Xem túi đồ (inventory) của bản thân"""
-        uid = str(ctx.author.id)
-        row = await fetchrow_db(self.bot, "SELECT inventory FROM event_profiles WHERE discord_id = $1", uid)
 
-        inv: Dict[str, int] = {}
-        if row and row["inventory"]:
-            try:
-                inv = json.loads(row["inventory"]) if isinstance(row["inventory"], str) else row["inventory"]
-            except Exception as e:
-                log.error(f"Lỗi parse inventory khi xem inv cho {uid}: {e}")
-
-        # Lọc bỏ các key có quantity <= 0
-        inv = {k: v for k, v in inv.items() if v > 0}
-
-        embed = discord.Embed(
-            title=f"🎒 Túi Đồ — {ctx.author.display_name}",
-            color=0x2b2d31,
-        )
-
-        if not inv:
-            embed.description = "Túi đồ trống rỗng! Ghé `y!choden` để sắm đồ nhé."
-        else:
-            lines = []
-            for item_id, qty in inv.items():
-                item_meta = BLACK_MARKET_ITEMS.get(item_id)
-                item_name = item_meta["name"] if item_meta else f"`{item_id}`"
-                lines.append(f"• **{item_name}** × {qty} — dùng: `y!use {item_id}`")
-            embed.description = "\n".join(lines)
-
-        embed.set_footer(text="Dùng y!use <item_id> [@mục tiêu] để sử dụng vật phẩm")
-        await ctx.send(embed=embed)
 
     # ------------------------------------------------------------------
     # LỆNH SỬ DỤNG VẬT PHẨM: y!use <item_id> [@target]
