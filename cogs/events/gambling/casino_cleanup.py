@@ -16,7 +16,7 @@ class CasinoCleanupCog(commands.Cog):
             return
             
         # Chỉ quan tâm tin nhắn của Bot
-        if message.author.id != self.bot.user.id:
+        if not self.bot.user or message.author.id != self.bot.user.id:
             return
             
         # Chỉ quan tâm tin nhắn có chứa embed
@@ -48,7 +48,7 @@ class CasinoCleanupCog(commands.Cog):
         if after.channel.id != self.casino_channel_id:
             return
             
-        if after.author.id != self.bot.user.id:
+        if not self.bot.user or after.author.id != self.bot.user.id:
             return
             
         if not after.embeds:
@@ -61,7 +61,7 @@ class CasinoCleanupCog(commands.Cog):
         # Kiểm tra xem TẤT CẢ các component (button/select) đã bị disable chưa
         all_disabled = True
         for action_row in after.components:
-            for child in action_row.children:
+            for child in getattr(action_row, "children", []):
                 # Trích xuất thuộc tính disabled của child (hoạt động với discord.py components)
                 if not getattr(child, "disabled", False):
                     all_disabled = False

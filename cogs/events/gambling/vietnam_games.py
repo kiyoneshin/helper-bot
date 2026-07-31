@@ -212,7 +212,10 @@ class VietnamGames(commands.Cog):
 
         embed.set_footer(text="Angelic Casino • Tài Xỉu 🌸")
         delay = 10.0 if ctx.channel.id == 1498711783223853101 else None
-        await ctx.send(embed=embed, delete_after=delay)
+        if delay is not None:
+            await ctx.send(embed=embed, delete_after=delay)
+        else:
+            await ctx.send(embed=embed)
 
     @taixiu_cmd.error
     async def taixiu_error(self, ctx: commands.Context, error: Exception) -> None:
@@ -491,7 +494,10 @@ class VietnamGames(commands.Cog):
 
             try:
                 delay = 10.0 if ctx.channel.id == 1498711783223853101 else None
-                await ctx.send(embed=result_embed, delete_after=delay)
+                if delay is not None:
+                    await ctx.send(embed=result_embed, delete_after=delay)
+                else:
+                    await ctx.send(embed=result_embed)
             except discord.HTTPException:
                 pass
 

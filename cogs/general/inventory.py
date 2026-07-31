@@ -1,3 +1,4 @@
+
 """
 inventory_cog.py — Cog Túi Đồ Hợp Nhất (y!inv / y!bag / y!use)
 ================================================================
@@ -413,9 +414,9 @@ class InventoryView(discord.ui.View):
 
         # Gắn callback
         self.btn_sell_item.callback = self._on_sell_item
-        self.btn_sell_crops.callback = lambda i: self._on_sell_all(i, "crops", "Nông sản")
-        self.btn_sell_ores.callback = lambda i: self._on_sell_all(i, "ores", "Khoáng sản")
-        self.btn_sell_fish.callback = lambda i: self._on_sell_all(i, "fish", "Cá")
+        self.btn_sell_crops.callback = lambda interaction: self._on_sell_all(interaction, "crops", "Nông sản")
+        self.btn_sell_ores.callback = lambda interaction: self._on_sell_all(interaction, "ores", "Khoáng sản")
+        self.btn_sell_fish.callback = lambda interaction: self._on_sell_all(interaction, "fish", "Cá")
 
         # Mặc định tab không phải farm nên ẩn nút
         if default_tab == "farm":
@@ -573,12 +574,92 @@ class UnifiedInventoryCog(commands.Cog):
         )
         await ctx.send(embed=embed)
 
-        # TODO: Thêm hiệu ứng thực tế của từng item tại đây
-        # Ví dụ:
-        # if db_key == "jail_card":
-        #     await _apply_jail(ctx, target)
-        # elif db_key == "timeout_1m":
-        #     await target.timeout(timedelta(minutes=1))
+        # -------------------------------------------------------------
+        # HIỆU ỨNG THỰC TẾ
+        # -------------------------------------------------------------
+        if not target and db_key in ["timeout_1m", "timeout_5m", "ghost_ping_card", "jail_card", "disconnect_card", "fake_ban_card", "thief_card", "nickname_change"]:
+            await ctx.send("❌ Vật phẩm này yêu cầu bạn phải `@mục_tiêu`!", delete_after=5.0)
+            return
+
+        if target and not isinstance(target, discord.Member):
+            await ctx.send("❌ Mục tiêu phải là thành viên trong server này!")
+            return
+        
+        if target:
+            assert isinstance(target, discord.Member)
+
+        from datetime import timedelta
+
+        if db_key == "timeout_1m":
+            assert isinstance(target, discord.Member)
+            try:
+                await target.timeout(timedelta(minutes=1), reason=f"Bị {ctx.author} dùng Búa Gõ 1 Phút")
+                await ctx.send(f"🔨 {target.mention} đã bị dán băng keo vào miệng trong 1 phút!")
+            except discord.Forbidden:
+                await ctx.send("❌ Bot không đủ quyền timeout người này!")
+
+        elif db_key == "timeout_5m":
+            assert isinstance(target, discord.Member)
+            try:
+                await target.timeout(timedelta(minutes=5), reason=f"Bị {ctx.author} dùng Búa Gõ 5 Phút")
+                await ctx.send(f"🔨 {target.mention} đã bị dán băng keo vào miệng trong 5 phút!")
+            except discord.Forbidden:
+                await ctx.send("❌ Bot không đủ quyền timeout người này!")
+
+        elif db_key == "ghost_ping_card":
+            assert isinstance(target, discord.Member)
+            for _ in range(3):
+                msg = await ctx.channel.send(target.mention)
+                await msg.delete()
+            await ctx.send(f"👻 Đã chọc ghẹo {target.mention} thành công!")
+
+        elif db_key == "disconnect_card":
+            assert isinstance(target, discord.Member)
+            if target.voice and target.voice.channel:
+                try:
+                    await target.move_to(None)
+                    await ctx.send(f"🔌 {target.mention} vừa bị sút văng khỏi kênh thoại!")
+                except discord.Forbidden:
+                    await ctx.send("❌ Bot không đủ quyền sút người này!")
+            else:
+                await ctx.send(f"❌ {target.mention} không ở trong kênh thoại nào cả!")
+
+        elif db_key == "fake_ban_card":
+            assert isinstance(target, discord.Member)
+            fake_embed = discord.Embed(
+                title="🔨 THÔNG BÁO BAN!",
+                description=f"**{target.mention}** đã bị cấm vĩnh viễn khỏi máy chủ.\n**Lý do:** Vi phạm nội quy cực kỳ nghiêm trọng.",
+                color=0xFF0000
+            )
+            fake_embed.set_footer(text="Đùa tí thôi! Bị lừa rồi nhé 😂")
+            await ctx.send(embed=fake_embed)
+
+        elif db_key == "jail_card":
+            assert isinstance(target, discord.Member)
+            jail_cog: Any = self.bot.get_cog("JailSystem")
+            if jail_cog:
+                try:
+                    # Bỏ qua quyền hạn, gọi trực tiếp callback của lệnh phattu
+                    await jail_cog.phattu_cmd.callback(jail_cog, ctx, target, 50, reason=f"Bị {ctx.author} dùng Thẻ Bỏ Tù")
+                except Exception as e:
+                    await ctx.send(f"❌ Lỗi khi bỏ tù: {e}")
+            else:
+                await ctx.send("❌ Tính năng Chuồng Chó hiện đang bảo trì!")
+
+        elif db_key == "thief_card":
+            assert isinstance(target, discord.Member)
+            await ctx.send(f"🕵️ {ctx.author.mention} đang cố gắng trộm đồ của {target.mention}... Tính năng trộm đang được cập nhật!")
+            
+        elif db_key == "nickname_change":
+            assert isinstance(target, discord.Member)
+            try:
+                import random
+                funny_names = ["Thánh Hề", "Kẻ Trộm Chó", "Đại Vương Móm", "Chúa Tể Báo Thủ", "Chú Bé Đần"]
+                new_name = random.choice(funny_names)
+                await target.edit(nick=new_name, reason=f"Bị {ctx.author} dùng thẻ đổi tên")
+                await ctx.send(f"🤡 Đã đổi tên {target.mention} thành **{new_name}**!")
+            except discord.Forbidden:
+                await ctx.send("❌ Bot không đủ quyền đổi tên người này!")
 
 
 async def setup(bot: commands.Bot) -> None:

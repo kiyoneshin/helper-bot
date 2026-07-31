@@ -225,11 +225,11 @@ class MilestoneCog(commands.Cog):
         )
         
         # Cấp roles
-        if getattr(ctx, "guild", None):
+        if ctx.guild is not None:
             for role_id in roles_to_add:
                 try:
                     role = ctx.guild.get_role(role_id)
-                    if role:
+                    if role and isinstance(ctx.author, discord.Member):
                         await ctx.author.add_roles(role)
                 except discord.Forbidden:
                     log.warning(f"Không đủ quyền để cấp role {role_id} cho {ctx.author.id}")
@@ -255,7 +255,7 @@ class MilestoneCog(commands.Cog):
         if total_tickets > 0:
             embed.add_field(name="Vé Xổ Số", value=f"+**{total_tickets}** vé", inline=True)
             
-        if roles_to_add and getattr(ctx, "guild", None):
+        if roles_to_add and ctx.guild is not None:
             role_mentions = []
             for r_id in roles_to_add:
                 r = ctx.guild.get_role(r_id)

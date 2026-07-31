@@ -39,7 +39,7 @@ def _stamina_bar(stamina: int, bar_len: int = 10) -> str:
 # EMBED
 # ---------------------------------------------------------------------------
 
-def build_fishing_embed(author: discord.Member, stamina: int, farm_data: Dict[str, Any] | None = None) -> discord.Embed:
+def build_fishing_embed(author: discord.Member | discord.User, stamina: int, farm_data: Dict[str, Any] | None = None) -> discord.Embed:
     """Giao diện Hồ Câu Cá, hiển thị thể lực, cấp cần câu, và các loại cá."""
     rod_level = (farm_data or {}).get("rod_level", 1)
 
@@ -116,7 +116,7 @@ class FishCatchView(discord.ui.View):
 class FishingView(discord.ui.View):
     """View chính chứa nút "Quăng Cần"."""
 
-    def __init__(self, bot: commands.Bot, user_id: str, author: discord.Member, stamina: int, farm_data: Dict[str, Any]):
+    def __init__(self, bot: commands.Bot, user_id: str, author: discord.Member | discord.User, stamina: int, farm_data: Dict[str, Any]):
         super().__init__(timeout=300)
         self.bot = bot
         self.user_id = user_id

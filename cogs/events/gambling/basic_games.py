@@ -176,7 +176,10 @@ class BasicGames(commands.Cog):
         embed.add_field(name="💳 Số dư mới", value=f"{new_balance:,}", inline=False)
         embed.set_footer(text="Angelic Casino • Coinflip 🌸")
         delay = 10.0 if ctx.channel.id == 1498711783223853101 else None
-        await ctx.send(embed=embed, delete_after=delay)
+        if delay is not None:
+            await ctx.send(embed=embed, delete_after=delay)
+        else:
+            await ctx.send(embed=embed)
 
     @coinflip_cmd.error
     async def coinflip_error(self, ctx: commands.Context, error: Exception):
@@ -270,7 +273,10 @@ class BasicGames(commands.Cog):
         embed.add_field(name="💳 Số dư mới", value=f"{new_balance:,}", inline=False)
         embed.set_footer(text="Angelic Casino • Dice 7 🌸")
         delay = 10.0 if ctx.channel.id == 1498711783223853101 else None
-        await ctx.send(embed=embed, delete_after=delay)
+        if delay is not None:
+            await ctx.send(embed=embed, delete_after=delay)
+        else:
+            await ctx.send(embed=embed)
 
     @dice_cmd.error
     async def dice_error(self, ctx: commands.Context, error: Exception):
@@ -394,8 +400,9 @@ class CupsView(discord.ui.View):
         embed.add_field(name="💳 Số dư mới", value=f"{new_balance:,}", inline=False)
         embed.set_footer(text="Angelic Casino • Cups 🌸")
         await interaction.response.edit_message(embed=embed, view=self)
-        if interaction.message.channel.id == 1498711783223853101:
-            await interaction.message.delete(delay=10.0)
+        if interaction.message and interaction.message.channel.id == 1498711783223853101:
+            if interaction.message:
+                await interaction.message.delete(delay=10.0)
 
     @discord.ui.button(label="🥤 1", style=discord.ButtonStyle.secondary)
     async def cup_1(self, interaction: discord.Interaction, button: discord.ui.Button):
@@ -427,7 +434,8 @@ class CupsView(discord.ui.View):
                 embed.set_footer(text="Angelic Casino • Cups 🌸")
                 await self.message.edit(embed=embed, view=self)
                 if self.message.channel.id == 1498711783223853101:
-                    await self.message.delete(delay=10.0)
+                    if self.message:
+                        await self.message.delete(delay=10.0)
             except discord.HTTPException:
                 pass
 
@@ -478,8 +486,9 @@ class RouletteView(discord.ui.View):
             embed.add_field(name="💳 Số dư mới", value=f"{self.balance:,}", inline=False)
             embed.set_footer(text="Angelic Casino • Cò Quay Tử Thần 🌸")
             await interaction.response.edit_message(embed=embed, view=self)
-            if interaction.message.channel.id == 1498711783223853101:
-                await interaction.message.delete(delay=10.0)
+            if interaction.message and interaction.message.channel.id == 1498711783223853101:
+                if interaction.message:
+                    await interaction.message.delete(delay=10.0)
         else:
             self.survived_rounds += 1
             if self.survived_rounds == 5:
@@ -561,13 +570,15 @@ class RouletteView(discord.ui.View):
 
         if interaction:
             await interaction.response.edit_message(embed=embed, view=self)
-            if interaction.message.channel.id == 1498711783223853101:
-                await interaction.message.delete(delay=10.0)
+            if interaction.message and interaction.message.channel.id == 1498711783223853101:
+                if interaction.message:
+                    await interaction.message.delete(delay=10.0)
         elif self.message:
             try:
                 await self.message.edit(embed=embed, view=self)
                 if self.message.channel.id == 1498711783223853101:
-                    await self.message.delete(delay=10.0)
+                    if self.message:
+                        await self.message.delete(delay=10.0)
             except discord.HTTPException:
                 pass
 

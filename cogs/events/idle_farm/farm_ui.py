@@ -1,3 +1,4 @@
+import typing
 import time
 from typing import Any, Dict
 import discord
@@ -60,7 +61,7 @@ class PlantSeedSelect(discord.ui.Select):
         if selected_seed == "empty":
             return
             
-        seed_info = SEEDS.get(selected_seed, {})
+        seed_info = typing.cast(typing.Dict[str, typing.Any], dict(SEEDS.get(selected_seed, {})))
         await interaction.response.send_modal(PlantSlotModal(self.bot, user_id, view.author, selected_seed, seed_info, view))
 
 class PlantSlotModal(discord.ui.Modal):
@@ -72,7 +73,7 @@ class PlantSlotModal(discord.ui.Modal):
         required=True
     )
     
-    def __init__(self, bot: commands.Bot, user_id: str, author: discord.Member, seed_id: str, seed_info: dict, view: "FarmView"):
+    def __init__(self, bot: commands.Bot, user_id: str, author: discord.Member | discord.User, seed_id: str, seed_info: dict, view: "FarmView"):
         super().__init__(title=f"Gieo: {seed_info.get('name', seed_id)}")
         self.bot = bot
         self.user_id = user_id
@@ -117,7 +118,7 @@ class PlantSlotModal(discord.ui.Modal):
 class FarmView(discord.ui.View):
     """View chính của Nông Trại chứa các nút tương tác."""
     
-    def __init__(self, bot: commands.Bot, user_id: str, author: discord.Member, farm_data: Dict[str, Any]):
+    def __init__(self, bot: commands.Bot, user_id: str, author: discord.Member | discord.User, farm_data: Dict[str, Any]):
         super().__init__(timeout=120)
         self.bot = bot
         self.user_id = user_id
@@ -213,7 +214,7 @@ class ClearSlotModal(discord.ui.Modal, title="Cuốc Bỏ Cây Trồng"):
         required=True
     )
     
-    def __init__(self, bot: commands.Bot, user_id: str, author: discord.Member, view: FarmView):
+    def __init__(self, bot: commands.Bot, user_id: str, author: discord.Member | discord.User, view: FarmView):
         super().__init__()
         self.bot = bot
         self.user_id = user_id
@@ -240,7 +241,7 @@ class ClearSlotModal(discord.ui.Modal, title="Cuốc Bỏ Cây Trồng"):
         await interaction.followup.send(f"✅ {msg} (Tại Ô {slot_id})", ephemeral=True)
 
 
-def build_farm_embed(author: discord.Member, farm_data: Dict[str, Any]) -> discord.Embed:
+def build_farm_embed(author: discord.Member | discord.User, farm_data: Dict[str, Any]) -> discord.Embed:
     """
     Render giao diện text hiển thị trực quan các ô đất.
     Thay đổi icon cây trồng dựa theo tiến trình sinh trưởng.

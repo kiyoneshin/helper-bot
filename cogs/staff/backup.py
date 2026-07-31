@@ -142,11 +142,11 @@ class StaffBackupCog(commands.Cog):
                     embed=embed,
                     file=file_obj,
                 )
-            elif backup_channel:
+            elif isinstance(backup_channel, discord.TextChannel):
                 await backup_channel.send(embed=embed, file=file_obj)
                 log.info(f"Backup gửi thành công → #{backup_channel.name} | {file_size_mb:.2f} MB | {filename}")
             else:
-                log.warning(f"Kênh backup ID={channel_id} không tìm thấy, bỏ qua gửi file.")
+                log.warning(f"Kênh backup ID={channel_id} không tìm thấy hoặc không hỗ trợ gửi tin nhắn, bỏ qua gửi file.")
 
         except Exception as e:
             log.error(f"Lỗi khi xử lý hoặc gửi file backup: {e}", exc_info=True)

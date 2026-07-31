@@ -62,7 +62,7 @@ class BankingCog(commands.Cog):
         self.bot = bot
         self.daily_interest_loop.start()
 
-    def cog_unload(self):
+    async def cog_unload(self) -> None:
         self.daily_interest_loop.cancel()
 
     @commands.hybrid_command(name="vayno", aliases=["vay", "loan"])
@@ -71,12 +71,12 @@ class BankingCog(commands.Cog):
         uid = str(ctx.author.id)
         profile = await get_or_create_event_profile(self.bot, uid)
         
-        if profile["is_locked"]:
+        if profile and profile.get("is_locked"):
             await ctx.send("❌ Tài khoản của bạn đang bị khóa do vỡ nợ, không thể vay thêm!")
             return
 
-        total_earned = float(profile["total_earned"])
-        current_debt = float(profile["debt"])
+        total_earned = float(profile.get("total_earned", 0.0)) if profile else 0.0
+        current_debt = float(profile.get("debt", 0.0)) if profile else 0.0
         
         max_loan = total_earned * 0.5
         available_loan = max(0.0, max_loan - current_debt)
@@ -122,8 +122,8 @@ class BankingCog(commands.Cog):
         uid = str(ctx.author.id)
         profile = await get_or_create_event_profile(self.bot, uid)
         
-        current_debt = float(profile["debt"])
-        current_points = float(profile["points"])
+        current_debt = float(profile.get("debt", 0.0)) if profile else 0.0
+        current_points = float(profile.get("points", 0.0)) if profile else 0.0
         
         if current_debt <= 0:
             await ctx.send(f"✅ {ctx.author.mention} Bạn không có khoản nợ nào để trả!")
@@ -234,7 +234,7 @@ class BankingCog(commands.Cog):
             )
             
             # Gắn còi báo động đòi nợ nếu vừa bị khóa
-            if just_locked and debt_channel:
+            if just_locked and isinstance(debt_channel, discord.TextChannel):
                 await debt_channel.send(
                     f"🚨🚨 **CẢNH BÁO VỠ NỢ** 🚨🚨\n"
                     f"<@{uid}> đã âm vốn liên tiếp 2 ngày! Ngân hàng đã **SIẾT TÀI SẢN & KHÓA TÀI KHOẢN**.\n"

@@ -83,8 +83,8 @@ async def get_and_update_stamina(bot: commands.Bot, user_id: str) -> int:
     farm_data = await get_farm_data(bot, user_id)
     now = int(time.time())
 
-    current_stamina: int = int(farm_data.get("stamina", MAX_STAMINA))
-    last_update: int    = int(farm_data.get("last_stamina_update", now))
+    current_stamina: int = int((farm_data or {}).get("stamina", MAX_STAMINA))
+    last_update: int    = int((farm_data or {}).get("last_stamina_update", now))
 
     # Anti-cheat: clamp elapsed thành tối đa đủ để fill hết thể lực
     max_seconds_needed = (MAX_STAMINA - current_stamina) * STAMINA_REGEN_INTERVAL_SECONDS
@@ -114,7 +114,7 @@ async def save_farm_data(bot: commands.Bot, user_id: str, farm_data: Dict[str, A
     except Exception as e:
         log.error(f"Lỗi khi save_farm_data cho {user_id}: {e}")
 
-def calculate_crop_status(crop_data: Dict[str, Any], slot_id: str = None, crops: Dict[str, Any] = None) -> Tuple[str, int]:
+def calculate_crop_status(crop_data: Dict[str, Any], slot_id: str | None = None, crops: Dict[str, Any] | None = None) -> Tuple[str, int]:
     """
     Tính toán trạng thái cây trồng (sync).
     Trả về (Trạng Thái, Thời Gian Còn Lại/Quá Hạn tính bằng giây).
@@ -132,6 +132,9 @@ def calculate_crop_status(crop_data: Dict[str, Any], slot_id: str = None, crops:
     }
     try:
         seed_id = crop_data.get("seed")
+        if not isinstance(seed_id, str):
+            return config.STATUS_EMPTY, 0
+        
         planted_at = crop_data.get("planted_at", 0)
         watered = crop_data.get("watered", False)
         
@@ -178,8 +181,8 @@ async def plant_seed(bot: commands.Bot, user_id: str, slot_id: str, seed_type: s
         return False, "Hạt giống không tồn tại!"
         
     farm_data = await get_farm_data(bot, user_id)
-    inventory = farm_data.get("inventory", {})
-    crops = farm_data.get("crops", {})
+    inventory = (farm_data or {}).get("inventory", {})
+    crops = (farm_data or {}).get("crops", {})
     
     seed_item_id = f"seed_{seed_type}"
     if inventory.get(seed_item_id, 0) < 1:
@@ -189,7 +192,7 @@ async def plant_seed(bot: commands.Bot, user_id: str, slot_id: str, seed_type: s
     # Ép slot_id về string để key json đồng nhất
     slot_id_str = str(slot_id)
     
-    max_slots = farm_data.get("slots", 3)
+    max_slots = (farm_data or {}).get("slots", 3)
     try:
         slot_num = int(slot_id_str)
         if slot_num > max_slots or slot_num < 1:
@@ -249,7 +252,7 @@ async def water_all(bot: commands.Bot, user_id: str) -> Tuple[bool, int]:
     Xử lý logic tưới nước cho toàn bộ vườn.
     """
     farm_data = await get_farm_data(bot, user_id)
-    crops = farm_data.get("crops", {})
+    crops = (farm_data or {}).get("crops", {})
     
     watered_count = 0
     changed = False
@@ -274,7 +277,7 @@ async def harvest_all(bot: commands.Bot, user_id: str) -> Tuple[bool, Dict[str, 
     Thu hoạch toàn bộ cây có trạng thái READY. Có cơ chế Cây Khổng Lồ (Giant Crops).
     """
     farm_data = await get_farm_data(bot, user_id)
-    crops = farm_data.get("crops", {})
+    crops = (farm_data or {}).get("crops", {})
     inventory = farm_data.setdefault("inventory", {})
     
     harvest_report = {}
@@ -379,7 +382,7 @@ async def sell_inventory(bot: commands.Bot, user_id: str, category: str) -> int:
     from cogs.events.fishing.fishing_config import FISH_LOOT
     
     farm_data = await get_farm_data(bot, user_id)
-    inventory = farm_data.get("inventory", {})
+    inventory = (farm_data or {}).get("inventory", {})
     
     if not inventory:
         return 0
@@ -447,7 +450,7 @@ async def remove_crop(bot: commands.Bot, user_id: str, slot_id: str) -> Tuple[bo
     Cuốc bỏ cây trồng ở một ô đất cụ thể.
     """
     farm_data = await get_farm_data(bot, user_id)
-    crops = farm_data.get("crops", {})
+    crops = (farm_data or {}).get("crops", {})
     
     slot_id_str = str(slot_id)
     
@@ -464,7 +467,7 @@ async def expand_farm_slot(bot: commands.Bot, user_id: str) -> Tuple[bool, str]:
     Mở rộng thêm 1 ô đất cho Nông trại. Tối đa đạt MAX_SLOTS.
     """
     farm_data = await get_farm_data(bot, user_id)
-    current_slots = farm_data.get("slots", 3)
+    current_slots = (farm_data or {}).get("slots", 3)
     
     if current_slots >= config.MAX_SLOTS:
         return False, "Nông trại của bạn đã đạt kích thước tối đa!"
@@ -508,7 +511,7 @@ async def sell_items_partial(
     from cogs.events.fishing.fishing_config import FISH_LOOT
 
     farm_data = await get_farm_data(bot, user_id)
-    inventory = farm_data.get("inventory", {})
+    inventory = (farm_data or {}).get("inventory", {})
 
     current_qty = inventory.get(item_id, 0)
     if current_qty <= 0:

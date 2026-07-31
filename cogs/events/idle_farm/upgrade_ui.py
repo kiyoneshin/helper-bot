@@ -25,7 +25,7 @@ from cogs.events.fishing.fishing_config import (
 # EMBED
 # ---------------------------------------------------------------------------
 
-def build_upgrade_embed(author: discord.Member, farm_data: Dict[str, Any], points: float) -> discord.Embed:
+def build_upgrade_embed(author: discord.Member | discord.User, farm_data: Dict[str, Any], points: float) -> discord.Embed:
     embed = discord.Embed(
         title="🔧 Nâng Cấp Trang Trại",
         color=0x3498db,
@@ -109,7 +109,7 @@ def build_upgrade_embed(author: discord.Member, farm_data: Dict[str, Any], point
 # ---------------------------------------------------------------------------
 
 class UpgradeView(discord.ui.View):
-    def __init__(self, bot: commands.Bot, user_id: str, author: discord.Member, farm_data: Dict[str, Any]):
+    def __init__(self, bot: commands.Bot, user_id: str, author: discord.Member | discord.User, farm_data: Dict[str, Any]):
         super().__init__(timeout=120)
         self.bot     = bot
         self.user_id = user_id
@@ -166,7 +166,7 @@ class UpgradeView(discord.ui.View):
     # -----------------------------------------------------------------------
     # HELPER: refresh embed & view
     # -----------------------------------------------------------------------
-    async def _refresh(self, interaction: discord.Interaction, msg: str) -> None:
+    async def update_view(self, interaction: discord.Interaction, msg: str) -> None:
         new_farm_data = await get_farm_data(self.bot, self.user_id)
         user_points   = await fetchval_db(self.bot, "SELECT points FROM event_profiles WHERE discord_id = $1", self.user_id)
         points        = float(user_points) if user_points else 0.0
@@ -186,7 +186,7 @@ class UpgradeView(discord.ui.View):
         if not ok:
             await interaction.response.send_message(f"❌ {msg}", ephemeral=True)
             return
-        await self._refresh(interaction, msg)
+        await self.update_view(interaction, msg)
 
     # -----------------------------------------------------------------------
     # CALLBACK: Nâng cấp Cuốc
@@ -232,7 +232,7 @@ class UpgradeView(discord.ui.View):
         await save_farm_data(self.bot, self.user_id, farm_data)
 
         new_name = PICKAXE_NAMES.get(pickaxe_level + 1, f"Lv{pickaxe_level + 1}")
-        await self._refresh(interaction, f"Nâng cấp thành công! Cuốc mới: **{new_name}**")
+        await self.update_view(interaction, f"Nâng cấp thành công! Cuốc mới: **{new_name}**")
 
     # -----------------------------------------------------------------------
     # CALLBACK: Nâng cấp Cần câu
@@ -276,4 +276,4 @@ class UpgradeView(discord.ui.View):
         await save_farm_data(self.bot, self.user_id, farm_data)
 
         new_name = ROD_NAMES.get(rod_level + 1, f"Lv{rod_level + 1}")
-        await self._refresh(interaction, f"Nâng cấp thành công! Cần câu mới: **{new_name}**")
+        await self.update_view(interaction, f"Nâng cấp thành công! Cần câu mới: **{new_name}**")

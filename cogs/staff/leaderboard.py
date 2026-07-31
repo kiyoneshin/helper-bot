@@ -591,7 +591,8 @@ class DateSelectionView(discord.ui.View):
                 view=None,
             )
             if interaction.message:
-                await interaction.message.delete(delay=2)
+                if interaction.message:
+                    await interaction.message.delete(delay=2)
         except Exception:
             pass
 

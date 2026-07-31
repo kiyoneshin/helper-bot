@@ -40,7 +40,7 @@ def _mins_to_full(stamina: int) -> str:
 # EMBED
 # ---------------------------------------------------------------------------
 
-def build_mining_embed(author: discord.Member, stamina: int, farm_data: Dict[str, Any]) -> discord.Embed:
+def build_mining_embed(author: discord.Member | discord.User, stamina: int, farm_data: Dict[str, Any]) -> discord.Embed:
     """Render giao diện Hang Động với thanh thể lực và thông tin cuốc hiện tại."""
     pickaxe_level = int(farm_data.get("pickaxe_level", 1))
     pickaxe_name  = PICKAXE_NAMES.get(pickaxe_level, f"Lv{pickaxe_level}")
@@ -95,7 +95,7 @@ def build_mining_embed(author: discord.Member, stamina: int, farm_data: Dict[str
 class MiningView(discord.ui.View):
     """View chính của Khu Mỏ."""
 
-    def __init__(self, bot: commands.Bot, user_id: str, author: discord.Member, stamina: int):
+    def __init__(self, bot: commands.Bot, user_id: str, author: discord.Member | discord.User, stamina: int):
         super().__init__(timeout=300)
         self.bot = bot
         self.user_id = user_id

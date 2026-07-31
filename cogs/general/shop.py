@@ -21,6 +21,7 @@ from cogs.common.db import (
 )
 from cogs.common.item_config import (
     ITEM_REGISTRY,
+    ItemEntry,
     get_buyable_items,
     get_item_by_id,
 )
@@ -159,7 +160,7 @@ class ShopView(discord.ui.View):
 async def _buy_event_item(
     ctx: commands.Context,
     bot: commands.Bot,
-    item: dict[str, Any],
+    item: ItemEntry,
     amount: int,
 ) -> None:
     """Xử lý mua vật phẩm sự kiện (ID 0–9)."""
@@ -242,7 +243,7 @@ async def _buy_event_item(
 async def _buy_farm_item(
     ctx: commands.Context,
     bot: commands.Bot,
-    item: dict[str, Any],
+    item: ItemEntry,
     amount: int,
 ) -> None:
     """Xử lý mua hạt giống Farm (ID 10–19) — gọi buy_seed trong farm_db."""
@@ -258,7 +259,7 @@ async def _buy_farm_item(
 async def _buy_blackmarket_item(
     ctx: commands.Context,
     bot: commands.Bot,
-    item: dict[str, Any],
+    item: ItemEntry,
     amount: int,
 ) -> None:
     """Xử lý mua vật phẩm Chợ đen (ID 20–29)."""

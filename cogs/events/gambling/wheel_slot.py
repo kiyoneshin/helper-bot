@@ -305,7 +305,10 @@ class WheelSlots(commands.Cog):
 
         embed.set_footer(text="Angelic Casino • Vòng Quay May Mắn 🌸")
         delay = 10.0 if ctx.channel.id == 1498711783223853101 else None
-        await ctx.send(embed=embed, delete_after=delay)
+        if delay is not None:
+            await ctx.send(embed=embed, delete_after=delay)
+        else:
+            await ctx.send(embed=embed)
 
     @wheel_cmd.error
     async def wheel_error(self, ctx: commands.Context, error: Exception) -> None:
@@ -382,7 +385,10 @@ class WheelSlots(commands.Cog):
 
         embed.set_footer(text="Angelic Casino • Máy Xẻng 🌸")
         delay = 10.0 if ctx.channel.id == 1498711783223853101 else None
-        await ctx.send(embed=embed, delete_after=delay)
+        if delay is not None:
+            await ctx.send(embed=embed, delete_after=delay)
+        else:
+            await ctx.send(embed=embed)
 
     @slots_cmd.error
     async def slots_error(self, ctx: commands.Context, error: Exception) -> None:
