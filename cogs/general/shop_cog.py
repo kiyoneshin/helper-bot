@@ -16,6 +16,7 @@ from cogs.common.db import (
     deduct_event_points,
     execute_db,
     fetchrow_db,
+    fetchval_db,
     get_or_create_event_profile,
 )
 from cogs.common.item_config import (
@@ -165,6 +166,69 @@ async def _buy_event_item(
         is_locked = lottery_cog.is_locked if lottery_cog else False
         ok, msg = await buy_lottery_tickets(bot, str(ctx.author.id), amount, is_locked)
         await ctx.send(f"{ctx.author.mention} {msg}", delete_after=10.0)
+    elif item["id"] in [2, 3, 4, 5, 6]:
+        uid = str(ctx.author.id)
+        price = item["price"]
+        if price is None:
+            await ctx.send("❌ Vật phẩm này không thể mua!", delete_after=5.0)
+            return
+
+        total = price * amount
+
+        # Special logic for ID 5 (Role Vĩnh Viễn)
+        if item["id"] == 5:
+            count = await fetchval_db(
+                bot,
+                "SELECT COUNT(*) FROM event_profiles WHERE COALESCE((inventory->>'item_4')::int, 0) > 0"
+            )
+            if count is not None and count >= 5:
+                await ctx.send("❌ Rất tiếc, vật phẩm này đã đạt giới hạn 5 người đổi!", delete_after=5.0)
+                return
+
+        await get_or_create_event_profile(bot, uid)
+        ok = await deduct_event_points(bot, uid, total)
+        if not ok:
+            await ctx.send(
+                f"❌ {ctx.author.mention} Không đủ điểm! Cần **{total:,}** điểm để mua **{amount}x {item['name']}**.",
+                delete_after=5.0
+            )
+            return
+
+        # Write to inventory
+        row = await fetchrow_db(bot, "SELECT inventory FROM event_profiles WHERE discord_id = $1", uid)
+        inv: dict[str, int] = {}
+        if row and row["inventory"]:
+            try:
+                inv = json.loads(row["inventory"]) if isinstance(row["inventory"], str) else row["inventory"]
+            except Exception:
+                pass
+
+        db_key = item["db_key"]
+        inv[db_key] = inv.get(db_key, 0) + amount
+
+        await execute_db(
+            bot,
+            "UPDATE event_profiles SET inventory = $2::jsonb WHERE discord_id = $1",
+            uid,
+            json.dumps(inv),
+        )
+
+        # Notify
+        if item["id"] == 6:
+            await ctx.send(
+                f"✅ {ctx.author.mention} Đã mua thành công **{item['name']}**! "
+                f"Yêu cầu của bạn đã được ghi nhận. Ban Quản Trị sẽ sớm liên hệ."
+            )
+            await ctx.channel.send(
+                f"👑 Chúc mừng {ctx.author.mention} vừa đổi thành công **{item['name']}** "
+                f"(với giá {total:,} điểm)! Hãy chờ Admin trao giải nhé!"
+            )
+        else:
+            await ctx.send(
+                f"✅ {ctx.author.mention} Đã mua **{amount}x {item['icon']} {item['name']}** "
+                f"với giá **{total:,}** điểm. Vật phẩm đã nằm trong `y!inv`!",
+                delete_after=10.0,
+            )
     else:
         await ctx.send(
             f"❌ Vật phẩm **{item['name']}** không thể mua trong shop hiện tại.",
