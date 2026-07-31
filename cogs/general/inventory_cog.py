@@ -24,7 +24,6 @@ from cogs.events.idle_farm.farm_db import (
     sell_inventory,
     sell_items_partial,
 )
-from cogs.events.generals.black_market import BLACK_MARKET_ITEMS
 
 log = logging.getLogger("InventoryCog")
 

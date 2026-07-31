@@ -68,7 +68,10 @@ def build_shop_embed(category: str, author: discord.Member | discord.User) -> di
     else:
         embed.description = "*Không có vật phẩm nào để mua ở mục này.*"
 
-    embed.set_footer(text="💡 Hướng dẫn: Dùng lệnh y!buy <id> [số_lượng] để mua vật phẩm.")
+    if category == "blackmarket":
+        embed.set_footer(text="💡 Lưu ý: Cửa hàng này chỉ để xem. Bạn chỉ có thể mua bằng lệnh y!ebuy khi Chợ Đêm mở (y!choden)!")
+    else:
+        embed.set_footer(text="💡 Hướng dẫn: Dùng lệnh y!buy <id> [số_lượng] để mua vật phẩm.")
     return embed
 
 
@@ -166,7 +169,7 @@ async def _buy_event_item(
         is_locked = lottery_cog.is_locked if lottery_cog else False
         ok, msg = await buy_lottery_tickets(bot, str(ctx.author.id), amount, is_locked)
         await ctx.send(f"{ctx.author.mention} {msg}", delete_after=10.0)
-    elif item["id"] in [2, 3, 4, 5, 6]:
+    elif item["id"] in [1, 2, 3, 4, 5]:
         uid = str(ctx.author.id)
         price = item["price"]
         if price is None:
@@ -175,8 +178,8 @@ async def _buy_event_item(
 
         total = price * amount
 
-        # Special logic for ID 5 (Role Vĩnh Viễn)
-        if item["id"] == 5:
+        # Special logic for ID 4 (Role Vĩnh Viễn)
+        if item["id"] == 4:
             count = await fetchval_db(
                 bot,
                 "SELECT COUNT(*) FROM event_profiles WHERE COALESCE((inventory->>'item_4')::int, 0) > 0"
@@ -214,7 +217,7 @@ async def _buy_event_item(
         )
 
         # Notify
-        if item["id"] == 6:
+        if item["id"] == 5:
             await ctx.send(
                 f"✅ {ctx.author.mention} Đã mua thành công **{item['name']}**! "
                 f"Yêu cầu của bạn đã được ghi nhận. Ban Quản Trị sẽ sớm liên hệ."
@@ -331,7 +334,7 @@ class ShopCog(commands.Cog):
     async def buy_cmd(self, ctx: commands.Context, item_id: int, amount: int = 1) -> None:
         """Mua vật phẩm theo ID số trong ITEM_REGISTRY."""
         if amount <= 0:
-            await ctx.send("❌ Số lượng phải lớn hơn 0!", delete_after=5.0)
+            await ctx.send("❌ Số lượng mua phải lớn hơn 0!", delete_after=5.0)
             return
 
         item = get_item_by_id(item_id)
@@ -340,6 +343,14 @@ class ShopCog(commands.Cog):
                 f"❌ Không tìm thấy vật phẩm với ID `{item_id}`! "
                 f"Dùng `y!shop` để xem danh sách.",
                 delete_after=5.0,
+            )
+            return
+
+        # Block black market buying
+        if item["category"] == "blackmarket":
+            await ctx.send(
+                "❌ Bạn không thể mua trực tiếp vật phẩm chợ đen ở đây! Hãy chờ Chợ Đêm mở (`y!choden`) và dùng lệnh `y!ebuy`.",
+                delete_after=7.0,
             )
             return
 

@@ -53,9 +53,14 @@ async def _get_or_refresh_daily_shop(bot: Any) -> Dict[str, Any]:
 
     row = await fetchrow_db(bot, "SELECT shop_data FROM black_market_daily WHERE sale_date = $1", today)
     if row:
-        # Đã có shop hôm nay — parse và trả về
+        # Đã có shop hôm nay — parse và kiểm tra định dạng
         try:
-            return json.loads(row['shop_data']) if isinstance(row['shop_data'], str) else row['shop_data']
+            data = json.loads(row['shop_data']) if isinstance(row['shop_data'], str) else row['shop_data']
+            # Kiểm tra xem có trường "db_key" của định dạng mới không
+            if data and all("db_key" in v for v in data.values()):
+                return data
+            else:
+                log.warning("Định dạng shop_data cũ, sẽ tiến hành làm mới.")
         except Exception as e:
             log.error(f"Lỗi parse shop_data: {e}")
 
