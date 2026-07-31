@@ -49,16 +49,7 @@ class IdleFarmCog(commands.Cog):
         
         await ctx.send(embed=embed, view=view)
 
-    @commands.hybrid_command(name="bag", aliases=["khodo", "farmbag"])
-    async def bag_cmd(self, ctx: commands.Context) -> None:
-        """🎒 Xem kho đồ Nông trại của bạn."""
-        user_id = str(ctx.author.id)
-        farm_data = await get_farm_data(self.bot, user_id)
-        
-        embed = build_bag_embed(ctx.author, farm_data)
-        view = BagView(self.bot, user_id, ctx.author)
-        
-        await ctx.send(embed=embed, view=view)
+
 
     @commands.hybrid_command(name="upgrade", aliases=["nangcap", "morong"])
     async def upgrade_cmd(self, ctx: commands.Context) -> None:
