@@ -1,4 +1,4 @@
-﻿import discord
+import discord
 from discord.ext import commands
 import logging
 import json
@@ -14,22 +14,7 @@ log = logging.getLogger("BlackMarket")
 # Múi giờ UTC+7
 UTC7 = timezone(timedelta(hours=7))
 
-# =====================================================================
-# I. DANH SÁCH VẬT PHẨM CHỢ ĐEN (Đã thêm Giá chuẩn theo mốc 1,640đ/ngày)
-# =====================================================================
-BLACK_MARKET_ITEMS: Dict[str, Dict[str, Any]] = {
-    "timeout_1m":      {"name": "Búa Gõ 1 Phút 🔨",       "price": 2500,  "description": "Timeout mục tiêu 1 phút"},
-    "ghost_ping_card": {"name": "Bom Ảo Giác 💣",          "price": 3000,  "description": "Bot gửi tin nhắn tag mục tiêu rồi xóa ngay lập tức 3 lần liên tục"},
-    "timeout_5m":      {"name": "Búa Gõ 5 Phút 🔨",       "price": 5000,  "description": "Timeout mục tiêu 5 phút"},
-    "thief_card":      {"name": "Bao Tay Đạo Chích 🧤",    "price": 6500,  "description": "Trộm ngẫu nhiên 50-500 điểm sự kiện của mục tiêu"},
-    "nickname_change": {"name": "Thẻ Đổi Tên 🤡",         "price": 8000,  "description": "Buộc mục tiêu đổi biệt danh thành một tên tấu hài ngẫu nhiên"},
-    "shield_card":     {"name": "Thẻ Miễn Nhiễm 🛡️",      "price": 10000, "description": "Tự động chặn 1 lần bị người khác dùng thẻ xấu lên mình"},
-    "disconnect_card": {"name": "Thẻ Rút Phích Cắm 🔌",   "price": 12000, "description": "Đá văng mục tiêu khỏi Voice Channel ngay lập tức"},
-    "free_card":       {"name": "Thẻ Đặc Xá 🕊️",         "price": 12000, "description": "Cứu người khác khỏi tù hoặc tự cứu mình (tương đương y!thatu)"},
-    "jail_card":       {"name": "Thẻ Tống Giam 🚔",        "price": 15000, "description": "Gửi 1 người vào chuồng chó (tương đương y!phattu)"},
-    "fake_ban_card":   {"name": "Trát Hầu Tòa 📜",         "price": 20000, "description": "Gửi một Embed dọa ban vĩnh viễn cực kỳ nghiêm trọng rồi chốt là đùa"},
-}
-
+from cogs.common.item_config import get_items_by_category, ITEM_REGISTRY
 
 # =====================================================================
 # II. HÀM HELPER DATABASE - CHỢ NGÀY
@@ -77,13 +62,17 @@ async def _get_or_refresh_daily_shop(bot: Any) -> Dict[str, Any]:
     # Chưa có (hoặc parse lỗi) → Xóa cũ, tạo mới
     await execute_db(bot, "DELETE FROM black_market_daily")
 
-    chosen_ids = random.sample(list(BLACK_MARKET_ITEMS.keys()), k=3)
+    bm_items = get_items_by_category("blackmarket")
+    chosen = random.sample(bm_items, k=3)
+    chosen.sort(key=lambda x: x["id"])
+
     shop_data: Dict[str, Any] = {}
-    for idx, item_id in enumerate(chosen_ids, start=1):
-        price = BLACK_MARKET_ITEMS[item_id]["price"]
-        shop_data[str(idx)] = {
-            "item_id": item_id,
-            "stock":   _calc_stock(price),
+    for item in chosen:
+        price = item["price"] or 0
+        item_id = str(item["id"])
+        shop_data[item_id] = {
+            "db_key": item["db_key"],
+            "stock": _calc_stock(price),
         }
 
     await execute_db(
@@ -92,7 +81,7 @@ async def _get_or_refresh_daily_shop(bot: Any) -> Dict[str, Any]:
         today,
         json.dumps(shop_data),
     )
-    log.info(f"🌙 Chợ Đêm mới ngày {today}: {[v['item_id'] for v in shop_data.values()]}")
+    log.info(f"🌙 Chợ Đêm mới ngày {today}: {list(shop_data.keys())}")
     return shop_data
 
 
@@ -152,17 +141,20 @@ class BlackMarketCog(commands.Cog):
         )
         embed.set_thumbnail(url="https://cdn.discordapp.com/attachments/1513465012344193088/1530634452357742733/pepe-evil.gif?ex=6a6649eb&is=6a64f86b&hm=be3d5c561533f9f25e490ab00930c0a8a12aab0813351080116ee9e19a7c2808&")  # Optional
 
-        for slot, slot_info in shop_data.items():
-            item_id   = slot_info["item_id"]
-            stock     = slot_info["stock"]
-            item_data = BLACK_MARKET_ITEMS[item_id]
-            price     = item_data["price"]
+        for slot_id, slot_info in shop_data.items():
+            db_key = slot_info["db_key"]
+            stock  = slot_info["stock"]
+            
+            # Find item from registry
+            item_data = ITEM_REGISTRY[int(slot_id)]
+            price     = item_data["price"] or 0
             name      = item_data["name"]
             desc      = item_data["description"]
+            icon      = item_data["icon"]
 
             stock_text = f"**{stock}** chiếc" if stock > 0 else "~~Cháy hàng~~"
             embed.add_field(
-                name=f"🛒 Mã số `{slot}` — {name}",
+                name=f"🛒 Mã số `[{slot_id}]` — {icon} {name}",
                 value=f"Giá: **{price:,}** điểm | Còn lại: {stock_text}\n*{desc}*",
                 inline=False,
             )
@@ -175,7 +167,7 @@ class BlackMarketCog(commands.Cog):
     # ------------------------------------------------------------------
     @commands.hybrid_command(name="ebuy", aliases=["muadem", "bmbuy"])
     async def event_buy_cmd(self, ctx: commands.Context, slot_id: str, quantity: int = 1) -> None:
-        """🛒 Mua vật phẩm từ Chợ Đêm theo mã số (1, 2, hoặc 3)"""
+        """🛒 Mua vật phẩm từ Chợ Đêm theo mã số ID vật phẩm"""
         now_vn = datetime.now(UTC7)
         if not (0 <= now_vn.hour < 2):
             await ctx.send("❌ Chợ Đêm hiện đang đóng cửa! Gõ `y!choden` để xem thời gian mở lại.", delete_after=5.0)
@@ -190,20 +182,21 @@ class BlackMarketCog(commands.Cog):
 
         shop_data = await _get_or_refresh_daily_shop(self.bot)
 
-        if slot_id not in ["1", "2", "3"]:
+        if slot_id not in shop_data:
             await ctx.send(
-                "❌ Mã số không hợp lệ! Vui lòng nhập **1**, **2** hoặc **3** theo bảng `y!choden`.",
+                f"❌ Mã số không hợp lệ! Vui lòng nhập đúng mã số vật phẩm đang bán trong `y!choden`.",
                 delete_after=5.0,
             )
             return
 
         # 2. Kiểm tra tồn kho
         slot_info = shop_data[slot_id]
-        item_id   = slot_info["item_id"]
+        db_key    = slot_info["db_key"]
         stock     = slot_info["stock"]
-        item_data = BLACK_MARKET_ITEMS[item_id]
+        
+        item_data = ITEM_REGISTRY[int(slot_id)]
         item_name = item_data["name"]
-        price     = item_data["price"]
+        price     = item_data["price"] or 0
 
         if stock == 0:
             await ctx.send(
@@ -249,7 +242,7 @@ class BlackMarketCog(commands.Cog):
             except Exception as e:
                 log.error(f"Lỗi parse inventory khi ebuy cho {uid}: {e}")
 
-        inv[item_id] = inv.get(item_id, 0) + quantity
+        inv[db_key] = inv.get(db_key, 0) + quantity
         await execute_db(
             self.bot,
             "UPDATE event_profiles SET inventory = $2::jsonb WHERE discord_id = $1",
@@ -260,7 +253,7 @@ class BlackMarketCog(commands.Cog):
         # 6. Thông báo thành công
         await ctx.send(
             f"🛒 Mua thành công **{quantity}x {item_name}** với giá **{total_price:,}** điểm. "
-            f"Hãy dùng `y!use {item_id}` để xài!"
+            f"Hãy dùng `y!use {slot_id}` để xài!"
         )
 
 async def setup(bot: Any) -> None:

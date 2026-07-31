@@ -65,16 +65,35 @@ def _build_regular_embed(
             for item in ITEM_REGISTRY.values()
             if item["category"] == category
         }
+        
+        items_to_display = []
+        unrecognized = []
         for db_key, qty in inv.items():
+            if qty <= 0:
+                continue
+            
             meta = db_key_to_item.get(db_key)
             if meta:
-                lines.append(
-                    f"`[{meta['id']}]` {meta['icon']} **{meta['name']}** (x{qty}) — {meta['description']}"
-                )
+                items_to_display.append((meta, qty))
             else:
-                # Fallback: item chưa có trong registry
-                lines.append(f"• `{db_key}` × {qty}")
-        embed.description = "\n".join(lines)
+                # Kiểm tra xem item này có thuộc category KHÁC không
+                is_known = any(item["db_key"] == db_key for item in ITEM_REGISTRY.values())
+                # Chỉ hiển thị item KHÔNG NẰM TRONG REGISTRY vào tab event để tránh rác tab khác
+                if not is_known and category == "event":
+                    unrecognized.append((db_key, qty))
+                    
+        # Sắp xếp theo ID tăng dần
+        items_to_display.sort(key=lambda x: x[0]["id"])
+        
+        for meta, qty in items_to_display:
+            lines.append(
+                f"`[{meta['id']}]` {meta['icon']} **{meta['name']}** (x{qty}) — {meta['description']}"
+            )
+            
+        for db_key, qty in unrecognized:
+            lines.append(f"• `{db_key}` × {qty}")
+            
+        embed.description = "\n".join(lines) if lines else "*Không có vật phẩm nào thuộc mục này.*"
 
     embed.set_footer(text=footer)
     return embed

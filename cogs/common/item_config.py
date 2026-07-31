@@ -51,16 +51,6 @@ ITEM_REGISTRY: dict[int, ItemEntry] = {
     },
     1: {
         "id":          1,
-        "name":        "Thẻ Tăng Tốc",
-        "icon":        "⚡",
-        "price":       None,              # Không bán trong shop — chỉ nhận qua sự kiện
-        "description": "Giảm 50% thời gian hồi thể lực trong 30 phút.",
-        "db_key":      "boost_card",
-        "category":    "event",
-        "usable":      True,
-    },
-    2: {
-        "id":          2,
         "name":        "Hộp Quà Bí Ẩn (Gacha)",
         "icon":        "🎁",
         "price":       2500,
@@ -69,8 +59,8 @@ ITEM_REGISTRY: dict[int, ItemEntry] = {
         "category":    "event",
         "usable":      True,
     },
-    3: {
-        "id":          3,
+    2: {
+        "id":          2,
         "name":        "Role Màu Sự Kiện",
         "icon":        "🎭",
         "price":       10000,
@@ -79,8 +69,8 @@ ITEM_REGISTRY: dict[int, ItemEntry] = {
         "category":    "event",
         "usable":      False,
     },
-    4: {
-        "id":          4,
+    3: {
+        "id":          3,
         "name":        "Role Màu Thiết Kế Riêng",
         "icon":        "🎨",
         "price":       30000,
@@ -89,8 +79,8 @@ ITEM_REGISTRY: dict[int, ItemEntry] = {
         "category":    "event",
         "usable":      False,
     },
-    5: {
-        "id":          5,
+    4: {
+        "id":          4,
         "name":        "Role Biểu Tượng Vĩnh Viễn",
         "icon":        "👑",
         "price":       70000,
@@ -99,8 +89,8 @@ ITEM_REGISTRY: dict[int, ItemEntry] = {
         "category":    "event",
         "usable":      False,
     },
-    6: {
-        "id":          6,
+    5: {
+        "id":          5,
         "name":        "Vật Phẩm Tối Cao",
         "icon":        "🏆",
         "price":       110000,
@@ -108,6 +98,16 @@ ITEM_REGISTRY: dict[int, ItemEntry] = {
         "db_key":      "item_5",
         "category":    "event",
         "usable":      False,
+    },
+    6: {
+        "id":          6,
+        "name":        "Thẻ Tăng Tốc",
+        "icon":        "⚡",
+        "price":       None,              # Không bán trong shop — chỉ nhận qua sự kiện
+        "description": "Giảm 50% thời gian hồi thể lực trong 30 phút.",
+        "db_key":      "boost_card",
+        "category":    "event",
+        "usable":      True,
     },
 
     # ──────────────────────────────────────────────────────────
