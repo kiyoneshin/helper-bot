@@ -19,17 +19,18 @@ class CasinoCleanupCog(commands.Cog):
         if not self.bot.user or message.author.id != self.bot.user.id:
             return
             
-        # Chỉ quan tâm tin nhắn có chứa embed
-        if not message.embeds:
+        # Kiểm tra xem đây có phải là tin nhắn welcome không (dựa vào text)
+        content_lower = message.content.lower()
+        is_welcome = "chào mừng" in content_lower or "queo căm" in content_lower or "lốp ăng giê líc xin chào" in content_lower
+        if is_welcome:
             return
-            
         # Kiểm tra xem tin nhắn có components (buttons/selects) không
         has_components = len(message.components) > 0
         
         # Nếu KHÔNG CÓ nút bấm (ví dụ lệnh help, lệnh xem point, hoặc thông báo thường)
         if not has_components:
-            # Xoá sau 5 phút (300 giây)
-            await asyncio.sleep(300.0)
+            # Xoá sau 2 phút (120 giây)
+            await asyncio.sleep(120.0)
             try:
                 await message.delete()
             except discord.NotFound:
@@ -51,9 +52,10 @@ class CasinoCleanupCog(commands.Cog):
         if not self.bot.user or after.author.id != self.bot.user.id:
             return
             
-        if not after.embeds:
+        content_lower = after.content.lower()
+        is_welcome = "chào mừng" in content_lower or "queo căm" in content_lower or "lốp ăng giê líc xin chào" in content_lower
+        if is_welcome:
             return
-            
         # Kiểm tra xem tin nhắn có components không
         if len(after.components) == 0:
             return
@@ -71,8 +73,8 @@ class CasinoCleanupCog(commands.Cog):
                 
         # Nếu tất cả đã bị vô hiệu hoá (vd: View đã timeout)
         if all_disabled:
-            # Bắt đầu đếm ngược 5 phút (300s) rồi xoá
-            await asyncio.sleep(300.0)
+            # Bắt đầu đếm ngược 2 phút (120s) rồi xoá
+            await asyncio.sleep(120.0)
             try:
                 await after.delete()
             except discord.NotFound:
