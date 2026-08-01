@@ -23,6 +23,8 @@ from .core import (
     add_penalty,
     reduce_penalty,
     release_member,
+    notify_cooldown,
+    MAIN_CHANNEL_ID,
 )
 
 
@@ -113,6 +115,9 @@ class JailGames(commands.Cog):
             await msg.edit(embed=embed_result)
         except discord.HTTPException:
             await ctx.send(embed=embed_result)
+            
+        if not freed:
+            self.bot.loop.create_task(notify_cooldown(ctx, 20.0, "lcuoc"))
 
     @lcuoc_cmd.error
     async def lcuoc_error(self, ctx: commands.Context, error: Exception) -> None:
@@ -200,20 +205,18 @@ class JailGames(commands.Cog):
             except discord.HTTPException:
                 await ctx.send(embed=embed_result)
 
-            # Tag Admin để thông báo
-            guild = ctx.guild
-            admin_role = guild.get_role(ADMIN_ROLE_ID)
-            jail_channel = self.bot.get_channel(JAIL_CHANNEL_ID)
-            if isinstance(jail_channel, discord.TextChannel) and admin_role:
+            # Đăng lên Main Channel bêu rếu thay vì tag Admin
+            main_channel = self.bot.get_channel(MAIN_CHANNEL_ID)
+            if isinstance(main_channel, discord.TextChannel):
                 try:
-                    await jail_channel.send(
-                        f"🚨 {admin_role.mention} Báo cáo Admin: "
-                        f"**{ctx.author}** vừa cố vượt ngục nhưng bị bắt lại! "
-                        f"Án phạt đã nhân ×3 lên **{new_count}** lần.",
-                        allowed_mentions=discord.AllowedMentions(roles=True),
+                    await main_channel.send(
+                        f"📢 **TIN NÓNG HỔI:** Tù nhân {ctx.author.mention} vừa có một pha đào tường vượt ngục chuồng chó đi vào lòng đất! 🤡\n"
+                        f"Kế hoạch ngu ngốc bị phát hiện tại trận! Kết quả: Lôi xệch về chuồng, án phạt tăng x3 lên tới **{new_count}** lần cọ toilet. Cười ẻ!!! 😂"
                     )
                 except discord.HTTPException:
                     pass
+            
+            self.bot.loop.create_task(notify_cooldown(ctx, 300.0, "lvuotnguc"))
 
     @lvuotnguc_cmd.error
     async def lvuotnguc_error(self, ctx: commands.Context, error: Exception) -> None:

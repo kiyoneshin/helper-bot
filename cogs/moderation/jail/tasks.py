@@ -24,6 +24,7 @@ from .core import (
     is_jailed_check,
     add_penalty,
     reduce_penalty,
+    notify_cooldown,
 )
 
 
@@ -137,6 +138,9 @@ class JailTasks(commands.Cog):
                 color=COLOR_JAIL,
             )
             await ctx.send(embed=embed_fail)
+            
+        if not freed:
+            self.bot.loop.create_task(notify_cooldown(ctx, 15.0, "sua"))
 
     @sua_cmd.error
     async def sua_error(self, ctx: commands.Context, error: Exception) -> None:
@@ -207,6 +211,9 @@ class JailTasks(commands.Cog):
 
         embed.set_footer(text="70% may mắn / 30% xui xẻo • Cooldown 30s")
         await ctx.send(embed=embed)
+        
+        if not freed:
+            self.bot.loop.create_task(notify_cooldown(ctx, 30.0, "nhatxuong"))
 
     @nhatxuong_cmd.error
     async def nhatxuong_error(self, ctx: commands.Context, error: Exception) -> None:

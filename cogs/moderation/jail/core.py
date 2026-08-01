@@ -13,6 +13,7 @@ from typing import Optional
 
 import discord
 from discord.ext import commands
+import asyncio
 
 from cogs.common.db import execute_db, fetchrow_db
 
@@ -23,6 +24,7 @@ log = logging.getLogger("JailCore")
 # ─────────────────────────────────────────────────────────────────────
 JAIL_ROLE_ID    = 1513141241330536468
 JAIL_CHANNEL_ID = 1513140873662169098
+MAIN_CHANNEL_ID = 1498711783223853101
 OWNER_ROLE_ID   = 1498711782192189494
 ADMIN_ROLE_ID   = 1510230255988900002
 
@@ -200,6 +202,18 @@ async def release_member(bot: commands.Bot, member: discord.Member) -> bool:
     return True
 
 
+async def notify_cooldown(ctx: commands.Context, delay: float, cmd_name: str) -> None:
+    """Đợi cooldown xong rồi ping user báo lệnh đã sẵn sàng."""
+    await asyncio.sleep(delay)
+    try:
+        await ctx.send(
+            f"🔔 {ctx.author.mention} Lệnh `y!{cmd_name}` đã hồi xong, tiếp tục cải tạo đi!",
+            delete_after=10.0
+        )
+    except Exception:
+        pass
+
+
 # ─────────────────────────────────────────────────────────────────────
 # COG CHÍNH
 # ─────────────────────────────────────────────────────────────────────
@@ -322,11 +336,31 @@ class JailCore(commands.Cog):
 
         jail_channel = self.bot.get_channel(JAIL_CHANNEL_ID)
         if isinstance(jail_channel, discord.TextChannel):
+            embed_guide = discord.Embed(
+                title="📜 HƯỚNG DẪN CẢI TẠO CHO TÙ NHÂN",
+                description=(
+                    f"{member.mention}, chào mừng đến với Chuồng Chó! Dưới đây là các cách để bạn sớm thấy ánh mặt trời:\n\n"
+                    "🧹 **Lao động công ích:**\n"
+                    "• `y!laudon`: Lau dọn giảm 1 án (Cooldown: 5s)\n\n"
+                    "🧮 **Cày chay (Trí tuệ & Nhân phẩm):**\n"
+                    "• `y!sua`: Giải toán cấp tốc giảm 2 án (Cooldown: 15s)\n"
+                    "• `y!nhatxuong`: Nhặt xương 70% giảm 5 án, 30% cắn ngược +1 án (Cooldown: 30s)\n\n"
+                    "🎲 **Sinh tử (Cờ bạc & Liều mạng):**\n"
+                    "• `y!lcuoc`: Tung đồng xu 50% giảm 5 án, 50% tăng 10 án (Cooldown: 20s)\n"
+                    "• `y!lvuotnguc`: 5% thoát ngay lập tức, 95% nhân 3 án và bị bêu rếu (Cooldown: 5 phút)\n\n"
+                    "💸 **Bảo lãnh:** Hãy nhờ bạn bè dùng `y!baolanh @bạn` để chuộc bạn ra bằng điểm sự kiện!\n\n"
+                    "⚠️ **NỘI QUY:** Mọi tin nhắn chat thường trong này phải kết thúc bằng chữ `gâu` hoặc `ẳng`, nếu không sẽ bị ăn tát!"
+                ),
+                color=COLOR_JAIL
+            )
             try:
                 await jail_channel.send(
-                    f"🚨 Cửa ngục khép lại! {member.mention} (a.k.a **{dog_name}**) vừa bị tống vào đây.\n"
-                    f"Lý do: **{reason}**\n"
-                    f"Hãy dùng `y!laudon` **{clean_count}** lần để chuộc lỗi! 🧹"
+                    content=(
+                        f"🚨 Cửa ngục khép lại! {member.mention} (a.k.a **{dog_name}**) vừa bị tống vào đây.\n"
+                        f"Lý do: **{reason}**\n"
+                        f"Hãy dùng `y!laudon` **{clean_count}** lần để chuộc lỗi! 🧹"
+                    ),
+                    embed=embed_guide
                 )
             except discord.HTTPException:
                 pass
@@ -392,6 +426,10 @@ class JailCore(commands.Cog):
                 f"🧹 {ctx.author.mention} hì hục cọ toilet... "
                 f"Còn lại **{new_count}** lần lau dọn để được tự do."
             )
+            
+        # Kích hoạt báo cooldown 5s
+        if not freed:
+            self.bot.loop.create_task(notify_cooldown(ctx, 5.0, "laudon"))
 
     @laudon_cmd.error
     async def laudon_error(self, ctx: commands.Context, error: Exception) -> None:
