@@ -133,12 +133,12 @@ def build_giveaway_embed(
         desc += f"  <@&{role_id}>\n"
     else:
         desc += f"  Không yêu cầu\n"
-        
+         
     if is_fga and current_flash is not None and total_flash is not None:
         desc += f"\n- 𝓕𝓵𝓪𝓼𝓱 𝓘𝓷𝓯𝓸\n"
         desc += f"  • Tiến độ: {current_flash}/{total_flash}\n"
         
-    footer_emojis = "<a:_:1526668102216061009><a:_:1526668571391037541><a:_:1526668198500630590><a:_:1526668262123896934><a:_:1526668347700416592><a:_:1526889619319296000><a:_:1526889807400402945>"
+    footer_emojis = "<a:_:1526668102216061009> <a:_:1526668571391037541> <a:_:1526668198500630590> <a:_:1526668262123896934> <a:_:1526668347700416592> <a:_:1526889619319296000> <a:_:1526889807400402945>"
     desc += f"\n\n{footer_emojis}"
         
     emb.description = desc
@@ -147,7 +147,7 @@ def build_giveaway_embed(
         end_time_str = end_time_dt.strftime("%d/%m/%Y %H:%M:%S") if end_time_dt else "???"
         emb.set_footer(text=f"Số người thắng: {winners_str} | Kết thúc lúc {end_time_str}")
     else:
-        emb.set_footer(text=f"winner: {winners_str}e")
+        emb.set_footer(text=f"Số người thắng: {winners_str}")
         
     return emb
 
