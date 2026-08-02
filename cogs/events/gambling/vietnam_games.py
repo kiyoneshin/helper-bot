@@ -49,13 +49,17 @@ async def _apply_delta(bot: commands.Bot, user_id: str, delta: int) -> bool:
     return True  # delta == 0
 
 
-def _parse_bet(raw: str, balance: int) -> tuple[Optional[int], Optional[str]]:
+def _parse_bet(raw: str, balance: int) -> tuple[Optional[int], Optional[str], bool]:
     """
     Parse chuỗi tiền cược. Hỗ trợ hậu tố k (nghìn) và m (triệu).
-    Ví dụ: 50k = 50,000 | 1.5m = 1,500,000 | 100,000
-    Trả về (amount, None) nếu hợp lệ, hoặc (None, error_msg) nếu không.
+    Hỗ trợ từ khóa 'all' để cược toàn bộ số dư.
+    Trả về (amount, None, is_all) nếu hợp lệ, hoặc (None, error_msg, False) nếu không.
     """
     cleaned = raw.lower().replace(",", "").strip()
+    if cleaned in ("all", "max", "het", "hết"):
+        if balance <= 0:
+            return None, "Í quá, ví trống rỗng! Đi cày kiếm điểm rồi quay lại nhé.", False
+        return balance, None, True
     try:
         if cleaned.endswith("m"):
             amount = int(float(cleaned[:-1]) * 1_000_000)
@@ -64,14 +68,14 @@ def _parse_bet(raw: str, balance: int) -> tuple[Optional[int], Optional[str]]:
         else:
             amount = int(float(cleaned))
     except ValueError:
-        return None, f"`{raw}` không phải số hợp lệ!"
+        return None, f"`{raw}` không phải số hợp lệ!", False
     if amount <= 0:
-        return None, "Tiền cược phải lớn hơn **0** nha mấy khứa!"
+        return None, "Tiền cược phải lớn hơn **0** nha mấy khứa!", False
     if amount > balance:
         return None, (
             f"Ví còn đúng **{balance:,}** mà đòi cược **{amount:,}**? Nghèo mà ham!"
-        )
-    return amount, None
+        ), False
+    return amount, None, False
 
 # ─────────────────────────────────────────────────────────────────────────────
 # HỆ THỐNG KHÓA HÀNH ĐỘNG (COMMAND LOCK)
@@ -131,11 +135,21 @@ class VietnamGames(commands.Cog):
 
         uid = str(ctx.author.id)
         balance = await _get_balance(self.bot, uid)
-        bet, err = _parse_bet(bet_raw, balance)
+        bet, err, is_all = _parse_bet(bet_raw, balance)
         if err or bet is None:
             await ctx.send(f"❌ {ctx.author.mention} {err}")
             return
 
+        if is_all:
+            async def _run(ctx: commands.Context, bet: int):
+                await self._exec_taixiu(ctx, choice, bet, uid, balance)
+            from cogs.events.gambling.basic_games import _send_confirm
+            await _send_confirm(ctx, bet, _run)
+        else:
+            await self._exec_taixiu(ctx, choice, bet, uid, balance)
+
+    async def _exec_taixiu(self, ctx: commands.Context, choice: str, bet: int, uid: str, balance: int) -> None:
+        """Logic thực thi game tài xỉu."""
         # ── Cơ chế xúc xắc ──────────────────────────────────────────────
         d1, d2, d3 = [random.randint(1, 6) for _ in range(3)]
         total = d1 + d2 + d3
@@ -332,7 +346,7 @@ class VietnamGames(commands.Cog):
 
                 # Lấy số dư realtime
                 cur_bal = await _get_balance(self.bot, sender_uid)
-                amount, err = _parse_bet(amount_raw, cur_bal)
+                amount, err, _ = _parse_bet(amount_raw, cur_bal)
 
                 if err or amount is None:
                     try:

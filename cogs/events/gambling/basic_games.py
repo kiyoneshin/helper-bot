@@ -71,13 +71,22 @@ async def _apply_delta(bot: commands.Bot, user_id: str, delta: int) -> bool:
         return await deduct_event_points(bot, user_id, abs(delta))
     return True
 
-def _parse_bet(raw: str, balance: int) -> tuple[Optional[int], Optional[str]]:
+def _parse_bet(raw: str, balance: int) -> tuple[Optional[int], Optional[str], bool]:
     """
     Parse chuỗi tiền cược. Hỗ trợ hậu tố k (nghìn) và m (triệu).
-    Ví dụ: 50k = 50,000 | 1.5m = 1,500,000 | 100,000
-    Trả về (amount, None) nếu hợp lệ, hoặc (None, error_msg) nếu không.
+    Hỗ trợ từ khóa 'all' để cược toàn bộ số dư.
+    Trả về (amount, None, is_all) nếu hợp lệ, hoặc (None, error_msg, False) nếu không.
+    is_all=True khi dùng từ khóa 'all' — cần hiện cửa sổ xác nhận.
     """
     cleaned = raw.lower().replace(",", "").strip()
+
+    # ── Từ khóa 'all' ──────────────────────────────────────────────
+    if cleaned in ("all", "max", "het", "hết"):
+        if balance <= 0:
+            return None, "Í quá, ví trống rỗng! Đi cày kiếm điểm rồi quay lại nhé.", False
+        return balance, None, True  # is_all=True → cần confirm
+
+    # ── Số thường ────────────────────────────────────────────────
     try:
         if cleaned.endswith("m"):
             amount = int(float(cleaned[:-1]) * 1_000_000)
@@ -86,14 +95,81 @@ def _parse_bet(raw: str, balance: int) -> tuple[Optional[int], Optional[str]]:
         else:
             amount = int(float(cleaned))
     except ValueError:
-        return None, f"`{raw}` không phải số hợp lệ!"
+        return None, f"`{raw}` không phải số hợp lệ!", False
     if amount <= 0:
-        return None, "Tiền cược phải lớn hơn **0** nha mấy khứa!"
+        return None, "Tiền cược phải lớn hơn **0** nha mấy khứa!", False
     if amount > balance:
         return None, (
             f"Ví còn đúng **{balance:,}** mà đòi cược **{amount:,}**? Nghèo mà ham!"
+        ), False
+    return amount, None, False
+
+
+# =============================================================================
+# BET CONFIRM VIEW — Hiện khi user cược 'all'
+# =============================================================================
+
+class BetConfirmView(discord.ui.View):
+    """
+    Embed xác nhận trước khi cược toàn bộ số dư.
+    callback_fn: coroutine(ctx, bet) — được gọi khi người chơi xác nhận.
+    """
+    def __init__(self, ctx: commands.Context, bet: int, callback_fn):
+        super().__init__(timeout=20.0)
+        self.ctx = ctx
+        self.bet = bet
+        self.callback_fn = callback_fn
+        self.message: Optional[discord.Message] = None
+
+    async def interaction_check(self, interaction: discord.Interaction) -> bool:
+        if interaction.user.id != self.ctx.author.id:
+            await interaction.response.send_message("❌ Chưa đến lượt bạn!", ephemeral=True)
+            return False
+        return True
+
+    @discord.ui.button(label="✅ Xác nhận cược all", style=discord.ButtonStyle.danger)
+    async def confirm_btn(self, interaction: discord.Interaction, button: discord.ui.Button):
+        self.stop()
+        for item in self.children:
+            item.disabled = True  # type: ignore
+        await interaction.response.edit_message(view=self)
+        # Khởi chạy game
+        await self.callback_fn(self.ctx, self.bet)
+
+    @discord.ui.button(label="❌ Hủy", style=discord.ButtonStyle.secondary)
+    async def cancel_btn(self, interaction: discord.Interaction, button: discord.ui.Button):
+        self.stop()
+        await interaction.response.edit_message(
+            content="🚫 Đã hủy cược. Tiền vẫn ở trong ví, chưa bị mất!",
+            embed=None, view=None
         )
-    return amount, None
+
+    async def on_timeout(self):
+        if self.message:
+            try:
+                await self.message.edit(
+                    content="⏰ Hết giờ xác nhận. Tiền vẫn an toàn trong ví!",
+                    embed=None, view=None
+                )
+            except discord.HTTPException:
+                pass
+
+
+async def _send_confirm(ctx: commands.Context, bet: int, callback_fn) -> None:
+    """Gửi embed xác nhận cược all và đợi người dùng phản hồi."""
+    embed = discord.Embed(
+        title="⚠️ Xác nhận cược toàn bộ",
+        description=(
+            f"{ctx.author.mention} Đầy cả ví ra cược hết!\n\n"
+            f"💰 **Số tiền sẽ cược:** **{bet:,.0f}** điểm\n\n"
+            "✅ Nhấn **Xác nhận** để vào sòng, hoặc ❌ **Hủy** để rút lui."
+        ),
+        color=0xFF8C00,
+    )
+    embed.set_footer(text="⏰ Hết 20 giây tự động hủy")
+    view = BetConfirmView(ctx, bet, callback_fn)
+    view.message = await ctx.send(embed=embed, view=view)
+
 
 # =============================================================================
 # COG CHÍNH
@@ -104,31 +180,40 @@ class BasicGames(commands.Cog):
 
     def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
-        # Khởi tạo biến lưu danh sách người chơi trên Bot nếu chưa có
         if not hasattr(self.bot, 'active_players'):
             setattr(self.bot, 'active_players', set())
 
     # =========================================================================
-    # 1. COINFLIP (Game tức thời - Không cần khóa, nhưng bị chặn nếu đang khóa)
+    # 1. COINFLIP (Game tức thời)
     # =========================================================================
     @commands.hybrid_command(name="coinflip", aliases=["cf"])
     async def coinflip_cmd(self, ctx: commands.Context, choice: str, bet_raw: str):
         if await _check_busy(self.bot, ctx): return
-        
+
         choice = choice.lower().strip()
         if choice not in ("h", "t"):
-            await ctx.send(f"❌ {ctx.author.mention} Bấm bậy bạ gì vậy? Dùng `h` (Ngửa) hoặc `t` (Sấp).\nCú pháp: `y!cf <h/t> <tiền_cược>`")
+            await ctx.send(f"❌ {ctx.author.mention} Bấm bậy bạ gì vậy? Dùng `h` (Ngửa) hoặc `t` (Sấp).\nCú pháp: `y!cf <h/t> <tiền_cược | all>`")
             return
 
         uid = str(ctx.author.id)
         balance = await _get_balance(self.bot, uid)
-        bet, err = _parse_bet(bet_raw, balance)
+        bet, err, is_all = _parse_bet(bet_raw, balance)
         if err or bet is None:
             await ctx.send(f"❌ {ctx.author.mention} {err}")
             return
 
+        # Cược 'all' → hiện confirm trước
+        async def _run(ctx: commands.Context, bet: int):
+            await self._exec_coinflip(ctx, choice, bet, uid, balance)
+
+        if is_all:
+            await _send_confirm(ctx, bet, _run)
+        else:
+            await self._exec_coinflip(ctx, choice, bet, uid, balance)
+
+    async def _exec_coinflip(self, ctx: commands.Context, choice: str, bet: int, uid: str, balance: int):
+        """Logic thực thi game coinflip sau khi đã xác nhận."""
         outcome = random.choices(["win", "lose", "side"], weights=[44.0, 55.0, 1.0], k=1)[0]
-        # ... logic tính delta & color ...
         if outcome == "win":
             payout = round(bet * 1.9)
             delta = payout - bet
@@ -156,8 +241,7 @@ class BasicGames(commands.Cog):
             return
 
         new_balance = balance + delta
-
-        face_map = {"h": "NGỬA 🌕", "t": "SẤP 🌑"}
+        face_map = {"h": "NGẮA 🌕", "t": "SẤP 🌑"}
         your_pick = face_map[choice]
         if outcome == "side":
             landed = "ĐỨNG 🟡"
@@ -184,7 +268,7 @@ class BasicGames(commands.Cog):
     @coinflip_cmd.error
     async def coinflip_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, commands.MissingRequiredArgument):
-            await ctx.send(f"❌ {ctx.author.mention} Chơi mà không ném tiền à? Cú pháp: `y!cf <h/t> <tiền_cược>`")
+            await ctx.send(f"❌ {ctx.author.mention} Chơi mà không ném tiền à? Cú pháp: `y!cf <h/t> <tiền_cược | all>`")
 
     # =========================================================================
     # 2. CUPS (Game tương tác - Cần khóa hành động)
@@ -195,11 +279,21 @@ class BasicGames(commands.Cog):
 
         uid = str(ctx.author.id)
         balance = await _get_balance(self.bot, uid)
-        bet, err = _parse_bet(bet_raw, balance)
+        bet, err, is_all = _parse_bet(bet_raw, balance)
         if err or bet is None:
             await ctx.send(f"❌ {ctx.author.mention} {err}")
             return
 
+        async def _run(ctx: commands.Context, bet: int):
+            await self._exec_cups(ctx, bet, uid, balance)
+
+        if is_all:
+            await _send_confirm(ctx, bet, _run)
+        else:
+            await self._exec_cups(ctx, bet, uid, balance)
+
+    async def _exec_cups(self, ctx: commands.Context, bet: int, uid: str, balance: int):
+        """Logic thực thi game cups."""
         end_time = int(time.time()) + 30
         embed = discord.Embed(
             description=f"Cục màu trắng ở đâu? ◽ **1, 2** hay **3** ?\nNhanh tay lẹ mắt nhào vô trước <t:{end_time}:R>!\n\n🥤  🥤  🥤\n",
@@ -207,21 +301,18 @@ class BasicGames(commands.Cog):
         )
         embed.set_author(name=f"{ctx.author.display_name} — cups", icon_url=ctx.author.display_avatar.url)
         embed.set_footer(text="Ngâm quá sòng trả lại tiền")
-
-        # Khóa người chơi
         _lock_user(self.bot, ctx.author.id)
-
         view = CupsView(bot=self.bot, author=ctx.author, bet=bet, balance=balance)
         try:
             view.message = await ctx.send(embed=embed, view=view)
         except Exception:
-            # Mở khóa nếu lỗi không gửi được tin nhắn
             _unlock_user(self.bot, ctx.author.id)
 
     @cups_cmd.error
     async def cups_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, commands.MissingRequiredArgument):
-            await ctx.send(f"❌ {ctx.author.mention} Dốc hết hầu bao đi! Cú pháp: `y!cups <tiền_cược>`")
+            await ctx.send(f"❌ {ctx.author.mention} Dốc hết hầu bao đi! Cú pháp: `y!cups <tiền_cược | all>`")
+
 
     # =========================================================================
     # 3. DICE 7 (Game tức thời)
@@ -232,11 +323,21 @@ class BasicGames(commands.Cog):
 
         uid = str(ctx.author.id)
         balance = await _get_balance(self.bot, uid)
-        bet, err = _parse_bet(bet_raw, balance)
+        bet, err, is_all = _parse_bet(bet_raw, balance)
         if err or bet is None:
             await ctx.send(f"❌ {ctx.author.mention} {err}")
             return
 
+        async def _run(ctx: commands.Context, bet: int):
+            await self._exec_dice(ctx, bet, uid, balance)
+
+        if is_all:
+            await _send_confirm(ctx, bet, _run)
+        else:
+            await self._exec_dice(ctx, bet, uid, balance)
+
+    async def _exec_dice(self, ctx: commands.Context, bet: int, uid: str, balance: int):
+        """Logic thực thi game dice."""
         face = random.choices([1, 2, 3, 4, 5, 6, 7], weights=[16.75, 16.75, 16.75, 16.5, 16.5, 16.5, 0.25], k=1)[0]
         # ... logic tính điểm ...
         PAYOUT = {
@@ -292,18 +393,27 @@ class BasicGames(commands.Cog):
 
         uid = str(ctx.author.id)
         balance = await _get_balance(self.bot, uid)
-        bet, err = _parse_bet(bet_raw, balance)
+        bet, err, is_all = _parse_bet(bet_raw, balance)
         if err or bet is None:
             await ctx.send(f"❌ {ctx.author.mention} {err}")
             return
 
+        async def _run(ctx: commands.Context, bet: int):
+            await self._exec_roulette(ctx, bet, uid, balance)
+
+        if is_all:
+            await _send_confirm(ctx, bet, _run)
+        else:
+            await self._exec_roulette(ctx, bet, uid, balance)
+
+    async def _exec_roulette(self, ctx: commands.Context, bet: int, uid: str, balance: int):
+        """Logic thực thi game roulette."""
         ok = await _apply_delta(self.bot, uid, -bet)
         if not ok:
             await ctx.send(f"❌ {ctx.author.mention} Lỗi DB, không tạm giữ tiền cược được!")
             return
-            
-        new_balance = balance - bet
 
+        new_balance = balance - bet
         end_time = int(time.time()) + 60
         embed = discord.Embed(
             title="🔫 Cò Quay Tử Thần",
@@ -320,10 +430,7 @@ class BasicGames(commands.Cog):
         embed.add_field(name="💰 Tiền cược (đang giữ)", value=f"{bet:,}", inline=False)
         embed.add_field(name="💳 Số dư hiện tại", value=f"{new_balance:,}", inline=False)
         embed.set_footer(text="Ngâm quá sòng tự động chốt lãi.")
-
-        # Khóa người chơi
         _lock_user(self.bot, ctx.author.id)
-
         view = RouletteView(bot=self.bot, author=ctx.author, bet=bet, original_balance=balance)
         try:
             view.message = await ctx.send(embed=embed, view=view)
@@ -333,7 +440,8 @@ class BasicGames(commands.Cog):
     @roulette_cmd.error
     async def roulette_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, commands.MissingRequiredArgument):
-            await ctx.send(f"❌ {ctx.author.mention} Không cọc tiền ai cho chơi! Cú pháp: `y!shot <tiền_cược>`")
+            await ctx.send(f"❌ {ctx.author.mention} Không cọc tiền ai cho chơi! Cú pháp: `y!shot <tiền_cược | all>`")
+
 
 
 # =============================================================================

@@ -99,13 +99,17 @@ async def _apply_delta(bot: commands.Bot, user_id: str, delta: int) -> bool:
     return True  # delta == 0
 
 
-def _parse_bet(raw: str, balance: int) -> tuple[Optional[int], Optional[str]]:
+def _parse_bet(raw: str, balance: int) -> tuple[Optional[int], Optional[str], bool]:
     """
     Parse chuỗi tiền cược. Hỗ trợ hậu tố k (nghìn) và m (triệu).
-    Ví dụ: 50k = 50,000 | 1.5m = 1,500,000 | 100,000
-    Trả về (amount, None) nếu hợp lệ, hoặc (None, error_msg) nếu không.
+    Hỗ trợ từ khóa 'all' để cược toàn bộ số dư.
+    Trả về (amount, None, is_all) nếu hợp lệ, hoặc (None, error_msg, False) nếu không.
     """
     cleaned = raw.lower().replace(",", "").strip()
+    if cleaned in ("all", "max", "het", "hết"):
+        if balance <= 0:
+            return None, "Í quá, ví trống rỗng! Đi cày kiếm điểm rồi quay lại nhé.", False
+        return balance, None, True
     try:
         if cleaned.endswith("m"):
             amount = int(float(cleaned[:-1]) * 1_000_000)
@@ -114,14 +118,15 @@ def _parse_bet(raw: str, balance: int) -> tuple[Optional[int], Optional[str]]:
         else:
             amount = int(float(cleaned))
     except ValueError:
-        return None, f"`{raw}` không phải số hợp lệ!"
+        return None, f"`{raw}` không phải số hợp lệ!", False
     if amount <= 0:
-        return None, "Tiền cược phải lớn hơn **0** nha mấy khứa!"
+        return None, "Tiền cược phải lớn hơn **0** nha mấy khứa!", False
     if amount > balance:
         return None, (
             f"Ví còn đúng **{balance:,}** mà đòi cược **{amount:,}**? Nghèo mà ham!"
-        )
-    return amount, None
+        ), False
+    return amount, None, False
+
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -240,12 +245,21 @@ class WheelSlots(commands.Cog):
         """
         uid = str(ctx.author.id)
         balance = await _get_balance(self.bot, uid)
-        bet, err = _parse_bet(bet_raw, balance)
+        bet, err, is_all = _parse_bet(bet_raw, balance)
         if err or bet is None:
             await ctx.send(f"❌ {ctx.author.mention} {err}")
             return
 
-        # ── Quay vòng: chọn chỉ số dừng ngẫu nhiên trên mảng cố định ─────
+        if is_all:
+            async def _run(ctx: commands.Context, bet: int):
+                await self._exec_wheel(ctx, bet, uid, balance)
+            from cogs.events.gambling.basic_games import _send_confirm
+            await _send_confirm(ctx, bet, _run)
+        else:
+            await self._exec_wheel(ctx, bet, uid, balance)
+
+    async def _exec_wheel(self, ctx: commands.Context, bet: int, uid: str, balance: int) -> None:
+        """Logic thực thi game wheel."""
         stop_idx: int = random.randint(0, len(BASE_WHEEL) - 1)
         winning_emoji: str = BASE_WHEEL[stop_idx]
 
@@ -331,12 +345,22 @@ class WheelSlots(commands.Cog):
         """
         uid = str(ctx.author.id)
         balance = await _get_balance(self.bot, uid)
-        bet, err = _parse_bet(bet_raw, balance)
+        bet, err, is_all = _parse_bet(bet_raw, balance)
         if err or bet is None:
             await ctx.send(f"❌ {ctx.author.mention} {err}")
             return
 
-        # ── Sinh kết quả & Đánh giá ──────────────────────────────────────
+        if is_all:
+            async def _run(ctx: commands.Context, bet: int):
+                await self._exec_slots(ctx, bet, uid, balance)
+            from cogs.events.gambling.basic_games import _send_confirm
+            await _send_confirm(ctx, bet, _run)
+        else:
+            await self._exec_slots(ctx, bet, uid, balance)
+
+    async def _exec_slots(self, ctx: commands.Context, bet: int, uid: str, balance: int) -> None:
+        """Logic thực thi game slots."""
+        # ── Sinh kết quả & Đánh giá ────────────────────────────────────
         slots = _generate_slots()
         mult, desc = _evaluate_slots(slots)
 

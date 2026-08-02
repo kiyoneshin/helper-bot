@@ -1,152 +1,248 @@
+"""
+help_cog.py — Hệ Thống Trợ Giúp Chung 3 Tầng (y!help)
+=======================================================
+Tầng 1 - Home     : Danh sách danh mục (Dropdown → Tầng 2)
+Tầng 2 - Category : Danh sách lệnh (Dropdown → Tầng 3 | Button 🏠 → Tầng 1)
+Tầng 3 - Detail   : Chi tiết lệnh (Button ◀ → Tầng 2 | Button 🏠 → Tầng 1)
+"""
+
+from __future__ import annotations
+
 import discord
 from discord.ext import commands
-from typing import Dict, Any, List
+from typing import Optional
 
-COLOR_THEME = 0x2b2d31
+COLOR_THEME = 0x2B2D31
 
-# Định nghĩa map các danh mục và Cog tương ứng cho y!help
-HELP_CATEGORY_MAP = {
-    "Quản Trị & Staff": {
-        "emoji": "⚙️",
-        "desc": "Các lệnh quản lý bot và máy chủ dành cho Staff/Admin.",
-        "cogs": ["StaffUICog", "StaffTestCog", "StaffMsgTrackerCog", "StaffListenerCog", "StaffLeaderboardCog", "StaffEditCog", "StaffBackupCog", "StaffAddCog", "JailSystem"]
+# =============================================================================
+# DỮ LIỆU TRUNG TÂM — Thêm/sửa lệnh chỉ cần chỉnh ở đây
+# =============================================================================
+
+CMD_DATA: dict[str, dict] = {
+    # ── MODERATION ────────────────────────────────────────────────────────────
+    "profile": {
+        "name": "Hồ Sơ Nhân Sự",
+        "emoji": "📋",
+        "short": "Xem hồ sơ chi tiết của một thành viên trong BQT.",
+        "aliases": [],
+        "cooldown": None,
+        "usage": "y!profile [@user]",
+        "examples": ["y!profile", "y!profile @Admin"],
+        "note": None,
     },
-    "Khác": {
+    "phattu": {
+        "name": "Phạt Tù",
+        "emoji": "⛓️",
+        "short": "Tống một thành viên vào Chuồng Chó (Jail). Chỉ Admin/Owner.",
+        "aliases": [],
+        "cooldown": None,
+        "usage": "y!phattu <@user> <số_lần_dọn> [lý do]",
+        "examples": ["y!phattu @User 10 Spam"],
+        "note": "Tù nhân phải lau dọn đủ số lần mới được thả.",
+    },
+    "thatu": {
+        "name": "Thả Tù",
+        "emoji": "🔓",
+        "short": "Thả sớm một thành viên khỏi Chuồng Chó. Chỉ Admin/Owner.",
+        "aliases": [],
+        "cooldown": None,
+        "usage": "y!thatu <@user>",
+        "examples": ["y!thatu @User"],
+        "note": None,
+    },
+    "laudon": {
+        "name": "Lau Dọn",
+        "emoji": "🧹",
+        "short": "Tù nhân lau dọn để giảm số lần án phạt còn lại.",
+        "aliases": [],
+        "cooldown": "5s",
+        "usage": "y!laudon",
+        "examples": ["y!laudon"],
+        "note": "Mỗi lần giảm 1 án. Chỉ dùng được trong Chuồng Chó.",
+    },
+    "baolanh": {
+        "name": "Bảo Lãnh",
+        "emoji": "💸",
+        "short": "Trả tiền bảo lãnh để chuộc một tù nhân về.",
+        "aliases": [],
+        "cooldown": None,
+        "usage": "y!baolanh <@user>",
+        "examples": ["y!baolanh @BanBe"],
+        "note": "Phí = max(30,000, số_án × 500) điểm sự kiện.",
+    },
+    "sua": {
+        "name": "Giải Toán",
+        "emoji": "🧮",
+        "short": "Tù nhân giải toán nhanh để giảm 2 án. CD 15s.",
+        "aliases": [],
+        "cooldown": "15s",
+        "usage": "y!sua",
+        "examples": ["y!sua"],
+        "note": "Phép toán có cộng/trừ/nhân/chia và ngoặc.",
+    },
+    "nhatxuong": {
+        "name": "Nhặt Xương",
+        "emoji": "🦴",
+        "short": "70% giảm 5 án, 30% bị cắn ngược tăng 1 án. CD 30s.",
+        "aliases": [],
+        "cooldown": "30s",
+        "usage": "y!nhatxuong",
+        "examples": ["y!nhatxuong"],
+        "note": None,
+    },
+    "lcuoc": {
+        "name": "Lật Cược",
+        "emoji": "🎲",
+        "short": "Tung đồng xu: 50% giảm 5 án / 50% tăng 10 án. CD 20s.",
+        "aliases": [],
+        "cooldown": "20s",
+        "usage": "y!lcuoc",
+        "examples": ["y!lcuoc"],
+        "note": "Liều cao, thưởng lớn, phạt cũng lớn!",
+    },
+    "lvuotnguc": {
+        "name": "Lệnh Vượt Ngục",
+        "emoji": "🏃",
+        "short": "5% thoát hoàn toàn, 95% bị bắt lại và nhân 3 án. CD 5 phút.",
+        "aliases": ["lvn", "break"],
+        "cooldown": "5 phút",
+        "usage": "y!lvuotnguc",
+        "examples": ["y!lvuotnguc"],
+        "note": "Nếu thất bại sẽ bị công khai bêu rếu ở kênh chung. Liều thì liều!",
+    },
+    # ── TIỆN ÍCH ──────────────────────────────────────────────────────────────
+    "ehelp": {
+        "name": "Cẩm Nang Sự Kiện",
+        "emoji": "🌸",
+        "short": "Xem hướng dẫn toàn bộ các lệnh sự kiện với UI tương tác.",
+        "aliases": [],
+        "cooldown": None,
+        "usage": "y!ehelp",
+        "examples": ["y!ehelp"],
+        "note": None,
+    },
+    "help": {
+        "name": "Trợ Giúp",
         "emoji": "🛡️",
-        "desc": "Các lệnh thông dụng và hệ thống khác.",
-        "cogs": ["WelcomeCog", "TrapChannelCog"]
-    }
+        "short": "Xem danh sách lệnh quản trị và hệ thống (đang xem đây nè).",
+        "aliases": ["trogiup", "hd"],
+        "cooldown": None,
+        "usage": "y!help",
+        "examples": ["y!help"],
+        "note": None,
+    },
 }
 
-def build_help_home(bot: commands.Bot, author: discord.Member | discord.User) -> discord.Embed:
+CATEGORY_DATA: dict[str, dict] = {
+    "Chuồng Chó (Jail)": {
+        "emoji": "🐕",
+        "desc": "Hệ thống tù tội và cải tạo dành cho các thành viên lỡ dại.",
+        "commands": ["phattu", "thatu", "laudon", "baolanh", "sua", "nhatxuong", "lcuoc", "lvuotnguc"],
+        "cogs": ["JailCore", "JailTasks", "JailGames", "JailInteraction"],
+    },
+    "Tiện Ích": {
+        "emoji": "🛡️",
+        "desc": "Các lệnh thông dụng, hỗ trợ và hướng dẫn.",
+        "commands": ["ehelp", "help"],
+        "cogs": ["EventHelpCog", "HelpCog"],
+    },
+}
+
+
+# =============================================================================
+# BUILDERS
+# =============================================================================
+
+def build_home_embed(bot: commands.Bot, author: discord.Member | discord.User) -> discord.Embed:
     embed = discord.Embed(
-        title=f"🛡️ Trung Tâm Hỗ Trợ Của {author.display_name}",
+        title=f"🛡️ Trung Tâm Hỗ Trợ — {author.display_name}",
         description=(
-            "Chào mừng bạn đến với hệ thống lệnh hỗ trợ chung!\n\n"
-            "Tại đây chứa các lệnh quản trị, điều hành, và tiện ích hệ thống.\n\n"
-            "**Dưới đây là các danh mục lệnh hiện có:**"
+            "Chào mừng! Đây là bảng điều khiển lệnh quản trị và hệ thống.\n\n"
+            "Để xem lệnh **sự kiện**, hãy dùng `y!ehelp`.\n\n"
+            "**📋 Chọn danh mục bên dưới để xem chi tiết:**"
         ),
-        color=COLOR_THEME
+        color=COLOR_THEME,
     )
-    
-    total_cmds = 0
-    for cat_name, cat_info in HELP_CATEGORY_MAP.items():
-        cmds_count = 0
-        for cog_name in cat_info["cogs"]:
-            cog = bot.get_cog(cog_name)
-            if cog:
-                cmds_count += len([c for c in cog.get_commands() if not c.hidden])
-                
-        total_cmds += cmds_count
-        if cmds_count > 0:
-            embed.add_field(
-                name=f"{cat_info['emoji']} {cat_name}",
-                value=f"{cat_info['desc']} *(Gồm {cmds_count} lệnh)*",
-                inline=False
-            )
-
-    embed.set_thumbnail(url=bot.user.display_avatar.url if bot.user else None)
-    embed.set_footer(text=f"Sử dụng Menu thả xuống bên dưới để khám phá • Tổng {total_cmds} lệnh")
-    return embed
-
-def build_help_category(bot: commands.Bot, category_name: str) -> discord.Embed:
-    cat_info = HELP_CATEGORY_MAP.get(category_name)
-    if not cat_info:
-        return discord.Embed(title="❌ Không tìm thấy danh mục", color=discord.Color.red())
-
-    embed = discord.Embed(
-        title=f"{cat_info['emoji']} {category_name}",
-        description=cat_info['desc'],
-        color=COLOR_THEME
-    )
-
-    for cog_name in cat_info["cogs"]:
-        cog = bot.get_cog(cog_name)
-        if cog:
-            for cmd in cog.get_commands():
-                if cmd.hidden:
-                    continue
-                
-                aliases_str = f" (hoặc {', '.join(cmd.aliases)})" if cmd.aliases else ""
-                desc = cmd.help or cmd.description or "Không có mô tả chi tiết."
-                embed.add_field(
-                    name=f"y!{cmd.name}{aliases_str}",
-                    value=desc,
-                    inline=False
-                )
-
-    return embed
-
-class HelpSelect(discord.ui.Select):
-    def __init__(self, bot: commands.Bot, author: discord.Member | discord.User):
-        self.bot = bot
-        self.author = author
-        
-        options = [
-            discord.SelectOption(
-                label="Trang Chủ",
-                value="home",
-                emoji="🏠",
-                description="Quay về trang chào mừng"
-            )
-        ]
-        
-        for cat_name, cat_info in HELP_CATEGORY_MAP.items():
-            has_commands = False
-            for cog_name in cat_info["cogs"]:
-                cog = bot.get_cog(cog_name)
-                if cog and any(not c.hidden for c in cog.get_commands()):
-                    has_commands = True
-                    break
-            
-            if has_commands:
-                options.append(discord.SelectOption(
-                    label=cat_name,
-                    value=cat_name,
-                    emoji=cat_info["emoji"],
-                    description=cat_info["desc"][:50]
-                ))
-
-        super().__init__(
-            placeholder="🔍 Chọn danh mục lệnh chung...",
-            min_values=1,
-            max_values=1,
-            options=options
+    for cat_name, cat_info in CATEGORY_DATA.items():
+        count = len(cat_info["commands"])
+        embed.add_field(
+            name=f"{cat_info['emoji']} {cat_name}",
+            value=f"{cat_info['desc']}\n*({count} lệnh)*",
+            inline=False,
         )
+    if bot.user:
+        embed.set_thumbnail(url=bot.user.display_avatar.url)
+    total = sum(len(c["commands"]) for c in CATEGORY_DATA.values())
+    embed.set_footer(text=f"Tổng {total} lệnh  •  Chọn danh mục từ menu bên dưới")
+    return embed
 
-    async def callback(self, interaction: discord.Interaction):
-        selected = self.values[0]
-        
-        if selected == "home":
-            embed = build_help_home(self.bot, self.author)
-        else:
-            embed = build_help_category(self.bot, selected)
 
-        for opt in self.options:
-            opt.default = (opt.value == selected)
+def build_category_embed(cat_name: str) -> discord.Embed:
+    cat = CATEGORY_DATA.get(cat_name)
+    if not cat:
+        return discord.Embed(title="❌ Không tìm thấy danh mục", color=discord.Color.red())
+    embed = discord.Embed(
+        title=f"{cat['emoji']} {cat_name}",
+        description=f"{cat['desc']}\n\n**Chọn lệnh từ menu bên dưới để xem chi tiết:**",
+        color=COLOR_THEME,
+    )
+    for key in cat["commands"]:
+        cmd = CMD_DATA.get(key)
+        if cmd:
+            aliases = f" · `{'`, `'.join(f'y!{a}' for a in cmd['aliases'])}`" if cmd["aliases"] else ""
+            embed.add_field(
+                name=f"{cmd['emoji']} `y!{key}`{aliases}",
+                value=cmd["short"],
+                inline=False,
+            )
+    embed.set_footer(text="Nhấn 🏠 Trang Chủ để quay về")
+    return embed
 
-        await interaction.response.edit_message(embed=embed, view=self.view)
 
-class HelpView(discord.ui.View):
+def build_detail_embed(cmd_key: str) -> discord.Embed:
+    cmd = CMD_DATA.get(cmd_key)
+    if not cmd:
+        return discord.Embed(title="❌ Không tìm thấy lệnh", color=discord.Color.red())
+    embed = discord.Embed(
+        title=f"{cmd['emoji']} {cmd['name']}",
+        description=cmd["short"],
+        color=COLOR_THEME,
+    )
+    if cmd.get("aliases"):
+        embed.add_field(name="📛 Lệnh rút gọn", value=" · ".join(f"`y!{a}`" for a in cmd["aliases"]), inline=True)
+    if cmd.get("cooldown"):
+        embed.add_field(name="⏱️ Cooldown", value=cmd["cooldown"], inline=True)
+    embed.add_field(name="\u200b", value="\u200b", inline=False)
+    embed.add_field(name="📝 Cú pháp", value=f"`{cmd['usage']}`", inline=False)
+    if cmd.get("examples"):
+        embed.add_field(name="💡 Ví dụ", value="\n".join(f"`{e}`" for e in cmd["examples"]), inline=False)
+    if cmd.get("note"):
+        embed.add_field(name="ℹ️ Ghi chú", value=cmd["note"], inline=False)
+    embed.set_footer(text="Nhấn ◀ Quay Lại để về danh sách lệnh")
+    return embed
+
+
+# =============================================================================
+# VIEWS — 3 Tầng
+# =============================================================================
+
+class HomeView(discord.ui.View):
     def __init__(self, bot: commands.Bot, author: discord.Member | discord.User):
-        super().__init__(timeout=60.0)
+        super().__init__(timeout=120.0)
         self.bot = bot
         self.author = author
-        self.select_menu = HelpSelect(bot, author)
-        self.add_item(self.select_menu)
-        self.message: discord.Message | None = None
+        self.message: Optional[discord.Message] = None
+        self.add_item(_CategorySelect(bot, author))
 
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
         if interaction.user.id != self.author.id:
-            await interaction.response.send_message(
-                "❌ Bạn không phải người gọi lệnh này!",
-                ephemeral=True
-            )
+            await interaction.response.send_message("❌ Đây không phải trang trợ giúp của bạn!", ephemeral=True)
             return False
         return True
 
     async def on_timeout(self):
-        self.select_menu.disabled = True
+        for item in self.children:
+            item.disabled = True  # type: ignore
         if self.message:
             try:
                 await self.message.edit(view=self)
@@ -154,22 +250,160 @@ class HelpView(discord.ui.View):
                 pass
 
 
+class _CategorySelect(discord.ui.Select):
+    def __init__(self, bot: commands.Bot, author: discord.Member | discord.User):
+        self.bot = bot
+        self.author = author
+        options = [
+            discord.SelectOption(
+                label=cat_name,
+                value=cat_name,
+                emoji=cat_info["emoji"],
+                description=cat_info["desc"][:50],
+            )
+            for cat_name, cat_info in CATEGORY_DATA.items()
+        ]
+        super().__init__(placeholder="🔍 Chọn danh mục lệnh...", options=options)
+
+    async def callback(self, interaction: discord.Interaction):
+        cat_name = self.values[0]
+        embed = build_category_embed(cat_name)
+        view = CategoryView(self.bot, self.author, cat_name)
+        view.message = self.view.message  # type: ignore
+        await interaction.response.edit_message(embed=embed, view=view)
+
+
+class CategoryView(discord.ui.View):
+    def __init__(self, bot: commands.Bot, author: discord.Member | discord.User, cat_name: str):
+        super().__init__(timeout=120.0)
+        self.bot = bot
+        self.author = author
+        self.cat_name = cat_name
+        self.message: Optional[discord.Message] = None
+        self.add_item(_CommandSelect(bot, author, cat_name))
+        self.add_item(_HomeButton())
+
+    async def interaction_check(self, interaction: discord.Interaction) -> bool:
+        if interaction.user.id != self.author.id:
+            await interaction.response.send_message("❌ Đây không phải trang trợ giúp của bạn!", ephemeral=True)
+            return False
+        return True
+
+    async def on_timeout(self):
+        for item in self.children:
+            item.disabled = True  # type: ignore
+        if self.message:
+            try:
+                await self.message.edit(view=self)
+            except discord.HTTPException:
+                pass
+
+
+class _CommandSelect(discord.ui.Select):
+    def __init__(self, bot: commands.Bot, author: discord.Member | discord.User, cat_name: str):
+        self.bot = bot
+        self.author = author
+        self.cat_name = cat_name
+        cat = CATEGORY_DATA.get(cat_name, {})
+        options = []
+        for key in cat.get("commands", []):
+            cmd = CMD_DATA.get(key)
+            if cmd:
+                options.append(discord.SelectOption(
+                    label=f"{cmd['emoji']} {cmd['name']}"[:25],
+                    value=key,
+                    description=cmd["short"][:50],
+                ))
+        super().__init__(placeholder="📖 Chọn lệnh để xem chi tiết...", options=options)
+
+    async def callback(self, interaction: discord.Interaction):
+        embed = build_detail_embed(self.values[0])
+        view = DetailView(self.bot, self.author, self.cat_name)
+        view.message = self.view.message  # type: ignore
+        await interaction.response.edit_message(embed=embed, view=view)
+
+
+class _HomeButton(discord.ui.Button):
+    def __init__(self):
+        super().__init__(label="🏠 Trang Chủ", style=discord.ButtonStyle.secondary, row=1)
+
+    async def callback(self, interaction: discord.Interaction):
+        view: CategoryView = self.view  # type: ignore
+        embed = build_home_embed(view.bot, view.author)
+        new_view = HomeView(view.bot, view.author)
+        new_view.message = view.message
+        await interaction.response.edit_message(embed=embed, view=new_view)
+
+
+class DetailView(discord.ui.View):
+    def __init__(self, bot: commands.Bot, author: discord.Member | discord.User, cat_name: str):
+        super().__init__(timeout=120.0)
+        self.bot = bot
+        self.author = author
+        self.cat_name = cat_name
+        self.message: Optional[discord.Message] = None
+        self.add_item(_BackButton())
+        self.add_item(_HomeButton2())
+
+    async def interaction_check(self, interaction: discord.Interaction) -> bool:
+        if interaction.user.id != self.author.id:
+            await interaction.response.send_message("❌ Đây không phải trang trợ giúp của bạn!", ephemeral=True)
+            return False
+        return True
+
+    async def on_timeout(self):
+        for item in self.children:
+            item.disabled = True  # type: ignore
+        if self.message:
+            try:
+                await self.message.edit(view=self)
+            except discord.HTTPException:
+                pass
+
+
+class _BackButton(discord.ui.Button):
+    def __init__(self):
+        super().__init__(label="◀ Quay Lại", style=discord.ButtonStyle.primary, row=0)
+
+    async def callback(self, interaction: discord.Interaction):
+        view: DetailView = self.view  # type: ignore
+        embed = build_category_embed(view.cat_name)
+        new_view = CategoryView(view.bot, view.author, view.cat_name)
+        new_view.message = view.message
+        await interaction.response.edit_message(embed=embed, view=new_view)
+
+
+class _HomeButton2(discord.ui.Button):
+    def __init__(self):
+        super().__init__(label="🏠 Trang Chủ", style=discord.ButtonStyle.secondary, row=0)
+
+    async def callback(self, interaction: discord.Interaction):
+        view: DetailView = self.view  # type: ignore
+        embed = build_home_embed(view.bot, view.author)
+        new_view = HomeView(view.bot, view.author)
+        new_view.message = view.message
+        await interaction.response.edit_message(embed=embed, view=new_view)
+
+
+# =============================================================================
+# COG
+# =============================================================================
+
 class HelpCog(commands.Cog):
-    """Cog Hỗ trợ hướng dẫn lệnh chung."""
+    """🛡️ Trợ giúp lệnh hệ thống với UI 3 tầng."""
+
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-        if self.bot.get_command("help"):
-            self.bot.remove_command("help")
 
     @commands.hybrid_command(
         name="help",
         aliases=["trogiup", "hd"],
-        description="Xem danh sách toàn bộ các lệnh (UI Dropdown)"
+        description="Xem danh sách toàn bộ lệnh hệ thống (UI 3 tầng).",
     )
     async def help_cmd(self, ctx: commands.Context):
-        """Lệnh hỗ trợ xem nhanh các lệnh chung và hệ thống."""
-        embed = build_help_home(self.bot, ctx.author)
-        view = HelpView(self.bot, ctx.author)
+        """🛡️ Trợ giúp lệnh hệ thống với UI tương tác 3 tầng."""
+        embed = build_home_embed(self.bot, ctx.author)
+        view = HomeView(self.bot, ctx.author)
         view.message = await ctx.send(embed=embed, view=view)
 
 
