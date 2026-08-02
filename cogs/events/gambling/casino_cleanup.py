@@ -24,6 +24,20 @@ class CasinoCleanupCog(commands.Cog):
         is_welcome = "chào mừng" in content_lower or "queo căm" in content_lower or "lốp ăng giê líc xin chào" in content_lower
         if is_welcome:
             return
+            
+        # Kiểm tra tin nhắn Giveaway (không xoá)
+        is_giveaway = False
+        if "giveaway đã kết thúc" in content_lower or "chúc mừng" in content_lower or "không có ai tham gia hợp lệ" in content_lower or "đang cấu hình" in content_lower:
+            is_giveaway = True
+        for emb in message.embeds:
+            title = emb.title or ""
+            author_name = emb.author.name if emb.author and emb.author.name else ""
+            if "Giveaway" in title or "Giveaway" in author_name or "Thiết lập Giveaway" in title:
+                is_giveaway = True
+                break
+        if is_giveaway:
+            return
+
         # Kiểm tra xem tin nhắn có components (buttons/selects) không
         has_components = len(message.components) > 0
         
@@ -56,6 +70,20 @@ class CasinoCleanupCog(commands.Cog):
         is_welcome = "chào mừng" in content_lower or "queo căm" in content_lower or "lốp ăng giê líc xin chào" in content_lower
         if is_welcome:
             return
+            
+        # Kiểm tra tin nhắn Giveaway (không xoá)
+        is_giveaway = False
+        if "giveaway đã kết thúc" in content_lower or "chúc mừng" in content_lower or "không có ai tham gia hợp lệ" in content_lower or "đang cấu hình" in content_lower:
+            is_giveaway = True
+        for emb in after.embeds:
+            title = emb.title or ""
+            author_name = emb.author.name if emb.author and emb.author.name else ""
+            if "Giveaway" in title or "Giveaway" in author_name or "Thiết lập Giveaway" in title:
+                is_giveaway = True
+                break
+        if is_giveaway:
+            return
+
         # Kiểm tra xem tin nhắn có components không
         if len(after.components) == 0:
             return
