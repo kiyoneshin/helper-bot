@@ -9,6 +9,98 @@ from typing import Any
 
 from cogs.common.db import get_or_create_event_profile, query_db
 
+from typing import Any, Optional
+
+class TopLeaderboardView(discord.ui.View):
+    def __init__(self, bot: commands.Bot, guild: Optional[discord.Guild], current_page: str = "total"):
+        super().__init__(timeout=60.0)
+        self.bot = bot
+        self.guild = guild
+        self.current_page = current_page
+        self._update_buttons()
+
+    def _update_buttons(self):
+        self.clear_items()
+        
+        btn_total = discord.ui.Button(
+            label="Đua Top (Cày Cuốc)", 
+            style=discord.ButtonStyle.primary if self.current_page == "total" else discord.ButtonStyle.secondary,
+            disabled=(self.current_page == "total")
+        )
+        btn_total.callback = self.show_total
+        self.add_item(btn_total)
+        
+        btn_points = discord.ui.Button(
+            label="Thần Bài (Số Dư)", 
+            style=discord.ButtonStyle.primary if self.current_page == "points" else discord.ButtonStyle.secondary,
+            disabled=(self.current_page == "points")
+        )
+        btn_points.callback = self.show_points
+        self.add_item(btn_points)
+
+    async def _generate_embed(self) -> discord.Embed:
+        if self.current_page == "total":
+            sql = """
+                SELECT discord_id, total_earned, points 
+                FROM event_profiles 
+                WHERE total_earned > 0 
+                ORDER BY total_earned DESC 
+                LIMIT 10;
+            """
+            title = "🏆 Bảng Xếp Hạng Đua Top Cày Cuốc ໒꒱"
+            desc_prefix = "Vinh danh Top 10 chiến thần tích lũy điểm cày cuốc:\n\n"
+            footer = "Bảng xếp hạng dựa trên tổng điểm cày được (không bị trừ khi mua shop) 🌸"
+        else:
+            sql = """
+                SELECT discord_id, total_earned, points 
+                FROM event_profiles 
+                WHERE points > 0 
+                ORDER BY points DESC 
+                LIMIT 10;
+            """
+            title = "🎰 Bảng Xếp Hạng Thần Bài (Số Dư) ໒꒱"
+            desc_prefix = "Vinh danh Top 10 đại gia nắm giữ nhiều tiền nhất server:\n\n"
+            footer = "Bảng xếp hạng dựa trên số dư hiện tại 🌸"
+            
+        rows = await query_db(self.bot, sql)
+        
+        embed = discord.Embed(title=title, color=0xffb6c1)
+        if not rows:
+            embed.description = "Bảng xếp hạng hiện đang trống!"
+        else:
+            medals = ["🥇", "🥈", "🥉"]
+            leaderboard_text = ""
+            for idx, row in enumerate(rows):
+                rank_icon = medals[idx] if idx < 3 else f"**#{idx + 1}.**"
+                user_id = row["discord_id"]
+                t_pts = row["total_earned"]
+                c_pts = row["points"]
+                
+                if self.current_page == "total":
+                    leaderboard_text += f"{rank_icon} <@{user_id}>\n└ 🏆 Tổng cày: **`{t_pts:,}`** điểm *(Dư: `{c_pts:,}`)*\n\n"
+                else:
+                    leaderboard_text += f"{rank_icon} <@{user_id}>\n└ 💰 Số dư: **`{c_pts:,}`** điểm *(Cày được: `{t_pts:,}`)*\n\n"
+                    
+            embed.description = desc_prefix + leaderboard_text
+            
+        icon_url = self.guild.icon.url if self.guild and self.guild.icon else None
+        if icon_url:
+            embed.set_thumbnail(url=icon_url)
+        embed.set_footer(text=footer)
+        return embed
+
+    async def show_total(self, interaction: discord.Interaction):
+        self.current_page = "total"
+        self._update_buttons()
+        emb = await self._generate_embed()
+        await interaction.response.edit_message(embed=emb, view=self)
+        
+    async def show_points(self, interaction: discord.Interaction):
+        self.current_page = "points"
+        self._update_buttons()
+        emb = await self._generate_embed()
+        await interaction.response.edit_message(embed=emb, view=self)
+
 
 class EventStatsCog(commands.Cog):
     """📊 Cog Quản lý điểm số và Bảng xếp hạng Sự Kiện."""
@@ -79,51 +171,9 @@ class EventStatsCog(commands.Cog):
     @commands.hybrid_command(name="etop", aliases=["evtop", "eventtop", "eventop"])
     async def etop_cmd(self, ctx: commands.Context) -> None:
         """Xem Bảng Xếp Hạng Đua Top Điểm Sự Kiện."""
-        sql = """
-            SELECT discord_id, total_earned, points 
-            FROM event_profiles 
-            WHERE total_earned > 0 
-            ORDER BY total_earned DESC 
-            LIMIT 10;
-        """
-        rows = await query_db(self.bot, sql)
-
-        if not rows:
-            await ctx.send("📊 Bảng xếp hạng sự kiện hiện đang trống! Hãy là người đầu tiên chat để lấy điểm nhé.")
-            return
-
-        embed = discord.Embed(
-            title="🏆 Bảng Xếp Hạng Sự Kiện Angelic ໒꒱",
-            color=0xffb6c1
-        )
-
-        medals = ["🥇", "🥈", "🥉"]
-        leaderboard_text = ""
-
-        for idx, row in enumerate(rows):
-            rank_icon = medals[idx] if idx < 3 else f"**#{idx + 1}.**"
-            user_id = row["discord_id"]
-            total_pts = row["total_earned"]
-            current_pts = row["points"]
-
-            leaderboard_text += (
-                f"{rank_icon} <@{user_id}>\n"
-                f"└ 🏆 Tổng cày: **`{total_pts:,}`** điểm *(Dư: `{current_pts:,}`)*\n\n"
-            )
-
-        embed.description = (
-            "Vinh danh Top 10 chiến thần tích lũy nhiều điểm nhất trong sự kiện:\n\n"
-            f"{leaderboard_text}"
-        )
-        
-        # Sửa đổi: An toàn khi guild là None
-        icon_url = ctx.guild.icon.url if ctx.guild and ctx.guild.icon else None
-        if icon_url:
-            embed.set_thumbnail(url=icon_url)
-            
-        embed.set_footer(text="Bảng xếp hạng dựa trên tổng điểm cày được (không bị trừ khi mua shop) 🌸")
-
-        await ctx.send(embed=embed)
+        view = TopLeaderboardView(self.bot, ctx.guild)
+        emb = await view._generate_embed()
+        await ctx.send(embed=emb, view=view)
 
 
 async def setup(bot: commands.Bot) -> None:
