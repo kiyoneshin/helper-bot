@@ -82,12 +82,21 @@ def split_prize(prize_str: str, winners: int) -> str:
 
     return prize_str[:match.start()] + res + rest
 
+def get_ga_title(ch_id: Optional[int]) -> str:
+    if ch_id == 1520009693249015948:
+        return "Daily Giveaway 🎀"
+    elif ch_id == 1516781881688068316:
+        return "Big Giveaway 🎀"
+    return "Giveaway 🎀"
+
 def build_giveaway_embed(
     is_fga: bool,
     prize_split: str,
     total_winners: int,
     host_id: int,
-    end_unix_time: Optional[int],
+    host_avatar_url: Optional[str],
+    end_time_dt: Optional[datetime],
+    channel_id: Optional[int],
     role_id: Optional[int] = None,
     current_flash: Optional[int] = None,
     total_flash: Optional[int] = None,
@@ -95,21 +104,26 @@ def build_giveaway_embed(
     winner_mentions: Optional[str] = None
 ) -> discord.Embed:
     emb = discord.Embed(color=0x2b2d31 if not is_ended else discord.Color.red())
-    emb.set_author(name="giveaway daily 🎀")
+    
+    emb.set_author(name=get_ga_title(channel_id))
+    if host_avatar_url:
+        emb.set_thumbnail(url=host_avatar_url)
     
     prize_str = prize_split if prize_split else "???"
     winners_str = total_winners if total_winners else "?"
     
-    desc = f"**{winners_str}e** {prize_str} 🎁\n\n"
+    desc = f"## <a:_:1509023822454460517> **{prize_str}** <a:_:1509023858613817384>\n\n"
     desc += f" — *Host:* <@{host_id}>\n"
     
     if is_ended:
+        desc += f" — *Time:* Đã kết thúc\n"
         if winner_mentions:
-            desc += f" — *Người thắng:* {winner_mentions}\n"
+            desc += f" — *Winner:* {winner_mentions}\n"
         else:
-            desc += f" — *Người thắng:* Không có ai hợp lệ\n"
+            desc += f" — *Winner:* Không có ai hợp lệ\n"
     else:
-        if end_unix_time:
+        if end_time_dt:
+            end_unix_time = int(end_time_dt.timestamp())
             desc += f" — *Time:* <t:{end_unix_time}:R>\n"
         else:
             desc += f" — *Time:* ???\n"
@@ -124,14 +138,17 @@ def build_giveaway_embed(
         desc += f"\n- 𝓕𝓵𝓪𝓼𝓱 𝓘𝓷𝓯𝓸\n"
         desc += f"  • Tiến độ: {current_flash}/{total_flash}\n"
         
+    footer_emojis = "<a:_:1526668102216061009><a:_:1526668571391037541><a:_:1526668198500630590><a:_:1526668262123896934><a:_:1526668347700416592><a:_:1526889619319296000><a:_:1526889807400402945>"
+    desc += f"\n\n{footer_emojis}"
+        
     emb.description = desc
     
     if is_ended:
-        emb.title = "[ĐÃ KẾT THÚC]"
+        end_time_str = end_time_dt.strftime("%d/%m/%Y %H:%M:%S") if end_time_dt else "???"
+        emb.set_footer(text=f"Số người thắng: {winners_str} | Kết thúc lúc {end_time_str}")
     else:
-        emb.title = "Click 🎉 để tham gia!"
+        emb.set_footer(text=f"winner: {winners_str}e")
         
-    emb.set_footer(text=f"winner: {winners_str}")
     return emb
 
 
@@ -275,14 +292,19 @@ class GiveawaySession:
         total_winners = self.winners * batch
         end_time = None
         if self.duration_sec > 0:
-            end_time = int((datetime.now() + timedelta(seconds=self.duration_sec)).timestamp())
+            end_time = datetime.now(UTC7) + timedelta(seconds=self.duration_sec)
+            
+        host = self.ctx.author
+        host_avatar = host.display_avatar.url if host.display_avatar else None
             
         return build_giveaway_embed(
             is_fga=self.is_fga,
             prize_split=self.prize_split,
             total_winners=total_winners,
-            host_id=self.ctx.author.id,
-            end_unix_time=end_time,
+            host_id=host.id,
+            host_avatar_url=host_avatar,
+            end_time_dt=end_time,
+            channel_id=self.channel_id,
             role_id=self.role_id,
             current_flash=batch if self.is_fga else None,
             total_flash=self.total_fga if self.is_fga else None,
@@ -527,14 +549,18 @@ class GiveawayCog(commands.Cog):
         total_winners = s.winners * batch
         
         end_time = datetime.now(UTC7) + timedelta(seconds=s.duration_sec)
-        unix_time = int(end_time.timestamp())
+        
+        host = s.ctx.author
+        host_avatar = host.display_avatar.url if host.display_avatar else None
 
         emb = build_giveaway_embed(
             is_fga=s.is_fga,
             prize_split=s.prize_split,
             total_winners=total_winners,
             host_id=s.ctx.author.id,
-            end_unix_time=unix_time,
+            host_avatar_url=host_avatar,
+            end_time_dt=end_time,
+            channel_id=s.channel_id,
             role_id=s.role_id,
             current_flash=current_flash,
             total_flash=s.total_fga,
@@ -578,6 +604,7 @@ class GiveawayCog(commands.Cog):
             per_batch = row['per_batch']
             role_req = row['role_id_required']
             dur = row['duration_seconds']
+            db_end_time = row['end_time']
 
             await execute_db(self.bot, "DELETE FROM active_giveaways WHERE message_id = $1", msg_id)
 
@@ -585,9 +612,15 @@ class GiveawayCog(commands.Cog):
             if not channel or not hasattr(channel, 'fetch_message'):
                 continue
             
+            host_avatar = None
+            if hasattr(channel, 'guild'):
+                host_member = channel.guild.get_member(host_id) # type: ignore
+                if host_member and host_member.display_avatar:
+                    host_avatar = host_member.display_avatar.url
+            
             try:
                 msg = await channel.fetch_message(msg_id) # type: ignore
-                emb = msg.embeds[0] if msg.embeds else discord.Embed(title=prize, color=0x2b2d31)
+                emb = msg.embeds[0] if msg.embeds else discord.Embed()
                 
                 reaction = discord.utils.get(msg.reactions, emoji=GA_EMOJI)
                 participants = []
@@ -619,7 +652,9 @@ class GiveawayCog(commands.Cog):
                     prize_split=prize,
                     total_winners=k,
                     host_id=host_id,
-                    end_unix_time=None,
+                    host_avatar_url=host_avatar,
+                    end_time_dt=db_end_time,
+                    channel_id=ch_id,
                     role_id=role_req,
                     current_flash=current_flash,
                     total_flash=total_flash,
@@ -627,7 +662,7 @@ class GiveawayCog(commands.Cog):
                     winner_mentions=winner_mentions
                 )
                 
-                await msg.edit(embed=new_emb)
+                await msg.edit(content="__**Giveaway đã kết thúc**__", embed=new_emb)
                 
                 if winners:
                     await msg.reply(f"🎉 Chúc mừng {winner_mentions} đã trúng **{prize}**! (Host: <@{host_id}>)")
@@ -640,10 +675,10 @@ class GiveawayCog(commands.Cog):
                 log.error(f"Lỗi kết thúc GA {msg_id}: {e}")
 
             if is_flash and current_flash < total_flash:
-                asyncio.create_task(self.drop_next_fga(ch_id, host_id, prize, dur, total_flash, current_flash, per_batch, role_req, winners_per_fga))
+                asyncio.create_task(self.drop_next_fga(ch_id, host_id, host_avatar, prize, dur, total_flash, current_flash, per_batch, role_req, winners_per_fga))
 
 
-    async def drop_next_fga(self, ch_id: int, host_id: int, prize: str, dur: int, total_flash: int, current_flash: int, per_batch: int, role_req: Optional[int], winners_per_fga: int):
+    async def drop_next_fga(self, ch_id: int, host_id: int, host_avatar: Optional[str], prize: str, dur: int, total_flash: int, current_flash: int, per_batch: int, role_req: Optional[int], winners_per_fga: int):
         await asyncio.sleep(30)
         
         batch = min(per_batch, total_flash - current_flash)
@@ -651,14 +686,15 @@ class GiveawayCog(commands.Cog):
         total_winners = winners_per_fga * batch
         
         end_time = datetime.now(UTC7) + timedelta(seconds=dur)
-        unix_time = int(end_time.timestamp())
 
         emb = build_giveaway_embed(
             is_fga=True,
             prize_split=prize,
             total_winners=total_winners,
             host_id=host_id,
-            end_unix_time=unix_time,
+            host_avatar_url=host_avatar,
+            end_time_dt=end_time,
+            channel_id=ch_id,
             role_id=role_req,
             current_flash=new_current,
             total_flash=total_flash,
