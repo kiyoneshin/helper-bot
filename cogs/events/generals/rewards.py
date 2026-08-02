@@ -51,7 +51,7 @@ class Rewards(commands.Cog):
     # ─────────────────────────────────────────────────────────────────────────
     @commands.hybrid_command(name="daily", aliases=["diemdanh"])
     async def daily_cmd(self, ctx: commands.Context) -> None:
-        """🎁 Nhận thưởng 500 points mỗi ngày (tăng dần theo chuỗi)."""
+        """🎁 Nhận thưởng 500 điểm mỗi ngày (tăng dần theo chuỗi)."""
         uid = str(ctx.author.id)
         now = datetime.now(timezone.utc)
         
@@ -120,7 +120,7 @@ class Rewards(commands.Cog):
         embed = discord.Embed(
             title="🎁 Điểm Danh Hàng Ngày",
             description=(
-                f"✅ Nhận thành công **{total_reward:,}** points!\n"
+                f"✅ Nhận thành công **{total_reward:,}** điểm!\n"
                 f"*(Cơ bản: {base_reward:,} + Thưởng chuỗi: {streak_bonus:,})*\n\n"
                 f"🔥 **Chuỗi hiện tại:** {daily_streak} ngày\n"
                 f"*(Chuỗi càng dài thưởng càng lớn. Hãy quay lại vào ngày mai để không làm đứt chuỗi nhé!)*"
@@ -135,7 +135,7 @@ class Rewards(commands.Cog):
     # ─────────────────────────────────────────────────────────────────────────
     @commands.hybrid_command(name="weekly", aliases=["luongtuan"])
     async def weekly_cmd(self, ctx: commands.Context) -> None:
-        """💎 Nhận lương 5000 points mỗi tuần."""
+        """💎 Nhận lương 5000 điểm mỗi tuần."""
         uid = str(ctx.author.id)
         now = datetime.now(timezone.utc)
         
@@ -192,7 +192,7 @@ class Rewards(commands.Cog):
         embed = discord.Embed(
             title="💎 Lương Tuần Đã Về!",
             description=(
-                f"🎉 Chúc mừng bạn đã nhận **{total_reward:,}** points lương tuần!\n"
+                f"🎉 Chúc mừng bạn đã nhận **{total_reward:,}** điểm lương tuần!\n"
                 f"Hãy dùng số điểm này thật khôn ngoan tại `y!shop` hoặc các sòng bài Casino nhé!"
             ),
             color=0xFFD700  # Màu vàng

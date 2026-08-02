@@ -608,7 +608,7 @@ class SpectatorBetView(discord.ui.View):
         if total_spec_pool > 0:
             embed.add_field(
                 name="💰 Tổng Pot Khán Đài",
-                value=f"**{total_spec_pool:,}** points",
+                value=f"**{total_spec_pool:,}** điểm",
                 inline=False,
             )
         embed.set_footer(text="Cược bao nhiêu cửa cũng được, cộng dồn tuỳ thích! 🎲")

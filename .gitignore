@@ -174,3 +174,4 @@ pyrightconfig.json
 *.ppk
 *.key
 repomix-output.xml
+EVENT_FAQ.md

@@ -148,7 +148,7 @@ def _build_farm_embed(
             total_ores_worth += price * count
             ore_lines.append(
                 f"• `[{item_id}]` {ore['icon']} **{ore['name']}** (x{count})"
-                f" — {price:,} pts/cái"
+                f" — {price:,} điểm/cái"
             )
         elif item_id in FISH_LOOT:
             fish = FISH_LOOT[item_id]
@@ -157,7 +157,7 @@ def _build_farm_embed(
             rare = "⭐" if fish.get("rare_rank", 0) >= 3 else ""
             fish_lines.append(
                 f"• `[{item_id}]` {fish['icon']} {rare}**{fish['name']}** (x{count})"
-                f" — {price:,} pts/cái"
+                f" — {price:,} điểm/cái"
             )
         else:
             parts = item_id.split("_")
@@ -171,7 +171,7 @@ def _build_farm_embed(
                 total_crops_worth += worth * count
                 crop_lines.append(
                     f"• `[{item_id}]` {seed_info['icon']} **{seed_info['name']}**"
-                    f" {emoji} (x{count}) — {worth:,} pts/cái"
+                    f" {emoji} (x{count}) — {worth:,} điểm/cái"
                 )
 
     desc_parts: list[str] = []
@@ -188,11 +188,11 @@ def _build_farm_embed(
 
     footer_parts: list[str] = []
     if total_crops_worth > 0:
-        footer_parts.append(f"📦 {total_crops_worth:,} pts")
+        footer_parts.append(f"📦 {total_crops_worth:,} điểm")
     if total_ores_worth > 0:
-        footer_parts.append(f"⛏️ {total_ores_worth:,} pts")
+        footer_parts.append(f"⛏️ {total_ores_worth:,} điểm")
     if total_fish_worth > 0:
-        footer_parts.append(f"🐠 {total_fish_worth:,} pts")
+        footer_parts.append(f"🐠 {total_fish_worth:,} điểm")
     if footer_parts:
         embed.add_field(
             name="💰 Tổng Giá Trị Ước Tính",

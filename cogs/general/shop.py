@@ -43,7 +43,7 @@ log = logging.getLogger("ShopCog")
 # ============================================================
 
 def _format_price(price: int | None) -> str:
-    return f"{price:,} pts" if price is not None else "Không bán"
+    return f"{price:,} điểm" if price is not None else "Không bán"
 
 
 def build_shop_embed(category: str, author: discord.Member | discord.User) -> discord.Embed:

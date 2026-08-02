@@ -20,11 +20,6 @@ EHELP_CATEGORY_MAP = {
         "emoji": "🏕️",
         "desc": "Tham gia trồng trọt, câu cá, đào mỏ.",
         "cogs": ["IdleFarmCog", "Mining", "Fishing"]
-    },
-    "Sự Kiện Đặc Biệt": {
-        "emoji": "🎪",
-        "desc": "Các sự kiện và minigame tương tác nhanh.",
-        "cogs": ["EventCoreCog", "DiceLobby", "FastHand", "QuickGrab", "MvpTribute"]
     }
 }
 

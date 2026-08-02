@@ -113,7 +113,7 @@ class MilestoneCog(commands.Cog):
                 
             rewards = []
             if data.get("points"):
-                rewards.append(f"**{data['points']:,}** points")
+                rewards.append(f"**{data['points']:,}** điểm")
             if data.get("tickets"):
                 rewards.append(f"**{data['tickets']}** vé số")
             if data.get("role_id"):
@@ -250,7 +250,7 @@ class MilestoneCog(commands.Cog):
             return s
             
         if total_points > 0:
-            embed.add_field(name="Điểm Thưởng", value=f"+**{_fmt(total_points)}** points", inline=True)
+            embed.add_field(name="Điểm Thưởng", value=f"+**{_fmt(total_points)}** điểm", inline=True)
             
         if total_tickets > 0:
             embed.add_field(name="Vé Xổ Số", value=f"+**{total_tickets}** vé", inline=True)
