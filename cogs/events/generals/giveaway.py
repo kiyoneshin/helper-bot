@@ -138,10 +138,12 @@ def build_giveaway_embed(
         desc += f"\n- 𝓕𝓵𝓪𝓼𝓱 𝓘𝓷𝓯𝓸\n"
         desc += f"  • Tiến độ: {current_flash}/{total_flash}\n"
         
-    footer_emojis = "<a:_:1526668102216061009> <a:_:1526668571391037541> <a:_:1526668198500630590> <a:_:1526668262123896934> <a:_:1526668347700416592> <a:_:1526889619319296000> <a:_:1526889807400402945>"
+    footer_emojis = "<:_:1526668102216061009><:_:1526668571391037541><:_:1526668198500630590><:_:1526668262123896934><:_:1526668347700416592><:_:1526889619319296000><:_:1526889807400402945>"
     desc += f"\n\n{footer_emojis}"
         
     emb.description = desc
+    
+    emb.set_image(url="https://cdn.discordapp.com/attachments/1532630679219732490/1533556575200084028/dg3gryc-10c81a9c-012f-45c9-8b66-9ea2470e3ca7.gif?ex=6a70eb5b&is=6a6f99db&hm=a8b215c3fdf42acbf01636089fa83a9e2b886c8e7612c815fa9165b0e6a6f9b8&")
     
     if is_ended:
         end_time_str = end_time_dt.strftime("%d/%m/%Y %H:%M:%S") if end_time_dt else "???"
