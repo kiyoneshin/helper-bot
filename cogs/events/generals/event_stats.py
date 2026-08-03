@@ -7,7 +7,7 @@ import discord
 from discord.ext import commands
 from typing import Any
 
-from cogs.common.db import get_or_create_event_profile, query_db
+from cogs.common.db import get_or_create_event_profile, query_db, update_task_progress
 
 from typing import Any, Optional
 
@@ -167,6 +167,9 @@ class EventStatsCog(commands.Cog):
         
         embed.set_footer(text="Gõ y!shop để xem cửa hàng đổi quà nhé! 🌸")
         await ctx.send(embed=embed)
+        
+        # Nhiệm vụ
+        await update_task_progress(self.bot, uid, "check_bal", 1)
 
     @commands.hybrid_command(name="etop", aliases=["evtop", "eventtop", "eventop"])
     async def etop_cmd(self, ctx: commands.Context) -> None:
@@ -174,6 +177,9 @@ class EventStatsCog(commands.Cog):
         view = TopLeaderboardView(self.bot, ctx.guild)
         emb = await view._generate_embed()
         await ctx.send(embed=emb, view=view)
+        
+        # Nhiệm vụ
+        await update_task_progress(self.bot, ctx.author.id, "check_top", 1)
 
 
 async def setup(bot: commands.Bot) -> None:

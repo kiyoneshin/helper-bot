@@ -5,7 +5,7 @@ from typing import Optional
 import discord
 from discord.ext import commands
 
-from cogs.common.db import get_or_create_event_profile, add_event_points, deduct_event_points, execute_db
+from cogs.common.db import get_or_create_event_profile, add_event_points, deduct_event_points, execute_db, update_task_progress
 
 from .work_events import WORK_EVENTS
 
@@ -87,6 +87,9 @@ class WorkCog(commands.Cog):
         emb.set_thumbnail(url=ctx.author.display_avatar.url)
         emb.set_footer(text=f"Requested by {ctx.author.display_name}")
         await ctx.send(embed=emb)
+        
+        # Nhiệm vụ
+        await update_task_progress(self.bot, uid, "work", 1)
 
 async def setup(bot: commands.Bot):
     await bot.add_cog(WorkCog(bot))

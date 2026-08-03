@@ -24,6 +24,7 @@ from cogs.common.db import (
     get_or_create_event_profile,
     add_event_points,
     deduct_event_points,
+    update_task_progress,
 )
 
 log = logging.getLogger("WheelSlots")
@@ -323,6 +324,8 @@ class WheelSlots(commands.Cog):
             await ctx.send(embed=embed, delete_after=delay)
         else:
             await ctx.send(embed=embed)
+            
+        await update_task_progress(self.bot, uid, "gamble_any", 1)
 
     @wheel_cmd.error
     async def wheel_error(self, ctx: commands.Context, error: Exception) -> None:
@@ -413,6 +416,9 @@ class WheelSlots(commands.Cog):
             await ctx.send(embed=embed, delete_after=delay)
         else:
             await ctx.send(embed=embed)
+            
+        await update_task_progress(self.bot, uid, "slots", 1)
+        await update_task_progress(self.bot, uid, "gamble_any", 1)
 
     @slots_cmd.error
     async def slots_error(self, ctx: commands.Context, error: Exception) -> None:

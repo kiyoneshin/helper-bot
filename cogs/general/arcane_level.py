@@ -5,7 +5,7 @@ import asyncio
 import discord
 from discord.ext import commands
 
-from cogs.common.db import fetchval_db, execute_db
+from cogs.common.db import fetchval_db, execute_db, update_task_progress
 
 log = logging.getLogger("ArcaneLevelSync")
 
@@ -176,6 +176,9 @@ class ArcaneLevelSync(commands.Cog):
             if level > max_level:
                 await self.upsert_user_level(user.id, level)
                 await self._assign_level_roles(user, level)
+                
+                # Nhiệm vụ
+                await update_task_progress(self.bot, user.id, "arcane_lvup", 1)
 
     @commands.Cog.listener()
     async def on_member_join(self, member: discord.Member):

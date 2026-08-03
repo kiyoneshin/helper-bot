@@ -18,6 +18,7 @@ from cogs.common.db import (
     get_or_create_event_profile,
     add_event_points,
     deduct_event_points,
+    update_task_progress,
 )
 
 log = logging.getLogger("VietnamGames")
@@ -230,6 +231,10 @@ class VietnamGames(commands.Cog):
             await ctx.send(embed=embed, delete_after=delay)
         else:
             await ctx.send(embed=embed)
+            
+        # Nhiệm vụ
+        await update_task_progress(self.bot, uid, "taixiu", 1)
+        await update_task_progress(self.bot, uid, "gamble_any", 1)
 
     @taixiu_cmd.error
     async def taixiu_error(self, ctx: commands.Context, error: Exception) -> None:
@@ -512,6 +517,10 @@ class VietnamGames(commands.Cog):
                     await ctx.send(embed=result_embed, delete_after=delay)
                 else:
                     await ctx.send(embed=result_embed)
+                
+                # Nhiệm vụ
+                await update_task_progress(self.bot, player_id, "baucua", 1)
+                await update_task_progress(self.bot, player_id, "gamble_any", 1)
             except discord.HTTPException:
                 pass
 

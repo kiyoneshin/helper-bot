@@ -7,7 +7,7 @@ from typing import Optional
 import discord
 from discord.ext import commands, tasks
 
-from cogs.common.db import execute_db, query_db
+from cogs.common.db import execute_db, query_db, update_task_progress
 
 import logging
 log = logging.getLogger("GiveawayCog")
@@ -666,7 +666,13 @@ class GiveawayCog(commands.Cog):
                 
                 await msg.edit(content="__**Giveaway đã kết thúc**__", embed=new_emb)
                 
+                if participants:
+                    for p in participants:
+                        await update_task_progress(self.bot, p.id, "giveaway_join", 1)
+                
                 if winners:
+                    for w in winners:
+                        await update_task_progress(self.bot, w.id, "giveaway_win", 1)
                     await msg.reply(f"🎉 Chúc mừng {winner_mentions} đã trúng **{prize}**! (Host: <@{host_id}>)")
                 else:
                     await msg.reply(f"😔 Không có ai tham gia hợp lệ đợt này. (Host: <@{host_id}>)")

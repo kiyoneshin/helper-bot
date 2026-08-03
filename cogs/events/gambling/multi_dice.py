@@ -29,6 +29,7 @@ from cogs.common.db import (
     add_event_points,
     deduct_event_points,
     get_or_create_event_profile,
+    update_task_progress,
 )
 
 log = logging.getLogger("MultiDice")
@@ -1024,7 +1025,14 @@ class MultiDice(commands.Cog):
             ),
             inline=False,
         )
+        embed.set_thumbnail(url=ctx.guild.icon.url if ctx.guild and ctx.guild.icon else None)
         embed.set_footer(text="Angelic Casino • Xúc Xắc Quần Hùng 🌸")
+
+        # Nhiệm vụ
+        for p in players:
+            await update_task_progress(self.bot, p.id, "dice", 1)
+            await update_task_progress(self.bot, p.id, "gamble_any", 1)
+
         delay = 10.0 if ctx.channel.id == 1498711783223853101 else None
         if delay is not None:
             await ctx.send(embed=embed, delete_after=delay)

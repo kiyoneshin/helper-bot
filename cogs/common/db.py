@@ -168,6 +168,15 @@ async def init_all_tables(bot: Any) -> bool:
             except Exception as e:
                 log.warning(f"Bỏ qua convert type points (có thể đã là FLOAT): {e}")
                 
+            # Tạo bảng user_tasks (Nhiệm vụ Ngày/Tuần/Sự kiện)
+            await conn.execute('''
+                CREATE TABLE IF NOT EXISTS user_tasks (
+                    discord_id BIGINT PRIMARY KEY,
+                    daily_tasks JSONB DEFAULT '{"assigned_date": null, "tasks": {}}'::jsonb,
+                    weekly_tasks JSONB DEFAULT '{"assigned_date": null, "tasks": {}}'::jsonb,
+                    quests JSONB DEFAULT '{}'::jsonb
+                );
+            ''')
             
         log.info("🌸 Toàn bộ Database (Staff + Event) đã được khởi tạo và cấu trúc chuẩn xác!")
         return True
@@ -270,3 +279,79 @@ def check_not_locked():
             return False
         return True
     return commands.check(predicate)
+
+# =====================================================================
+# 5. HỆ THỐNG NHIỆM VỤ (TASK SYSTEM HELPERS)
+# =====================================================================
+
+async def get_user_tasks_row(bot: Any, discord_id: Union[str, int]) -> dict:
+    """Lấy row của user_tasks, nếu chưa có thì tạo."""
+    uid = int(discord_id)
+    row = await fetchrow_db(bot, "SELECT * FROM user_tasks WHERE discord_id = $1", uid)
+    if not row:
+        sql = '''
+            INSERT INTO user_tasks (discord_id) VALUES ($1)
+            ON CONFLICT (discord_id) DO NOTHING RETURNING *;
+        '''
+        row = await fetchrow_db(bot, sql, uid)
+        if not row:
+            row = await fetchrow_db(bot, "SELECT * FROM user_tasks WHERE discord_id = $1", uid)
+    
+    # Convert asyncpg Record to dict for mutability, keeping string representation for JSONB
+    return dict(row) if row else {
+        "discord_id": uid,
+        "daily_tasks": '{"assigned_date": null, "tasks": {}}',
+        "weekly_tasks": '{"assigned_date": null, "tasks": {}}',
+        "quests": '{}'
+    }
+
+async def update_task_progress(bot: Any, discord_id: Union[str, int], action_type: str, amount: int = 1) -> None:
+    """
+    Cập nhật tiến độ nhiệm vụ cho user.
+    action_type: Chuỗi định danh loại hành động (vd: 'work', 'slots', 'taixiu', 'dice', 'chat', 'voice')
+    """
+    try:
+        uid = int(discord_id)
+        row = await get_user_tasks_row(bot, uid)
+        
+        # Helper parse JSONB
+        def _parse(val):
+            if isinstance(val, dict): return val
+            if isinstance(val, str): return json.loads(val)
+            return {}
+            
+        daily_json = _parse(row.get("daily_tasks"))
+        weekly_json = _parse(row.get("weekly_tasks"))
+        quests_json = _parse(row.get("quests"))
+        
+        def _update_dict(tasks_dict) -> bool:
+            changed = False
+            for tid, tdata in tasks_dict.items():
+                if tdata.get("action") == action_type and not tdata.get("completed"):
+                    tdata["progress"] += amount
+                    if tdata["progress"] >= tdata["target"]:
+                        tdata["progress"] = tdata["target"]
+                        tdata["completed"] = True
+                    changed = True
+            return changed
+
+        d_changed = _update_dict(daily_json.get("tasks", {}))
+        w_changed = _update_dict(weekly_json.get("tasks", {}))
+        q_changed = _update_dict(quests_json)
+
+        if d_changed or w_changed or q_changed:
+            sql_update = """
+                UPDATE user_tasks 
+                SET daily_tasks = $1::jsonb, weekly_tasks = $2::jsonb, quests = $3::jsonb 
+                WHERE discord_id = $4
+            """
+            await execute_db(
+                bot, sql_update, 
+                json.dumps(daily_json), 
+                json.dumps(weekly_json), 
+                json.dumps(quests_json), 
+                uid
+            )
+            
+    except Exception as e:
+        log.error(f"Lỗi update_task_progress cho user {discord_id}: {e}", exc_info=True)
