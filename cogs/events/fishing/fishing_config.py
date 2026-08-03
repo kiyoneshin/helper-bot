@@ -24,8 +24,8 @@ MAX_ROD_LEVEL: int = 3
 
 ROD_UPGRADE_COST: dict = {
     # level_hiện_tại -> (điểm_cần, {item_id: số_lượng})
-    1: (8_000,  {"stone": 5, "copper_ore": 3}),  # Lên Lv2: Cần Đồng
-    2: (20_000, {"iron_ore": 5, "coal": 8}),     # Lên Lv3: Cần Sắt
+    1: (8_000, {"wood": 10, "copper_ore": 5}),  # Lên Lv2: Cần Đồng
+    2: (20_000, {"hardwood": 5, "iron_ore": 5}),     # Lên Lv3: Cần Sắt
 }
 
 ROD_NAMES: dict = {

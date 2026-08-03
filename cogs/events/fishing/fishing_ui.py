@@ -34,6 +34,8 @@ def _stamina_bar(stamina: int, bar_len: int = 10) -> str:
     filled = round(stamina / MAX_STAMINA * bar_len)
     return "🟦" * filled + "⬛" * (bar_len - filled)
 
+from cogs.events.mining.mining_ui import _mins_to_full
+
 
 # ---------------------------------------------------------------------------
 # EMBED
@@ -59,10 +61,11 @@ def build_fishing_embed(author: discord.Member | discord.User, stamina: int, far
     )
 
     bar = _stamina_bar(stamina)
+    regen_info = f"(Hồi đầy sau: {_mins_to_full(stamina)})" if stamina < MAX_STAMINA else "✅ Đã đầy"
     embed.add_field(
         name="💪 Thể Lực",
-        value=f"{bar} **{stamina}/{MAX_STAMINA}**",
-        inline=True,
+        value=f"{bar} **{stamina}/{MAX_STAMINA}** {regen_info}",
+        inline=False,
     )
     embed.add_field(
         name="🎣 Cần Câu",
@@ -75,10 +78,19 @@ def build_fishing_embed(author: discord.Member | discord.User, stamina: int, far
         f"{info['icon']} **{info['name']}** — {display_weights[fish_id]}%"
         for fish_id, info in FISH_LOOT.items()
     ]
-    embed.add_field(name="🐠 Các Loài Trong Hồ", value="\n".join(fish_lines), inline=False)
+    embed.add_field(name="🐠 Các Loài (Base)", value="\n".join(fish_lines), inline=True)
+    
+    inventory = (farm_data or {}).get("inventory", {})
+    inv_lines = [
+        f"{info['icon']} {info['name']}: **{inventory.get(fish_id, 0)}**"
+        for fish_id, info in FISH_LOOT.items()
+        if inventory.get(fish_id, 0) > 0
+    ]
+    if inv_lines:
+        embed.add_field(name="🎒 Giỏ Cá Của Bạn", value="\n".join(inv_lines), inline=False)
 
     embed.set_thumbnail(url=author.display_avatar.url)
-    embed.set_footer(text="Cá câu được sẽ được cất vào y!bag. Nâng cấp cần với y!upgrade.")
+    embed.set_footer(text="Dùng y!bag để bán cá. Thể lực hồi 1 điểm mỗi 18 giây.")
     return embed
 
 

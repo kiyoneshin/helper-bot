@@ -19,6 +19,9 @@ from cogs.events.mining.mining_config import (
 from cogs.events.fishing.fishing_config import (
     ROD_UPGRADE_COST, ROD_NAMES, MAX_ROD_LEVEL, FISH_LOOT
 )
+from cogs.events.woodcutting.woodcutting_config import (
+    AXE_UPGRADE_COST, AXE_NAMES, MAX_AXE_LEVEL, WOODCUTTING_LOOT
+)
 
 
 # ---------------------------------------------------------------------------
@@ -34,6 +37,7 @@ def build_upgrade_embed(author: discord.Member | discord.User, farm_data: Dict[s
     current_slots    = farm_data.get("slots", 3)
     pickaxe_level    = farm_data.get("pickaxe_level", 1)
     rod_level        = farm_data.get("rod_level", 1)
+    axe_level        = farm_data.get("axe_level", 1)
     inventory        = farm_data.get("inventory", {})
 
     embed.description = (
@@ -60,8 +64,9 @@ def build_upgrade_embed(author: discord.Member | discord.User, farm_data: Dict[s
         pick_info = "✅ Đã đạt cấp tối đa!"
     else:
         cost_pts, cost_items = PICKAXE_UPGRADE_COST[pickaxe_level]
+        all_items = {**MINING_LOOT, **FISH_LOOT, **WOODCUTTING_LOOT}
         items_str = ", ".join(
-            f"{MINING_LOOT[k]['icon']} {v}x {MINING_LOOT[k]['name']}" for k, v in cost_items.items()
+            f"{all_items[k]['icon']} {v}x {all_items[k]['name']}" for k, v in cost_items.items() if k in all_items
         )
         # Kiểm tra đủ nguyên liệu
         has_items = all(inventory.get(k, 0) >= v for k, v in cost_items.items())
@@ -99,6 +104,29 @@ def build_upgrade_embed(author: discord.Member | discord.User, farm_data: Dict[s
         inline=True,
     )
 
+    # --- Rìu ---
+    axe_name = AXE_NAMES.get(axe_level, f"Lv{axe_level}")
+    if axe_level >= MAX_AXE_LEVEL:
+        axe_info = "✅ Đã đạt cấp tối đa!"
+    else:
+        cost_pts, cost_items = AXE_UPGRADE_COST[axe_level]
+        all_items = {**MINING_LOOT, **FISH_LOOT, **WOODCUTTING_LOOT}
+        items_str = ", ".join(
+            f"{all_items[k]['icon']} {v}x {all_items[k]['name']}"
+            for k, v in cost_items.items()
+            if k in all_items
+        )
+        has_items = all(inventory.get(k, 0) >= v for k, v in cost_items.items())
+        can_afford = points >= cost_pts
+        status = "✅ Đủ vật liệu" if (has_items and can_afford) else "❌ Chưa đủ"
+        axe_info = f"**{cost_pts:,.0f}** điểm + {items_str}\n_{status}_"
+
+    embed.add_field(
+        name=f"🪓 Rìu: {axe_name} (Lv{axe_level})",
+        value=axe_info,
+        inline=False,
+    )
+
     embed.set_thumbnail(url=author.display_avatar.url)
     embed.set_footer(text="Nhấn nút bên dưới để nâng cấp.")
     return embed
@@ -118,6 +146,7 @@ class UpgradeView(discord.ui.View):
         current_slots = farm_data.get("slots", 3)
         pickaxe_level = farm_data.get("pickaxe_level", 1)
         rod_level     = farm_data.get("rod_level", 1)
+        axe_level     = farm_data.get("axe_level", 1)
 
         # Nút 1: Mở rộng ô đất
         btn_slot = discord.ui.Button(
@@ -151,6 +180,17 @@ class UpgradeView(discord.ui.View):
         )
         btn_rod.callback = self._rod_callback
         self.add_item(btn_rod)
+
+        # Nút 4: Nâng cấp Rìu
+        btn_axe = discord.ui.Button(
+            label="Nâng Rìu",
+            emoji="🪓",
+            style=discord.ButtonStyle.secondary,
+            row=0,
+            disabled=(axe_level >= MAX_AXE_LEVEL),
+        )
+        btn_axe.callback = self._axe_callback
+        self.add_item(btn_axe)
 
     # -----------------------------------------------------------------------
     # HELPER: kiểm tra chủ sở hữu
@@ -259,7 +299,7 @@ class UpgradeView(discord.ui.View):
             )
             return
 
-        all_items = {**MINING_LOOT, **FISH_LOOT}
+        all_items = {**MINING_LOOT, **FISH_LOOT, **WOODCUTTING_LOOT}
         for item_id, qty in cost_items.items():
             if inventory.get(item_id, 0) < qty:
                 item_name = all_items.get(item_id, {}).get("name", item_id)
@@ -277,3 +317,47 @@ class UpgradeView(discord.ui.View):
 
         new_name = ROD_NAMES.get(rod_level + 1, f"Lv{rod_level + 1}")
         await self.update_view(interaction, f"Nâng cấp thành công! Cần câu mới: **{new_name}**")
+
+    # -----------------------------------------------------------------------
+    # CALLBACK: Nâng cấp Rìu
+    # -----------------------------------------------------------------------
+    async def _axe_callback(self, interaction: discord.Interaction) -> None:
+        if not await self._check_owner(interaction):
+            return
+
+        farm_data = await get_farm_data(self.bot, self.user_id)
+        axe_level = int(farm_data.get("axe_level", 1))
+        inventory = farm_data.setdefault("inventory", {})
+
+        if axe_level >= MAX_AXE_LEVEL:
+            await interaction.response.send_message("❌ Rìu đã đạt cấp tối đa!", ephemeral=True)
+            return
+
+        cost_pts, cost_items = AXE_UPGRADE_COST[axe_level]
+
+        user_points = await fetchval_db(self.bot, "SELECT points FROM event_profiles WHERE discord_id = $1", self.user_id)
+        points = float(user_points) if user_points else 0.0
+        if points < cost_pts:
+            await interaction.response.send_message(
+                f"❌ Không đủ điểm! Cần **{cost_pts:,.0f}**, bạn có **{points:,.0f}**.", ephemeral=True
+            )
+            return
+
+        all_items = {**MINING_LOOT, **FISH_LOOT, **WOODCUTTING_LOOT}
+        for item_id, qty in cost_items.items():
+            if inventory.get(item_id, 0) < qty:
+                item_name = all_items.get(item_id, {}).get("name", item_id)
+                await interaction.response.send_message(
+                    f"❌ Thiếu **{item_name}**! Cần {qty}, bạn có {inventory.get(item_id, 0)}.", ephemeral=True
+                )
+                return
+
+        await deduct_event_points(self.bot, self.user_id, cost_pts)
+        for item_id, qty in cost_items.items():
+            inventory[item_id] -= qty
+
+        farm_data["axe_level"] = axe_level + 1
+        await save_farm_data(self.bot, self.user_id, farm_data)
+
+        new_name = AXE_NAMES.get(axe_level + 1, f"Lv{axe_level + 1}")
+        await self.update_view(interaction, f"Nâng cấp thành công! Rìu mới: **{new_name}**")

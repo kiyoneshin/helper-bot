@@ -23,8 +23,8 @@ MAX_PICKAXE_LEVEL: int = 3
 
 PICKAXE_UPGRADE_COST: dict = {
     # level_hiện_tại -> (điểm_cần, {item_id: số_lượng})
-    1: (10_000, {"copper_ore": 10}),  # Lên Lv2: Cuốc Đồng
-    2: (25_000, {"iron_ore": 10}),    # Lên Lv3: Cuốc Sắt
+    1: (10_000, {"wood": 20, "copper_ore": 10}),  # Lên Lv2: Cuốc Đồng
+    2: (25_000, {"hardwood": 10, "iron_ore": 10}),    # Lên Lv3: Cuốc Sắt
 }
 
 PICKAXE_NAMES: dict = {
