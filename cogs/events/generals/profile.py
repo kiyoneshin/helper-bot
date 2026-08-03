@@ -7,7 +7,8 @@ import discord
 from discord.ext import commands
 import random
 
-from cogs.common.db import check_not_locked
+from cogs.common.db import check_not_locked, fetchrow_db, get_or_create_event_profile
+import json
 
 # Import cấu hình tên công cụ (để chuyển từ Level sang Tên đẹp)
 from cogs.events.woodcutting.woodcutting_config import AXE_NAMES
@@ -15,29 +16,42 @@ from cogs.events.mining.mining_config import PICKAXE_NAMES
 from cogs.events.fishing.fishing_config import ROD_NAMES
 
 async def fetch_user_profile_data(bot: commands.Bot, user_id: str) -> dict:
-    """
-    Hàm helper placeholder để lấy dữ liệu Profile của user.
-    Hiện tại trả về dữ liệu mẫu (mock data).
-    Bạn có thể đắp câu lệnh SQL query asyncpg vào đây sau.
-    """
-    # TODO: Tự viết câu lệnh SQL query vào DB của bạn ở đây
-    # Ví dụ:
-    # sql = "SELECT * FROM event_profiles WHERE discord_id = $1"
-    # data = await bot.db_pool.fetchrow(sql, user_id)
+    """Lấy dữ liệu thực tế từ event_profiles."""
+    await get_or_create_event_profile(bot, user_id)
+    sql = "SELECT points, total_earned, title, marry_to, farm_data, stats FROM event_profiles WHERE discord_id = $1"
+    row = await fetchrow_db(bot, sql, user_id)
     
+    if not row:
+        return {}
+        
+    farm_data = row["farm_data"]
+    if farm_data:
+        if isinstance(farm_data, str): farm_data = json.loads(farm_data)
+    else:
+        farm_data = {}
+        
+    stats = row["stats"]
+    if stats:
+        if isinstance(stats, str): stats = json.loads(stats)
+    else:
+        stats = {}
+        
     return {
-        "title": "👑 Kẻ Lang Thang",  # Danh hiệu
-        "marry_to": None,            # ID của người kết hôn, hoặc None nếu độc thân
-        "points": 15000,             # Tiền/Điểm cơ bản
-        "event_coin": 350,           # Tiền sự kiện (ví dụ: Coconuts)
+        "title": row["title"] or "👑 Kẻ Lang Thang",
+        "marry_to": row["marry_to"],
+        "points": float(row["points"] or 0.0),
+        "total_earned": float(row["total_earned"] or 0.0),
         
-        "axe_level": 2,              # Level rìu
-        "pickaxe_level": 3,          # Level cuốc
-        "rod_level": 1,              # Level cần câu
+        "axe_level": int(farm_data.get("axe_level", 1)),
+        "pickaxe_level": int(farm_data.get("pickaxe_level", 1)),
+        "rod_level": int(farm_data.get("rod_level", 1)),
         
-        "quests_completed": 12,      # Số Quest đã làm
-        "crops_harvested": 150,      # Số cây đã thu hoạch
-        "jail_count": 3,             # Số lần vào chuồng chó
+        "quests_completed": int(stats.get("quests", 0)),
+        "crops_harvested": int(stats.get("crops", 0)),
+        "jail_count": int(stats.get("jails", 0)),
+        "works_done": int(stats.get("works", 0)),
+        "mines_done": int(stats.get("mines", 0)),
+        "fishes_done": int(stats.get("fishes", 0)),
     }
 
 class ProfileCog(commands.Cog, name="Profile"):
@@ -75,11 +89,11 @@ class ProfileCog(commands.Cog, name="Profile"):
         
         # 2. TÀI SẢN & KINH TẾ
         points = data.get("points", 0)
-        coconuts = data.get("event_coin", 0)
+        total_earned = data.get("total_earned", 0)
         
         embed.add_field(
             name="💰 Tài Sản & Ngân Khố",
-            value=f"💵 **Tiền/Điểm:** {points:,.0f}\n🥥 **Dừa Mùa Hè:** {coconuts:,.0f}",
+            value=f"💵 **Số dư (Khả dụng):** {points:,.0f}\n🏆 **Tổng Điểm (Milestones):** {total_earned:,.0f}",
             inline=True
         )
         
@@ -107,13 +121,19 @@ class ProfileCog(commands.Cog, name="Profile"):
         quests = data.get("quests_completed", 0)
         crops = data.get("crops_harvested", 0)
         jail = data.get("jail_count", 0)
+        works = data.get("works_done", 0)
+        mines = data.get("mines_done", 0)
+        fishes = data.get("fishes_done", 0)
         
         embed.add_field(
             name="📊 Bảng Vàng Thành Tích",
             value=(
-                f"🎯 **Nhiệm vụ:** {quests} Quests\n"
-                f"🌱 **Nông trại:** {crops} Cây\n"
-                f"🐕 **Vô chuồng chó:** {jail} Lần"
+                f"🎯 **Nhiệm vụ (Quests):** {quests}\n"
+                f"🌱 **Cây trồng (Harvests):** {crops}\n"
+                f"🪓 **Chặt gỗ (Works):** {works}\n"
+                f"⛏️ **Đập đá (Mines):** {mines}\n"
+                f"🎣 **Câu cá (Fishes):** {fishes}\n"
+                f"🐕 **Vô chuồng chó (Jails):** {jail} Lần"
             ),
             inline=False
         )

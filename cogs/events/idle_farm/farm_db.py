@@ -12,7 +12,7 @@ from typing import Any, Dict, Tuple
 
 from discord.ext import commands
 
-from cogs.common.db import fetchval_db, execute_db, get_or_create_event_profile, add_event_points
+from cogs.common.db import fetchval_db, execute_db, get_or_create_event_profile, add_event_points, update_event_stat
 from . import config
 
 log = logging.getLogger("FarmDB")
@@ -370,6 +370,10 @@ async def harvest_all(bot: commands.Bot, user_id: str) -> Tuple[bool, Dict[str, 
         
     if slots_to_remove:
         await save_farm_data(bot, user_id, farm_data)
+        
+    total_harvested = sum(harvest_report.values())
+    if total_harvested > 0:
+        await update_event_stat(bot, user_id, "crops", total_harvested)
         
     return True, {"harvested": harvest_report, "withered": withered_count}
 

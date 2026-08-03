@@ -159,11 +159,13 @@ async def init_all_tables(bot: Any) -> bool:
                     ALTER TABLE event_profiles ALTER COLUMN total_earned TYPE FLOAT USING total_earned::double precision;
                     ALTER TABLE event_profiles ADD COLUMN IF NOT EXISTS farm_data JSONB DEFAULT '{"slots": 3, "crops": {}, "inventory": {}}'::jsonb;
                     
-                    -- Thêm các cột cho hệ thống Ngân hàng
                     ALTER TABLE event_profiles ADD COLUMN IF NOT EXISTS debt FLOAT DEFAULT 0.0;
                     ALTER TABLE event_profiles ADD COLUMN IF NOT EXISTS last_interest_date DATE DEFAULT (CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Ho_Chi_Minh')::date;
                     ALTER TABLE event_profiles ADD COLUMN IF NOT EXISTS is_locked BOOLEAN DEFAULT FALSE;
                     ALTER TABLE event_profiles ADD COLUMN IF NOT EXISTS negative_streak INT DEFAULT 0;
+                    
+                    ALTER TABLE event_profiles ADD COLUMN IF NOT EXISTS title VARCHAR DEFAULT '👑 Kẻ Lang Thang';
+                    ALTER TABLE event_profiles ADD COLUMN IF NOT EXISTS stats JSONB DEFAULT '{"quests": 0, "crops": 0, "jails": 0, "works": 0, "mines": 0, "fishes": 0}'::jsonb;
                 ''')
             except Exception as e:
                 log.warning(f"Bỏ qua convert type points (có thể đã là FLOAT): {e}")
@@ -248,6 +250,22 @@ async def add_event_points(bot: Any, discord_id: Union[str, int], amount: float,
         '''
     res = await execute_db(bot, sql, uid, amount)
     return res is not None
+
+async def update_event_stat(bot: Any, discord_id: Union[str, int], stat_key: str, amount: int = 1) -> None:
+    """Tăng (hoặc giảm) một chỉ số thống kê trong cột stats (JSONB)."""
+    uid = str(discord_id)
+    await get_or_create_event_profile(bot, uid)
+    
+    sql = f"""
+        UPDATE event_profiles
+        SET stats = jsonb_set(
+            COALESCE(stats, '{{}}'::jsonb),
+            '{{{stat_key}}}',
+            (COALESCE((stats->>'{stat_key}')::int, 0) + $1)::text::jsonb
+        )
+        WHERE discord_id = $2;
+    """
+    await execute_db(bot, sql, amount, uid)
 
 async def deduct_event_points(bot: Any, discord_id: Union[str, int], amount: float) -> bool:
     """Trừ điểm an toàn (Mua đồ shop, đặt cược thua). Trả về True nếu thành công, False nếu không đủ tiền."""

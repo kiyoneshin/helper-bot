@@ -4,7 +4,7 @@ import random
 import json
 from datetime import datetime, timedelta, timezone
 
-from cogs.common.db import fetchrow_db, execute_db, add_event_points, UTC7
+from cogs.common.db import fetchrow_db, execute_db, add_event_points, UTC7, update_event_stat
 from .task_config import DAILY_TASKS, WEEKLY_TASKS, QUESTS
 
 def _get_progress_bar(progress: int, target: int, length: int = 10) -> str:
@@ -137,6 +137,7 @@ class TaskCog(commands.Cog):
             if tdata["progress"] >= tdata["target"] and not tdata["claimed"]:
                 tdata["claimed"] = True
                 await add_event_points(self.bot, uid, tdata["reward"], is_earned=True)
+                await update_event_stat(self.bot, uid, "quests", 1)
                 claimed_messages.append(f"✅ Đã nhận thưởng nhiệm vụ ngày #{idx} (+{tdata['reward']:,} điểm)")
                 db_changed = True
 
@@ -162,6 +163,7 @@ class TaskCog(commands.Cog):
             if tdata["progress"] >= tdata["target"] and not tdata["claimed"]:
                 tdata["claimed"] = True
                 await add_event_points(self.bot, uid, tdata["reward"], is_earned=True)
+                await update_event_stat(self.bot, uid, "quests", 1)
                 claimed_messages.append(f"🌟 Đã nhận thưởng nhiệm vụ tuần #{idx} (+{tdata['reward']:,} điểm)")
                 db_changed = True
 
@@ -217,6 +219,7 @@ class TaskCog(commands.Cog):
             if tdata["progress"] >= tdata["target"] and not tdata["claimed"]:
                 tdata["claimed"] = True
                 await add_event_points(self.bot, uid, tdata["reward"], is_earned=True)
+                await update_event_stat(self.bot, uid, "quests", 1)
                 claimed_messages.append(f"🏆 Đã hoàn thành siêu nhiệm vụ: **{conf['name']}** (+{tdata['reward']:,} điểm)")
                 db_changed = True
 

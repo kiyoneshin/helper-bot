@@ -9,6 +9,7 @@ from .woodcutting_config import (
 from cogs.events.idle_farm.farm_db import get_farm_data, save_farm_data, get_and_update_stamina
 from cogs.events.mining.mining_config import MAX_STAMINA
 from cogs.events.mining.mining_ui import _mins_to_full
+from cogs.common.db import update_event_stat
 
 def _stamina_bar(stamina: int, bar_len: int = 10) -> str:
     filled = round(stamina / MAX_STAMINA * bar_len)
@@ -103,5 +104,7 @@ class WoodcuttingView(discord.ui.View):
         double_str = " **(x2 Rìu Sắt!)**" if quantity == 2 else ""
         new_embed = build_woodcutting_embed(self.author, new_stamina, farm_data)
         await interaction.response.edit_message(embed=new_embed, view=self)
+        
+        await update_event_stat(self.bot, self.user_id, "works", 1)
         
         await interaction.followup.send(f"🪓 Bạn vung rìu và nhận được: {loot_info['icon']} **{quantity}x {loot_info['name']}**{double_str}!", ephemeral=True)

@@ -14,6 +14,7 @@ from .mining_config import (
     get_mining_loot, get_mining_display_weights
 )
 from cogs.events.idle_farm.farm_db import get_farm_data, save_farm_data, get_and_update_stamina
+from cogs.common.db import update_event_stat
 
 
 # ---------------------------------------------------------------------------
@@ -140,6 +141,7 @@ class MiningView(discord.ui.View):
 
         # 4. Lưu DB
         await save_farm_data(self.bot, self.user_id, farm_data)
+        await update_event_stat(self.bot, self.user_id, "mines", quantity)
 
         # 5. Cập nhật UI
         if new_stamina < STAMINA_PER_HIT:

@@ -15,7 +15,7 @@ import discord
 from discord.ext import commands
 import asyncio
 
-from cogs.common.db import execute_db, fetchrow_db
+from cogs.common.db import execute_db, fetchrow_db, update_event_stat
 
 log = logging.getLogger("JailCore")
 
@@ -299,6 +299,9 @@ class JailCore(commands.Cog):
         if status is None:
             await ctx.send("❌ Lỗi Database khi lưu hồ sơ tù nhân!")
             return
+            
+        # Thống kê +1 lần vô tù
+        await update_event_stat(self.bot, member.id, "jails", 1)
 
         # Gỡ role cũ
         if removable_roles:

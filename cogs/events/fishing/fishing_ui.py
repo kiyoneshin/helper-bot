@@ -24,6 +24,7 @@ from .fishing_config import (
 )
 from cogs.events.idle_farm.farm_db import get_farm_data, save_farm_data, get_and_update_stamina
 from cogs.events.mining.mining_config import MAX_STAMINA
+from cogs.common.db import update_event_stat
 
 
 # ---------------------------------------------------------------------------
@@ -196,6 +197,7 @@ class FishingView(discord.ui.View):
             inventory = farm_data.setdefault("inventory", {})
             inventory[fish_id] = inventory.get(fish_id, 0) + 1
             await save_farm_data(self.bot, self.user_id, farm_data)
+            await update_event_stat(self.bot, self.user_id, "fishes", 1)
 
             # Tạo thông báo kết quả
             prefix = "⚡ **Perfect Catch!** " if is_perfect else "🎉 **Tuyệt vời!** "

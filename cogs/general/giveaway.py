@@ -856,7 +856,7 @@ class GiveawayCog(commands.Cog):
             participants.append(u)
             
         if not participants:
-            await ctx.send("😔 Không tìm thấy ai hợp lệ để reroll (đã lọc bot, người bị ban và người đã trúng giải).")
+            await ctx.send("😔 Không tìm thấy ai hợp lệ để reroll.")
             return
             
         actual_k = min(winners_count, len(participants))
