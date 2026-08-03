@@ -14,11 +14,12 @@ import json
 from cogs.events.woodcutting.woodcutting_config import AXE_NAMES
 from cogs.events.mining.mining_config import PICKAXE_NAMES
 from cogs.events.fishing.fishing_config import ROD_NAMES
+from cogs.events.generals.milestone import EVENT_MILESTONES
 
 async def fetch_user_profile_data(bot: commands.Bot, user_id: str) -> dict:
     """Lấy dữ liệu thực tế từ event_profiles."""
     await get_or_create_event_profile(bot, user_id)
-    sql = "SELECT points, total_earned, title, marry_to, farm_data, stats FROM event_profiles WHERE discord_id = $1"
+    sql = "SELECT points, total_earned, title, marry_to, farm_data, stats, claimed_milestones FROM event_profiles WHERE discord_id = $1"
     row = await fetchrow_db(bot, sql, user_id)
     
     if not row:
@@ -36,8 +37,27 @@ async def fetch_user_profile_data(bot: commands.Bot, user_id: str) -> dict:
     else:
         stats = {}
         
+    db_title = row["title"]
+    if not db_title or db_title == "👑 Kẻ Lang Thang":
+        db_title = "👑 Kẻ Lang Thang"
+        claimed_str = row.get("claimed_milestones")
+        if claimed_str:
+            claimed = json.loads(claimed_str) if isinstance(claimed_str, str) else claimed_str
+            max_moc = 0
+            for moc, m_data in EVENT_MILESTONES.items():
+                if (moc in claimed or str(moc) in claimed) and "title" in m_data:
+                    if moc > max_moc:
+                        max_moc = moc
+                        db_title = m_data["title"]
+                        
+            # Sync ngược lại vào DB nếu tìm thấy title cao hơn
+            if db_title != "👑 Kẻ Lang Thang":
+                bot.loop.create_task(
+                    bot.db_pool.execute("UPDATE event_profiles SET title = $1 WHERE discord_id = $2", db_title, user_id)
+                )
+        
     return {
-        "title": row["title"] or "👑 Kẻ Lang Thang",
+        "title": db_title,
         "marry_to": row["marry_to"],
         "points": float(row["points"] or 0.0),
         "total_earned": float(row["total_earned"] or 0.0),

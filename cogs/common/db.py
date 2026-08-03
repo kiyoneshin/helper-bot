@@ -165,6 +165,7 @@ async def init_all_tables(bot: Any) -> bool:
                     ALTER TABLE event_profiles ADD COLUMN IF NOT EXISTS negative_streak INT DEFAULT 0;
                     
                     ALTER TABLE event_profiles ADD COLUMN IF NOT EXISTS title VARCHAR DEFAULT '👑 Kẻ Lang Thang';
+                    ALTER TABLE event_profiles ADD COLUMN IF NOT EXISTS marry_to VARCHAR;
                     ALTER TABLE event_profiles ADD COLUMN IF NOT EXISTS stats JSONB DEFAULT '{"quests": 0, "crops": 0, "jails": 0, "works": 0, "mines": 0, "fishes": 0}'::jsonb;
                 ''')
             except Exception as e:
