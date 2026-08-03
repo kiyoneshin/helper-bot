@@ -162,40 +162,34 @@ async def release_member(bot: commands.Bot, member: discord.Member) -> bool:
         str(member.id),
     )
 
-    # Gỡ role Tù Nhân
-    if jail_role and jail_role in member.roles:
-        try:
-            await member.remove_roles(jail_role, reason="Thả tù")
-        except (discord.Forbidden, discord.HTTPException) as e:
-            log.error(f"Không thể gỡ role Tù Nhân cho {member}: {e}")
-
     if row is None:
         return True
 
-    # Khôi phục role cũ
+    # Parse role cũ từ DB
+    restored: list[discord.Role] = []
     roles_json = row["roles_cache"]
     if roles_json:
         try:
             role_ids: list[int] = json.loads(roles_json)
+            for rid in role_ids:
+                r = guild.get_role(rid)
+                if r is not None:
+                    restored.append(r)
         except (json.JSONDecodeError, TypeError):
-            role_ids = []
-        restored: list[discord.Role] = []
-        for rid in role_ids:
-            r = guild.get_role(rid)
-            if r is not None:
-                restored.append(r)
-        if restored:
-            try:
-                await member.add_roles(*restored, reason="Thả tù — khôi phục role")
-            except (discord.Forbidden, discord.HTTPException) as e:
-                log.error(f"Không thể khôi phục role cho {member}: {e}")
+            pass
 
-    # Khôi phục nickname gốc
+    # Gộp chung các thay đổi thành 1 API call duy nhất để không bị delay
+    new_roles = [r for r in member.roles[1:] if r != jail_role]
+    for r in restored:
+        if r not in new_roles:
+            new_roles.append(r)
+                
     original_nick: Optional[str] = row["original_nick"]
+    
     try:
-        await member.edit(nick=original_nick, reason="Thả tù — khôi phục nickname")
-    except (discord.Forbidden, discord.HTTPException):
-        pass  # Bỏ qua nếu không có quyền
+        await member.edit(roles=new_roles, nick=original_nick, reason="Thả tù — khôi phục roles và nickname")
+    except (discord.Forbidden, discord.HTTPException) as e:
+        log.error(f"Lỗi khi khôi phục role/nick cho {member}: {e}")
 
     # Xóa record
     await execute_db(bot, "DELETE FROM jail_records WHERE discord_id = $1", str(member.id))
@@ -303,25 +297,17 @@ class JailCore(commands.Cog):
         # Thống kê +1 lần vô tù
         await update_event_stat(self.bot, member.id, "jails", 1)
 
-        # Gỡ role cũ
-        if removable_roles:
-            try:
-                await member.remove_roles(*removable_roles, reason=f"Phạt tù bởi {ctx.author}")
-            except (discord.Forbidden, discord.HTTPException) as e:
-                log.error(f"Không thể gỡ role của {member}: {e}")
-
-        # Ép role Tù Nhân
-        try:
-            await member.add_roles(jail_role, reason=f"Phạt tù bởi {ctx.author}")
-        except (discord.Forbidden, discord.HTTPException) as e:
-            log.error(f"Không thể thêm role Tù Nhân cho {member}: {e}")
-
-        # Đổi nickname thành tên chó
+        # Gộp tất cả thay đổi (gỡ role, thêm role, đổi nick) vào 1 API Call duy nhất để tránh delay
+        new_roles = [r for r in member.roles[1:] if r not in removable_roles]
+        if jail_role not in new_roles:
+            new_roles.append(jail_role)
+            
         dog_name = random.choice(DOG_NICKNAMES)
+        
         try:
-            await member.edit(nick=dog_name, reason="Tống giam — đổi nickname")
-        except (discord.Forbidden, discord.HTTPException):
-            pass
+            await member.edit(roles=new_roles, nick=dog_name, reason=f"Phạt tù bởi {ctx.author}")
+        except (discord.Forbidden, discord.HTTPException) as e:
+            log.error(f"Lỗi cập nhật role/nick khi phạt tù {member}: {e}")
 
         embed = discord.Embed(
             title="🔒 TỐNG GIAM!",
