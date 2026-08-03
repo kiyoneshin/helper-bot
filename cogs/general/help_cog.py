@@ -131,6 +131,57 @@ CMD_DATA: dict[str, dict] = {
         "examples": ["y!help"],
         "note": None,
     },
+    # ── GIVEAWAY ──────────────────────────────────────────────────────────────
+    "gasetup": {
+        "name": "Tạo Giveaway",
+        "emoji": "🎉",
+        "short": "Tạo Giveaway tặng điểm sự kiện bằng menu tương tác.",
+        "aliases": [],
+        "cooldown": None,
+        "usage": "y!gasetup",
+        "examples": ["y!gasetup"],
+        "note": "Hệ thống sẽ gửi menu, bạn cần chọn kênh và số điểm muốn tặng.",
+    },
+    "gaban": {
+        "name": "Cấm Giveaway",
+        "emoji": "🚫",
+        "short": "Cấm một người chơi tham gia mọi Giveaway của bot.",
+        "aliases": [],
+        "cooldown": None,
+        "usage": "y!gaban <@user> [lý do]",
+        "examples": ["y!gaban @User Gian lận"],
+        "note": "Chỉ Admin mới có thể dùng lệnh này.",
+    },
+    "gaunban": {
+        "name": "Mở Cấm Giveaway",
+        "emoji": "✅",
+        "short": "Gỡ cấm tham gia Giveaway cho người chơi.",
+        "aliases": [],
+        "cooldown": None,
+        "usage": "y!gaunban <@user>",
+        "examples": ["y!gaunban @User"],
+        "note": "Chỉ Admin mới có thể dùng lệnh này.",
+    },
+    "gabanlist": {
+        "name": "Danh Sách Cấm",
+        "emoji": "📜",
+        "short": "Xem danh sách những người đang bị cấm tham gia Giveaway.",
+        "aliases": [],
+        "cooldown": None,
+        "usage": "y!gabanlist",
+        "examples": ["y!gabanlist"],
+        "note": None,
+    },
+    "gareroll": {
+        "name": "Quay Lại Giveaway",
+        "emoji": "🔄",
+        "short": "Quay lại ngẫu nhiên để chọn người thắng mới.",
+        "aliases": [],
+        "cooldown": None,
+        "usage": "y!gareroll <link_tin_nhắn_ga> [số_người]",
+        "examples": ["y!gareroll https://discord.com/channels/... 1"],
+        "note": "Lệnh này dành cho Admin/Host quay bù người thắng.",
+    },
 }
 
 CATEGORY_DATA: dict[str, dict] = {
@@ -145,6 +196,12 @@ CATEGORY_DATA: dict[str, dict] = {
         "desc": "Các lệnh thông dụng, hỗ trợ và hướng dẫn.",
         "commands": ["ehelp", "help"],
         "cogs": ["EventHelpCog", "HelpCog"],
+    },
+    "Giveaway": {
+        "emoji": "🎉",
+        "desc": "Quản lý và tạo hệ thống phát quà Giveaway.",
+        "commands": ["gasetup", "gaban", "gaunban", "gabanlist", "gareroll"],
+        "cogs": ["GiveawayCog"],
     },
 }
 
