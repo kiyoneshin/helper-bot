@@ -100,7 +100,7 @@ class ArcaneLevelSync(commands.Cog):
         skipped_processed = 0
 
         # Regex bóc tách số từ chuỗi cũ 'đã lên level *<số>*' và mới 'thu thập được <số> viên kẹo'
-        level_regex = re.compile(r'(?:đã lên level|thu thập được) \**(\d+)\**', re.IGNORECASE)
+        level_regex = re.compile(r'(?:đã lên level|thu thập được)[^\d]+(\d+)', re.IGNORECASE)
 
         await ctx.send("🔄 Đang bắt đầu quét lịch sử từ kênh Arcane... Quá trình này có thể mất vài phút.")
 
@@ -162,7 +162,7 @@ class ArcaneLevelSync(commands.Cog):
         if not message.mentions:
             return
 
-        level_regex = re.compile(r'(?:đã lên level|thu thập được) \**(\d+)\**', re.IGNORECASE)
+        level_regex = re.compile(r'(?:đã lên level|thu thập được)[^\d]+(\d+)', re.IGNORECASE)
         match = level_regex.search(message.content)
         if not match:
             return
