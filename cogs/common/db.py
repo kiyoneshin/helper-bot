@@ -182,8 +182,13 @@ async def init_all_tables(bot: Any) -> bool:
                         pet_type VARCHAR,
                         pet_level INT DEFAULT 1,
                         last_interaction TIMESTAMP WITH TIME ZONE DEFAULT (CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Ho_Chi_Minh'),
-                        couple_task JSONB DEFAULT '{}'::jsonb
+                        couple_task JSONB DEFAULT '{}'::jsonb,
+                        custom_image VARCHAR
                     );
+                ''')
+                
+                await conn.execute('''
+                    ALTER TABLE marriages ADD COLUMN IF NOT EXISTS custom_image VARCHAR;
                 ''')
                 
                 # Đảm bảo index

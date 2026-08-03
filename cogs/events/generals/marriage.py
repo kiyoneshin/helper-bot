@@ -4,6 +4,7 @@ import time
 import random
 import json
 import aiohttp
+import datetime
 from typing import Optional
 
 from cogs.common.db import (
@@ -193,16 +194,22 @@ class MarryConfirmView(discord.ui.View):
         await interaction.response.edit_message(embed=emb, view=self)
         self.stop()
 
-    @discord.ui.button(label="Từ chối", style=discord.ButtonStyle.danger, emoji="💔")
+    @discord.ui.button(label="Từ chối/Hủy", style=discord.ButtonStyle.danger, emoji="💔")
     async def btn_decline(self, interaction: discord.Interaction, button: discord.ui.Button):
-        if interaction.user.id != self.target.id:
+        if interaction.user.id not in (self.target.id, self.proposer.id):
             await interaction.response.send_message("❌ Xin lỗi, bạn không phải là nhân vật chính.", ephemeral=True)
             return
             
         for child in self.children: child.disabled = True
         emb = interaction.message.embeds[0]
-        emb.title = "💔 LỜI CẦU HÔN BỊ TỪ CHỐI..."
-        emb.description = f"Rất tiếc, **{self.target.display_name}** đã từ chối lời cầu hôn của **{self.proposer.display_name}**."
+        
+        if interaction.user.id == self.target.id:
+            emb.title = "💔 LỜI CẦU HÔN BỊ TỪ CHỐI..."
+            emb.description = f"Rất tiếc, **{self.target.display_name}** đã từ chối lời cầu hôn của **{self.proposer.display_name}**."
+        else:
+            emb.title = "💔 LỜI CẦU HÔN BỊ HỦY..."
+            emb.description = f"**{self.proposer.display_name}** đã rút lại lời cầu hôn với **{self.target.display_name}**."
+            
         emb.color = discord.Color.dark_grey()
         
         await interaction.response.edit_message(embed=emb, view=self)
@@ -212,7 +219,7 @@ class MarryConfirmView(discord.ui.View):
 class MarriageCog(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-        self.action_cooldowns: dict[str, dict[str, float]] = {} # uid -> {action_tier -> timestamp}
+        self.action_cooldowns: dict[str, dict[str, float]] = {} # uid -> {action -> timestamp}
         self.anti_ghosting_loop.start()
 
     def cog_unload(self):
@@ -230,25 +237,37 @@ class MarriageCog(commands.Cog):
                 return await ctx.send("❌ Bạn chưa kết hôn với ai cả! Hãy dùng `y!marry @user` để cầu hôn nhé.")
                 
             partner_id = mar["user2_id"] if mar["user1_id"] == uid else mar["user1_id"]
-            partner = ctx.guild.get_member(int(partner_id))
-            partner_name = partner.display_name if partner else f"User {partner_id}"
             
             days = (discord.utils.utcnow() - mar["marry_date"]).days
+            days = max(0, days)
             
             ring_info = get_item_by_id(mar["ring_id"])
-            ring_name = f"{ring_info['icon']} {ring_info['name']}" if ring_info else "🌿 Nhẫn Cỏ"
-            
-            pet_text = f"{mar['pet_type']} (Lv{mar['pet_level']})" if mar['pet_type'] else "Chưa nhận nuôi (Cần 200 DTM)"
-            
-            marry_date_str = mar['marry_date'].strftime('%d/%m/%Y')
             
             promise = mar['promise_text']
+            formatted_promise = ""
             if promise:
-                promise_lines = promise.split('\n')
-                formatted_promise = "\n".join(f"🎀 {line.strip()}" for line in promise_lines if line.strip())
+                try:
+                    promise_data = json.loads(promise)
+                    for pid, ptext in promise_data.items():
+                        # Lấy tên của người hứa
+                        p_member = ctx.guild.get_member(int(pid))
+                        p_name = p_member.display_name if p_member else f"User {pid}"
+                        ptext_lines = ptext.split('\n')
+                        for i, line in enumerate(ptext_lines):
+                            if line.strip():
+                                if i == 0:
+                                    formatted_promise += f"🎀 **{p_name}**: {line.strip()}\n"
+                                else:
+                                    formatted_promise += f"🎀 {line.strip()}\n"
+                except Exception:
+                    # Legacy string format
+                    promise_lines = promise.split('\n')
+                    formatted_promise = "\n".join(f"🎀 {line.strip()}" for line in promise_lines if line.strip()) + "\n"
             else:
-                formatted_promise = "🎀 Chưa có lời thề non hẹn biển nào... (Dùng y!promise)"
+                formatted_promise = "🎀 Chưa có lời thề non hẹn biển nào... (Dùng y!promise)\n"
                 
+            marry_date_str = mar['marry_date'].strftime('%d/%m/%Y')
+            
             desc = (
                 f"💖 **So Sweet** 💖\n\n"
                 f"{ctx.author.mention} 💖 <@{partner_id}>\n"
@@ -261,9 +280,13 @@ class MarriageCog(commands.Cog):
             
             emb = discord.Embed(description=desc, color=discord.Color.from_rgb(255, 182, 193))
             emb.set_author(name="And after that... They live happily ever after~")
+            
+            if mar.get("custom_image"):
+                emb.set_image(url=mar["custom_image"])
+                
             emb.set_thumbnail(url=ctx.author.display_avatar.url)
             
-            now_str = discord.utils.utcnow().strftime("%H:%M")
+            now_str = (discord.utils.utcnow() + datetime.timedelta(hours=7)).strftime("%H:%M")
             emb.set_footer(text=f"💖 Happily ever after~ 💖 - Today at {now_str}")
             
             return await ctx.send(embed=emb)
@@ -383,6 +406,20 @@ class MarriageCog(commands.Cog):
         
         await ctx.send(f"🎉 Chúc mừng! Cuộc hôn nhân của hai bạn vừa được nâng tầm với chiếc **{ring_name}** siêu lấp lánh!")
 
+    @commands.hybrid_command(name="setimage", aliases=["setanh"])
+    async def setimage_cmd(self, ctx: commands.Context, url: str):
+        """🖼️ Thiết lập ảnh kỉ niệm cho profile y!marry của 2 bạn."""
+        uid = str(ctx.author.id)
+        mar = await get_marriage(self.bot, uid)
+        if not mar:
+            return await ctx.send("❌ Bạn chưa kết hôn nên không thể cài ảnh được!")
+            
+        if not url.startswith("http"):
+            return await ctx.send("❌ Link ảnh không hợp lệ (Phải bắt đầu bằng http/https).")
+            
+        await execute_db(self.bot, "UPDATE marriages SET custom_image = $1 WHERE id = $2", url, mar["id"])
+        await ctx.send("✅ Đã cập nhật ảnh thành công! Bạn có thể gõ `y!marry` để kiểm tra.")
+
     @commands.hybrid_command(name="gift", aliases=["tangqua"])
     async def gift_cmd(self, ctx: commands.Context, target: discord.Member, amount: int):
         """🎁 Tặng tiền cho vợ/chồng để tăng Điểm Thân Mật (1000 điểm = 10 DTM)."""
@@ -483,7 +520,7 @@ class MarriageCog(commands.Cog):
         
         # Check Cooldown
         if uid1 not in self.action_cooldowns: self.action_cooldowns[uid1] = {}
-        last_time = self.action_cooldowns[uid1].get(tier, 0)
+        last_time = self.action_cooldowns[uid1].get(action, 0)
         now = time.time()
         
         if now - last_time < actual_cd:
@@ -493,7 +530,7 @@ class MarriageCog(commands.Cog):
             wait_str = f"{h}h {m}m {s}s" if h > 0 else f"{m}m {s}s"
             return await ctx.send(f"⏳ Cứ từ từ thôi! Quấn quýt quá lại nhanh chán. Đợi thêm **{wait_str}** nữa mới được dùng lại hành động này nhé!")
             
-        self.action_cooldowns[uid1][tier] = now
+        self.action_cooldowns[uid1][action] = now
         
         # Calculate DTM
         actual_dtm = int(base_dtm * (1.0 + buffs["dtm_bonus"]))
