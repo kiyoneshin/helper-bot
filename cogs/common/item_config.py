@@ -247,6 +247,50 @@ ITEM_REGISTRY: dict[int, ItemEntry] = {
         "category":    "blackmarket",
         "usable":      True,
     },
+    
+    # ──────────────────────────────────────────────────────────
+    # ID 30–39 : NHẪN CƯỚI & TRANG SỨC (MARRIAGE)
+    # ──────────────────────────────────────────────────────────
+    31: {
+        "id":          31,
+        "name":        "Nhẫn Cỏ",
+        "icon":        "🌿",
+        "price":       1000,
+        "description": "Biểu tượng tình yêu giản dị. (Không có buff). Dùng: y!marry @user 31",
+        "db_key":      "ring_31",
+        "category":    "ring",
+        "usable":      False,
+    },
+    32: {
+        "id":          32,
+        "name":        "Nhẫn Bạc",
+        "icon":        "💍",
+        "price":       10000,
+        "description": "Tăng 10% Điểm Thân Mật (DTM) khi tương tác. Mở khóa y!adopt.",
+        "db_key":      "ring_32",
+        "category":    "ring",
+        "usable":      False,
+    },
+    33: {
+        "id":          33,
+        "name":        "Nhẫn Vàng",
+        "icon":        "🌟",
+        "price":       50000,
+        "description": "Tăng 20% DTM. Giảm 10% Cooldown lệnh hành động.",
+        "db_key":      "ring_33",
+        "category":    "ring",
+        "usable":      False,
+    },
+    34: {
+        "id":          34,
+        "name":        "Nhẫn Kim Cương",
+        "icon":        "💎",
+        "price":       200000,
+        "description": "Tăng 50% DTM. Giảm 25% Cooldown. Nhân 1.5 phần thưởng khi y!work chung.",
+        "db_key":      "ring_34",
+        "category":    "ring",
+        "usable":      False,
+    },
 }
 
 # ============================================================

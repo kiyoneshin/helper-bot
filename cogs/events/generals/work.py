@@ -4,8 +4,9 @@ from typing import Optional
 
 import discord
 from discord.ext import commands
+import json
 
-from cogs.common.db import get_or_create_event_profile, add_event_points, deduct_event_points, execute_db, update_task_progress
+from cogs.common.db import get_or_create_event_profile, add_event_points, deduct_event_points, execute_db, update_task_progress, get_marriage
 
 from .work_events import WORK_EVENTS
 
@@ -61,7 +62,39 @@ class WorkCog(commands.Cog):
         amount = random.randint(event["min_amount"], event["max_amount"])
         story = event["text"].format(amount=f"**{amount:,}**")
         
+        
+        # Check Co-op Marriage
+        mar = await get_marriage(self.bot, str(uid))
+        partner_id = None
+        is_coop = False
+        if mar:
+            p_id_str = mar["user2_id"] if mar["user1_id"] == str(uid) else mar["user1_id"]
+            partner_id = int(p_id_str)
+            p_passed = now - self.cooldowns.get(partner_id, 0)
+            if p_passed >= COOLDOWN_MINUTES * 60:
+                is_coop = True
+                self.cooldowns[partner_id] = now
+                
         if event["type"] == "gain":
+            if is_coop:
+                amount = int(amount * 1.2)
+                story = event["text"].format(amount=f"**{amount:,}**") + f"\n\n💕 **CO-OP BONUS!** Vợ/chồng của bạn <@{partner_id}> đã xắn tay vào làm chung! Cả hai nhận được x1.2 phần thưởng!"
+                await add_event_points(self.bot, str(partner_id), float(amount), is_earned=True)
+                
+                # Check Task
+                task_str = mar.get("couple_task")
+                if task_str:
+                    task_data = json.loads(task_str) if isinstance(task_str, str) else task_str
+                    today_str = discord.utils.utcnow().strftime("%Y-%m-%d")
+                    if task_data.get("date") == today_str and task_data.get("type") == "work" and not task_data.get("completed"):
+                        task_data["progress"] = task_data.get("progress", 0) + 1
+                        if task_data["progress"] >= task_data["target"]:
+                            task_data["completed"] = True
+                            from cogs.common.db import update_intimacy
+                            await update_intimacy(self.bot, str(uid), 100)
+                            story += f"\n\n🎉 **Nhiệm Vụ Cặp Đôi Hoàn Thành!** (+100 DTM)"
+                        await execute_db(self.bot, "UPDATE marriages SET couple_task = $1::jsonb WHERE id = $2", json.dumps(task_data), mar["id"])
+            
             # Cộng tiền (is_earned=True để tính vào cả đua top)
             await add_event_points(self.bot, str(uid), float(amount), is_earned=True)
             

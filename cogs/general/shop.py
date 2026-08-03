@@ -52,6 +52,7 @@ def build_shop_embed(category: str, author: discord.Member | discord.User) -> di
         "event":       ("🎪 Cửa Hàng Sự Kiện",       0x9b59b6),
         "farm":        ("🌾 Cửa Hàng Nông Trại",      0xe67e22),
         "blackmarket": ("🌙 Cửa Hàng Chợ Đen",        0x2b2d31),
+        "ring":        ("💍 Tiệm Kim Hoàn",           0xffb6c1),
     }
     title, color = CATEGORY_META.get(category, ("🛒 Cửa Hàng", 0x7289da))
 
@@ -107,6 +108,13 @@ class ShopSelect(discord.ui.Select):
                 emoji="🌙",
                 description="Vật phẩm đặc biệt — phá phách đối thủ",
                 default=(current_category == "blackmarket"),
+            ),
+            discord.SelectOption(
+                label="Nhẫn Cưới & Trang sức",
+                value="ring",
+                emoji="💍",
+                description="Nhẫn cưới và trang sức để kết hôn",
+                default=(current_category == "ring"),
             ),
         ]
         super().__init__(

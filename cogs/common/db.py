@@ -168,8 +168,30 @@ async def init_all_tables(bot: Any) -> bool:
                     ALTER TABLE event_profiles ADD COLUMN IF NOT EXISTS marry_to VARCHAR;
                     ALTER TABLE event_profiles ADD COLUMN IF NOT EXISTS stats JSONB DEFAULT '{"quests": 0, "crops": 0, "jails": 0, "works": 0, "mines": 0, "fishes": 0}'::jsonb;
                 ''')
+                
+                # ── BẢNG MỚI: MARRIAGES (HỆ THỐNG CẶP ĐÔI) ──────────────────
+                await conn.execute('''
+                    CREATE TABLE IF NOT EXISTS marriages (
+                        id SERIAL PRIMARY KEY,
+                        user1_id VARCHAR UNIQUE NOT NULL,
+                        user2_id VARCHAR UNIQUE NOT NULL,
+                        marry_date TIMESTAMP WITH TIME ZONE DEFAULT (CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Ho_Chi_Minh'),
+                        intimacy_points INT DEFAULT 0,
+                        ring_id INT DEFAULT 31,
+                        promise_text TEXT,
+                        pet_type VARCHAR,
+                        pet_level INT DEFAULT 1,
+                        last_interaction TIMESTAMP WITH TIME ZONE DEFAULT (CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Ho_Chi_Minh'),
+                        couple_task JSONB DEFAULT '{}'::jsonb
+                    );
+                ''')
+                
+                # Đảm bảo index
+                await conn.execute('''
+                    CREATE INDEX IF NOT EXISTS idx_marriages_users ON marriages (user1_id, user2_id);
+                ''')
             except Exception as e:
-                log.warning(f"Bỏ qua convert type points (có thể đã là FLOAT): {e}")
+                log.error(f"Lỗi ALTER TABLE event_profiles hoặc khởi tạo MARRIAGES: {e}", exc_info=True)
                 
             # Tạo bảng user_tasks (Nhiệm vụ Ngày/Tuần/Sự kiện)
             await conn.execute('''
@@ -282,6 +304,31 @@ async def deduct_event_points(bot: Any, discord_id: Union[str, int], amount: flo
     res = await execute_db(bot, sql, uid, amount)
     # res sẽ có dạng "UPDATE 1" nếu trừ thành công, "UPDATE 0" nếu số dư không đủ
     return res == "UPDATE 1"
+
+async def get_marriage(bot: Any, discord_id: str) -> Optional[Any]:
+    """Lấy thông tin kết hôn của user."""
+    sql = "SELECT * FROM marriages WHERE user1_id = $1 OR user2_id = $1"
+    return await fetchrow_db(bot, sql, discord_id)
+
+async def update_intimacy(bot: Any, discord_id: str, points: int) -> bool:
+    """Cộng hoặc trừ DTM."""
+    if points == 0: return True
+    sql = '''
+        UPDATE marriages
+        SET intimacy_points = intimacy_points + $2
+        WHERE user1_id = $1 OR user2_id = $1;
+    '''
+    res = await execute_db(bot, sql, discord_id, points)
+    return res is not None
+
+async def update_marriage_interaction(bot: Any, discord_id: str) -> None:
+    """Cập nhật thời gian tương tác cuối cùng."""
+    sql = '''
+        UPDATE marriages
+        SET last_interaction = (CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Ho_Chi_Minh')
+        WHERE user1_id = $1 OR user2_id = $1;
+    '''
+    await execute_db(bot, sql, discord_id)
 
 def check_not_locked():
     """
