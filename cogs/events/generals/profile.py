@@ -15,7 +15,7 @@ import json
 from cogs.events.woodcutting.woodcutting_config import AXE_NAMES
 from cogs.events.mining.mining_config import PICKAXE_NAMES
 from cogs.events.fishing.fishing_config import ROD_NAMES
-from cogs.events.generals.milestone import EVENT_MILESTONES
+from cogs.events.economy.milestone import EVENT_MILESTONES
 
 async def fetch_user_profile_data(bot: commands.Bot, user_id: str) -> dict:
     """Lấy dữ liệu thực tế từ event_profiles."""

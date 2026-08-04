@@ -57,7 +57,7 @@ class CasinoCleanupCog(commands.Cog):
                 if any(kw in content_lower for kw in keywords):
                     is_gambling_result = True
             
-            delay = 30.0 if is_gambling_result else 60.0
+            delay = 30.0 if is_gambling_result else 120.0
             await asyncio.sleep(delay)
             try:
                 await message.delete()
@@ -116,7 +116,10 @@ class CasinoCleanupCog(commands.Cog):
         # Nếu tất cả đã bị vô hiệu hoá (vd: View đã timeout)
         if all_disabled:
             is_gambling_result = False
-            keywords = ["tài xỉu", "bầu cua", "dice", "tàu bay", "crash", "roulette", "coinflip", "cups", "xổ số", "kết quả", "cốc", "ly", "shot", "nga"]
+            keywords = [
+                "tài xỉu", "bầu cua", "dice", "tàu bay", "crash", "roulette", "coinflip", "cups", "xổ số", "kết quả", "cốc", "ly", "shot", "nga",
+                "bảo vật", "nhặt lộc", "chúc mừng", "chúa tể", "nhân phẩm", "mvp", "danh sách", "tham gia", "vinh danh", "tan biến"
+            ]
             
             for emb in after.embeds:
                 text_to_check = f"{emb.title or ''} {emb.author.name if emb.author else ''} {emb.description or ''}".lower()

@@ -518,7 +518,7 @@ class CupsView(discord.ui.View):
         await interaction.response.edit_message(embed=embed, view=self)
         if interaction.message and interaction.message.channel.id == 1498711783223853101:
             if interaction.message:
-                await interaction.message.delete(delay=10.0)
+                await interaction.message.delete(delay=30.0)
 
     @discord.ui.button(label="🥤 1", style=discord.ButtonStyle.secondary)
     async def cup_1(self, interaction: discord.Interaction, button: discord.ui.Button):
@@ -551,7 +551,7 @@ class CupsView(discord.ui.View):
                 await self.message.edit(embed=embed, view=self)
                 if self.message.channel.id == 1498711783223853101:
                     if self.message:
-                        await self.message.delete(delay=10.0)
+                        await self.message.delete(delay=30.0)
             except discord.HTTPException:
                 pass
 
@@ -604,7 +604,7 @@ class RouletteView(discord.ui.View):
             await interaction.response.edit_message(embed=embed, view=self)
             if interaction.message and interaction.message.channel.id == 1498711783223853101:
                 if interaction.message:
-                    await interaction.message.delete(delay=10.0)
+                    await interaction.message.delete(delay=30.0)
         else:
             self.survived_rounds += 1
             if self.survived_rounds == 5:
@@ -688,13 +688,13 @@ class RouletteView(discord.ui.View):
             await interaction.response.edit_message(embed=embed, view=self)
             if interaction.message and interaction.message.channel.id == 1498711783223853101:
                 if interaction.message:
-                    await interaction.message.delete(delay=10.0)
+                    await interaction.message.delete(delay=30.0)
         elif self.message:
             try:
                 await self.message.edit(embed=embed, view=self)
                 if self.message.channel.id == 1498711783223853101:
                     if self.message:
-                        await self.message.delete(delay=10.0)
+                        await self.message.delete(delay=30.0)
             except discord.HTTPException:
                 pass
 
