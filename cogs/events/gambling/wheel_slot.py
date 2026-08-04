@@ -259,6 +259,12 @@ class WheelSlots(commands.Cog):
         else:
             await self._exec_wheel(ctx, bet, uid, balance)
 
+    @wheel_cmd.error
+    async def wheel_cmd_error(self, ctx: commands.Context, error: Exception):
+        if isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument)):
+            await ctx.send(f"❌ {ctx.author.mention} Quay tay bằng không khí à? Cú pháp: `y!wheel <tiền_cược | all>`. Để biết thêm chi tiết hãy xài lệnh y!ehelp wheel")
+
+
     async def _exec_wheel(self, ctx: commands.Context, bet: int, uid: str, balance: int) -> None:
         """Logic thực thi game wheel."""
         stop_idx: int = random.randint(0, len(BASE_WHEEL) - 1)
@@ -327,7 +333,6 @@ class WheelSlots(commands.Cog):
             
         await update_task_progress(self.bot, uid, "gamble_any", 1)
 
-    @wheel_cmd.error
     async def wheel_error(self, ctx: commands.Context, error: Exception) -> None:
         if isinstance(error, commands.MissingRequiredArgument):
             await ctx.send(f"❌ {ctx.author.mention} Quay tay bằng không khí à? Cú pháp: `y!wheel <tiền_cược>`")
@@ -360,6 +365,12 @@ class WheelSlots(commands.Cog):
             await _send_confirm(ctx, bet, _run)
         else:
             await self._exec_slots(ctx, bet, uid, balance)
+
+    @slots_cmd.error
+    async def slots_cmd_error(self, ctx: commands.Context, error: Exception):
+        if isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument)):
+            await ctx.send(f"❌ {ctx.author.mention} Đút xèng vào máy đi chứ! Cú pháp: `y!slots <tiền_cược | all>`. Để biết thêm chi tiết hãy xài lệnh y!ehelp slots")
+
 
     async def _exec_slots(self, ctx: commands.Context, bet: int, uid: str, balance: int) -> None:
         """Logic thực thi game slots."""
@@ -420,7 +431,6 @@ class WheelSlots(commands.Cog):
         await update_task_progress(self.bot, uid, "slots", 1)
         await update_task_progress(self.bot, uid, "gamble_any", 1)
 
-    @slots_cmd.error
     async def slots_error(self, ctx: commands.Context, error: Exception) -> None:
         if isinstance(error, commands.MissingRequiredArgument):
             await ctx.send(f"❌ {ctx.author.mention} Không bỏ tiền vô máy ai cho gạt cần? Cú pháp: `y!slots <tiền_cược>`")

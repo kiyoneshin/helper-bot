@@ -370,7 +370,7 @@ CMD_DATA: dict[str, dict] = {
         "name": "Hành Động Cặp Đôi",
         "emoji": "💞",
         "short": "Các lệnh tương tác đặc biệt dành cho vợ/chồng.",
-        "aliases": ["om", "hon", "tat", "can", "seg", "..."],
+        "aliases": ["om", "hon", "tat", "can", "seg", "hug", "kiss", "slap", "punch", "bite", "tickle", "poke", "pat", "saylove", "cuddle", "snuggle", "lick", "nom", "fuck", "hun", "dam", "choclet", "choc", "xoadau", "noiyeu", "iuem", "iuanh", "auyem", "nung", "nũng", "liem", "mam", "hanhdong", "hd"],
         "cooldown": 0,
         "usage": "y!<hành_động> <@user>",
         "examples": ["y!hug @VoYeu", "y!kiss @ChongYeu"],
@@ -821,8 +821,8 @@ class EventHelpCog(commands.Cog):
                         break
                 
                 if target_cat:
-                    embed = build_category_embed(target_cat)
-                    view = CategoryView(self.bot, ctx.author, target_cat)
+                    embed = build_detail_embed(cmd_key)
+                    view = DetailView(self.bot, ctx.author, target_cat)
                     view.message = await ctx.send(embed=embed, view=view)
                     return
                     

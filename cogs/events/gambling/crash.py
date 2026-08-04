@@ -469,6 +469,12 @@ class CrashGame(commands.Cog):
             self.active_games.discard(channel_id)
             log.info("Crash game ket thuc: channel=%d", channel_id)
 
+    @crash_cmd.error
+    async def crash_cmd_error(self, ctx: commands.Context, error: Exception):
+        if isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument)):
+            await ctx.send(f"❌ {ctx.author.mention} Tính lên tàu bay dạo không vé hả? Cú pháp: `y!crash <tiền_cược>`. Để biết thêm chi tiết hãy xài lệnh y!ehelp crash")
+
+
     async def _run_lobby(
         self,
         ctx: commands.Context,
@@ -615,7 +621,6 @@ class CrashGame(commands.Cog):
             except discord.HTTPException:
                 pass
 
-    @crash_cmd.error
     async def crash_error(self, ctx: commands.Context, error: Exception) -> None:
         if isinstance(error, commands.CommandInvokeError):
             log.error("Loi crash_cmd: %s", error.original, exc_info=True)

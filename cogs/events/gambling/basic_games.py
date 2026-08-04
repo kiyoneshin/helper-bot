@@ -211,6 +211,12 @@ class BasicGames(commands.Cog):
         else:
             await self._exec_coinflip(ctx, choice, bet, uid, balance)
 
+    @coinflip_cmd.error
+    async def coinflip_cmd_error(self, ctx: commands.Context, error: Exception):
+        if isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument)):
+            await ctx.send(f"❌ {ctx.author.mention} Chơi mà không ném tiền à? Cú pháp: `y!cf <h/t> <tiền_cược | all>`. Để biết thêm chi tiết hãy xài lệnh y!ehelp cf")
+
+
     async def _exec_coinflip(self, ctx: commands.Context, choice: str, bet: int, uid: str, balance: int):
         """Logic thực thi game coinflip sau khi đã xác nhận."""
         outcome = random.choices(["win", "lose", "side"], weights=[44.0, 55.0, 1.0], k=1)[0]
@@ -265,7 +271,6 @@ class BasicGames(commands.Cog):
         else:
             await ctx.send(embed=embed)
 
-    @coinflip_cmd.error
     async def coinflip_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, commands.MissingRequiredArgument):
             await ctx.send(f"❌ {ctx.author.mention} Chơi mà không ném tiền à? Cú pháp: `y!cf <h/t> <tiền_cược | all>`")
@@ -292,6 +297,12 @@ class BasicGames(commands.Cog):
         else:
             await self._exec_cups(ctx, bet, uid, balance)
 
+    @cups_cmd.error
+    async def cups_cmd_error(self, ctx: commands.Context, error: Exception):
+        if isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument)):
+            await ctx.send(f"❌ {ctx.author.mention} Dốc hết hầu bao đi! Cú pháp: `y!cups <tiền_cược | all>`. Để biết thêm chi tiết hãy xài lệnh y!ehelp cups")
+
+
     async def _exec_cups(self, ctx: commands.Context, bet: int, uid: str, balance: int):
         """Logic thực thi game cups."""
         end_time = int(time.time()) + 30
@@ -308,7 +319,6 @@ class BasicGames(commands.Cog):
         except Exception:
             _unlock_user(self.bot, ctx.author.id)
 
-    @cups_cmd.error
     async def cups_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, commands.MissingRequiredArgument):
             await ctx.send(f"❌ {ctx.author.mention} Dốc hết hầu bao đi! Cú pháp: `y!cups <tiền_cược | all>`")
@@ -335,6 +345,12 @@ class BasicGames(commands.Cog):
             await _send_confirm(ctx, bet, _run)
         else:
             await self._exec_dice(ctx, bet, uid, balance)
+
+    @dice_cmd.error
+    async def dice_cmd_error(self, ctx: commands.Context, error: Exception):
+        if isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument)):
+            await ctx.send(f"❌ {ctx.author.mention} Lắc xúc xắc bằng niềm tin à? Cú pháp: `y!dice <tiền_cược | all>`. Để biết thêm chi tiết hãy xài lệnh y!ehelp dice")
+
 
     async def _exec_dice(self, ctx: commands.Context, bet: int, uid: str, balance: int):
         """Logic thực thi game dice."""
@@ -379,7 +395,6 @@ class BasicGames(commands.Cog):
         else:
             await ctx.send(embed=embed)
 
-    @dice_cmd.error
     async def dice_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, commands.MissingRequiredArgument):
             await ctx.send(f"❌ {ctx.author.mention} Ném tiền vô mâm đi chứ! Cú pháp: `y!dice <tiền_cược>`")
@@ -405,6 +420,12 @@ class BasicGames(commands.Cog):
             await _send_confirm(ctx, bet, _run)
         else:
             await self._exec_roulette(ctx, bet, uid, balance)
+
+    @roulette_cmd.error
+    async def roulette_cmd_error(self, ctx: commands.Context, error: Exception):
+        if isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument)):
+            await ctx.send(f"❌ {ctx.author.mention} Cầm súng mà không mang đạn (tiền) à? Cú pháp: `y!shot <tiền_cược | all>`. Để biết thêm chi tiết hãy xài lệnh y!ehelp shot")
+
 
     async def _exec_roulette(self, ctx: commands.Context, bet: int, uid: str, balance: int):
         """Logic thực thi game roulette."""
@@ -437,7 +458,6 @@ class BasicGames(commands.Cog):
         except Exception:
             _unlock_user(self.bot, ctx.author.id)
 
-    @roulette_cmd.error
     async def roulette_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, commands.MissingRequiredArgument):
             await ctx.send(f"❌ {ctx.author.mention} Không cọc tiền ai cho chơi! Cú pháp: `y!shot <tiền_cược | all>`")

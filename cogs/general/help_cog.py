@@ -111,6 +111,46 @@ CMD_DATA: dict[str, dict] = {
         "note": "Nếu thất bại sẽ bị công khai bêu rếu ở kênh chung. Liều thì liều!",
     },
     # ── TIỆN ÍCH ──────────────────────────────────────────────────────────────
+    "inv": {
+        "name": "Kho Đồ",
+        "emoji": "🎒",
+        "short": "Xem túi đồ của bạn.",
+        "aliases": ["bag", "tuido", "khodo", "inventory"],
+        "cooldown": None,
+        "usage": "y!inv",
+        "examples": ["y!inv"],
+        "note": None,
+    },
+    "use": {
+        "name": "Sử Dụng Vật Phẩm",
+        "emoji": "🎁",
+        "short": "Sử dụng một vật phẩm trong túi đồ.",
+        "aliases": ["dung", "xai"],
+        "cooldown": None,
+        "usage": "y!use <tên_vật_phẩm>",
+        "examples": ["y!use Cà Phê"],
+        "note": None,
+    },
+    "shop": {
+        "name": "Cửa Hàng",
+        "emoji": "🛒",
+        "short": "Xem danh sách vật phẩm trong cửa hàng.",
+        "aliases": ["cuahang", "store"],
+        "cooldown": None,
+        "usage": "y!shop",
+        "examples": ["y!shop"],
+        "note": None,
+    },
+    "buy": {
+        "name": "Mua Hàng",
+        "emoji": "🛍️",
+        "short": "Mua vật phẩm từ cửa hàng.",
+        "aliases": ["mua"],
+        "cooldown": None,
+        "usage": "y!buy <số_lượng> <tên_vật_phẩm>",
+        "examples": ["y!buy 1 Cà Phê"],
+        "note": None,
+    },
     "ehelp": {
         "name": "Cẩm Nang Sự Kiện",
         "emoji": "🌸",
@@ -192,13 +232,23 @@ CMD_DATA: dict[str, dict] = {
         "examples": ["y!gareroll https://discord.com/channels/... 1"],
         "note": "Lệnh này dành cho Admin/Host quay bù người thắng.",
     },
+    "feedback": {
+        "name": "Xem Đánh Giá",
+        "emoji": "📝",
+        "short": "Xem danh sách toàn bộ bài đánh giá của một nhân sự.",
+        "aliases": ["fb"],
+        "cooldown": None,
+        "usage": "y!fb <@user | id>",
+        "examples": ["y!fb @User"],
+        "note": "Dành cho việc theo dõi hiệu suất của nhân sự.",
+    },
 }
 
 CATEGORY_DATA: dict[str, dict] = {
     "Quản Trị Nhân Sự": {
         "emoji": "📋",
         "desc": "Quản lý nhân sự và hồ sơ thành viên BQT.",
-        "commands": ["menu"],
+        "commands": ["menu", "feedback"],
         "cogs": ["StaffUI"],
     },
     "Chuồng Chó (Jail)": {
@@ -212,6 +262,12 @@ CATEGORY_DATA: dict[str, dict] = {
         "desc": "Các lệnh thông dụng, hỗ trợ và hướng dẫn.",
         "commands": ["ehelp", "help"],
         "cogs": ["EventHelpCog", "HelpCog"],
+    },
+    "Kho Đồ & Cửa Hàng": {
+        "emoji": "🎒",
+        "desc": "Quản lý túi đồ và mua sắm vật phẩm.",
+        "commands": ["inv", "use", "shop", "buy"],
+        "cogs": ["InventoryCog", "ShopCog"],
     },
     "Giveaway": {
         "emoji": "🎉",
@@ -490,8 +546,8 @@ class HelpCog(commands.Cog):
                         break
                 
                 if target_cat:
-                    embed = build_category_embed(target_cat)
-                    view = CategoryView(self.bot, ctx.author, target_cat)
+                    embed = build_detail_embed(cmd_key)
+                    view = DetailView(self.bot, ctx.author, target_cat)
                     view.message = await ctx.send(embed=embed, view=view)
                     return
                     
