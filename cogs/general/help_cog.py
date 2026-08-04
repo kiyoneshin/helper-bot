@@ -473,8 +473,28 @@ class HelpCog(commands.Cog):
         aliases=["trogiup", "hd"],
         description="Xem danh sách toàn bộ lệnh hệ thống (UI 3 tầng).",
     )
-    async def help_cmd(self, ctx: commands.Context):
+    async def help_cmd(self, ctx: commands.Context, *, cmd_name: str = None):
         """🛡️ Trợ giúp lệnh hệ thống với UI tương tác 3 tầng."""
+        if cmd_name:
+            cmd_key = None
+            for k, v in CMD_DATA.items():
+                if cmd_name.lower() == k or cmd_name.lower() in v.get("aliases", []):
+                    cmd_key = k
+                    break
+            
+            if cmd_key:
+                target_cat = None
+                for cat, data in CATEGORY_DATA.items():
+                    if cmd_key in data.get("commands", []):
+                        target_cat = cat
+                        break
+                
+                if target_cat:
+                    embed = build_category_embed(target_cat)
+                    view = CategoryView(self.bot, ctx.author, target_cat)
+                    view.message = await ctx.send(embed=embed, view=view)
+                    return
+                    
         embed = build_home_embed(self.bot, ctx.author)
         view = HomeView(self.bot, ctx.author)
         view.message = await ctx.send(embed=embed, view=view)

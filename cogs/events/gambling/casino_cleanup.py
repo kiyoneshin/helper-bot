@@ -43,8 +43,22 @@ class CasinoCleanupCog(commands.Cog):
         
         # Nếu KHÔNG CÓ nút bấm (ví dụ lệnh help, lệnh xem point, hoặc thông báo thường)
         if not has_components:
-            # Xoá sau 2 phút (120 giây)
-            await asyncio.sleep(120.0)
+            # Phân loại Kết quả cá cược hay thông báo thường
+            is_gambling_result = False
+            keywords = ["tài xỉu", "bầu cua", "dice", "tàu bay", "crash", "roulette", "coinflip", "cups", "xổ số", "kết quả"]
+            
+            for emb in message.embeds:
+                text_to_check = f"{emb.title or ''} {emb.author.name if emb.author else ''} {emb.description or ''}".lower()
+                if any(kw in text_to_check for kw in keywords):
+                    is_gambling_result = True
+                    break
+                    
+            if not is_gambling_result:
+                if any(kw in content_lower for kw in keywords):
+                    is_gambling_result = True
+            
+            delay = 30.0 if is_gambling_result else 60.0
+            await asyncio.sleep(delay)
             try:
                 await message.delete()
             except discord.NotFound:
@@ -101,8 +115,7 @@ class CasinoCleanupCog(commands.Cog):
                 
         # Nếu tất cả đã bị vô hiệu hoá (vd: View đã timeout)
         if all_disabled:
-            # Bắt đầu đếm ngược 2 phút (120s) rồi xoá
-            await asyncio.sleep(120.0)
+            # Xóa ngay lập tức
             try:
                 await after.delete()
             except discord.NotFound:

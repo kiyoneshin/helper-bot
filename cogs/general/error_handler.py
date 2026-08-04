@@ -59,38 +59,47 @@ class GlobalErrorHandler(commands.Cog):
         if isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument, commands.TooManyArguments)):
             cmd_name = ctx.command.name
             
-            # Cố gắng lấy hướng dẫn từ event_help.py
-            try:
-                from cogs.events.generals.event_help import CMD_DATA
-                cmd_data = CMD_DATA.get(cmd_name)
-                
-                # Check alias if not found
-                if not cmd_data:
-                    for k, v in CMD_DATA.items():
-                        if cmd_name in v.get("aliases", []):
-                            cmd_data = v
-                            cmd_name = k
-                            break
+            usage_str = None
+            example_str = None
+            help_cmd = "y!help"
 
-                if cmd_data:
-                    emb = discord.Embed(
-                        title=f"❌ Sai Cú Pháp Lệnh: {cmd_data.get('name', cmd_name)}",
-                        description=cmd_data.get('short', 'Bạn đã nhập thiếu hoặc sai tham số.'),
-                        color=discord.Color.red()
-                    )
-                    emb.add_field(name="📝 Cú Pháp Đúng", value=f"`{cmd_data.get('usage', '')}`", inline=False)
-                    examples = cmd_data.get('examples', [])
-                    if examples:
-                        example_str = "\n".join([f"`{ex}`" for ex in examples])
-                        emb.add_field(name="💡 Ví Dụ", value=example_str, inline=False)
-                    if 'note' in cmd_data:
-                        emb.add_field(name="ℹ️ Ghi Chú", value=cmd_data['note'], inline=False)
-                    return await ctx.send(embed=emb)
-            except Exception as e:
-                pass # Lỡ lỗi import hoặc không có data thì fallback xuống dưới
-            
-            # Fallback nếu không có trong event_help
-            await ctx.send(f"❌ **Lỗi Cú Pháp:** Bạn nhập sai hoặc thiếu tham số cho lệnh `{ctx.prefix}{cmd_name}`!\nVui lòng gõ `{ctx.prefix}help {cmd_name}` để xem hướng dẫn.")
+            # Tìm trong event_help
+            try:
+                from cogs.events.generals.event_help import CMD_DATA as E_CMD_DATA
+                for k, v in E_CMD_DATA.items():
+                    if cmd_name == k or cmd_name in v.get("aliases", []):
+                        usage_str = v.get('usage', '')
+                        examples = v.get('examples', [])
+                        if examples:
+                            example_str = examples[0]
+                        help_cmd = "y!ehelp"
+                        break
+            except Exception:
+                pass
+
+            # Tìm trong help_cog nếu không có
+            if not usage_str:
+                try:
+                    from cogs.general.help_cog import CMD_DATA as G_CMD_DATA
+                    for k, v in G_CMD_DATA.items():
+                        if cmd_name == k or cmd_name in v.get("aliases", []):
+                            usage_str = v.get('usage', '')
+                            examples = v.get('examples', [])
+                            if examples:
+                                example_str = examples[0]
+                            help_cmd = "y!help"
+                            break
+                except Exception:
+                    pass
+
+            if usage_str:
+                msg = f"{ctx.author.mention}, cú pháp đúng là: `{usage_str}`"
+                if example_str:
+                    msg += f", ví dụ: `{example_str}`"
+                msg += f". Vui lòng xài `{help_cmd} {cmd_name}` để xem hướng dẫn."
+                await ctx.send(msg, delete_after=30.0)
+            else:
+                await ctx.send(f"{ctx.author.mention}, bạn nhập sai hoặc thiếu tham số cho lệnh `{ctx.prefix}{cmd_name}`!\nVui lòng gõ `{ctx.prefix}help {cmd_name}` để xem hướng dẫn.", delete_after=30.0)
             return
         
         # Bỏ qua lỗi UserNotFound hoặc MemberNotFound và in ra lỗi đẹp

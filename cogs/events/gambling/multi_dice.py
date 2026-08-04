@@ -760,6 +760,11 @@ class MultiDice(commands.Cog):
                     invite_view.stop()
                     await invite_view.on_timeout()
 
+                try:
+                    await invite_msg.delete()
+                except discord.HTTPException:
+                    pass
+
                 confirmed_from_invite.extend(invite_view.confirmed)
                 # Thêm những người đã bấm Tham Gia vào locked_set để tí nữa mở khóa
                 for m in invite_view.confirmed:
@@ -775,6 +780,11 @@ class MultiDice(commands.Cog):
             except asyncio.TimeoutError:
                 lobby_view.stop()
                 await lobby_view.on_timeout()
+
+            try:
+                await lobby_msg.delete()
+            except discord.HTTPException:
+                pass
 
             final_players = lobby_view.players
             # Cập nhật locked_set với những người mới vào ở phase 2
@@ -801,6 +811,11 @@ class MultiDice(commands.Cog):
             except asyncio.TimeoutError:
                 spec_view.stop()
                 await spec_view.on_timeout()
+
+            try:
+                await spec_msg.delete()
+            except discord.HTTPException:
+                pass
 
             spectator_bets = dict(spec_view.spectator_bets)
             spec_locked = set(spec_view.locked_spectators)
@@ -885,6 +900,12 @@ class MultiDice(commands.Cog):
                 pass
 
             # ── GIAI ĐOẠN 4: KẾT QUẢ ────────────────────────────────────
+            try:
+                if roll_msg:
+                    await roll_msg.delete()
+            except discord.HTTPException:
+                pass
+            
             await self._resolve_game(ctx, final_players, player_infos, bet, spectator_bets)
 
         finally:
@@ -1033,7 +1054,8 @@ class MultiDice(commands.Cog):
             await update_task_progress(self.bot, p.id, "dice", 1)
             await update_task_progress(self.bot, p.id, "gamble_any", 1)
 
-        delay = 10.0 if ctx.channel.id == 1498711783223853101 else None
+        delay = 30.0 if ctx.channel.id == 1498711783223853101 else None
+
         if delay is not None:
             await ctx.send(embed=embed, delete_after=delay)
         else:
