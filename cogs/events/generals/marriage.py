@@ -250,6 +250,57 @@ class PetAdoptConfirmView(discord.ui.View):
                 child.disabled = True
         await interaction.response.edit_message(content="Đã hủy bỏ việc đổi thú cưng. Bé cưng cũ vẫn ở lại với bạn!", view=self)
 
+
+class DivorceConfirmView(discord.ui.View):
+    def __init__(self, bot, proposer: discord.Member, target_id: int, mar_id: int, user1_id: str, user2_id: str):
+        super().__init__(timeout=120)
+        self.bot = bot
+        self.proposer = proposer
+        self.target_id = target_id
+        self.mar_id = mar_id
+        self.user1_id = user1_id
+        self.user2_id = user2_id
+
+    @discord.ui.button(label="Đồng ý Ly Hôn", style=discord.ButtonStyle.success, emoji="💔")
+    async def btn_accept(self, interaction: discord.Interaction, button: discord.ui.Button):
+        if interaction.user.id not in (self.proposer.id, self.target_id):
+            return await interaction.response.send_message("❌ Đây không phải chuyện của bạn!", ephemeral=True)
+            
+        await interaction.response.defer()
+        
+        await execute_db(self.bot, "DELETE FROM marriages WHERE id = $1", self.mar_id)
+        await execute_db(self.bot, "UPDATE event_profiles SET marry_to = NULL WHERE discord_id = $1", self.user1_id)
+        await execute_db(self.bot, "UPDATE event_profiles SET marry_to = NULL WHERE discord_id = $1", self.user2_id)
+        
+        for child in self.children:
+            if getattr(child, 'disabled', None) is not None or isinstance(child, discord.ui.Button):
+                child.disabled = True # type: ignore
+                
+        emb = interaction.message.embeds[0] if interaction.message and getattr(interaction.message, "embeds", None) else discord.Embed()
+        emb.title = "💔 ĐÃ LY HÔN"
+        emb.description = f"Đơn ly hôn đã được xác nhận bởi **{interaction.user.display_name}**. Đường ai nấy đi, tình nghĩa đôi mình từ nay chấm dứt."
+        emb.color = discord.Color.dark_grey()
+        
+        await interaction.edit_original_response(embed=emb, view=self)
+        self.stop()
+
+    @discord.ui.button(label="Hủy Bỏ", style=discord.ButtonStyle.danger)
+    async def btn_decline(self, interaction: discord.Interaction, button: discord.ui.Button):
+        if interaction.user.id not in (self.proposer.id, self.target_id):
+            return await interaction.response.send_message("❌ Đây không phải chuyện của bạn!", ephemeral=True)
+            
+        for child in self.children:
+            if getattr(child, 'disabled', None) is not None or isinstance(child, discord.ui.Button):
+                child.disabled = True # type: ignore
+                
+        emb = interaction.message.embeds[0] if interaction.message and getattr(interaction.message, "embeds", None) else discord.Embed()
+        emb.title = "❌ HỦY LY HÔN"
+        emb.description = f"**{interaction.user.display_name}** đã hủy bỏ quyết định ly hôn. Hãy cố gắng trân trọng nhau nhé!"
+        emb.color = discord.Color.green()
+        
+        await interaction.response.edit_message(embed=emb, view=self)
+        self.stop()
+
 class MarriageCog(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
