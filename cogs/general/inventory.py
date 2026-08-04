@@ -45,6 +45,8 @@ def _build_regular_embed(
     CATEGORY_META = {
         "event":       ("🎪 Vật phẩm Sự kiện",       0x9b59b6, "💡 Sử dụng: `y!use <id>`"),
         "blackmarket": ("🌙 Vật phẩm Chợ đen",        0x2b2d31, "💡 Sử dụng: `y!use <id>`"),
+        "ring":        ("💍 Nhẫn Cưới & Trang sức",  0xff69b4, "💡 Dùng `y!marry` hoặc `y!upgrade_ring`"),
+        "gift":        ("🎁 Quà Tặng",                0xf1c40f, "💡 Dùng `y!gift` để tặng"),
     }
     title, color, footer = CATEGORY_META.get(category, ("🎒 Túi đồ", 0x7289da, ""))
 
@@ -336,6 +338,20 @@ class InventorySelect(discord.ui.Select):
                 emoji="🌾",
                 description="Xem kho nông sản, quặng, cá",
                 default=(current == "farm"),
+            ),
+            discord.SelectOption(
+                label="Nhẫn Cưới & Trang sức",
+                value="ring",
+                emoji="💍",
+                description="Nhẫn cưới để cầu hôn",
+                default=(current == "ring"),
+            ),
+            discord.SelectOption(
+                label="Quà Tặng",
+                value="gift",
+                emoji="🎁",
+                description="Quà để tặng người thương (y!gift)",
+                default=(current == "gift"),
             ),
         ]
         super().__init__(

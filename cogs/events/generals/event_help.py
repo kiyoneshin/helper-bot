@@ -22,6 +22,46 @@ COLOR_THEME = 0xFFB6C1  # Angelic pink
 # =============================================================================
 
 CMD_DATA: dict[str, dict] = {
+    "inv": {
+        "name": "Kho Đồ",
+        "emoji": "🎒",
+        "short": "Xem túi đồ của bạn.",
+        "aliases": ["bag", "tuido", "khodo", "inventory"],
+        "cooldown": None,
+        "usage": "y!inv",
+        "examples": ["y!inv"],
+        "note": None,
+    },
+    "use": {
+        "name": "Sử Dụng Vật Phẩm",
+        "emoji": "🎁",
+        "short": "Sử dụng một vật phẩm trong túi đồ.",
+        "aliases": ["dung", "xai"],
+        "cooldown": None,
+        "usage": "y!use <tên_vật_phẩm>",
+        "examples": ["y!use Cà Phê"],
+        "note": None,
+    },
+    "shop": {
+        "name": "Cửa Hàng",
+        "emoji": "🛒",
+        "short": "Xem danh sách vật phẩm trong cửa hàng.",
+        "aliases": ["cuahang", "store"],
+        "cooldown": None,
+        "usage": "y!shop",
+        "examples": ["y!shop"],
+        "note": None,
+    },
+    "buy": {
+        "name": "Mua Hàng",
+        "emoji": "🛍️",
+        "short": "Mua vật phẩm từ cửa hàng.",
+        "aliases": ["mua"],
+        "cooldown": None,
+        "usage": "y!buy <số_lượng> <tên_vật_phẩm>",
+        "examples": ["y!buy 1 Cà Phê"],
+        "note": None,
+    },
     # ── CASINO ────────────────────────────────────────────────────────────────
     "coinflip": {
         "name": "Coinflip",
@@ -477,6 +517,12 @@ CMD_DATA: dict[str, dict] = {
 }
 
 CATEGORY_DATA: dict[str, dict] = {
+    "Kho Đồ & Cửa Hàng": {
+        "emoji": "🎒",
+        "desc": "Quản lý túi đồ và mua sắm vật phẩm.",
+        "commands": ["inv", "use", "shop", "buy"],
+        "cogs": ["InventoryCog", "ShopCog"],
+    },
     "Casino & Giải Trí": {
         "emoji": "🎰",
         "desc": "Các minigame cờ bạc và thử vận may.",
