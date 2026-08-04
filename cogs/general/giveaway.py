@@ -544,6 +544,12 @@ class GiveawayCog(commands.Cog):
     async def cog_unload(self):
         self.ga_task.cancel()
 
+    async def cog_command_error(self, ctx: commands.Context, error: commands.CommandError):
+        if isinstance(error, commands.MissingPermissions):
+            await ctx.send("❌ Bạn không có quyền sử dụng lệnh này. Chỉ dành cho Admin/Owner!", ephemeral=True)
+        else:
+            log.error(f"Lỗi trong GiveawayCog ({ctx.command}): {error}")
+
     @commands.hybrid_command(name="ga", description="Tạo Giveaway thường")
     @commands.has_permissions(administrator=True)
     async def ga_cmd(self, ctx: commands.Context):

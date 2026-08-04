@@ -32,6 +32,30 @@ log = logging.getLogger("JailInteraction")
 BAIL_MIN_COST = 30_000
 BAIL_PER_COUNT = 500   # mỗi lần lau dọn còn lại = 500 điểm thêm
 
+class BailConfirmView(discord.ui.View):
+    def __init__(self, author_id: int):
+        super().__init__(timeout=60.0)
+        self.author_id = author_id
+        self.value = None
+
+    async def interaction_check(self, interaction: discord.Interaction) -> bool:
+        if interaction.user.id != self.author_id:
+            await interaction.response.send_message("❌ Đây không phải yêu cầu của bạn!", ephemeral=True)
+            return False
+        return True
+
+    @discord.ui.button(label="Xác Nhận Bảo Lãnh", style=discord.ButtonStyle.success)
+    async def confirm(self, interaction: discord.Interaction, button: discord.ui.Button):
+        self.value = True
+        self.stop()
+        await interaction.response.defer()
+
+    @discord.ui.button(label="Hủy Bỏ", style=discord.ButtonStyle.danger)
+    async def cancel(self, interaction: discord.Interaction, button: discord.ui.Button):
+        self.value = False
+        self.stop()
+        await interaction.response.defer()
+
 
 class JailInteraction(commands.Cog):
     """🤝 Hệ Thống Chuồng Chó — Tương Tác Cộng Đồng"""
@@ -208,12 +232,33 @@ class JailInteraction(commands.Cog):
             await ctx.send(embed=embed_fail)
             return
 
+        view = BailConfirmView(ctx.author.id)
+        embed_ask = discord.Embed(
+            title="💸 Yêu Cầu Bảo Lãnh",
+            description=(
+                f"{ctx.author.mention} muốn bảo lãnh cho {member.mention}.\n\n"
+                f"💰 Chi phí bảo lãnh: **{bail_cost:,}** điểm\n"
+                f"💳 Số dư hiện tại: **{payer_points:,.0f}** điểm\n\n"
+                f"Bạn có chắc chắn muốn bỏ ra số điểm này để bảo lãnh không?"
+            ),
+            color=discord.Color.gold(),
+        )
+        msg = await ctx.send(embed=embed_ask, view=view)
+        await view.wait()
+
+        if view.value is None:
+            await msg.edit(content="❌ Đã hủy do quá thời gian.", embed=None, view=None)
+            return
+        elif not view.value:
+            await msg.edit(content="❌ Bạn đã hủy bỏ yêu cầu bảo lãnh.", embed=None, view=None)
+            return
+
         # Trừ điểm người bảo lãnh
         ok = await deduct_event_points(self.bot, payer_uid, bail_cost)
         if not ok:
-            await ctx.send(
-                f"❌ {ctx.author.mention} Lỗi khi trừ điểm! Vui lòng thử lại.",
-                delete_after=6.0,
+            await msg.edit(
+                content=f"❌ {ctx.author.mention} Lỗi khi trừ điểm! Vui lòng thử lại.",
+                embed=None, view=None
             )
             return
 
@@ -224,13 +269,12 @@ class JailInteraction(commands.Cog):
             title="🕊️ Bảo Lãnh Thành Công!",
             description=(
                 f"💸 {ctx.author.mention} vừa bỏ **{bail_cost:,}** điểm ra bảo lãnh!\n\n"
-                f"🔓 {member.mention} được trả tự do — role và nickname đã khôi phục.\n\n"
-                f"*(Giá bảo lãnh = max(30,000, {clean_count} lần × 500đ/lần))*"
+                f"🔓 {member.mention} được trả tự do — role và nickname đã khôi phục."
             ),
             color=COLOR_FREE,
         )
         embed.set_footer(text="Lần sau đừng để bạn bè phải bỏ tiền chuộc mình nhé!")
-        await ctx.send(embed=embed)
+        await msg.edit(content=None, embed=embed, view=None)
 
     @baolanh_cmd.error
     async def baolanh_error(self, ctx: commands.Context, error: Exception) -> None:
