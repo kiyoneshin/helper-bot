@@ -125,7 +125,7 @@ CMD_DATA: dict[str, dict] = {
         "name": "Trợ Giúp",
         "emoji": "🛡️",
         "short": "Xem danh sách lệnh quản trị và hệ thống (đang xem đây nè).",
-        "aliases": ["trogiup", "hd"],
+        "aliases": ["trogiup"],
         "cooldown": None,
         "usage": "y!help",
         "examples": ["y!help"],
@@ -378,9 +378,15 @@ def build_category_embed(cat_name: str) -> discord.Embed:
     for key in cat["commands"]:
         cmd = CMD_DATA.get(key)
         if cmd:
-            aliases = f" · `{'`, `'.join(f'y!{a}' for a in cmd['aliases'])}`" if cmd["aliases"] else ""
+            aliases_list = cmd.get("aliases", [])
+            if len(aliases_list) > 3:
+                aliases_str = f" · `{'`, `'.join(f'y!{a}' for a in aliases_list[:3])}` (+{len(aliases_list)-3})"
+            elif aliases_list:
+                aliases_str = f" · `{'`, `'.join(f'y!{a}' for a in aliases_list)}`"
+            else:
+                aliases_str = ""
             embed.add_field(
-                name=f"{cmd['emoji']} `y!{key}`{aliases}",
+                name=f"{cmd['emoji']} `y!{key}`{aliases_str}",
                 value=cmd["short"],
                 inline=False,
             )
@@ -586,7 +592,7 @@ class HelpCog(commands.Cog):
 
     @commands.hybrid_command(
         name="help",
-        aliases=["trogiup", "hd"],
+        aliases=["trogiup"],
         description="Xem danh sách toàn bộ lệnh hệ thống (UI 3 tầng).",
     )
     async def help_cmd(self, ctx: commands.Context, *, cmd_name: Optional[str] = None):
