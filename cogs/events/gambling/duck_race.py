@@ -482,15 +482,6 @@ class DuckRace(commands.Cog):
         embed.set_footer(text="Angelic Casino • Đua Vịt Sự Kiện 🦆")
         await ctx.send(embed=embed)
 
-    @betvit_cmd.error
-    async def betvit_error(self, ctx: commands.Context, error: Exception) -> None:
-        if isinstance(error, commands.MissingRequiredArgument):
-            await ctx.send(
-                f"❌ {ctx.author.mention} Thiếu thông tin kèo!\n"
-                "Cú pháp: `y!betvit <màu_vịt> <tiền_cược>`\n"
-                "Các vịt: `do`, `xanh`, `vang`, `hong`, `yon`\n"
-                "Ví dụ: `y!betvit yon 500k`"
-            )
 
     @commands.command(name="huybet", aliases=["hb", "cancelbet"])
     async def huybet_cmd(self, ctx: commands.Context) -> None:

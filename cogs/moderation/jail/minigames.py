@@ -120,14 +120,6 @@ class JailGames(commands.Cog):
         if not freed:
             self.bot.loop.create_task(notify_cooldown(ctx, 20.0, "lcuoc"))
 
-    @lcuoc_cmd.error
-    async def lcuoc_error(self, ctx: commands.Context, error: Exception) -> None:
-        if isinstance(error, commands.CommandOnCooldown):
-            await ctx.send(
-                f"⏳ {ctx.author.mention} Đã cược xong rồi, chưa đến giờ cược tiếp! "
-                f"Còn **{error.retry_after:.1f}s** nữa.",
-                delete_after=6.0,
-            )
 
     # ─────────────────────────────────────────────────────────────────
     # Y!LVUOTNGUC — 5% TỰ DO | 95% NHÂN 3 ÁN + TAG ADMIN
@@ -219,15 +211,6 @@ class JailGames(commands.Cog):
             
             self.bot.loop.create_task(notify_cooldown(ctx, 300.0, "lvuotnguc"))
 
-    @lvuotnguc_cmd.error
-    async def lvuotnguc_error(self, ctx: commands.Context, error: Exception) -> None:
-        if isinstance(error, commands.CommandOnCooldown):
-            minutes = error.retry_after / 60
-            await ctx.send(
-                f"⏳ {ctx.author.mention} Vừa thử vượt ngục rồi! "
-                f"Còn **{minutes:.1f} phút** nữa mới được thử lại.",
-                delete_after=8.0,
-            )
 
 async def setup(bot: commands.Bot) -> None:
     await bot.add_cog(JailGames(bot))

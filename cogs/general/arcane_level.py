@@ -148,10 +148,6 @@ class ArcaneLevelSync(commands.Cog):
             f"🔹 Bỏ qua **{skipped_old}** tin nhắn từ 'kiếp trước'."
         )
 
-    @synclv_cmd.error
-    async def synclv_error(self, ctx: commands.Context, error: Exception):
-        if isinstance(error, commands.MissingPermissions):
-            await ctx.send("❌ Bạn phải là Administrator mới có thể sử dụng lệnh này!")
 
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):

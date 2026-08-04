@@ -236,10 +236,6 @@ class VietnamGames(commands.Cog):
         await update_task_progress(self.bot, uid, "taixiu", 1)
         await update_task_progress(self.bot, uid, "gamble_any", 1)
 
-    @taixiu_cmd.error
-    async def taixiu_error(self, ctx: commands.Context, error: Exception) -> None:
-        if isinstance(error, commands.MissingRequiredArgument):
-            await ctx.send(f"❌ {ctx.author.mention} Chơi mà không ném tiền à? Cú pháp: `y!tx <tai/xiu> <tiền_cược>`")
 
     # =========================================================================
     # BẦU CUA TÔM CÁ

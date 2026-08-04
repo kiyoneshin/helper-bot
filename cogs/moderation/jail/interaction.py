@@ -99,18 +99,6 @@ class JailInteraction(commands.Cog):
         )
         await ctx.send(embed=embed)
 
-    @choccho_cmd.error
-    async def choccho_error(self, ctx: commands.Context, error: Exception) -> None:
-        if isinstance(error, commands.CommandOnCooldown):
-            await ctx.send(
-                f"⏳ {ctx.author.mention} Chọc nhiều quá rồi! "
-                f"Nghỉ **{error.retry_after/60:.1f} phút** rồi tính.",
-                delete_after=6.0,
-            )
-        elif isinstance(error, commands.MissingRequiredArgument):
-            await ctx.send("❌ Cú pháp: `y!choccho <@member>`", delete_after=5.0)
-        elif isinstance(error, commands.BadArgument):
-            await ctx.send("❌ Không tìm thấy thành viên đó.", delete_after=5.0)
 
     # ─────────────────────────────────────────────────────────────────
     # Y!CHOAN @user — GIẢM 1 ÁN (Cooldown 60 giây/người)
@@ -161,18 +149,6 @@ class JailInteraction(commands.Cog):
             )
         await ctx.send(embed=embed)
 
-    @choan_cmd.error
-    async def choan_error(self, ctx: commands.Context, error: Exception) -> None:
-        if isinstance(error, commands.CommandOnCooldown):
-            await ctx.send(
-                f"⏳ {ctx.author.mention} Vừa cho ăn rồi! "
-                f"Còn **{error.retry_after:.1f}s** nữa.",
-                delete_after=6.0,
-            )
-        elif isinstance(error, commands.MissingRequiredArgument):
-            await ctx.send("❌ Cú pháp: `y!choan <@member>`", delete_after=5.0)
-        elif isinstance(error, commands.BadArgument):
-            await ctx.send("❌ Không tìm thấy thành viên đó.", delete_after=5.0)
 
     # ─────────────────────────────────────────────────────────────────
     # Y!BAOLANH @user — BẢO LÃNH (TRẢ ĐIỂM SỰ KIỆN)
@@ -276,18 +252,6 @@ class JailInteraction(commands.Cog):
         embed.set_footer(text="Lần sau đừng để bạn bè phải bỏ tiền chuộc mình nhé!")
         await msg.edit(content=None, embed=embed, view=None)
 
-    @baolanh_cmd.error
-    async def baolanh_error(self, ctx: commands.Context, error: Exception) -> None:
-        if isinstance(error, commands.CommandOnCooldown):
-            await ctx.send(
-                f"⏳ {ctx.author.mention} Bình tĩnh nào! "
-                f"Còn **{error.retry_after:.1f}s** nữa.",
-                delete_after=6.0,
-            )
-        elif isinstance(error, commands.MissingRequiredArgument):
-            await ctx.send("❌ Cú pháp: `y!baolanh <@member>`", delete_after=5.0)
-        elif isinstance(error, commands.BadArgument):
-            await ctx.send("❌ Không tìm thấy thành viên đó.", delete_after=5.0)
 
 async def setup(bot: commands.Bot) -> None:
     await bot.add_cog(JailInteraction(bot))
