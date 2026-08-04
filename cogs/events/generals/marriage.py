@@ -271,7 +271,7 @@ class MarriageCog(commands.Cog):
             desc = (
                 f"💖 **So Sweet** 💖\n\n"
                 f"{ctx.author.mention} 💖 <@{partner_id}>\n"
-                f"💞 **Love Points:** {mar['intimacy_points']:,} Pts\n"
+                f"💞 **Love Points:** {float(mar['intimacy_points']):,.1f} Pts\n"
                 f"💎 **Married day:** {marry_date_str}\n"
                 f"*** Been married for {days} days\n\n"
                 f"***Promises for loving:***\n"
@@ -352,21 +352,55 @@ class MarriageCog(commands.Cog):
 
     @commands.hybrid_command(name="adopt")
     async def adopt_cmd(self, ctx: commands.Context, pet_type: str):
-        """🐶 Nhận nuôi thú cưng chung (dog/cat). Yêu cầu > 200 DTM."""
+        """🐶 Nhận nuôi thú cưng (dog/cat/fox/wolf/penguin/rabbit/bear/dragon). Yêu cầu > 200 DTM."""
         uid = str(ctx.author.id)
         mar = await get_marriage(self.bot, uid)
         
         if not mar: return await ctx.send("❌ Hãy tìm một nửa của mình trước khi nghĩ đến việc nuôi con nhé!")
-        if mar["pet_type"]: return await ctx.send(f"❌ Hai bạn đã nuôi một bé **{mar['pet_type']}** rồi!")
+        from cogs.common.db import fetchrow_db
+        mar_db = await fetchrow_db(self.bot, "SELECT pet_name FROM marriages WHERE id = $1", mar["id"])
+        pet_name_db = mar_db["pet_name"] if mar_db else None
+
+        if mar["pet_type"]:
+            dtm = float(mar['intimacy_points'])
+            base_type = mar["pet_type"]
+            
+            if dtm < 1000:
+                stage = "Sơ Sinh 🐣"
+            elif dtm < 5000:
+                stage = "Trưởng Thành 🐾"
+            else:
+                stage = "Thần Thú 🌟"
+                
+            icon_map = {
+                "Chó": "🐶", "Mèo": "🐱", "Cáo": "🦊", "Sói": "🐺", 
+                "Cánh Cụt": "🐧", "Thỏ": "🐰", "Gấu": "🐻", "Rồng": "🐉"
+            }
+            icon = icon_map.get(base_type, "🐾")
+            
+            display_name = f"{pet_name_db}" if pet_name_db else f"{base_type}"
+            pet_text = f"**{display_name}** {icon} ({stage})"
+            return await ctx.send(f"❌ Hai bạn đã nuôi một bé **{pet_text}** rồi!")
         if mar["intimacy_points"] < 200: return await ctx.send("❌ Tình cảm chưa đủ chín muồi (Cần 200 DTM) để gánh vác trách nhiệm nuôi Pet!")
         
         ptype = pet_type.lower()
-        if ptype not in ["dog", "cat", "chó", "mèo"]:
-            return await ctx.send("❌ Hiện tại trại thú giống chỉ cung cấp `dog` hoặc `cat` thôi nhé.")
+        PET_MAP = {
+            "dog": "Chó", "chó": "Chó",
+            "cat": "Mèo", "mèo": "Mèo",
+            "fox": "Cáo", "cáo": "Cáo",
+            "wolf": "Sói", "sói": "Sói",
+            "penguin": "Cánh Cụt",
+            "rabbit": "Thỏ", "thỏ": "Thỏ",
+            "bear": "Gấu", "gấu": "Gấu",
+            "dragon": "Rồng", "rồng": "Rồng",
+        }
+        
+        if ptype not in PET_MAP:
+            return await ctx.send("❌ Hiện tại trại thú chỉ cung cấp: `dog, cat, fox, wolf, penguin, rabbit, bear, dragon`.")
             
-        pet_display = "Chó Corgi 🐶" if ptype in ["dog", "chó"] else "Mèo Anh Lông Ngắn 🐱"
-        await execute_db(self.bot, "UPDATE marriages SET pet_type = $1 WHERE id = $2", pet_display, mar["id"])
-        await ctx.send(f"🎉 Chúc mừng hai bạn đã nhận nuôi thành công bé **{pet_display}**!")
+        base_name = PET_MAP[ptype]
+        await execute_db(self.bot, "UPDATE marriages SET pet_type = $1 WHERE id = $2", base_name, mar["id"])
+        await ctx.send(f"🎉 Chúc mừng hai bạn đã nhận nuôi thành công bé **{base_name} Sơ Sinh**! Dùng `y!namepet` để đặt tên nhé.")
 
     @commands.hybrid_command(name="upgradering", aliases=["nangcapnhan"])
     async def upgradering_cmd(self, ctx: commands.Context, ring_id: int):
@@ -420,33 +454,59 @@ class MarriageCog(commands.Cog):
         await execute_db(self.bot, "UPDATE marriages SET custom_image = $1 WHERE id = $2", url, mar["id"])
         await ctx.send("✅ Đã cập nhật ảnh thành công! Bạn có thể gõ `y!marry` để kiểm tra.")
 
+    @commands.hybrid_command(name="namepet")
+    async def namepet_cmd(self, ctx: commands.Context, *, pet_name: str):
+        """🏷️ Đặt tên riêng cho thú cưng của bạn!"""
+        uid = str(ctx.author.id)
+        mar = await get_marriage(self.bot, uid)
+        if not mar:
+            return await ctx.send("❌ Bạn chưa kết hôn!")
+        if not mar.get("pet_type"):
+            return await ctx.send("❌ Hai bạn chưa nhận nuôi thú cưng nào cả! Dùng `y!adopt` nhé.")
+        
+        if len(pet_name) > 30:
+            return await ctx.send("❌ Tên thú cưng quá dài (tối đa 30 ký tự).")
+            
+        await execute_db(self.bot, "UPDATE marriages SET pet_name = $1 WHERE id = $2", pet_name, mar["id"])
+        await ctx.send(f"✅ Đã đặt tên thú cưng của hai bạn thành: **{pet_name}**!")
+
     @commands.hybrid_command(name="gift", aliases=["tangqua"])
-    async def gift_cmd(self, ctx: commands.Context, target: discord.Member, amount: int):
-        """🎁 Tặng tiền cho vợ/chồng để tăng Điểm Thân Mật (1000 điểm = 10 DTM)."""
+    async def gift_cmd(self, ctx: commands.Context, target: discord.Member, item_id: int):
+        """🎁 Tặng quà mua từ Cửa Hàng (Quà Tặng) cho vợ/chồng."""
         uid = str(ctx.author.id)
         mar = await get_marriage(self.bot, uid)
         if not mar or (mar["user1_id"] != str(target.id) and mar["user2_id"] != str(target.id)):
-            return await ctx.send("❌ Bạn chỉ có thể tặng quà đặc biệt này cho vợ/chồng hợp pháp của mình thôi!")
+            return await ctx.send("❌ Quà tặng này chứa chan tình cảm, chỉ dành riêng cho vợ/chồng của bạn thôi!")
             
-        if amount < 1000:
-            return await ctx.send("❌ Phải tặng ít nhất 1,000 điểm mới bõ công chứ!")
+        from cogs.common.item_config import get_item_by_id
+        item = get_item_by_id(item_id)
+        if not item or item["category"] != "gift":
+            return await ctx.send("❌ ID vật phẩm không hợp lệ! Hãy chọn ID của Quà Tặng trong `y!shop`.")
             
-        # Deduct money from sender
-        from cogs.common.db import deduct_event_points, add_event_points
-        ok = await deduct_event_points(self.bot, uid, float(amount))
-        if not ok:
-            return await ctx.send("❌ Bạn không có đủ tiền để tặng quà!")
-            
-        # Add money to receiver
-        await add_event_points(self.bot, str(target.id), float(amount), is_earned=False)
+        # Check inventory
+        from cogs.common.db import fetchrow_db
+        row = await fetchrow_db(self.bot, "SELECT inventory FROM event_profiles WHERE discord_id = $1", uid)
+        inv = json.loads(row["inventory"]) if (row and row["inventory"]) else {}
+        if isinstance(inv, str): inv = json.loads(inv)
         
-        # Calculate DTM (1000 points = 10 DTM)
-        dtm_gain = int(amount / 100)
+        db_key = item["db_key"]
+        if inv.get(db_key, 0) < 1:
+            return await ctx.send(f"❌ Bạn không có **{item['name']}** trong túi đồ! Dùng `y!buy {item_id}` để mua trước nhé.")
+            
+        # Deduct item
+        inv[db_key] -= 1
+        await execute_db(self.bot, "UPDATE event_profiles SET inventory = $2::jsonb WHERE discord_id = $1", uid, json.dumps(inv))
+        
+        # Calculate DTM from description (+XXX DTM)
+        import re
+        dtm_match = re.search(r'\+([\d\.]+)\s*DTM', item['description'])
+        dtm_gain = float(dtm_match.group(1)) if dtm_match else 0.0
+        
         await update_intimacy(self.bot, uid, dtm_gain)
         
         emb = discord.Embed(
             title="🎁 Tặng Quà Thành Công!",
-            description=f"**{ctx.author.display_name}** vừa ting ting cho **{target.display_name}** số tiền **{amount:,}** điểm!\nTình cảm của hai bạn tăng thêm `{dtm_gain} DTM` 💖",
+            description=f"**{ctx.author.display_name}** vừa tặng **{item['icon']} {item['name']}** cho **{target.display_name}**!\nTình cảm của hai bạn tăng thêm `{dtm_gain} DTM` 💖\n\n_{item['description']}_",
             color=discord.Color.brand_red()
         )
         await ctx.send(embed=emb)

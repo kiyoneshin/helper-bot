@@ -53,6 +53,7 @@ def build_shop_embed(category: str, author: discord.Member | discord.User) -> di
         "farm":        ("🌾 Cửa Hàng Nông Trại",      0xe67e22),
         "blackmarket": ("🌙 Cửa Hàng Chợ Đen",        0x2b2d31),
         "ring":        ("💍 Tiệm Kim Hoàn",           0xffb6c1),
+        "gift":        ("🎁 Quà Tặng",                0xff69b4),
     }
     title, color = CATEGORY_META.get(category, ("🛒 Cửa Hàng", 0x7289da))
 
@@ -113,8 +114,15 @@ class ShopSelect(discord.ui.Select):
                 label="Nhẫn Cưới & Trang sức",
                 value="ring",
                 emoji="💍",
-                description="Nhẫn cưới và trang sức để kết hôn",
+                description="Nhẫn cưới",
                 default=(current_category == "ring"),
+            ),
+            discord.SelectOption(
+                label="Quà Tặng",
+                value="gift",
+                emoji="🎁",
+                description="Quà để tặng người thương (y!gift)",
+                default=(current_category == "gift"),
             ),
         ]
         super().__init__(
@@ -371,7 +379,7 @@ class ShopCog(commands.Cog):
             return
 
         # Route đến đúng handler theo category
-        if item["category"] in ["event", "ring"]:
+        if item["category"] in ["event", "ring", "gift"]:
             await _buy_event_item(ctx, self.bot, item, amount)
         elif item["category"] == "farm":
             await _buy_farm_item(ctx, self.bot, item, amount)

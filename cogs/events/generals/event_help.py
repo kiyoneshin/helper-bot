@@ -63,6 +63,26 @@ CMD_DATA: dict[str, dict] = {
         "examples": ["y!shot 50k", "y!shot all"],
         "note": "Mỗi lần bóp cò tăng xác suất chết. Rút lui sớm để chốt lời an toàn.",
     },
+    "adopt": {
+        "name": "Nhận Nuôi Thú",
+        "emoji": "🐾",
+        "short": "Nhận nuôi thú cưng chung cho cặp đôi.",
+        "aliases": [],
+        "cooldown": 0,
+        "usage": "y!adopt <loại_thú>",
+        "examples": ["y!adopt dog", "y!adopt sói", "y!adopt thỏ"],
+        "note": "Hai bạn cần tối thiểu 200 Điểm Thân Mật (DTM) để nhận nuôi. Có thể nuôi: dog, cat, fox, wolf, penguin, rabbit, bear, dragon.",
+    },
+    "namepet": {
+        "name": "Đặt Tên Thú",
+        "emoji": "🏷️",
+        "short": "Đặt hoặc đổi tên riêng cho Thú cưng chung của hai bạn.",
+        "aliases": [],
+        "cooldown": 0,
+        "usage": "y!namepet <tên_thú_cưng>",
+        "examples": ["y!namepet Bông Tuyết", "y!namepet Bé Mực"],
+        "note": "Hai bạn cần phải nhận nuôi thú cưng (y!adopt) trước khi đặt tên. Tối đa 30 ký tự.",
+    },
     "crash": {
         "name": "Crash (Tàu Bay)",
         "emoji": "🚀",
@@ -299,12 +319,12 @@ CMD_DATA: dict[str, dict] = {
     "gift": {
         "name": "Tặng Quà",
         "emoji": "🎁",
-        "short": "Ting ting tiền cho vợ/chồng. Mỗi 100 điểm = +1 DTM.",
+        "short": "Tặng quà mua từ Cửa Hàng (Quà Tặng) cho vợ/chồng. Tăng DTM.",
         "aliases": ["tangqua"],
-        "cooldown": None,
-        "usage": "y!gift <@user> <số_tiền>",
-        "examples": ["y!gift @VoYeu 100k"],
-        "note": "Tối thiểu 1000 điểm mỗi lần chuyển.",
+        "cooldown": 0,
+        "usage": "y!gift <@user> <id_quà>",
+        "examples": ["y!gift @nguoiyeu 41", "y!gift 123456789 42"],
+        "note": "Quà tặng phải mua trong Cửa Hàng (y!shop mục Quà Tặng) trước khi dùng lệnh này. Mỗi món quà có lượng DTM tăng thêm riêng.",
     },
     "upgradering": {
         "name": "Nâng Cấp Nhẫn",
@@ -337,14 +357,19 @@ CMD_DATA: dict[str, dict] = {
         "note": "Ngày mới (sau 0h) sẽ nhận được task mới.",
     },
     "actions": {
-        "name": "Hành Động",
-        "emoji": "💕",
-        "short": "Các hành động tương tác (Ôm, hôn, chọc...) để cày Điểm Thân Mật (DTM).",
-        "aliases": ["om", "hon", "tat", "can"],
-        "cooldown": "Tùy hànhd động (5p - 3h)",
+        "name": "Hành Động Cặp Đôi",
+        "emoji": "💞",
+        "short": "Các lệnh tương tác đặc biệt dành cho vợ/chồng.",
+        "aliases": ["om", "hon", "tat", "can", "seg", "..."],
+        "cooldown": 0,
         "usage": "y!<hành_động> <@user>",
-        "examples": ["y!hug @VoYeu", "y!kiss @ChongYeu", "y!poke @AiDo"],
-        "note": "Bao gồm: poke, pat, slap, bite, punch, hug, nom, tickle, kiss, lick, cuddle, snuggle, saylove, seg. Có tỷ lệ fail nếu chọc ghẹo đối phương!",
+        "examples": ["y!hug @VoYeu", "y!kiss @ChongYeu"],
+        "note": "Bao gồm các lệnh sau (có thể dùng tên tiếng Anh hoặc alias tiếng Việt):\\n"
+                "- 🤜 **Bạo lực:** `y!slap` (tat), `y!punch` (dam), `y!bite` (can), `y!tickle` (choclet)\\n"
+                "- 💖 **Nhẹ nhàng:** `y!poke` (choc), `y!pat` (xoadau), `y!saylove` (noiyeu, iuem, iuanh)\\n"
+                "- 🤗 **Ôm ấp:** `y!hug` (om), `y!cuddle` (auyem), `y!snuggle` (nung, nũng)\\n"
+                "- 💋 **Thân mật:** `y!kiss` (hon, hun), `y!lick` (liem), `y!nom` (mam), `y!fuck` (seg)\\n"
+                "*(Lưu ý: Thời gian hồi chiêu và lượng DTM nhận được tùy thuộc vào độ 'thân mật' của hành động và cấp bậc Nhẫn cưới của bạn)*",
     },
     "trano": {
         "name": "Trả Nợ",
@@ -467,7 +492,7 @@ CATEGORY_DATA: dict[str, dict] = {
     "Hệ Thống Tình Yêu": {
         "emoji": "💖",
         "desc": "Kết hôn, cày điểm thân mật và tương tác cùng người thương.",
-        "commands": ["marry", "divorce", "promise", "coupletask", "gift", "upgradering", "setimage", "actions"],
+        "commands": ["marry", "divorce", "coupletask", "gift", "promise", "setimage", "adopt", "namepet", "upgradering", "actions"],
         "cogs": ["MarriageCog"],
     },
 }

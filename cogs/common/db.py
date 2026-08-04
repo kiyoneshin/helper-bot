@@ -176,14 +176,15 @@ async def init_all_tables(bot: Any) -> bool:
                         user1_id VARCHAR UNIQUE NOT NULL,
                         user2_id VARCHAR UNIQUE NOT NULL,
                         marry_date TIMESTAMP WITH TIME ZONE DEFAULT (CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Ho_Chi_Minh'),
-                        intimacy_points INT DEFAULT 0,
+                        intimacy_points FLOAT DEFAULT 0.0,
                         ring_id INT DEFAULT 31,
                         promise_text TEXT,
                         pet_type VARCHAR,
+                        pet_name VARCHAR,
+                        custom_image VARCHAR,
                         pet_level INT DEFAULT 1,
                         last_interaction TIMESTAMP WITH TIME ZONE DEFAULT (CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Ho_Chi_Minh'),
-                        couple_task JSONB DEFAULT '{}'::jsonb,
-                        custom_image VARCHAR
+                        couple_task JSONB DEFAULT '{}'::jsonb
                     );
                 ''')
                 
