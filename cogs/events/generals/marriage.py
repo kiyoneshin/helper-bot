@@ -301,6 +301,8 @@ class DivorceConfirmView(discord.ui.View):
         await interaction.response.edit_message(embed=emb, view=self)
         self.stop()
 
+
+
 class MarriageCog(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
@@ -339,7 +341,7 @@ class MarriageCog(commands.Cog):
 
             formatted_promise = ""
             for uid_str in (str(mar["user1_id"]), str(mar["user2_id"])):
-                member2 = ctx.guild.get_member(int(uid_str)) if ctx.guild else None
+                member2 = ctx.guild.get_member(int(uid_str)) if ctx.guild else None if ctx.guild else None
                 p_name = member2.display_name if member2 else f"User {uid_str}"
                 if uid_str in promise_data:
                     ptext = promise_data[uid_str]
