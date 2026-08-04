@@ -247,6 +247,48 @@ class EventCoreCog(commands.Cog):
     # =====================================================================
     def _is_bank_owner(self, ctx: commands.Context) -> bool:
         return ctx.author.id == YON_ID
+        
+    @commands.hybrid_command(name="sendfaq")
+    async def sendfaq_cmd(self, ctx: commands.Context):
+        """[ADMIN] Gửi cẩm nang EVENT_FAQ dưới dạng Embed vào kênh quy định."""
+        if not self._is_bank_owner(ctx):
+            return await ctx.send("❌ Chỉ có Bank Owner mới được dùng lệnh này!")
+            
+        import os, re
+        faq_path = os.path.join(os.getcwd(), "EVENT_FAQ.md")
+        if not os.path.exists(faq_path):
+            return await ctx.send("❌ Không tìm thấy file EVENT_FAQ.md")
+            
+        channel = self.bot.get_channel(1533131441398091917)
+        if not channel:
+            try:
+                channel = await self.bot.fetch_channel(1533131441398091917)
+            except:
+                return await ctx.send("❌ Không tìm thấy kênh đích (ID: 1533131441398091917)!")
+            
+        with open(faq_path, "r", encoding="utf-8") as f:
+            content = f.read()
+            
+        parts = re.split(r'(?m)^###\s+Phần', content)
+        if len(parts) < 2:
+            return await ctx.send("❌ Không tìm thấy các '### Phần' trong EVENT_FAQ.md")
+            
+        await ctx.send(f"Đang gửi Cẩm Nang Sự Kiện vào kênh <#{channel.id}>...", ephemeral=True)
+        
+        for i, part in enumerate(parts[1:], 1):
+            part_content = "Phần" + part
+            first_newline = part_content.find('\n')
+            part_title = part_content[:first_newline].strip()
+            part_body = part_content[first_newline:].strip()
+            
+            emb = discord.Embed(
+                title=part_title,
+                description=part_body,
+                color=0x2b2d31
+            )
+            emb.set_author(name="HƯỚNG DẪN VÀ CÁC CÂU HỎI THƯỜNG GẶP VỀ SỰ KIỆN CỦA ANGELIC")
+            emb.set_footer(text=f"Angelic Event FAQ • Phần {i}/{len(parts)-1}")
+            await channel.send(embed=emb)
 
     @commands.hybrid_command(name="give", aliases=["givepoints", "addpoints"])
     async def give_cmd(self, ctx: commands.Context, target: discord.Member, amount: str):
