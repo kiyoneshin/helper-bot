@@ -532,7 +532,7 @@ def build_home_embed(bot: commands.Bot, author: discord.Member | discord.User) -
         embed.add_field(
             name=f"{cat_info['emoji']} {cat_name}",
             value=f"{cat_info['desc']}\n*({count} lệnh)*",
-            inline=False,
+            inline=True,
         )
 
     if bot.user:
@@ -558,7 +558,7 @@ def build_category_embed(cat_name: str) -> discord.Embed:
             embed.add_field(
                 name=f"{cmd['emoji']} `y!{key}`{aliases}",
                 value=cmd["short"],
-                inline=False,
+                inline=True,
             )
     embed.set_footer(text="Nhấn ◀ Quay Lại để về trang chủ")
     return embed

@@ -124,7 +124,18 @@ class WorkCog(commands.Cog):
                 if not ok2:
                     await execute_db(self.bot, "UPDATE event_profiles SET points = 0 WHERE discord_id = $1", str(partner_id))
                     
-                story = event["text"].format(amount=f"**{reduced_amount:,}**") + f"\n\n💔 **ĐỒNG CAM CỘNG KHỔ!** Bạn và vợ/chồng <@{partner_id}> cùng gánh họa! Mỗi người bị trừ **{reduced_amount:,}** (đã giảm 20% thiệt hại do có người gánh cùng)."
+                # Reset cooldown cho cả hai
+                if ctx.command and hasattr(ctx.command, '_buckets') and ctx.command._buckets.valid:
+                    ctx.command.reset_cooldown(ctx)
+                    try:
+                        cache = ctx.command._buckets._cache
+                        for key in list(cache.keys()):
+                            if str(partner_id) in str(key):
+                                del cache[key]
+                    except Exception:
+                        pass
+                    
+                story = event["text"].format(amount=f"**{reduced_amount:,}**") + f"\n\n💔 **ĐỒNG CAM CỘNG KHỔ!** Bạn và vợ/chồng <@{partner_id}> cùng gánh họa! Mỗi người bị trừ **{reduced_amount:,}** (đã giảm 20% thiệt hại) và **Làm Mới Thời Gian Hồi Lệnh Làm Việc** cho cả hai!"
             else:
                 ok = await deduct_event_points(self.bot, str(uid), float(amount))
                 if not ok:

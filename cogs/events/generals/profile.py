@@ -81,7 +81,7 @@ class ProfileCog(commands.Cog, name="Profile"):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
-    @commands.hybrid_command(name="eprofile", aliases=["ep", "vi"])
+    @commands.hybrid_command(name="profile", aliases=["p", "pro", "ep"])
     async def profile_cmd(self, ctx: commands.Context, member: Optional[discord.Member] = None):
         """[Sự Kiện] Xem thông tin cá nhân, Số dư, Thú cưng, Thẻ đặc quyền."""
         if member:

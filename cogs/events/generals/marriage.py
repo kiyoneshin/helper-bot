@@ -141,70 +141,85 @@ class MarryConfirmView(discord.ui.View):
         self.target = target
         self.ring_id = ring_id
 
+    async def on_error(self, interaction: discord.Interaction, error: Exception, item: discord.ui.Item):
+        import traceback
+        traceback.print_exc()
+        try:
+            await interaction.response.send_message(f"❌ Đã xảy ra lỗi: {error}", ephemeral=True)
+        except:
+            pass
+
     @discord.ui.button(label="Đồng ý", style=discord.ButtonStyle.success, emoji="💍")
     async def btn_accept(self, interaction: discord.Interaction, button: discord.ui.Button):
         if interaction.user.id != self.target.id:
-            await interaction.response.send_message("❌ Người ta cầu hôn bạn đâu mà bấm?", ephemeral=True)
-            return
+            return await interaction.response.send_message("❌ Người ta cầu hôn bạn đâu mà bấm?", ephemeral=True)
             
-        uid1, uid2 = str(self.proposer.id), str(self.target.id)
-        
-        # Double check nếu ai đó kết hôn trong lúc chờ
-        if await get_marriage(self.bot, uid1) or await get_marriage(self.bot, uid2):
-            await interaction.response.send_message("❌ Một trong hai người đã kết hôn với người khác rồi!", ephemeral=True)
+        await interaction.response.defer()
+        try:
+            uid1, uid2 = str(self.proposer.id), str(self.target.id)
+            
+            # Double check nếu ai đó kết hôn trong lúc chờ
+            if await get_marriage(self.bot, uid1) or await get_marriage(self.bot, uid2):
+                await interaction.followup.send("❌ Một trong hai người đã kết hôn với người khác rồi!", ephemeral=True)
+                self.stop()
+                return
+                
+            # Trừ nhẫn trong inventory của người cầu hôn
+            row = await fetchrow_db(self.bot, "SELECT inventory FROM event_profiles WHERE discord_id = $1", uid1)
+            if not row or not row["inventory"]:
+                await interaction.followup.send("❌ Không tìm thấy túi đồ của người cầu hôn!", ephemeral=True)
+                return
+            
+            inv = json.loads(row["inventory"]) if isinstance(row["inventory"], str) else row["inventory"]
+            ring_key = f"ring_{self.ring_id}"
+            if inv.get(ring_key, 0) < 1:
+                await interaction.followup.send("❌ Người cầu hôn đã làm mất chiếc nhẫn rồi!", ephemeral=True)
+                return
+                
+            inv[ring_key] -= 1
+            await execute_db(self.bot, "UPDATE event_profiles SET inventory = $2::jsonb WHERE discord_id = $1", uid1, json.dumps(inv))
+            
+            # Insert marriage
+            sql = """
+                INSERT INTO marriages (user1_id, user2_id, ring_id) 
+                VALUES ($1, $2, $3)
+            """
+            await execute_db(self.bot, sql, uid1, uid2, self.ring_id)
+            
+            # Update event_profiles marry_to
+            await execute_db(self.bot, "UPDATE event_profiles SET marry_to = $2 WHERE discord_id = $1", uid1, uid2)
+            await execute_db(self.bot, "UPDATE event_profiles SET marry_to = $2 WHERE discord_id = $1", uid2, uid1)
+            
+            for child in self.children:
+                if getattr(child, 'disabled', None) is not None or isinstance(child, discord.ui.Button):
+                    child.disabled = True # type: ignore
+            
+            ring_info = get_item_by_id(self.ring_id)
+            ring_name = ring_info['name'] if ring_info else "Nhẫn Cỏ"
+            
+            emb = interaction.message.embeds[0] if interaction.message and getattr(interaction.message, "embeds", None) else discord.Embed()
+            emb.title = "🎉 CHÚC MỪNG TÂN LANG TÂN NƯƠNG! 🎉"
+            emb.description = f"💖 **{self.proposer.display_name}** và **{self.target.display_name}** đã chính thức về chung một nhà với chiếc **{ring_name}**!"
+            emb.color = discord.Color.gold()
+            
+            await interaction.edit_original_response(embed=emb, view=self)
+        except Exception as e:
+            import traceback
+            traceback.print_exc()
+            await interaction.followup.send(f"❌ Có lỗi xảy ra trong quá trình xử lý: {e}", ephemeral=True)
+        finally:
             self.stop()
-            return
-            
-        # Trừ nhẫn trong inventory của người cầu hôn
-        row = await fetchrow_db(self.bot, "SELECT inventory FROM event_profiles WHERE discord_id = $1", uid1)
-        if not row or not row["inventory"]:
-            await interaction.response.send_message("❌ Không tìm thấy túi đồ của người cầu hôn!", ephemeral=True)
-            return
-        
-        inv = json.loads(row["inventory"]) if isinstance(row["inventory"], str) else row["inventory"]
-        ring_key = f"ring_{self.ring_id}"
-        if inv.get(ring_key, 0) < 1:
-            await interaction.response.send_message("❌ Người cầu hôn đã làm mất chiếc nhẫn rồi!", ephemeral=True)
-            return
-            
-        inv[ring_key] -= 1
-        await execute_db(self.bot, "UPDATE event_profiles SET inventory = $2::jsonb WHERE discord_id = $1", uid1, json.dumps(inv))
-        
-        # Insert marriage
-        sql = """
-            INSERT INTO marriages (user1_id, user2_id, ring_id) 
-            VALUES ($1, $2, $3)
-        """
-        await execute_db(self.bot, sql, uid1, uid2, self.ring_id)
-        
-        # Update event_profiles marry_to
-        await execute_db(self.bot, "UPDATE event_profiles SET marry_to = $2 WHERE discord_id = $1", uid1, uid2)
-        await execute_db(self.bot, "UPDATE event_profiles SET marry_to = $2 WHERE discord_id = $1", uid2, uid1)
-        
-        for child in self.children:
-            if isinstance(child, (discord.ui.Button, discord.ui.Select)):
-                child.disabled = True
-        
-        ring_info = get_item_by_id(self.ring_id)
-        ring_name = ring_info['name'] if ring_info else "Nhẫn Cỏ"
-        
-        emb = interaction.message.embeds[0] if interaction.message and getattr(interaction.message, "embeds", None) else discord.Embed()
-        emb.title = "🎉 CHÚC MỪNG TÂN LANG TÂN NƯƠNG! 🎉"
-        emb.description = f"💖 **{self.proposer.display_name}** và **{self.target.display_name}** đã chính thức về chung một nhà với chiếc **{ring_name}**!"
-        emb.color = discord.Color.gold()
-        
-        await interaction.response.edit_message(embed=emb, view=self)
-        self.stop()
 
     @discord.ui.button(label="Từ chối/Hủy", style=discord.ButtonStyle.danger, emoji="💔")
     async def btn_decline(self, interaction: discord.Interaction, button: discord.ui.Button):
         if interaction.user.id not in (self.target.id, self.proposer.id):
-            await interaction.response.send_message("❌ Xin lỗi, bạn không phải là nhân vật chính.", ephemeral=True)
-            return
+            return await interaction.response.send_message("❌ Xin lỗi, bạn không phải là nhân vật chính.", ephemeral=True)
             
+        await interaction.response.defer()
+        
         for child in self.children:
-            if isinstance(child, (discord.ui.Button, discord.ui.Select)):
-                child.disabled = True
+            if getattr(child, 'disabled', None) is not None or isinstance(child, discord.ui.Button):
+                child.disabled = True # type: ignore
         emb = interaction.message.embeds[0] if interaction.message and getattr(interaction.message, "embeds", None) else discord.Embed()
         
         if interaction.user.id == self.target.id:
@@ -216,7 +231,7 @@ class MarryConfirmView(discord.ui.View):
             
         emb.color = discord.Color.dark_grey()
         
-        await interaction.response.edit_message(embed=emb, view=self)
+        await interaction.edit_original_response(embed=emb, view=self)
         self.stop()
 
 class PetAdoptConfirmView(discord.ui.View):
@@ -260,6 +275,14 @@ class DivorceConfirmView(discord.ui.View):
         self.mar_id = mar_id
         self.user1_id = user1_id
         self.user2_id = user2_id
+
+    async def on_error(self, interaction: discord.Interaction, error: Exception, item: discord.ui.Item):
+        import traceback
+        traceback.print_exc()
+        try:
+            await interaction.response.send_message(f"❌ Đã xảy ra lỗi: {error}", ephemeral=True)
+        except:
+            pass
 
     @discord.ui.button(label="Đồng ý Ly Hôn", style=discord.ButtonStyle.success, emoji="💔")
     async def btn_accept(self, interaction: discord.Interaction, button: discord.ui.Button):

@@ -259,7 +259,7 @@ class BasicGames(commands.Cog):
         embed.add_field(name=f"{outcome_emoji} Kết quả", value=result_line, inline=False)
         embed.add_field(name="💳 Số dư mới", value=f"{new_balance:,}", inline=False)
         embed.set_footer(text="Angelic Casino • Coinflip 🌸")
-        delay = 10.0 if ctx.channel.id == 1498711783223853101 else None
+        delay = 30.0 if ctx.channel.id == 1498711783223853101 else None
         if delay is not None:
             await ctx.send(embed=embed, delete_after=delay)
         else:
@@ -373,7 +373,7 @@ class BasicGames(commands.Cog):
         embed.add_field(name=f"{outcome_emoji} Kết quả", value=result_line, inline=False)
         embed.add_field(name="💳 Số dư mới", value=f"{new_balance:,}", inline=False)
         embed.set_footer(text="Angelic Casino • Dice 7 🌸")
-        delay = 10.0 if ctx.channel.id == 1498711783223853101 else None
+        delay = 30.0 if ctx.channel.id == 1498711783223853101 else None
         if delay is not None:
             await ctx.send(embed=embed, delete_after=delay)
         else:

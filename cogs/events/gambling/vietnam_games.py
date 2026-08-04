@@ -226,7 +226,7 @@ class VietnamGames(commands.Cog):
         embed.add_field(name="💳 Số dư mới", value=f"{new_balance:,}", inline=False)
 
         embed.set_footer(text="Angelic Casino • Tài Xỉu 🌸")
-        delay = 10.0 if ctx.channel.id == 1498711783223853101 else None
+        delay = 30.0 if ctx.channel.id == 1498711783223853101 else None
         if delay is not None:
             await ctx.send(embed=embed, delete_after=delay)
         else:
@@ -512,7 +512,7 @@ class VietnamGames(commands.Cog):
             result_embed.set_footer(text="Angelic Casino • Bầu Cua Tôm Cá 🌸")
 
             try:
-                delay = 10.0 if ctx.channel.id == 1498711783223853101 else None
+                delay = 30.0 if ctx.channel.id == 1498711783223853101 else None
                 if delay is not None:
                     await ctx.send(embed=result_embed, delete_after=delay)
                 else:
