@@ -265,6 +265,10 @@ class BasicGames(commands.Cog):
         else:
             await ctx.send(embed=embed)
 
+    @coinflip_cmd.error
+    async def coinflip_error(self, ctx: commands.Context, error: Exception):
+        if isinstance(error, commands.MissingRequiredArgument):
+            await ctx.send(f"❌ {ctx.author.mention} Chơi mà không ném tiền à? Cú pháp: `y!cf <h/t> <tiền_cược | all>`")
 
     # =========================================================================
     # 2. CUPS (Game tương tác - Cần khóa hành động)
@@ -304,6 +308,10 @@ class BasicGames(commands.Cog):
         except Exception:
             _unlock_user(self.bot, ctx.author.id)
 
+    @cups_cmd.error
+    async def cups_error(self, ctx: commands.Context, error: Exception):
+        if isinstance(error, commands.MissingRequiredArgument):
+            await ctx.send(f"❌ {ctx.author.mention} Dốc hết hầu bao đi! Cú pháp: `y!cups <tiền_cược | all>`")
 
 
     # =========================================================================
@@ -371,6 +379,10 @@ class BasicGames(commands.Cog):
         else:
             await ctx.send(embed=embed)
 
+    @dice_cmd.error
+    async def dice_error(self, ctx: commands.Context, error: Exception):
+        if isinstance(error, commands.MissingRequiredArgument):
+            await ctx.send(f"❌ {ctx.author.mention} Ném tiền vô mâm đi chứ! Cú pháp: `y!dice <tiền_cược>`")
 
     # =========================================================================
     # 4. ROULETTE (Game tương tác - Cần khóa hành động)
@@ -425,6 +437,10 @@ class BasicGames(commands.Cog):
         except Exception:
             _unlock_user(self.bot, ctx.author.id)
 
+    @roulette_cmd.error
+    async def roulette_error(self, ctx: commands.Context, error: Exception):
+        if isinstance(error, commands.MissingRequiredArgument):
+            await ctx.send(f"❌ {ctx.author.mention} Không cọc tiền ai cho chơi! Cú pháp: `y!shot <tiền_cược | all>`")
 
 
 

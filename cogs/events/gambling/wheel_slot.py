@@ -327,6 +327,10 @@ class WheelSlots(commands.Cog):
             
         await update_task_progress(self.bot, uid, "gamble_any", 1)
 
+    @wheel_cmd.error
+    async def wheel_error(self, ctx: commands.Context, error: Exception) -> None:
+        if isinstance(error, commands.MissingRequiredArgument):
+            await ctx.send(f"❌ {ctx.author.mention} Quay tay bằng không khí à? Cú pháp: `y!wheel <tiền_cược>`")
 
     # ─────────────────────────────────────────────────────────────────────────
     # LỆNH MÁY XẺNG: y!slots
@@ -416,6 +420,10 @@ class WheelSlots(commands.Cog):
         await update_task_progress(self.bot, uid, "slots", 1)
         await update_task_progress(self.bot, uid, "gamble_any", 1)
 
+    @slots_cmd.error
+    async def slots_error(self, ctx: commands.Context, error: Exception) -> None:
+        if isinstance(error, commands.MissingRequiredArgument):
+            await ctx.send(f"❌ {ctx.author.mention} Không bỏ tiền vô máy ai cho gạt cần? Cú pháp: `y!slots <tiền_cược>`")
 
 
 # =============================================================================

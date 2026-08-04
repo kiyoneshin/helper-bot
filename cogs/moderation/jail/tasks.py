@@ -143,6 +143,14 @@ class JailTasks(commands.Cog):
         if not freed:
             self.bot.loop.create_task(notify_cooldown(ctx, 15.0, "sua"))
 
+    @sua_cmd.error
+    async def sua_error(self, ctx: commands.Context, error: Exception) -> None:
+        if isinstance(error, commands.CommandOnCooldown):
+            await ctx.send(
+                f"⏳ {ctx.author.mention} Nghỉ ngơi cái đã, học nhiều cũng hại não! "
+                f"Còn **{error.retry_after:.1f}s** nữa.",
+                delete_after=6.0,
+            )
 
     # ─────────────────────────────────────────────────────────────────
     # Y!NHATXUONG — RNG (70% −5 ÁN / 30% +1 ÁN)
@@ -209,6 +217,14 @@ class JailTasks(commands.Cog):
         if not freed:
             self.bot.loop.create_task(notify_cooldown(ctx, 30.0, "nhatxuong"))
 
+    @nhatxuong_cmd.error
+    async def nhatxuong_error(self, ctx: commands.Context, error: Exception) -> None:
+        if isinstance(error, commands.CommandOnCooldown):
+            await ctx.send(
+                f"⏳ {ctx.author.mention} Đừng có tranh xương với chó liên tục! "
+                f"Còn **{error.retry_after:.1f}s** nữa.",
+                delete_after=6.0,
+            )
 
 async def setup(bot: commands.Bot) -> None:
     await bot.add_cog(JailTasks(bot))

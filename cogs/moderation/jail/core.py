@@ -420,8 +420,31 @@ class JailCore(commands.Cog):
         if not freed:
             self.bot.loop.create_task(notify_cooldown(ctx, 5.0, "laudon"))
 
+    @laudon_cmd.error
+    async def laudon_error(self, ctx: commands.Context, error: Exception) -> None:
+        if isinstance(error, commands.CommandOnCooldown):
+            if ctx.channel.id == JAIL_CHANNEL_ID:
+                await ctx.send(
+                    f"⏳ {ctx.author.mention} Cứ từ từ, thở cái đã... "
+                    f"Còn **{error.retry_after:.1f}s** nữa mới được lau tiếp.",
+                    delete_after=5.0,
+                )
 
+    @phattu_cmd.error
+    async def phattu_error(self, ctx: commands.Context, error: Exception) -> None:
+        if isinstance(error, commands.MissingRequiredArgument):
+            await ctx.send("❌ Thiếu thông tin! Cú pháp: `y!phattu <@member> <số_lần_dọn> [lý do]`")
+        elif isinstance(error, commands.MissingAnyRole):
+            await ctx.send("❌ Mày không đủ quyền! Chỉ có **Owner** và **Admin** mới được dùng.")
+        elif isinstance(error, commands.BadArgument):
+            await ctx.send("❌ Sai cú pháp! Kiểm tra lại @mention và số lần dọn.")
 
+    @thatu_cmd.error
+    async def thatu_error(self, ctx: commands.Context, error: Exception) -> None:
+        if isinstance(error, commands.MissingAnyRole):
+            await ctx.send("❌ Mày không đủ quyền!")
+        elif isinstance(error, commands.BadArgument):
+            await ctx.send("❌ Không tìm thấy thành viên đó.")
 
 async def setup(bot: commands.Bot) -> None:
     await bot.add_cog(JailCore(bot))

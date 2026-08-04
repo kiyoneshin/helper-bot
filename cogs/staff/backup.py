@@ -182,6 +182,10 @@ class StaffBackupCog(commands.Cog):
             except Exception:
                 pass
 
+    @backup_cmd.error
+    async def backup_error(self, ctx: commands.Context, error):
+        if isinstance(error, commands.MissingPermissions):
+            await ctx.send("Bạn không có quyền sử dụng lệnh này!")
 
 
 async def setup(bot: commands.Bot):

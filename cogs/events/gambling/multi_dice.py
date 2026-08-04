@@ -1066,6 +1066,13 @@ class MultiDice(commands.Cog):
             for spec_uid in spectator_bets:
                 _unlock_user(self.bot, spec_uid)
 
+    @multidice_cmd.error
+    async def multidice_error(self, ctx: commands.Context, error: Exception) -> None:
+        if isinstance(error, commands.MissingRequiredArgument):
+            await ctx.send(
+                "Thiếu! Cú pháp: `y!multidice <tiền_cược> [@user1] [@user2]...`",
+                ephemeral=True,
+            )
 
 
 # ─────────────────────────────────────────────────────────────────────────────

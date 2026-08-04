@@ -192,23 +192,13 @@ CMD_DATA: dict[str, dict] = {
         "examples": ["y!gareroll https://discord.com/channels/... 1"],
         "note": "Lệnh này dành cho Admin/Host quay bù người thắng.",
     },
-    "feedback": {
-        "name": "Xem Đánh Giá",
-        "emoji": "📝",
-        "short": "Xem danh sách toàn bộ bài đánh giá của một nhân sự.",
-        "aliases": ["fb"],
-        "cooldown": None,
-        "usage": "y!fb <@user | id>",
-        "examples": ["y!fb @User"],
-        "note": "Dành cho việc theo dõi hiệu suất của nhân sự.",
-    },
 }
 
 CATEGORY_DATA: dict[str, dict] = {
     "Quản Trị Nhân Sự": {
         "emoji": "📋",
         "desc": "Quản lý nhân sự và hồ sơ thành viên BQT.",
-        "commands": ["menu", "feedback"],
+        "commands": ["menu"],
         "cogs": ["StaffUI"],
     },
     "Chuồng Chó (Jail)": {
@@ -480,7 +470,7 @@ class HelpCog(commands.Cog):
 
     @commands.hybrid_command(
         name="help",
-        aliases=["trogiup", "tg"],
+        aliases=["trogiup", "hd"],
         description="Xem danh sách toàn bộ lệnh hệ thống (UI 3 tầng).",
     )
     async def help_cmd(self, ctx: commands.Context, *, cmd_name: Optional[str] = None):
@@ -500,8 +490,8 @@ class HelpCog(commands.Cog):
                         break
                 
                 if target_cat:
-                    embed = build_detail_embed(cmd_key)
-                    view = DetailView(self.bot, ctx.author, target_cat)
+                    embed = build_category_embed(target_cat)
+                    view = CategoryView(self.bot, ctx.author, target_cat)
                     view.message = await ctx.send(embed=embed, view=view)
                     return
                     
