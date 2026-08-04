@@ -111,11 +111,26 @@ class WorkCog(commands.Cog):
             )
         else:
             # Trừ tiền
-            ok = await deduct_event_points(self.bot, str(uid), float(amount))
-            if not ok:
-                # Nếu deduct trả về False tức là ví không đủ, siết sạch ví
-                await execute_db(self.bot, "UPDATE event_profiles SET points = 0 WHERE discord_id = $1", str(uid))
-                story += "\n\n*(Ví bạn cháy sạch không còn một cắc, phá sản rồi cưng!)*"
+            if is_coop:
+                reduced_amount = int(amount * 0.8)
+                
+                # Trừ người gọi lệnh
+                ok1 = await deduct_event_points(self.bot, str(uid), float(reduced_amount))
+                if not ok1:
+                    await execute_db(self.bot, "UPDATE event_profiles SET points = 0 WHERE discord_id = $1", str(uid))
+                    
+                # Trừ người partner
+                ok2 = await deduct_event_points(self.bot, str(partner_id), float(reduced_amount))
+                if not ok2:
+                    await execute_db(self.bot, "UPDATE event_profiles SET points = 0 WHERE discord_id = $1", str(partner_id))
+                    
+                story = event["text"].format(amount=f"**{reduced_amount:,}**") + f"\n\n💔 **ĐỒNG CAM CỘNG KHỔ!** Bạn và vợ/chồng <@{partner_id}> cùng gánh họa! Mỗi người bị trừ **{reduced_amount:,}** (đã giảm 20% thiệt hại do có người gánh cùng)."
+            else:
+                ok = await deduct_event_points(self.bot, str(uid), float(amount))
+                if not ok:
+                    # Nếu deduct trả về False tức là ví không đủ, siết sạch ví
+                    await execute_db(self.bot, "UPDATE event_profiles SET points = 0 WHERE discord_id = $1", str(uid))
+                    story += "\n\n*(Ví bạn cháy sạch không còn một cắc, phá sản rồi cưng!)*"
             
             emb = discord.Embed(
                 title="💥 Tai nạn nghề nghiệp!",

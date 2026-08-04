@@ -45,7 +45,7 @@ class CasinoCleanupCog(commands.Cog):
         if not has_components:
             # Phân loại Kết quả cá cược hay thông báo thường
             is_gambling_result = False
-            keywords = ["tài xỉu", "bầu cua", "dice", "tàu bay", "crash", "roulette", "coinflip", "cups", "xổ số", "kết quả"]
+            keywords = ["tài xỉu", "bầu cua", "dice", "tàu bay", "crash", "roulette", "coinflip", "cups", "xổ số", "kết quả", "cốc", "ly", "shot", "nga"]
             
             for emb in message.embeds:
                 text_to_check = f"{emb.title or ''} {emb.author.name if emb.author else ''} {emb.description or ''}".lower()
@@ -115,7 +115,22 @@ class CasinoCleanupCog(commands.Cog):
                 
         # Nếu tất cả đã bị vô hiệu hoá (vd: View đã timeout)
         if all_disabled:
-            # Xóa ngay lập tức
+            is_gambling_result = False
+            keywords = ["tài xỉu", "bầu cua", "dice", "tàu bay", "crash", "roulette", "coinflip", "cups", "xổ số", "kết quả", "cốc", "ly", "shot", "nga"]
+            
+            for emb in after.embeds:
+                text_to_check = f"{emb.title or ''} {emb.author.name if emb.author else ''} {emb.description or ''}".lower()
+                if any(kw in text_to_check for kw in keywords):
+                    is_gambling_result = True
+                    break
+                    
+            if not is_gambling_result:
+                if any(kw in content_lower for kw in keywords):
+                    is_gambling_result = True
+            
+            if is_gambling_result:
+                await asyncio.sleep(30.0)
+                
             try:
                 await after.delete()
             except discord.NotFound:

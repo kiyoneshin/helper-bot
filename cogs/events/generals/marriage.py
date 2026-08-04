@@ -716,8 +716,17 @@ class MarriageCog(commands.Cog):
         uid2 = str(target.id)
         
         mar = await get_marriage(self.bot, uid1)
-        if not mar or (mar["user1_id"] != uid2 and mar["user2_id"] != uid2):
-            return await ctx.send("❌ Úi! Hành động thân mật này chỉ dành cho vợ chồng hợp pháp thôi nhé! (Bạn phải kết hôn với người này trước).")
+        is_married = mar and (mar["user1_id"] == uid2 or mar["user2_id"] == uid2)
+        act = ACTIONS[action]
+        
+        if not is_married:
+            # Nếu chưa cưới, chỉ gửi embed biểu cảm (không cộng DTM, không hiệu ứng phụ)
+            msg = random.choice(act["msg"]).format(author=ctx.author.display_name, partner=target.mention)
+            emb = discord.Embed(description=msg, color=discord.Color.light_embed())
+            gif_url = await fetch_anime_gif(action)
+            if gif_url:
+                emb.set_image(url=gif_url)
+            return await ctx.send(embed=emb)
             
         # Calculate Ring Buffs
         ring_id = mar.get("ring_id", 31)
