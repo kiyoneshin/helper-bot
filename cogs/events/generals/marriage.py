@@ -243,28 +243,28 @@ class MarriageCog(commands.Cog):
             
             ring_info = get_item_by_id(mar["ring_id"])
             
-            promise = mar['promise_text']
-            formatted_promise = ""
+            promise = mar.get('promise_text')
+            promise_data = {}
             if promise:
                 try:
                     promise_data = json.loads(promise)
-                    for pid, ptext in promise_data.items():
-                        # Lấy tên của người hứa
-                        p_member = ctx.guild.get_member(int(pid))
-                        p_name = p_member.display_name if p_member else f"User {pid}"
-                        ptext_lines = ptext.split('\n')
-                        for i, line in enumerate(ptext_lines):
-                            if line.strip():
-                                if i == 0:
-                                    formatted_promise += f"🎀 **{p_name}**: {line.strip()}\n"
-                                else:
-                                    formatted_promise += f"🎀 {line.strip()}\n"
                 except Exception:
-                    # Legacy string format
-                    promise_lines = promise.split('\n')
-                    formatted_promise = "\n".join(f"🎀 {line.strip()}" for line in promise_lines if line.strip()) + "\n"
-            else:
-                formatted_promise = "🎀 Chưa có lời thề non hẹn biển nào... (Dùng y!promise)\n"
+                    # Nếu là dạng chuỗi cũ, tự động gán cho người dùng 1
+                    promise_data = {str(mar["user1_id"]): promise}
+
+            formatted_promise = ""
+            for uid_str in (str(mar["user1_id"]), str(mar["user2_id"])):
+                p_member = ctx.guild.get_member(int(uid_str))
+                p_name = p_member.display_name if p_member else f"User {uid_str}"
+                ptext = promise_data.get(uid_str, "chưa có lời thề non hẹn biển nào...")
+                
+                ptext_lines = ptext.split('\n')
+                for i, line in enumerate(ptext_lines):
+                    if line.strip():
+                        if i == 0:
+                            formatted_promise += f"*** {p_name} {line.strip()}\n"
+                        else:
+                            formatted_promise += f"*** {line.strip()}\n"
                 
             marry_date_str = mar['marry_date'].strftime('%d/%m/%Y')
             
@@ -273,7 +273,7 @@ class MarriageCog(commands.Cog):
                 f"{ctx.author.mention} 💖 <@{partner_id}>\n"
                 f"💞 **Love Points:** {mar['intimacy_points']:,} Pts\n"
                 f"💎 **Married day:** {marry_date_str}\n"
-                f"🎀 **Been married for {days} days**\n\n"
+                f"*** Been married for {days} days\n\n"
                 f"***Promises for loving:***\n"
                 f"{formatted_promise}"
             )
