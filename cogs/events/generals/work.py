@@ -98,6 +98,12 @@ class WorkCog(commands.Cog):
             # Cộng tiền (is_earned=True để tính vào cả đua top)
             await add_event_points(self.bot, str(uid), float(amount), is_earned=True)
             
+            # Thưởng EXP Thú Cưng
+            if mar and mar.get("pet_type"):
+                exp_gained = 40 if is_coop else 20
+                await execute_db(self.bot, "UPDATE marriages SET pet_exp = pet_exp + $1 WHERE id = $2", float(exp_gained), mar["id"])
+                story += f"\n✨ *Thú cưng nhận {exp_gained} EXP vì bạn chăm chỉ làm việc!*"
+            
             emb = discord.Embed(
                 title="🎉 Làm việc chăm chỉ (hoặc ăn may)!",
                 description=story,

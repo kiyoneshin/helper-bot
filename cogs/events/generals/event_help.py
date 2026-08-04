@@ -64,14 +64,14 @@ CMD_DATA: dict[str, dict] = {
         "note": "Mỗi lần bóp cò tăng xác suất chết. Rút lui sớm để chốt lời an toàn.",
     },
     "adopt": {
-        "name": "Nhận Nuôi Thú",
+        "name": "Nhận Nuôi",
         "emoji": "🐾",
-        "short": "Nhận nuôi thú cưng chung cho cặp đôi.",
+        "short": "Nhận nuôi thú cưng để tăng hiệu ứng tương tác.",
         "aliases": [],
         "cooldown": 0,
-        "usage": "y!adopt <loại_thú>",
-        "examples": ["y!adopt dog", "y!adopt sói", "y!adopt thỏ"],
-        "note": "Hai bạn cần tối thiểu 200 Điểm Thân Mật (DTM) để nhận nuôi. Có thể nuôi: dog, cat, fox, wolf, penguin, rabbit, bear, dragon.",
+        "usage": "y!adopt <tên_thú_cưng>",
+        "examples": ["y!adopt dog", "y!adopt cat"],
+        "note": "Yêu cầu 200 DTM để nhận nuôi. Nếu đã có thú cưng, bạn có thể nhận bé mới nhưng EXP thú cưng sẽ quay về 0.",
     },
     "namepet": {
         "name": "Đặt Tên Thú",
@@ -82,6 +82,16 @@ CMD_DATA: dict[str, dict] = {
         "usage": "y!namepet <tên_thú_cưng>",
         "examples": ["y!namepet Bông Tuyết", "y!namepet Bé Mực"],
         "note": "Hai bạn cần phải nhận nuôi thú cưng (y!adopt) trước khi đặt tên. Tối đa 30 ký tự.",
+    },
+    "pet": {
+        "name": "Hồ Sơ Thú Cưng",
+        "emoji": "🐶",
+        "short": "Xem thông tin chi tiết thú cưng, cấp độ và buff kỹ năng đặc thù.",
+        "aliases": ["thucung"],
+        "cooldown": 0,
+        "usage": "y!pet",
+        "examples": ["y!pet"],
+        "note": "Mỗi loại thú cưng có kỹ năng ĐỘC QUYỀN khác nhau. Nhận EXP thú cưng bằng cách đi làm (y!work), làm nhiệm vụ (y!task) hoặc dùng lệnh hành động.",
     },
     "crash": {
         "name": "Crash (Tàu Bay)",
@@ -494,7 +504,7 @@ CATEGORY_DATA: dict[str, dict] = {
     "Hệ Thống Tình Yêu": {
         "emoji": "💖",
         "desc": "Kết hôn, cày điểm thân mật và tương tác cùng người thương.",
-        "commands": ["marry", "divorce", "coupletask", "gift", "promise", "setimage", "adopt", "namepet", "upgradering", "actions"],
+        "commands": ["marry", "divorce", "coupletask", "gift", "promise", "setimage", "adopt", "pet", "namepet", "upgradering", "actions"],
         "cogs": ["MarriageCog"],
     },
 }

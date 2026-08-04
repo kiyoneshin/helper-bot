@@ -215,6 +215,32 @@ class MarryConfirmView(discord.ui.View):
         await interaction.response.edit_message(embed=emb, view=self)
         self.stop()
 
+class PetAdoptConfirmView(discord.ui.View):
+    def __init__(self, bot, author, mar_id, new_base_name):
+        super().__init__(timeout=60)
+        self.bot = bot
+        self.author = author
+        self.mar_id = mar_id
+        self.new_base_name = new_base_name
+
+    @discord.ui.button(label="Chắc chắn Đổi", style=discord.ButtonStyle.red)
+    async def confirm(self, interaction: discord.Interaction, button: discord.ui.Button):
+        if interaction.user.id != self.author.id:
+            return await interaction.response.send_message("❌ Bạn không phải là người đưa ra yêu cầu!", ephemeral=True)
+            
+        from cogs.common.db import execute_db
+        await execute_db(self.bot, "UPDATE marriages SET pet_type = $1, pet_name = NULL, pet_exp = 0.0 WHERE id = $2", self.new_base_name, self.mar_id)
+        
+        for child in self.children: child.disabled = True
+        await interaction.response.edit_message(content=f"🎉 Bạn đã đổi thú cưng thành công! Chào mừng bé **{self.new_base_name} Sơ Sinh** đến với gia đình! (Kinh nghiệm thú cưng đã reset về 0). Dùng `y!namepet` để đặt tên nhé.", view=self)
+
+    @discord.ui.button(label="Hủy bỏ", style=discord.ButtonStyle.gray)
+    async def cancel(self, interaction: discord.Interaction, button: discord.ui.Button):
+        if interaction.user.id != self.author.id:
+            return await interaction.response.send_message("❌ Bạn không phải là người đưa ra yêu cầu!", ephemeral=True)
+            
+        for child in self.children: child.disabled = True
+        await interaction.response.edit_message(content="Đã hủy bỏ việc đổi thú cưng. Bé cưng cũ vẫn ở lại với bạn!", view=self)
 
 class MarriageCog(commands.Cog):
     def __init__(self, bot: commands.Bot):
@@ -256,15 +282,17 @@ class MarriageCog(commands.Cog):
             for uid_str in (str(mar["user1_id"]), str(mar["user2_id"])):
                 p_member = ctx.guild.get_member(int(uid_str))
                 p_name = p_member.display_name if p_member else f"User {uid_str}"
-                ptext = promise_data.get(uid_str, "chưa có lời thề non hẹn biển nào...")
-                
-                ptext_lines = ptext.split('\n')
-                for i, line in enumerate(ptext_lines):
-                    if line.strip():
-                        if i == 0:
-                            formatted_promise += f"*** {p_name} {line.strip()}\n"
-                        else:
-                            formatted_promise += f"*** {line.strip()}\n"
+                if uid_str in promise_data:
+                    ptext = promise_data[uid_str]
+                    ptext_lines = ptext.split('\n')
+                    for i, line in enumerate(ptext_lines):
+                        if line.strip():
+                            if i == 0:
+                                formatted_promise += f"💖 **{p_name}**: {line.strip()}\n"
+                            else:
+                                formatted_promise += f"    {line.strip()}\n"
+                else:
+                    formatted_promise += f"💔 **{p_name}**: chưa có lời thề non hẹn biển nào...\n"
                 
             marry_date_str = mar['marry_date'].strftime('%d/%m/%Y')
             
@@ -274,6 +302,30 @@ class MarriageCog(commands.Cog):
                 f"💞 **Love Points:** {float(mar['intimacy_points']):,.1f} Pts\n"
                 f"💎 **Married day:** {marry_date_str}\n"
                 f"*** Been married for {days} days\n\n"
+            )
+            
+            if mar.get("pet_type"):
+                pet_exp = float(mar.get('pet_exp', 0.0))
+                if pet_exp < 1000:
+                    stage = "Sơ Sinh 🐣"
+                elif pet_exp < 5000:
+                    stage = "Trưởng Thành 🐾"
+                else:
+                    stage = "Thần Thú 🌟"
+                    
+                icon_map = {
+                    "Chó": "🐶", "Mèo": "🐱", "Cáo": "🦊", "Sói": "🐺", 
+                    "Cánh Cụt": "🐧", "Thỏ": "🐰", "Gấu": "🐻", "Rồng": "🐉"
+                }
+                base_type = mar["pet_type"]
+                icon = icon_map.get(base_type, "🐾")
+                pet_level = int(pet_exp / 200) + 1
+                
+                pet_name_db = mar.get("pet_name")
+                display_name = f"{pet_name_db}" if pet_name_db else f"{base_type}"
+                desc += f"🐾 **Thú Cưng Chung**: {display_name} {icon} *(Lv.{pet_level} - {stage})*\n\n"
+                
+            desc += (
                 f"***Promises for loving:***\n"
                 f"{formatted_promise}"
             )
@@ -347,8 +399,16 @@ class MarriageCog(commands.Cog):
         if len(text) > 200:
             return await ctx.send("❌ Lời hứa quá dài! Hãy viết ngắn gọn dưới 200 ký tự thôi.")
             
-        await execute_db(self.bot, "UPDATE marriages SET promise_text = $1 WHERE id = $2", text, mar["id"])
-        await ctx.send("💌 Lời hứa của hai bạn đã được khắc ghi vào Cây Tình Yêu!")
+        # Lấy promise_text hiện tại và cập nhật
+        try:
+            promise_data = json.loads(mar["promise_text"]) if mar["promise_text"] else {}
+        except Exception:
+            promise_data = {str(mar["user1_id"]): mar["promise_text"]} if mar["promise_text"] else {}
+            
+        promise_data[uid] = text
+        
+        await execute_db(self.bot, "UPDATE marriages SET promise_text = $1 WHERE id = $2", json.dumps(promise_data), mar["id"])
+        await ctx.send("💌 Lời hứa của bạn đã được khắc ghi vào Cây Tình Yêu!")
 
     @commands.hybrid_command(name="adopt")
     async def adopt_cmd(self, ctx: commands.Context, pet_type: str):
@@ -357,31 +417,7 @@ class MarriageCog(commands.Cog):
         mar = await get_marriage(self.bot, uid)
         
         if not mar: return await ctx.send("❌ Hãy tìm một nửa của mình trước khi nghĩ đến việc nuôi con nhé!")
-        from cogs.common.db import fetchrow_db
-        mar_db = await fetchrow_db(self.bot, "SELECT pet_name FROM marriages WHERE id = $1", mar["id"])
-        pet_name_db = mar_db["pet_name"] if mar_db else None
-
-        if mar["pet_type"]:
-            dtm = float(mar['intimacy_points'])
-            base_type = mar["pet_type"]
-            
-            if dtm < 1000:
-                stage = "Sơ Sinh 🐣"
-            elif dtm < 5000:
-                stage = "Trưởng Thành 🐾"
-            else:
-                stage = "Thần Thú 🌟"
-                
-            icon_map = {
-                "Chó": "🐶", "Mèo": "🐱", "Cáo": "🦊", "Sói": "🐺", 
-                "Cánh Cụt": "🐧", "Thỏ": "🐰", "Gấu": "🐻", "Rồng": "🐉"
-            }
-            icon = icon_map.get(base_type, "🐾")
-            
-            display_name = f"{pet_name_db}" if pet_name_db else f"{base_type}"
-            pet_text = f"**{display_name}** {icon} ({stage})"
-            return await ctx.send(f"❌ Hai bạn đã nuôi một bé **{pet_text}** rồi!")
-        if mar["intimacy_points"] < 200: return await ctx.send("❌ Tình cảm chưa đủ chín muồi (Cần 200 DTM) để gánh vác trách nhiệm nuôi Pet!")
+        if float(mar["intimacy_points"]) < 200: return await ctx.send("❌ Tình cảm chưa đủ chín muồi (Cần 200 DTM) để gánh vác trách nhiệm nuôi Pet!")
         
         ptype = pet_type.lower()
         PET_MAP = {
@@ -399,8 +435,17 @@ class MarriageCog(commands.Cog):
             return await ctx.send("❌ Hiện tại trại thú chỉ cung cấp: `dog, cat, fox, wolf, penguin, rabbit, bear, dragon`.")
             
         base_name = PET_MAP[ptype]
-        await execute_db(self.bot, "UPDATE marriages SET pet_type = $1 WHERE id = $2", base_name, mar["id"])
-        await ctx.send(f"🎉 Chúc mừng hai bạn đã nhận nuôi thành công bé **{base_name} Sơ Sinh**! Dùng `y!namepet` để đặt tên nhé.")
+        
+        if mar["pet_type"]:
+            if mar["pet_type"] == base_name:
+                return await ctx.send(f"❌ Bạn đang nuôi loài **{base_name}** rồi, không thể nhận nuôi lại!")
+            
+            view = PetAdoptConfirmView(self.bot, ctx.author, mar["id"], base_name)
+            await ctx.send(f"⚠️ Hai bạn đang nuôi một bé **{mar['pet_type']}**. Nếu bạn nhận nuôi **{base_name}**, thú cưng cũ sẽ ra đi và **Kinh nghiệm thú cưng (Pet EXP) sẽ bị reset về 0** (Level 1). Bạn có chắc chắn muốn đổi không?", view=view)
+        else:
+            from cogs.common.db import execute_db
+            await execute_db(self.bot, "UPDATE marriages SET pet_type = $1, pet_exp = 0.0 WHERE id = $2", base_name, mar["id"])
+            await ctx.send(f"🎉 Chúc mừng hai bạn đã nhận nuôi thành công bé **{base_name} Sơ Sinh**! Dùng `y!namepet` để đặt tên nhé.")
 
     @commands.hybrid_command(name="upgradering", aliases=["nangcapnhan"])
     async def upgradering_cmd(self, ctx: commands.Context, ring_id: int):
@@ -454,6 +499,93 @@ class MarriageCog(commands.Cog):
         await execute_db(self.bot, "UPDATE marriages SET custom_image = $1 WHERE id = $2", url, mar["id"])
         await ctx.send("✅ Đã cập nhật ảnh thành công! Bạn có thể gõ `y!marry` để kiểm tra.")
 
+    @commands.hybrid_command(name="pet", aliases=["thucung"])
+    async def pet_cmd(self, ctx: commands.Context):
+        """🐶 Xem thông tin thú cưng của cặp đôi."""
+        uid = str(ctx.author.id)
+        mar = await get_marriage(self.bot, uid)
+        if not mar:
+            return await ctx.send("❌ Bạn chưa kết hôn!")
+        if not mar.get("pet_type"):
+            return await ctx.send("❌ Hai bạn chưa nhận nuôi thú cưng nào cả! Dùng `y!adopt` nhé.")
+            
+        pet_exp = float(mar.get('pet_exp', 0.0))
+        base_type = mar["pet_type"]
+        
+        from cogs.common.db import fetchrow_db
+        mar_db = await fetchrow_db(self.bot, "SELECT pet_name FROM marriages WHERE id = $1", mar["id"])
+        pet_name_db = mar_db["pet_name"] if mar_db else None
+        
+        if pet_exp < 1000:
+            stage = "Sơ Sinh 🐣"
+        elif pet_exp < 5000:
+            stage = "Trưởng Thành 🐾"
+        else:
+            stage = "Thần Thú 🌟"
+            
+        icon_map = {
+            "Chó": "🐶", "Mèo": "🐱", "Cáo": "🦊", "Sói": "🐺", 
+            "Cánh Cụt": "🐧", "Thỏ": "🐰", "Gấu": "🐻", "Rồng": "🐉"
+        }
+        icon = icon_map.get(base_type, "🐾")
+        
+        display_name = f"{pet_name_db}" if pet_name_db else f"{base_type}"
+        pet_level = int(pet_exp / 200) + 1
+        
+        skill_name = "Chưa rõ"
+        skill_desc = ""
+        
+        if base_type == "Chó":
+            skill_name = "Vui Vẻ"
+            buff = min(pet_level * 1.0, 50.0)
+            skill_desc = f"Tăng **{buff:.1f}%** DTM nhận được mỗi lần tương tác."
+        elif base_type == "Mèo":
+            skill_name = "Linh Hoạt"
+            buff = min(pet_level * 0.75, 45.0)
+            skill_desc = f"Giảm **{buff:.2f}%** thời gian chờ (Cooldown) của các lệnh tương tác."
+        elif base_type == "Cáo":
+            skill_name = "Ranh Mãnh"
+            buff = min(pet_level * 0.25, 25.0)
+            skill_desc = f"Mỗi lần tương tác có **{buff:.2f}%** tỷ lệ gây Bạo Kích (x2 DTM)."
+        elif base_type == "Sói":
+            skill_name = "Kiên Trì"
+            buff = min(pet_level * 2.5, 125.0)
+            skill_desc = f"Tăng **{buff:.1f}%** DTM thưởng thêm khi làm Nhiệm Vụ Cặp Đôi."
+        elif base_type == "Cánh Cụt":
+            skill_name = "Bình Tĩnh"
+            buff = min(pet_level * 1.0, 50.0)
+            bonus = pet_level * 0.1
+            skill_desc = f"Giảm **{buff:.1f}%** tỷ lệ đối phương quạu khi chọc ghẹo. Thưởng cố định +{bonus:.1f} DTM."
+        elif base_type == "Thỏ":
+            skill_name = "Nhanh Nhẹn"
+            buff = min(pet_level * 0.2, 15.0)
+            skill_desc = f"Mỗi lần tương tác có **{buff:.2f}%** tỷ lệ lập tức Bỏ Qua Hồi Chiêu."
+        elif base_type == "Gấu":
+            skill_name = "Ấm Áp"
+            buff = min(pet_level * 2.0, 100.0)
+            skill_desc = f"Tăng **{buff:.1f}%** DTM nhận được khi dùng lệnh tặng quà (y!gift)."
+        elif base_type == "Rồng":
+            skill_name = "Uy Cực"
+            dtm_b = pet_level * 0.35
+            cd_b = pet_level * 0.35
+            task_b = pet_level * 1.0
+            gift_b = pet_level * 0.5
+            skill_desc = f"Toàn năng: Tăng +{dtm_b:.2f}% DTM, Giảm -{cd_b:.2f}% Cooldown, +{task_b:.1f}% Task, +{gift_b:.1f}% Quà."
+            
+        current_exp_in_level = pet_exp % 200
+        desc = (
+            f"**Tên:** {display_name} {icon}\n"
+            f"**Loài:** {base_type}\n"
+            f"**Trạng Thái:** {stage}\n"
+            f"**Cấp Độ:** Lv.{pet_level}  *(EXP: {current_exp_in_level:.1f}/200)*\n\n"
+            f"🌟 **Kỹ Năng Độc Quyền:** `{skill_name}`\n"
+            f"-> {skill_desc}\n\n"
+            f"*(Nhận EXP thú cưng bằng cách tương tác, làm nhiệm vụ hoặc đi làm `y!work`)*"
+        )
+        
+        emb = discord.Embed(title="🐾 Hồ Sơ Thú Cưng", description=desc, color=discord.Color.gold())
+        await ctx.send(embed=emb)
+
     @commands.hybrid_command(name="namepet")
     async def namepet_cmd(self, ctx: commands.Context, *, pet_name: str):
         """🏷️ Đặt tên riêng cho thú cưng của bạn!"""
@@ -502,11 +634,31 @@ class MarriageCog(commands.Cog):
         dtm_match = re.search(r'\+([\d\.]+)\s*DTM', item['description'])
         dtm_gain = float(dtm_match.group(1)) if dtm_match else 0.0
         
+        # Apply Pet Buff (Bear / Dragon)
+        pet_exp = float(mar.get('pet_exp', 0.0))
+        pet_type = mar.get("pet_type")
+        pet_level = int(pet_exp / 200) + 1 if pet_type else 0
+        pet_gift_bonus = 0.0
+        
+        if pet_type == "Gấu":
+            pet_gift_bonus = min(pet_level * 0.02, 1.0)
+        elif pet_type == "Rồng":
+            pet_gift_bonus = pet_level * 0.005
+            
+        dtm_gain = dtm_gain * (1.0 + pet_gift_bonus)
         await update_intimacy(self.bot, uid, dtm_gain)
         
+        # Thưởng EXP thú cưng bằng DTM_gain x 2
+        exp_gain = dtm_gain * 2
+        if pet_type:
+            await execute_db(self.bot, "UPDATE marriages SET pet_exp = pet_exp + $1 WHERE id = $2", exp_gain, mar["id"])
+            exp_msg = f"\n✨ *Thú cưng nhận {exp_gain:.1f} EXP*"
+        else:
+            exp_msg = ""
+            
         emb = discord.Embed(
             title="🎁 Tặng Quà Thành Công!",
-            description=f"**{ctx.author.display_name}** vừa tặng **{item['icon']} {item['name']}** cho **{target.display_name}**!\nTình cảm của hai bạn tăng thêm `{dtm_gain} DTM` 💖\n\n_{item['description']}_",
+            description=f"**{ctx.author.display_name}** vừa tặng **{item['icon']} {item['name']}** cho **{target.display_name}**!\nTình cảm của hai bạn tăng thêm `{dtm_gain:.1f} DTM` 💖\n\n_{item['description']}_{exp_msg}",
             color=discord.Color.brand_red()
         )
         await ctx.send(embed=emb)
@@ -571,12 +723,41 @@ class MarriageCog(commands.Cog):
         ring_id = mar.get("ring_id", 31)
         buffs = RING_BUFFS.get(ring_id, RING_BUFFS[31])
         
+        # Calculate Pet Buffs
+        pet_exp = float(mar.get('pet_exp', 0.0))
+        pet_type = mar.get("pet_type")
+        pet_level = int(pet_exp / 200) + 1 if pet_type else 0
+        
+        pet_cd_reduction = 0.0
+        pet_dtm_bonus = 0.0
+        pet_fail_reduction = 0.0
+        pet_crit_chance = 0.0
+        pet_reset_chance = 0.0
+        pet_task_bonus = 0.0
+        
+        if pet_type == "Chó":
+            pet_dtm_bonus = min(pet_level * 0.01, 0.50)
+        elif pet_type == "Mèo":
+            pet_cd_reduction = min(pet_level * 0.0075, 0.45)
+        elif pet_type == "Cáo":
+            pet_crit_chance = min(pet_level * 0.0025, 0.25)
+        elif pet_type == "Sói":
+            pet_task_bonus = min(pet_level * 0.025, 1.25)
+        elif pet_type == "Cánh Cụt":
+            pet_fail_reduction = min(pet_level * 0.01, 0.50)
+        elif pet_type == "Thỏ":
+            pet_reset_chance = min(pet_level * 0.002, 0.15)
+        elif pet_type == "Rồng":
+            pet_dtm_bonus = pet_level * 0.0035
+            pet_cd_reduction = pet_level * 0.0035
+            pet_task_bonus = pet_level * 0.01
+            
         act = ACTIONS[action]
         tier = str(act["tier"])
         base_cd = ACTION_TIERS[act["tier"]]["cd"]
         base_dtm = ACTION_TIERS[act["tier"]]["dtm"]
         
-        actual_cd = base_cd * (1.0 - buffs["cd_reduction"])
+        actual_cd = base_cd * (1.0 - buffs["cd_reduction"] - pet_cd_reduction)
         
         # Check Cooldown
         if uid1 not in self.action_cooldowns: self.action_cooldowns[uid1] = {}
@@ -590,17 +771,30 @@ class MarriageCog(commands.Cog):
             wait_str = f"{h}h {m}m {s}s" if h > 0 else f"{m}m {s}s"
             return await ctx.send(f"⏳ Cứ từ từ thôi! Quấn quýt quá lại nhanh chán. Đợi thêm **{wait_str}** nữa mới được dùng lại hành động này nhé!")
             
-        self.action_cooldowns[uid1][action] = now
+        reset_msg = ""
+        if pet_reset_chance > 0 and random.random() < pet_reset_chance:
+            self.action_cooldowns[uid1][action] = 0
+            reset_msg = "\n🐰 *Thỏ Nhanh Nhẹn đã giúp bạn hồi chiêu ngay lập tức!*"
+        else:
+            self.action_cooldowns[uid1][action] = now
         
         # Calculate DTM
-        actual_dtm = int(base_dtm * (1.0 + buffs["dtm_bonus"]))
+        actual_dtm = float(base_dtm * (1.0 + buffs["dtm_bonus"] + pet_dtm_bonus))
         
+        crit_msg = ""
+        if pet_crit_chance > 0 and random.random() < pet_crit_chance:
+            actual_dtm *= 2.0
+            crit_msg = "\n🦊 *Cáo Ranh Mãnh giúp hành động này Bạo Kích (x2 DTM)!*"
+            
         # Random fail for tier 1 (Chọc ghẹo)
-        if act["tier"] == 1 and random.random() < 0.2:
-            actual_dtm = -1 # Trừ 1 điểm nếu đối phương quạu
+        fail_chance = 0.2 - pet_fail_reduction
+        if act["tier"] == 1 and random.random() < fail_chance:
+            actual_dtm = -1.0 # Trừ 1 điểm nếu đối phương quạu
             msg = f"💢 {ctx.author.display_name} chọc ghẹo không đúng lúc, {target.display_name} đang quạu! (Trừ 1 DTM)"
         else:
-            msg = random.choice(act["msg"]).format(author=ctx.author.display_name, partner=target.mention) + f" `(+{actual_dtm} DTM)`"
+            if act["tier"] == 1 and pet_type == "Cánh Cụt":
+                actual_dtm += pet_level * 0.1 # Cánh cụt bonus
+            msg = random.choice(act["msg"]).format(author=ctx.author.display_name, partner=target.mention) + f" `(+{actual_dtm:.1f} DTM)`"
             
             # Tiên quyết: Chỉ update task nếu thành công (không fail)
             task_str = mar.get("couple_task")
@@ -611,9 +805,18 @@ class MarriageCog(commands.Cog):
                     task_data["progress"] = task_data.get("progress", 0) + 1
                     if task_data["progress"] >= task_data["target"]:
                         task_data["completed"] = True
-                        actual_dtm += 100
-                        msg += f"\n🎉 **Nhiệm Vụ Cặp Đôi Hoàn Thành!** (+100 DTM)"
+                        task_reward = 100 * (1.0 + pet_task_bonus)
+                        actual_dtm += task_reward
+                        msg += f"\n🎉 **Nhiệm Vụ Cặp Đôi Hoàn Thành!** (+{task_reward:.1f} DTM)"
                     await execute_db(self.bot, "UPDATE marriages SET couple_task = $1::jsonb WHERE id = $2", json.dumps(task_data), mar["id"])
+            
+            # Pet EXP gain
+            if pet_type:
+                gained_exp = base_dtm * 2
+                await execute_db(self.bot, "UPDATE marriages SET pet_exp = pet_exp + $1 WHERE id = $2", gained_exp, mar["id"])
+                msg += f"\n✨ *Thú cưng nhận {gained_exp:.1f} EXP*"
+            
+        msg += reset_msg + crit_msg
         
         # Update DB
         await update_intimacy(self.bot, uid1, actual_dtm)

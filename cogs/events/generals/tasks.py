@@ -126,6 +126,9 @@ class TaskCog(commands.Cog):
         claimed_messages = []
         db_changed = False
 
+        from cogs.common.db import fetchrow_db, execute_db
+        mar = await fetchrow_db(self.bot, "SELECT id, pet_type FROM marriages WHERE user1_id = $1 OR user2_id = $1", str(uid))
+
         # --- Hiển thị Daily ---
         daily_text = ""
         idx = 1
@@ -138,7 +141,13 @@ class TaskCog(commands.Cog):
                 tdata["claimed"] = True
                 await add_event_points(self.bot, uid, tdata["reward"], is_earned=True)
                 await update_event_stat(self.bot, uid, "quests", 1)
-                claimed_messages.append(f"✅ Đã nhận thưởng nhiệm vụ ngày #{idx} (+{tdata['reward']:,} điểm)")
+                
+                pet_msg = ""
+                if mar and mar["pet_type"]:
+                    await execute_db(self.bot, "UPDATE marriages SET pet_exp = pet_exp + 100 WHERE id = $1", mar["id"])
+                    pet_msg = " và Thú cưng +100 EXP"
+                    
+                claimed_messages.append(f"✅ Đã nhận thưởng nhiệm vụ ngày #{idx} (+{tdata['reward']:,} điểm{pet_msg})")
                 db_changed = True
 
             status = "COMPLETED" if tdata["claimed"] else f"{tdata['progress']}/{tdata['target']}"
@@ -164,7 +173,13 @@ class TaskCog(commands.Cog):
                 tdata["claimed"] = True
                 await add_event_points(self.bot, uid, tdata["reward"], is_earned=True)
                 await update_event_stat(self.bot, uid, "quests", 1)
-                claimed_messages.append(f"🌟 Đã nhận thưởng nhiệm vụ tuần #{idx} (+{tdata['reward']:,} điểm)")
+                
+                pet_msg = ""
+                if mar and mar["pet_type"]:
+                    await execute_db(self.bot, "UPDATE marriages SET pet_exp = pet_exp + 300 WHERE id = $1", mar["id"])
+                    pet_msg = " và Thú cưng +300 EXP"
+                    
+                claimed_messages.append(f"🌟 Đã nhận thưởng nhiệm vụ tuần #{idx} (+{tdata['reward']:,} điểm{pet_msg})")
                 db_changed = True
 
             status = "COMPLETED" if tdata["claimed"] else f"{tdata['progress']}/{tdata['target']}"

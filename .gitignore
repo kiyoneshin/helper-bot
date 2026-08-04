@@ -175,3 +175,4 @@ pyrightconfig.json
 *.key
 repomix-output.xml
 EVENT_FAQ.md
+.agents/
