@@ -118,7 +118,7 @@ async def fetch_anime_gif(action: str) -> Optional[str]:
         
     try:
         async with aiohttp.ClientSession() as session:
-            async with session.get(url, timeout=3) as resp:
+            async with session.get(url, timeout=aiohttp.ClientTimeout(total=3)) as resp:
                 if resp.status == 200:
                     data = await resp.json()
                     return data.get("url")
@@ -181,12 +181,14 @@ class MarryConfirmView(discord.ui.View):
         await execute_db(self.bot, "UPDATE event_profiles SET marry_to = $2 WHERE discord_id = $1", uid1, uid2)
         await execute_db(self.bot, "UPDATE event_profiles SET marry_to = $2 WHERE discord_id = $1", uid2, uid1)
         
-        for child in self.children: child.disabled = True
+        for child in self.children:
+            if isinstance(child, (discord.ui.Button, discord.ui.Select)):
+                child.disabled = True
         
         ring_info = get_item_by_id(self.ring_id)
         ring_name = ring_info['name'] if ring_info else "Nhẫn Cỏ"
         
-        emb = interaction.message.embeds[0]
+        emb = interaction.message.embeds[0] if interaction.message and getattr(interaction.message, "embeds", None) else discord.Embed()
         emb.title = "🎉 CHÚC MỪNG TÂN LANG TÂN NƯƠNG! 🎉"
         emb.description = f"💖 **{self.proposer.display_name}** và **{self.target.display_name}** đã chính thức về chung một nhà với chiếc **{ring_name}**!"
         emb.color = discord.Color.gold()
@@ -200,8 +202,10 @@ class MarryConfirmView(discord.ui.View):
             await interaction.response.send_message("❌ Xin lỗi, bạn không phải là nhân vật chính.", ephemeral=True)
             return
             
-        for child in self.children: child.disabled = True
-        emb = interaction.message.embeds[0]
+        for child in self.children:
+            if isinstance(child, (discord.ui.Button, discord.ui.Select)):
+                child.disabled = True
+        emb = interaction.message.embeds[0] if interaction.message and getattr(interaction.message, "embeds", None) else discord.Embed()
         
         if interaction.user.id == self.target.id:
             emb.title = "💔 LỜI CẦU HÔN BỊ TỪ CHỐI..."
@@ -231,7 +235,9 @@ class PetAdoptConfirmView(discord.ui.View):
         from cogs.common.db import execute_db
         await execute_db(self.bot, "UPDATE marriages SET pet_type = $1, pet_name = NULL, pet_exp = 0.0 WHERE id = $2", self.new_base_name, self.mar_id)
         
-        for child in self.children: child.disabled = True
+        for child in self.children:
+            if isinstance(child, (discord.ui.Button, discord.ui.Select)):
+                child.disabled = True
         await interaction.response.edit_message(content=f"🎉 Bạn đã đổi thú cưng thành công! Chào mừng bé **{self.new_base_name} Sơ Sinh** đến với gia đình! (Kinh nghiệm thú cưng đã reset về 0). Dùng `y!namepet` để đặt tên nhé.", view=self)
 
     @discord.ui.button(label="Hủy bỏ", style=discord.ButtonStyle.gray)
@@ -239,7 +245,9 @@ class PetAdoptConfirmView(discord.ui.View):
         if interaction.user.id != self.author.id:
             return await interaction.response.send_message("❌ Bạn không phải là người đưa ra yêu cầu!", ephemeral=True)
             
-        for child in self.children: child.disabled = True
+        for child in self.children:
+            if isinstance(child, (discord.ui.Button, discord.ui.Select)):
+                child.disabled = True
         await interaction.response.edit_message(content="Đã hủy bỏ việc đổi thú cưng. Bé cưng cũ vẫn ở lại với bạn!", view=self)
 
 class MarriageCog(commands.Cog):
@@ -248,7 +256,7 @@ class MarriageCog(commands.Cog):
         self.action_cooldowns: dict[str, dict[str, float]] = {} # uid -> {action -> timestamp}
         self.anti_ghosting_loop.start()
 
-    def cog_unload(self):
+    async def cog_unload(self):
         self.anti_ghosting_loop.cancel()
 
     @commands.hybrid_command(name="marry", aliases=["kethon"])
@@ -280,8 +288,8 @@ class MarriageCog(commands.Cog):
 
             formatted_promise = ""
             for uid_str in (str(mar["user1_id"]), str(mar["user2_id"])):
-                p_member = ctx.guild.get_member(int(uid_str))
-                p_name = p_member.display_name if p_member else f"User {uid_str}"
+                member2 = ctx.guild.get_member(int(uid_str)) if ctx.guild else None
+                p_name = member2.display_name if member2 else f"User {uid_str}"
                 if uid_str in promise_data:
                     ptext = promise_data[uid_str]
                     ptext_lines = ptext.split('\n')
@@ -371,6 +379,8 @@ class MarriageCog(commands.Cog):
             description=f"💖 {target.mention} ơi!\n**{ctx.author.display_name}** đang quỳ một chân và đưa ra chiếc **{ring_name}** để cầu hôn bạn!\nBạn có đồng ý đi cùng người ấy đến cuối con đường không?",
             color=discord.Color.pink()
         )
+        if not isinstance(ctx.author, discord.Member):
+            return await ctx.send("❌ Lệnh này chỉ dùng trong server!")
         view = MarryConfirmView(self.bot, ctx.author, target, ring_id)
         await ctx.send(content=target.mention, embed=emb, view=view)
 
@@ -646,7 +656,7 @@ class MarriageCog(commands.Cog):
             pet_gift_bonus = pet_level * 0.005
             
         dtm_gain = dtm_gain * (1.0 + pet_gift_bonus)
-        await update_intimacy(self.bot, uid, dtm_gain)
+        await update_intimacy(self.bot, str(ctx.author.id), int(dtm_gain))
         
         # Thưởng EXP thú cưng bằng DTM_gain x 2
         exp_gain = dtm_gain * 2
@@ -716,10 +726,12 @@ class MarriageCog(commands.Cog):
         uid2 = str(target.id)
         
         mar = await get_marriage(self.bot, uid1)
-        is_married = mar and (mar["user1_id"] == uid2 or mar["user2_id"] == uid2)
+        is_married = mar is not None and (mar["user1_id"] == uid2 or mar["user2_id"] == uid2)
+        if mar is None and is_married:
+            return
         act = ACTIONS[action]
         
-        if not is_married:
+        if not is_married or mar is None:
             # Nếu chưa cưới, chỉ gửi embed biểu cảm (không cộng DTM, không hiệu ứng phụ)
             msg = random.choice(act["msg"]).format(author=ctx.author.display_name, partner=target.mention)
             emb = discord.Embed(description=msg, color=discord.Color.light_embed())
@@ -828,7 +840,7 @@ class MarriageCog(commands.Cog):
         msg += reset_msg + crit_msg
         
         # Update DB
-        await update_intimacy(self.bot, uid1, actual_dtm)
+        await update_intimacy(self.bot, uid1, int(actual_dtm))
         await update_marriage_interaction(self.bot, uid1)
         
         emb = discord.Embed(description=msg, color=discord.Color.pink())
@@ -895,7 +907,7 @@ class MarriageCog(commands.Cog):
         """Trừ DTM nếu không tương tác > 3 ngày, xóa DB nếu DTM <= 0."""
         # Chạy lúc 00:00 hoặc mỗi 24h tùy config, tạm thời loop mỗi 24h
         sql_get = "SELECT id, user1_id, user2_id, intimacy_points, last_interaction FROM marriages"
-        pool = self.bot.db_pool
+        pool = getattr(self.bot, "db_pool", None)
         if not pool: return
         
         try:
@@ -916,7 +928,7 @@ class MarriageCog(commands.Cog):
                         await pool.execute("UPDATE event_profiles SET marry_to = NULL WHERE discord_id = $1", row["user1_id"])
                         await pool.execute("UPDATE event_profiles SET marry_to = NULL WHERE discord_id = $1", row["user2_id"])
                         
-                        if channel:
+                        if isinstance(channel, discord.TextChannel):
                             await channel.send(f"💔 **Tình cảm nhạt phai...**\nDo quá thờ ơ lơ lạnh, <@{row['user1_id']}> và <@{row['user2_id']}> đã chính thức ly hôn bởi hệ thống.")
                     else:
                         # Trừ điểm

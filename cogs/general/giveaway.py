@@ -544,7 +544,7 @@ class GiveawayCog(commands.Cog):
     async def cog_unload(self):
         self.ga_task.cancel()
 
-    async def cog_command_error(self, ctx: commands.Context, error: commands.CommandError):
+    async def cog_command_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, commands.MissingPermissions):
             await ctx.send("❌ Bạn không có quyền sử dụng lệnh này. Chỉ dành cho Admin/Owner!", ephemeral=True)
         else:
@@ -752,7 +752,7 @@ class GiveawayCog(commands.Cog):
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload: discord.RawReactionActionEvent):
         """Xoá reaction nếu user nằm trong blacklist của Giveaway."""
-        if payload.user_id == self.bot.user.id or str(payload.emoji) != GA_EMOJI:
+        if not self.bot.user or payload.user_id == self.bot.user.id or str(payload.emoji) != GA_EMOJI:
             return
 
         banned = await query_db(self.bot, "SELECT reason FROM giveaway_bans WHERE user_id = $1", payload.user_id)
@@ -763,7 +763,7 @@ class GiveawayCog(commands.Cog):
         is_ga = await query_db(self.bot, "SELECT 1 FROM active_giveaways WHERE message_id = $1", payload.message_id)
         if is_ga:
             channel = self.bot.get_channel(payload.channel_id)
-            if not channel: return
+            if not isinstance(channel, discord.TextChannel): return
             msg = await channel.fetch_message(payload.message_id)
             if msg:
                 await msg.remove_reaction(payload.emoji, payload.member or discord.Object(id=payload.user_id))

@@ -72,6 +72,7 @@ class JailGames(commands.Cog):
 
         win = random.random() < 0.5
         coin_face = "🟡 NGỬA!" if win else "⚫ SẤP!"
+        freed = False
 
         if win:
             if isinstance(ctx.author, discord.Member):

@@ -288,7 +288,8 @@ class EventCoreCog(commands.Cog):
             )
             emb.set_author(name="HƯỚNG DẪN VÀ CÁC CÂU HỎI THƯỜNG GẶP VỀ SỰ KIỆN CỦA ANGELIC")
             emb.set_footer(text=f"Angelic Event FAQ • Phần {i}/{len(parts)-1}")
-            await channel.send(embed=emb)
+            if isinstance(channel, discord.TextChannel):
+                await channel.send(embed=emb)
 
     @commands.hybrid_command(name="give", aliases=["givepoints", "addpoints"])
     async def give_cmd(self, ctx: commands.Context, target: discord.Member, amount: str):

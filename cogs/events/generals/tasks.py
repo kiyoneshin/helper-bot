@@ -28,7 +28,8 @@ class TaskCog(commands.Cog):
             await execute_db(self.bot, "INSERT INTO user_tasks (discord_id) VALUES ($1) ON CONFLICT DO NOTHING", uid)
             row = await fetchrow_db(self.bot, "SELECT * FROM user_tasks WHERE discord_id = $1", uid)
         
-        row_dict = dict(row) # type: ignore
+        from typing import Any
+        row_dict: dict[str, Any] = {str(k): v for k, v in dict(row).items()} # type: ignore
         
         def _parse(val):
             if isinstance(val, dict): return val

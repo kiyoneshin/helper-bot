@@ -804,7 +804,7 @@ class EventHelpCog(commands.Cog):
         name="ehelp",
         description="Xem danh sách toàn bộ các lệnh sự kiện (UI 3 tầng).",
     )
-    async def ehelp_cmd(self, ctx: commands.Context, *, cmd_name: str = None):
+    async def ehelp_cmd(self, ctx: commands.Context, *, cmd_name: Optional[str] = None):
         """🌸 Cẩm nang sự kiện với UI tương tác 3 tầng."""
         if cmd_name:
             cmd_key = None

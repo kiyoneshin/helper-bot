@@ -10,7 +10,7 @@ class GlobalErrorHandler(commands.Cog):
     async def on_command_error(self, ctx: commands.Context, error: commands.CommandError):
         # Lấy bản ghi gốc của lỗi (nếu có bị bọc bởi các lỗi khác)
         if hasattr(error, 'original'):
-            error = error.original
+            error = getattr(error, "original", error)
 
         # Bỏ qua các lệnh không tìm thấy
         if isinstance(error, commands.CommandNotFound):
@@ -57,7 +57,7 @@ class GlobalErrorHandler(commands.Cog):
 
         # Các lỗi liên quan đến sai tham số hoặc thiếu tham số
         if isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument, commands.TooManyArguments)):
-            cmd_name = ctx.command.name
+            cmd_name = ctx.command.name if ctx.command else "unknown"
             
             usage_str = None
             example_str = None

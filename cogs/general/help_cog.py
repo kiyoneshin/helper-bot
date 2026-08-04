@@ -473,7 +473,7 @@ class HelpCog(commands.Cog):
         aliases=["trogiup", "hd"],
         description="Xem danh sách toàn bộ lệnh hệ thống (UI 3 tầng).",
     )
-    async def help_cmd(self, ctx: commands.Context, *, cmd_name: str = None):
+    async def help_cmd(self, ctx: commands.Context, *, cmd_name: Optional[str] = None):
         """🛡️ Trợ giúp lệnh hệ thống với UI tương tác 3 tầng."""
         if cmd_name:
             cmd_key = None

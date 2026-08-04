@@ -99,6 +99,7 @@ class JailTasks(commands.Cog):
             )
             return
 
+        freed = False
         if user_answer == answer:
             if isinstance(ctx.author, discord.Member):
                 freed = await reduce_penalty(self.bot, ctx.author, 2)
@@ -165,6 +166,7 @@ class JailTasks(commands.Cog):
         uid = str(ctx.author.id)
         roll = random.random()
 
+        freed = False
         if roll < 0.70:
             # Thành công
             if isinstance(ctx.author, discord.Member):

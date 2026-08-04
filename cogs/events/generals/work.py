@@ -82,7 +82,7 @@ class WorkCog(commands.Cog):
                 await add_event_points(self.bot, str(partner_id), float(amount), is_earned=True)
                 
                 # Check Task
-                task_str = mar.get("couple_task")
+                task_str = mar.get("couple_task") if mar else None
                 if task_str:
                     task_data = json.loads(task_str) if isinstance(task_str, str) else task_str
                     today_str = discord.utils.utcnow().strftime("%Y-%m-%d")
@@ -93,7 +93,7 @@ class WorkCog(commands.Cog):
                             from cogs.common.db import update_intimacy
                             await update_intimacy(self.bot, str(uid), 100)
                             story += f"\n\n🎉 **Nhiệm Vụ Cặp Đôi Hoàn Thành!** (+100 DTM)"
-                        await execute_db(self.bot, "UPDATE marriages SET couple_task = $1::jsonb WHERE id = $2", json.dumps(task_data), mar["id"])
+                        await execute_db(self.bot, "UPDATE marriages SET couple_task = $1::jsonb WHERE id = $2", json.dumps(task_data), mar["id"] if mar else 0)
             
             # Cộng tiền (is_earned=True để tính vào cả đua top)
             await add_event_points(self.bot, str(uid), float(amount), is_earned=True)
@@ -101,7 +101,7 @@ class WorkCog(commands.Cog):
             # Thưởng EXP Thú Cưng
             if mar and mar.get("pet_type"):
                 exp_gained = 40 if is_coop else 20
-                await execute_db(self.bot, "UPDATE marriages SET pet_exp = pet_exp + $1 WHERE id = $2", float(exp_gained), mar["id"])
+                await execute_db(self.bot, "UPDATE marriages SET pet_exp = pet_exp + $1 WHERE id = $2", float(exp_gained), mar["id"] if mar else 0)
                 story += f"\n✨ *Thú cưng nhận {exp_gained} EXP vì bạn chăm chỉ làm việc!*"
             
             emb = discord.Embed(

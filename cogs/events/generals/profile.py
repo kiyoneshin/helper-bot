@@ -5,6 +5,7 @@ Hiển thị căn cước công dân của người chơi trong hệ thống s�
 """
 import discord
 from discord.ext import commands
+from typing import Optional
 import random
 
 from cogs.common.db import check_not_locked, fetchrow_db, get_or_create_event_profile
@@ -53,7 +54,7 @@ async def fetch_user_profile_data(bot: commands.Bot, user_id: str) -> dict:
             # Sync ngược lại vào DB nếu tìm thấy title cao hơn
             if db_title != "👑 Kẻ Lang Thang":
                 bot.loop.create_task(
-                    bot.db_pool.execute("UPDATE event_profiles SET title = $1 WHERE discord_id = $2", db_title, user_id)
+                    getattr(bot, "db_pool").execute("UPDATE event_profiles SET title = $1 WHERE discord_id = $2", db_title, user_id)
                 )
         
     return {
@@ -80,22 +81,29 @@ class ProfileCog(commands.Cog, name="Profile"):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
-    @commands.hybrid_command(name="profile", aliases=["p", "pro"])
-    @check_not_locked()
-    async def profile_cmd(self, ctx: commands.Context, member: discord.Member = None) -> None:
-        """👤 Xem hồ sơ cá nhân của bạn hoặc người khác."""
-        target = member or ctx.author
-        
+    @commands.hybrid_command(name="eprofile", aliases=["ep", "vi"])
+    async def profile_cmd(self, ctx: commands.Context, member: Optional[discord.Member] = None):
+        """[Sự Kiện] Xem thông tin cá nhân, Số dư, Thú cưng, Thẻ đặc quyền."""
+        if member:
+            target_member = member
+        elif isinstance(ctx.author, discord.Member):
+            target_member = ctx.author
+        else:
+            return await ctx.send("Lệnh này chỉ dùng trong server!")
+
+        pool = getattr(self.bot, "db_pool", None)
+        if not pool:
+            return await ctx.send("Lỗi: Không thể kết nối đến cơ sở dữ liệu.")
+            
         # Gọi hàm helper lấy dữ liệu
-        data = await fetch_user_profile_data(self.bot, str(target.id))
+        data = await fetch_user_profile_data(self.bot, str(target_member.id))
         
         # Tạo Embed với màu sắc ngẫu nhiên hoặc màu đặc trưng
         embed = discord.Embed(
-            title=f"📜 Căn Cước Công Dân — {target.display_name}",
+            title=f"📜 Căn Cước Công Dân — {target_member.display_name}",
             description="*Hồ sơ thám hiểm và thành tích trong thế giới Angelic.*",
-            color=target.color if target.color.value != 0 else discord.Color.random(),
         )
-        embed.set_thumbnail(url=target.display_avatar.url)
+        embed.set_thumbnail(url=target_member.display_avatar.url)
         
         # 1. THÔNG TIN CHUNG
         marry_status = f"💍 Đã kết hôn với <@{data['marry_to']}>" if data.get("marry_to") else "💔 Độc thân vui tính"
