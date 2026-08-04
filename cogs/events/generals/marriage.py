@@ -627,6 +627,20 @@ class MarriageCog(commands.Cog):
             
         await ctx.send(embed=emb)
 
+    @commands.hybrid_command(name="actions", aliases=["hd", "hanhdong"])
+    async def actions_cmd(self, ctx: commands.Context):
+        """💞 Xem danh sách các hành động tương tác cặp đôi."""
+        embed = discord.Embed(
+            title="💞 Hành Động Cặp Đôi",
+            description="Các lệnh tương tác đặc biệt dành cho vợ/chồng. Thời gian hồi chiêu và DTM nhận được tùy thuộc vào độ thân mật và Nhẫn cưới.\nCú pháp: `y!<hành_động> <@user>`",
+            color=discord.Color.pink()
+        )
+        embed.add_field(name="🤜 Bạo lực", value="`y!slap` (tat), `y!punch` (dam), `y!bite` (can), `y!tickle` (choclet)", inline=False)
+        embed.add_field(name="💖 Nhẹ nhàng", value="`y!poke` (choc), `y!pat` (xoadau), `y!saylove` (noiyeu, iuem, iuanh)", inline=False)
+        embed.add_field(name="🤗 Ôm ấp", value="`y!hug` (om), `y!cuddle` (auyem), `y!snuggle` (nung, nũng)", inline=False)
+        embed.add_field(name="💋 Thân mật", value="`y!kiss` (hon, hun), `y!lick` (liem), `y!nom` (mam), `y!fuck` (seg)", inline=False)
+        await ctx.send(embed=embed)
+
     # Lệnh Action Tiers
     @commands.hybrid_command(aliases=["choc"])
     async def poke(self, ctx, target: discord.Member): await self.handle_action(ctx, target, "poke")

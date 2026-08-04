@@ -364,12 +364,14 @@ CMD_DATA: dict[str, dict] = {
         "cooldown": 0,
         "usage": "y!<hành_động> <@user>",
         "examples": ["y!hug @VoYeu", "y!kiss @ChongYeu"],
-        "note": "Bao gồm các lệnh sau (có thể dùng tên tiếng Anh hoặc alias tiếng Việt):\\n"
-                "- 🤜 **Bạo lực:** `y!slap` (tat), `y!punch` (dam), `y!bite` (can), `y!tickle` (choclet)\\n"
-                "- 💖 **Nhẹ nhàng:** `y!poke` (choc), `y!pat` (xoadau), `y!saylove` (noiyeu, iuem, iuanh)\\n"
-                "- 🤗 **Ôm ấp:** `y!hug` (om), `y!cuddle` (auyem), `y!snuggle` (nung, nũng)\\n"
-                "- 💋 **Thân mật:** `y!kiss` (hon, hun), `y!lick` (liem), `y!nom` (mam), `y!fuck` (seg)\\n"
-                "*(Lưu ý: Thời gian hồi chiêu và lượng DTM nhận được tùy thuộc vào độ 'thân mật' của hành động và cấp bậc Nhẫn cưới của bạn)*",
+        "note": (
+            "Bao gồm các lệnh sau (có thể dùng tên tiếng Anh hoặc alias tiếng Việt):\n"
+            "- 🤜 **Bạo lực:** `y!slap` (tat), `y!punch` (dam), `y!bite` (can), `y!tickle` (choclet)\n"
+            "- 💖 **Nhẹ nhàng:** `y!poke` (choc), `y!pat` (xoadau), `y!saylove` (noiyeu, iuem, iuanh)\n"
+            "- 🤗 **Ôm ấp:** `y!hug` (om), `y!cuddle` (auyem), `y!snuggle` (nung, nũng)\n"
+            "- 💋 **Thân mật:** `y!kiss` (hon, hun), `y!lick` (liem), `y!nom` (mam), `y!fuck` (seg)\n"
+            "*(Lưu ý: Thời gian hồi chiêu và lượng DTM nhận được tùy thuộc vào độ 'thân mật' của hành động và cấp bậc Nhẫn cưới của bạn)*"
+        ),
     },
     "trano": {
         "name": "Trả Nợ",
