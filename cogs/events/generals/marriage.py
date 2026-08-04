@@ -267,7 +267,7 @@ class PetAdoptConfirmView(discord.ui.View):
 
 
 class DivorceConfirmView(discord.ui.View):
-    def __init__(self, bot, proposer: discord.Member, target_id: int, mar_id: int, user1_id: str, user2_id: str):
+    def __init__(self, bot, proposer: discord.Member | discord.User, target_id: int, mar_id: int, user1_id: str, user2_id: str):
         super().__init__(timeout=120)
         self.bot = bot
         self.proposer = proposer
@@ -466,19 +466,27 @@ class MarriageCog(commands.Cog):
             await ctx.send(f"❌ {ctx.author.mention} Đòi cưới mà không thèm tag tên người ta? Ai thèm lấy! Cú pháp: `y!marry <@user>`. Để biết thêm chi tiết hãy xài lệnh y!ehelp marry")
 
 
-    @commands.hybrid_command(name="divorce", aliases=["lydi", "lyhon"])
-    async def divorce_cmd(self, ctx: commands.Context):
+    @commands.hybrid_command(name="divorce", aliases=["lydi", "lyhon", "lidi"])
+    async def divorce_cmd(self, ctx: commands.Context, target: discord.Member):
         """💔 Ly hôn với người hiện tại (Sẽ xóa toàn bộ DTM)."""
         uid = str(ctx.author.id)
         mar = await get_marriage(self.bot, uid)
         if not mar:
             return await ctx.send("❌ Bạn chưa kết hôn mà đòi ly hôn cái gì?")
             
-        await execute_db(self.bot, "DELETE FROM marriages WHERE id = $1", mar["id"])
-        await execute_db(self.bot, "UPDATE event_profiles SET marry_to = NULL WHERE discord_id = $1", mar["user1_id"])
-        await execute_db(self.bot, "UPDATE event_profiles SET marry_to = NULL WHERE discord_id = $1", mar["user2_id"])
+        partner_id = mar["user2_id"] if mar["user1_id"] == uid else mar["user1_id"]
+        if str(target.id) != partner_id:
+            return await ctx.send("❌ Người đó đâu phải vợ/chồng của bạn mà đòi ly dị? Bạn hãy tag đúng tên người bạn muốn ly hôn nhé!")
+            
+        emb = discord.Embed(
+            title="💔 YÊU CẦU LY HÔN",
+            description=f"**{ctx.author.display_name}** đang muốn ly hôn với **{target.display_name}**.\n\nCả hai đều có thể bấm **Đồng ý** để chính thức kết thúc, hoặc bấm **Từ chối/Hủy** để giữ lại cuộc hôn nhân này.",
+            color=discord.Color.dark_grey()
+        )
+        emb.set_thumbnail(url=ctx.author.display_avatar.url)
         
-        await ctx.send(f"💔 **{ctx.author.display_name}** đã chính thức đệ đơn ly hôn. Đường ai nấy đi, tình nghĩa đôi mình từ nay chấm dứt.")
+        view = DivorceConfirmView(self.bot, ctx.author, target.id, mar["id"], mar["user1_id"], mar["user2_id"])
+        await ctx.send(content=target.mention, embed=emb, view=view)
 
     @divorce_cmd.error
     async def divorce_cmd_error(self, ctx: commands.Context, error: Exception):

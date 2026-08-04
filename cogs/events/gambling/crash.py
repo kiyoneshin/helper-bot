@@ -472,7 +472,14 @@ class CrashGame(commands.Cog):
     @crash_cmd.error
     async def crash_cmd_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument)):
-            await ctx.send(f"❌ {ctx.author.mention} Tính lên tàu bay dạo không vé hả? Cú pháp: `y!crash <tiền_cược>`. Để biết thêm chi tiết hãy xài lệnh y!ehelp crash")
+            await ctx.send(f"❌ {ctx.author.mention} Tính lên tàu bay dạo không vé hả? Cú pháp: `y!crash <tiền_cược>`. Để biết thêm chi tiết hãy xài lệnh `y!ehelp crash`")
+        elif isinstance(error, commands.CommandInvokeError):
+            log.error("Loi crash_cmd: %s", error.original, exc_info=True)
+            await ctx.send(
+                "❌ Đã xảy ra lỗi nội bộ làm sập sòng Crash. "
+                "Phiên chơi bị huỷ kèo và ván mới có thể bắt đầu.",
+                delete_after=10.0,
+            )
 
 
     async def _run_lobby(
@@ -621,14 +628,6 @@ class CrashGame(commands.Cog):
             except discord.HTTPException:
                 pass
 
-    async def crash_error(self, ctx: commands.Context, error: Exception) -> None:
-        if isinstance(error, commands.CommandInvokeError):
-            log.error("Loi crash_cmd: %s", error.original, exc_info=True)
-            await ctx.send(
-                "❌ Đã xảy ra lỗi nội bộ làm sập sòng Crash. "
-                "Phiên chơi bị huỷ kèo và ván mới có thể bắt đầu.",
-                delete_after=10.0,
-            )
 
 
 async def setup(bot: commands.Bot) -> None:

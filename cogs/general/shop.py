@@ -186,7 +186,7 @@ async def _buy_event_item(
         is_locked = lottery_cog.is_locked if lottery_cog else False
         ok, msg = await buy_lottery_tickets(bot, str(ctx.author.id), amount, is_locked)
         await ctx.send(f"{ctx.author.mention} {msg}", delete_after=10.0)
-    elif item["category"] in ["event", "ring"]:
+    elif item["category"] in ["event", "ring", "gift"]:
         uid = str(ctx.author.id)
         price = item["price"]
         if price is None:

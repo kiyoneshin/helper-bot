@@ -915,7 +915,7 @@ class MultiDice(commands.Cog):
     @multidice_cmd.error
     async def multidice_cmd_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument)):
-            await ctx.send(f"❌ {ctx.author.mention} Lắc xí ngầu tập thể mà không có cắc bạc nào à? Cú pháp: `y!md <tiền_cược> <@user1> <@user2>...`. Để biết thêm chi tiết hãy xài lệnh y!ehelp md")
+            await ctx.send(f"❌ {ctx.author.mention} Lắc xí ngầu tập thể mà không có cắc bạc nào à? Cú pháp: `y!md <tiền_cược> <@user1> <@user2>...`. Để biết thêm chi tiết hãy xài lệnh `y!ehelp md`")
 
 
     async def _resolve_game(
@@ -1072,12 +1072,6 @@ class MultiDice(commands.Cog):
             for spec_uid in spectator_bets:
                 _unlock_user(self.bot, spec_uid)
 
-    async def multidice_error(self, ctx: commands.Context, error: Exception) -> None:
-        if isinstance(error, commands.MissingRequiredArgument):
-            await ctx.send(
-                "Thiếu! Cú pháp: `y!multidice <tiền_cược> [@user1] [@user2]...`",
-                ephemeral=True,
-            )
 
 
 # ─────────────────────────────────────────────────────────────────────────────

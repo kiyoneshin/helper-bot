@@ -57,7 +57,8 @@ class GlobalErrorHandler(commands.Cog):
 
         # Các lỗi liên quan đến sai tham số hoặc thiếu tham số
         if isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument, commands.TooManyArguments)):
-            if hasattr(ctx.command, 'on_error'): return
+            if ctx.command and ctx.command.has_error_handler():
+                return
             cmd_name = ctx.invoked_with if ctx.invoked_with else (ctx.command.name if ctx.command else "unknown")
             
             usage_str = None
@@ -97,12 +98,12 @@ class GlobalErrorHandler(commands.Cog):
                 if example_str:
                     import re
                     example_str = re.sub(r'@[A-Za-z_]+', '<@468428368828956692>', example_str)
-                    msg = f"{ctx.author.mention}, lệnh đúng là `{usage_str}`, ví dụ `{example_str}`. Để biết thêm chi tiết hãy xài lệnh {help_cmd} {cmd_name}"
+                    msg = f"{ctx.author.mention}, lệnh đúng là `{usage_str}`, ví dụ `{example_str}`. Để biết thêm chi tiết hãy xài lệnh `{help_cmd} {cmd_name}`"
                 else:
-                    msg = f"{ctx.author.mention}, lệnh đúng là `{usage_str}`. Để biết thêm chi tiết hãy xài lệnh {help_cmd} {cmd_name}"
+                    msg = f"{ctx.author.mention}, lệnh đúng là `{usage_str}`. Để biết thêm chi tiết hãy xài lệnh `{help_cmd} {cmd_name}`"
                 await ctx.send(msg, delete_after=30.0)
             else:
-                await ctx.send(f"{ctx.author.mention}, lệnh đúng là `{ctx.prefix}{cmd_name} <các_tham_số>`. Để biết thêm chi tiết hãy xài lệnh y!help {cmd_name}", delete_after=30.0)
+                await ctx.send(f"{ctx.author.mention}, lệnh đúng là `{ctx.prefix}{cmd_name} <các_tham_số>`. Để biết thêm chi tiết hãy xài lệnh `y!help {cmd_name}`", delete_after=30.0)
             return
         
         # Bỏ qua lỗi UserNotFound hoặc MemberNotFound và in ra lỗi đẹp

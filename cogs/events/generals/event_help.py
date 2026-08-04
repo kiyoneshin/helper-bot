@@ -325,16 +325,6 @@ CMD_DATA: dict[str, dict] = {
         "examples": ["y!fish"],
         "note": "Tốn 3 Thể Lực mỗi lần câu. Nâng cấp cần câu để tăng tỉ lệ cá hiếm.",
     },
-    "inventory": {
-        "name": "Kho Đồ",
-        "emoji": "🎒",
-        "short": "Xem vật phẩm trong kho, bán nông sản/quặng/cá lấy điểm.",
-        "aliases": ["inv", "bag", "tuido", "khodo"],
-        "cooldown": None,
-        "usage": "y!inv",
-        "examples": ["y!inv"],
-        "note": "",
-    },
     # ── HỆ THỐNG TÌNH YÊU ──────────────────────────────────────────────────────
     "marry": {
         "name": "Kết Hôn",
@@ -517,23 +507,18 @@ CMD_DATA: dict[str, dict] = {
 }
 
 CATEGORY_DATA: dict[str, dict] = {
-    "Kho Đồ & Cửa Hàng": {
-        "emoji": "🎒",
-        "desc": "Quản lý túi đồ và mua sắm vật phẩm.",
-        "commands": ["inv", "use", "shop", "buy"],
-        "cogs": ["InventoryCog", "ShopCog"],
-    },
+
     "Casino & Giải Trí": {
         "emoji": "🎰",
         "desc": "Các minigame cờ bạc và thử vận may.",
         "commands": ["coinflip", "cups", "dice", "roulette", "crash", "wheel", "slots", "taixiu", "baucua", "betvit", "xoso", "multidice"],
         "cogs": ["BasicGames", "CrashGame", "DuckRace", "Lottery", "MultiDice", "VietnamGames", "WheelSlots"],
     },
-    "Kinh Tế & Cửa Hàng": {
+    "Kinh Tế & Kho Đồ": {
         "emoji": "🛒",
-        "desc": "Quản lý điểm, cửa hàng, cột mốc và ngân hàng.",
-        "commands": ["daily", "weekly", "point", "etop", "milestone", "shop", "black_market", "ebuy", "vayno", "trano"],
-        "cogs": ["EventShopCog", "Rewards", "MilestoneCog", "BlackMarketCog", "BankingCog"],
+        "desc": "Quản lý điểm, túi đồ, cửa hàng, cột mốc và ngân hàng.",
+        "commands": ["inv", "use", "buy", "daily", "weekly", "point", "etop", "milestone", "shop", "black_market", "ebuy", "vayno", "trano"],
+        "cogs": ["InventoryCog", "ShopCog", "EventShopCog", "Rewards", "MilestoneCog", "BlackMarketCog", "BankingCog"],
     },
     "Nhiệm Vụ & Công Việc": {
         "emoji": "📋",
@@ -543,8 +528,8 @@ CATEGORY_DATA: dict[str, dict] = {
     },
     "Khu Sinh Thái": {
         "emoji": "🏕️",
-        "desc": "Trồng trọt, đào mỏ, câu cá, chặt cây, chế tạo và quản lý kho đồ.",
-        "commands": ["farm", "upgrade", "machine", "mine", "fish", "chop", "recipe", "inventory"],
+        "desc": "Trồng trọt, đào mỏ, câu cá, chặt cây, chế tạo.",
+        "commands": ["farm", "upgrade", "machine", "mine", "fish", "chop", "recipe"],
         "cogs": ["IdleFarmCog", "Mining", "Fishing", "Woodcutting", "Recipes"],
     },
     "Hệ Thống Tình Yêu": {

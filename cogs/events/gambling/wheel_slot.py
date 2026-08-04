@@ -262,7 +262,7 @@ class WheelSlots(commands.Cog):
     @wheel_cmd.error
     async def wheel_cmd_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument)):
-            await ctx.send(f"❌ {ctx.author.mention} Quay tay bằng không khí à? Cú pháp: `y!wheel <tiền_cược | all>`. Để biết thêm chi tiết hãy xài lệnh y!ehelp wheel")
+            await ctx.send(f"❌ {ctx.author.mention} Quay tay bằng không khí à? Cú pháp: `y!wheel <tiền_cược | all>`. Để biết thêm chi tiết hãy xài lệnh `y!ehelp wheel`")
 
 
     async def _exec_wheel(self, ctx: commands.Context, bet: int, uid: str, balance: int) -> None:
@@ -333,9 +333,6 @@ class WheelSlots(commands.Cog):
             
         await update_task_progress(self.bot, uid, "gamble_any", 1)
 
-    async def wheel_error(self, ctx: commands.Context, error: Exception) -> None:
-        if isinstance(error, commands.MissingRequiredArgument):
-            await ctx.send(f"❌ {ctx.author.mention} Quay tay bằng không khí à? Cú pháp: `y!wheel <tiền_cược>`")
 
     # ─────────────────────────────────────────────────────────────────────────
     # LỆNH MÁY XẺNG: y!slots
@@ -369,7 +366,7 @@ class WheelSlots(commands.Cog):
     @slots_cmd.error
     async def slots_cmd_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument)):
-            await ctx.send(f"❌ {ctx.author.mention} Đút xèng vào máy đi chứ! Cú pháp: `y!slots <tiền_cược | all>`. Để biết thêm chi tiết hãy xài lệnh y!ehelp slots")
+            await ctx.send(f"❌ {ctx.author.mention} Đút xèng vào máy đi chứ! Cú pháp: `y!slots <tiền_cược | all>`. Để biết thêm chi tiết hãy xài lệnh `y!ehelp slots`")
 
 
     async def _exec_slots(self, ctx: commands.Context, bet: int, uid: str, balance: int) -> None:
@@ -431,9 +428,6 @@ class WheelSlots(commands.Cog):
         await update_task_progress(self.bot, uid, "slots", 1)
         await update_task_progress(self.bot, uid, "gamble_any", 1)
 
-    async def slots_error(self, ctx: commands.Context, error: Exception) -> None:
-        if isinstance(error, commands.MissingRequiredArgument):
-            await ctx.send(f"❌ {ctx.author.mention} Không bỏ tiền vô máy ai cho gạt cần? Cú pháp: `y!slots <tiền_cược>`")
 
 
 # =============================================================================
