@@ -118,7 +118,7 @@ CMD_DATA: dict[str, dict] = {
         "aliases": [],
         "cooldown": None,
         "usage": "y!ehelp [tên_lệnh]",
-        "examples": ["y!ehelp", "y!ehelp crash"],
+        "examples": ["y!ehelp", "`y!ehelp crash`"],
         "note": None,
     },
     "help": {

@@ -29,16 +29,22 @@ ACTIONS = {
         "{author} vừa chọc má {partner} đáng yêu quá đi!",
         "{author} lấy ngón tay ấn ấn vào người {partner} chọc ghẹo~",
         "{author} khều khều {partner} đòi sự chú ý!"
+    ,
+        "{author} ngứa tay chọt chọt vào người {partner} chọc tức!"
     ]},
     "pat":    {"tier": 1, "msg": [
         "{author} đang xoa đầu {partner} thật ngoan ~",
         "{author} vỗ vỗ đầu {partner} an ủi nè!",
         "{author} xoa rối tung tóc của {partner} luôn!"
+    ,
+        "{author} vỗ đầu {partner} cái bóp: Ngoan nào!"
     ]},
     "slap":   {"tier": 1, "msg": [
         "{author} vừa vả {partner} một cái chát!",
         "{author} giáng một cú tát điếng người vào mặt {partner}!",
         "{partner} ăn trọn cái tát của {author} vì tội lếu láo!"
+    ,
+        "{author} vung tay tát {partner} lật mặt!"
     ]},
     "punch":  {"tier": 1, "msg": [
         "{author} đấm {partner} cái u đầu!",
@@ -60,11 +66,15 @@ ACTIONS = {
         "{author} ôm chầm lấy {partner} thật ấm áp ❤️",
         "{author} vòng tay ôm {partner} từ phía sau 💖",
         "{author} lao vào lòng {partner} ôm thật chặt 💕"
+    ,
+        "{author} ôm ấp {partner} vỗ về những mỏi mệt 💖"
     ]},
     "cuddle": {"tier": 2, "msg": [
         "{author} rúc vào lòng {partner} làm nũng ❤️",
         "{author} âu yếm {partner} thật tình cảm 💖",
         "{author} và {partner} đang nằm ôm nhau thủ thỉ 💖"
+    ,
+        "{author} và {partner} rúc vào nhau sưởi ấm trong ngày lạnh 💕"
     ]},
     "nom":    {"tier": 2, "msg": [
         "{author} gặm gặm {partner} như một chiếc bánh ngọt 🧁",
@@ -81,6 +91,9 @@ ACTIONS = {
         "{author} trao cho {partner} một nụ hôn nồng cháy 💋",
         "{author} nhón chân lên hôn chụt vào môi {partner} 💋",
         "{author} và {partner} đang chìm đắm trong nụ hôn ngọt ngào 💕"
+    ,
+        "{author} đè {partner} ra hôn ngấu nghiến không cho thở 💋",
+        "{author} hôn nhẹ lên trán {partner} đầy trân trọng 💖"
     ]},
     "lick":   {"tier": 3, "msg": [
         "{author} liếm láp {partner} như một chú cún con 🐶",
@@ -97,6 +110,8 @@ ACTIONS = {
         "{author} và {partner} đang có những giây phút vô cùng mãnh liệt 🔞🔥",
         "{author} đè {partner} ra và cả hai chìm đắm vào dục vọng 🔞🔥",
         "{author} làm {partner} thở không ra hơi... mệt mỏi nhưng sung sướng 🔞🔥"
+    ,
+        "{partner} bị {author} xoay vần đủ tư thế đến mức không thở nổi 🔞🔥"
     ]},
     "seg":    {"tier": 4, "msg": [
         "{author} và {partner} đang tận hưởng đêm xuân đáng nhớ 🔞🔥",
@@ -463,7 +478,7 @@ class MarriageCog(commands.Cog):
     @marry_cmd.error
     async def marry_cmd_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument)):
-            await ctx.send(f"❌ {ctx.author.mention} Đòi cưới mà không thèm tag tên người ta? Ai thèm lấy! Cú pháp: `y!marry <@user>`. Để biết thêm chi tiết hãy xài lệnh y!ehelp marry")
+            await ctx.send(f"❌ {ctx.author.mention} Đòi cưới mà không thèm tag tên người ta? Ai thèm lấy! Cú pháp: `y!marry <@user>`. Để biết thêm chi tiết hãy xài lệnh `y!ehelp marry`")
 
 
     @commands.hybrid_command(name="divorce", aliases=["lydi", "lyhon", "lidi"])
@@ -491,7 +506,7 @@ class MarriageCog(commands.Cog):
     @divorce_cmd.error
     async def divorce_cmd_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument)):
-            await ctx.send(f"❌ {ctx.author.mention} Đã ly dị còn không dám gọi thẳng tên nó? Cú pháp: `y!divorce <@user>`. Để biết thêm chi tiết hãy xài lệnh y!ehelp divorce")
+            await ctx.send(f"❌ {ctx.author.mention} Đã ly dị còn không dám gọi thẳng tên nó? Cú pháp: `y!divorce <@user>`. Để biết thêm chi tiết hãy xài lệnh `y!ehelp divorce`")
 
 
     @commands.hybrid_command(name="promise", aliases=["hua"])
@@ -519,7 +534,7 @@ class MarriageCog(commands.Cog):
     @promise_cmd.error
     async def promise_cmd_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument)):
-            await ctx.send(f"❌ {ctx.author.mention} Định thề non hẹn biển bằng sự im lặng à? Cú pháp: `y!promise <lời_thề>`. Để biết thêm chi tiết hãy xài lệnh y!ehelp promise")
+            await ctx.send(f"❌ {ctx.author.mention} Định thề non hẹn biển bằng sự im lặng à? Cú pháp: `y!promise <lời_thề>`. Để biết thêm chi tiết hãy xài lệnh `y!ehelp promise`")
 
 
     @commands.hybrid_command(name="adopt")
@@ -562,7 +577,7 @@ class MarriageCog(commands.Cog):
     @adopt_cmd.error
     async def adopt_cmd_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument)):
-            await ctx.send(f"❌ {ctx.author.mention} Muốn nuôi sếp mà không thèm chọn giống nào à? Cú pháp: `y!adopt <tên_thú_cưng>`. Để biết thêm chi tiết hãy xài lệnh y!ehelp adopt")
+            await ctx.send(f"❌ {ctx.author.mention} Muốn nuôi sếp mà không thèm chọn giống nào à? Cú pháp: `y!adopt <tên_thú_cưng>`. Để biết thêm chi tiết hãy xài lệnh `y!ehelp adopt`")
 
 
     @commands.hybrid_command(name="upgradering", aliases=["nangcapnhan"])
@@ -723,7 +738,7 @@ class MarriageCog(commands.Cog):
     @namepet_cmd.error
     async def namepet_cmd_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument)):
-            await ctx.send(f"❌ {ctx.author.mention} Đặt tên mà không nghĩ ra chữ nào à? Cú pháp: `y!namepet <tên_gọi>`. Để biết thêm chi tiết hãy xài lệnh y!ehelp namepet")
+            await ctx.send(f"❌ {ctx.author.mention} Đặt tên mà không nghĩ ra chữ nào à? Cú pháp: `y!namepet <tên_gọi>`. Để biết thêm chi tiết hãy xài lệnh `y!ehelp namepet`")
 
 
     @commands.hybrid_command(name="gift", aliases=["tangqua"])
@@ -790,7 +805,7 @@ class MarriageCog(commands.Cog):
     @gift_cmd.error
     async def gift_cmd_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument)):
-            await ctx.send(f"❌ {ctx.author.mention} Tặng quà mà giấu giếm thế? Cú pháp: `y!gift <@user> <ID_món_quà>`. Để biết thêm chi tiết hãy xài lệnh y!ehelp gift")
+            await ctx.send(f"❌ {ctx.author.mention} Tặng quà mà giấu giếm thế? Cú pháp: `y!gift <@user> <ID_món_quà>`. Để biết thêm chi tiết hãy xài lệnh `y!ehelp gift`")
 
 
     @commands.hybrid_command(name="coupletask")
@@ -812,6 +827,12 @@ class MarriageCog(commands.Cog):
                 {"type": "work", "target": 2, "desc": "làm việc chung 2 lần"},
                 {"type": "poke", "target": 5, "desc": "chọc ghẹo nhau 5 lần"},
                 {"type": "pat", "target": 5, "desc": "xoa đầu nhau 5 lần"},
+                {"type": "cuddle", "target": 3, "desc": "âu yếm nhau 3 lần"},
+                {"type": "snuggle", "target": 3, "desc": "rúc vào lòng nhau 3 lần"},
+                {"type": "nom", "target": 3, "desc": "cắn yêu nhau 3 lần"},
+                {"type": "lick", "target": 3, "desc": "liếm má nhau 3 lần"},
+                {"type": "saylove", "target": 2, "desc": "tỏ tình với nhau 2 lần"},
+                {"type": "tickle", "target": 5, "desc": "thọc léc nhau 5 lần"},
             ]
             task = random.choice(COUPLE_TASKS)
             task_data = {
@@ -838,14 +859,25 @@ class MarriageCog(commands.Cog):
     # ---------------------------------------------------------
     # ACTION COMMANDS LOGIC
     # ---------------------------------------------------------
-    async def handle_action(self, ctx: commands.Context, target: discord.Member, action: str):
+    async def handle_action(self, ctx: commands.Context, target: Optional[discord.Member], action: str):
+        uid1 = str(ctx.author.id)
+        mar = await get_marriage(self.bot, uid1)
+        
+        if target is None:
+            if not mar:
+                return await ctx.send(f"❌ {ctx.author.mention} Tính tự kỷ hay gì mà xài hành động không tag ai? Nhớ tag tên người ta nha!. Để biết thêm chi tiết hãy xài lệnh `y!ehelp {action}`")
+            
+            partner_id = mar["user2_id"] if mar["user1_id"] == uid1 else mar["user1_id"]
+            if ctx.guild:
+                target = ctx.guild.get_member(int(partner_id))
+                
+            if not target:
+                return await ctx.send("❌ Vợ/chồng của bạn hiện không có trong server này để nhận hành động!")
+                
         if target.id == ctx.author.id or target.bot:
             return await ctx.send("❌ Tự kỷ à? Hoặc tha cho con Bot đi!")
             
-        uid1 = str(ctx.author.id)
         uid2 = str(target.id)
-        
-        mar = await get_marriage(self.bot, uid1)
         is_married = mar is not None and (mar["user1_id"] == uid2 or mar["user2_id"] == uid2)
         if mar is None and is_married:
             return
@@ -987,119 +1019,119 @@ class MarriageCog(commands.Cog):
 
     # Lệnh Action Tiers
     @commands.hybrid_command(aliases=["choc"])
-    async def poke(self, ctx, target: discord.Member): await self.handle_action(ctx, target, "poke")
+    async def poke(self, ctx, target: Optional[discord.Member] = None): await self.handle_action(ctx, target, "poke")
 
     @poke.error
     async def poke_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument)):
-            await ctx.send(f"❌ {ctx.author.mention} Tính tự kỷ hay gì mà xài hành động không tag ai? Nhớ tag tên người ta nha!. Để biết thêm chi tiết hãy xài lệnh y!ehelp poke")
+            await ctx.send(f"❌ {ctx.author.mention} Tính tự kỷ hay gì mà xài hành động không tag ai? Nhớ tag tên người ta nha!. Để biết thêm chi tiết hãy xài lệnh `y!ehelp poke`")
 
     @commands.hybrid_command(aliases=["xoadau"])
-    async def pat(self, ctx, target: discord.Member): await self.handle_action(ctx, target, "pat")
+    async def pat(self, ctx, target: Optional[discord.Member] = None): await self.handle_action(ctx, target, "pat")
 
     @pat.error
     async def pat_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument)):
-            await ctx.send(f"❌ {ctx.author.mention} Tính tự kỷ hay gì mà xài hành động không tag ai? Nhớ tag tên người ta nha!. Để biết thêm chi tiết hãy xài lệnh y!ehelp pat")
+            await ctx.send(f"❌ {ctx.author.mention} Tính tự kỷ hay gì mà xài hành động không tag ai? Nhớ tag tên người ta nha!. Để biết thêm chi tiết hãy xài lệnh `y!ehelp pat`")
 
     @commands.hybrid_command(aliases=["tat"])
-    async def slap(self, ctx, target: discord.Member): await self.handle_action(ctx, target, "slap")
+    async def slap(self, ctx, target: Optional[discord.Member] = None): await self.handle_action(ctx, target, "slap")
 
     @slap.error
     async def slap_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument)):
-            await ctx.send(f"❌ {ctx.author.mention} Tính tự kỷ hay gì mà xài hành động không tag ai? Nhớ tag tên người ta nha!. Để biết thêm chi tiết hãy xài lệnh y!ehelp slap")
+            await ctx.send(f"❌ {ctx.author.mention} Tính tự kỷ hay gì mà xài hành động không tag ai? Nhớ tag tên người ta nha!. Để biết thêm chi tiết hãy xài lệnh `y!ehelp slap`")
 
     @commands.hybrid_command(aliases=["dam"])
-    async def punch(self, ctx, target: discord.Member): await self.handle_action(ctx, target, "punch")
+    async def punch(self, ctx, target: Optional[discord.Member] = None): await self.handle_action(ctx, target, "punch")
 
     @punch.error
     async def punch_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument)):
-            await ctx.send(f"❌ {ctx.author.mention} Tính tự kỷ hay gì mà xài hành động không tag ai? Nhớ tag tên người ta nha!. Để biết thêm chi tiết hãy xài lệnh y!ehelp punch")
+            await ctx.send(f"❌ {ctx.author.mention} Tính tự kỷ hay gì mà xài hành động không tag ai? Nhớ tag tên người ta nha!. Để biết thêm chi tiết hãy xài lệnh `y!ehelp punch`")
 
     @commands.hybrid_command(aliases=["choclet"])
-    async def tickle(self, ctx, target: discord.Member): await self.handle_action(ctx, target, "tickle")
+    async def tickle(self, ctx, target: Optional[discord.Member] = None): await self.handle_action(ctx, target, "tickle")
 
     @tickle.error
     async def tickle_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument)):
-            await ctx.send(f"❌ {ctx.author.mention} Tính tự kỷ hay gì mà xài hành động không tag ai? Nhớ tag tên người ta nha!. Để biết thêm chi tiết hãy xài lệnh y!ehelp tickle")
+            await ctx.send(f"❌ {ctx.author.mention} Tính tự kỷ hay gì mà xài hành động không tag ai? Nhớ tag tên người ta nha!. Để biết thêm chi tiết hãy xài lệnh `y!ehelp tickle`")
 
     @commands.hybrid_command(aliases=["can"])
-    async def bite(self, ctx, target: discord.Member): await self.handle_action(ctx, target, "bite")
+    async def bite(self, ctx, target: Optional[discord.Member] = None): await self.handle_action(ctx, target, "bite")
 
     @bite.error
     async def bite_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument)):
-            await ctx.send(f"❌ {ctx.author.mention} Tính tự kỷ hay gì mà xài hành động không tag ai? Nhớ tag tên người ta nha!. Để biết thêm chi tiết hãy xài lệnh y!ehelp bite")
+            await ctx.send(f"❌ {ctx.author.mention} Tính tự kỷ hay gì mà xài hành động không tag ai? Nhớ tag tên người ta nha!. Để biết thêm chi tiết hãy xài lệnh `y!ehelp bite`")
 
     
     @commands.hybrid_command(aliases=["om"])
-    async def hug(self, ctx, target: discord.Member): await self.handle_action(ctx, target, "hug")
+    async def hug(self, ctx, target: Optional[discord.Member] = None): await self.handle_action(ctx, target, "hug")
 
     @hug.error
     async def hug_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument)):
-            await ctx.send(f"❌ {ctx.author.mention} Tính tự kỷ hay gì mà xài hành động không tag ai? Nhớ tag tên người ta nha!. Để biết thêm chi tiết hãy xài lệnh y!ehelp hug")
+            await ctx.send(f"❌ {ctx.author.mention} Tính tự kỷ hay gì mà xài hành động không tag ai? Nhớ tag tên người ta nha!. Để biết thêm chi tiết hãy xài lệnh `y!ehelp hug`")
 
     @commands.hybrid_command(aliases=["auyem"])
-    async def cuddle(self, ctx, target: discord.Member): await self.handle_action(ctx, target, "cuddle")
+    async def cuddle(self, ctx, target: Optional[discord.Member] = None): await self.handle_action(ctx, target, "cuddle")
 
     @cuddle.error
     async def cuddle_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument)):
-            await ctx.send(f"❌ {ctx.author.mention} Tính tự kỷ hay gì mà xài hành động không tag ai? Nhớ tag tên người ta nha!. Để biết thêm chi tiết hãy xài lệnh y!ehelp cuddle")
+            await ctx.send(f"❌ {ctx.author.mention} Tính tự kỷ hay gì mà xài hành động không tag ai? Nhớ tag tên người ta nha!. Để biết thêm chi tiết hãy xài lệnh `y!ehelp cuddle`")
 
     @commands.hybrid_command(aliases=["mam"])
-    async def nom(self, ctx, target: discord.Member): await self.handle_action(ctx, target, "nom")
+    async def nom(self, ctx, target: Optional[discord.Member] = None): await self.handle_action(ctx, target, "nom")
 
     @nom.error
     async def nom_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument)):
-            await ctx.send(f"❌ {ctx.author.mention} Tính tự kỷ hay gì mà xài hành động không tag ai? Nhớ tag tên người ta nha!. Để biết thêm chi tiết hãy xài lệnh y!ehelp nom")
+            await ctx.send(f"❌ {ctx.author.mention} Tính tự kỷ hay gì mà xài hành động không tag ai? Nhớ tag tên người ta nha!. Để biết thêm chi tiết hãy xài lệnh `y!ehelp nom`")
 
     @commands.hybrid_command(aliases=["nung", "nũng"])
-    async def snuggle(self, ctx, target: discord.Member): await self.handle_action(ctx, target, "snuggle")
+    async def snuggle(self, ctx, target: Optional[discord.Member] = None): await self.handle_action(ctx, target, "snuggle")
 
     @snuggle.error
     async def snuggle_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument)):
-            await ctx.send(f"❌ {ctx.author.mention} Tính tự kỷ hay gì mà xài hành động không tag ai? Nhớ tag tên người ta nha!. Để biết thêm chi tiết hãy xài lệnh y!ehelp snuggle")
+            await ctx.send(f"❌ {ctx.author.mention} Tính tự kỷ hay gì mà xài hành động không tag ai? Nhớ tag tên người ta nha!. Để biết thêm chi tiết hãy xài lệnh `y!ehelp snuggle`")
 
     
     @commands.hybrid_command(aliases=["hon", "hun"])
-    async def kiss(self, ctx, target: discord.Member): await self.handle_action(ctx, target, "kiss")
+    async def kiss(self, ctx, target: Optional[discord.Member] = None): await self.handle_action(ctx, target, "kiss")
 
     @kiss.error
     async def kiss_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument)):
-            await ctx.send(f"❌ {ctx.author.mention} Tính tự kỷ hay gì mà xài hành động không tag ai? Nhớ tag tên người ta nha!. Để biết thêm chi tiết hãy xài lệnh y!ehelp kiss")
+            await ctx.send(f"❌ {ctx.author.mention} Tính tự kỷ hay gì mà xài hành động không tag ai? Nhớ tag tên người ta nha!. Để biết thêm chi tiết hãy xài lệnh `y!ehelp kiss`")
 
     @commands.hybrid_command(aliases=["liem"])
-    async def lick(self, ctx, target: discord.Member): await self.handle_action(ctx, target, "lick")
+    async def lick(self, ctx, target: Optional[discord.Member] = None): await self.handle_action(ctx, target, "lick")
 
     @lick.error
     async def lick_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument)):
-            await ctx.send(f"❌ {ctx.author.mention} Tính tự kỷ hay gì mà xài hành động không tag ai? Nhớ tag tên người ta nha!. Để biết thêm chi tiết hãy xài lệnh y!ehelp lick")
+            await ctx.send(f"❌ {ctx.author.mention} Tính tự kỷ hay gì mà xài hành động không tag ai? Nhớ tag tên người ta nha!. Để biết thêm chi tiết hãy xài lệnh `y!ehelp lick`")
 
     @commands.hybrid_command(aliases=["noiyeu", "iuem", "iuanh"])
-    async def saylove(self, ctx, target: discord.Member): await self.handle_action(ctx, target, "saylove")
+    async def saylove(self, ctx, target: Optional[discord.Member] = None): await self.handle_action(ctx, target, "saylove")
 
     @saylove.error
     async def saylove_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument)):
-            await ctx.send(f"❌ {ctx.author.mention} Tính tự kỷ hay gì mà xài hành động không tag ai? Nhớ tag tên người ta nha!. Để biết thêm chi tiết hãy xài lệnh y!ehelp saylove")
+            await ctx.send(f"❌ {ctx.author.mention} Tính tự kỷ hay gì mà xài hành động không tag ai? Nhớ tag tên người ta nha!. Để biết thêm chi tiết hãy xài lệnh `y!ehelp saylove`")
 
     
     @commands.hybrid_command(aliases=["seg"])
-    async def fuck(self, ctx, target: discord.Member): await self.handle_action(ctx, target, "fuck")
+    async def fuck(self, ctx, target: Optional[discord.Member] = None): await self.handle_action(ctx, target, "fuck")
 
     @fuck.error
     async def fuck_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument)):
-            await ctx.send(f"❌ {ctx.author.mention} Tính tự kỷ hay gì mà xài hành động không tag ai? Nhớ tag tên người ta nha!. Để biết thêm chi tiết hãy xài lệnh y!ehelp fuck")
+            await ctx.send(f"❌ {ctx.author.mention} Tính tự kỷ hay gì mà xài hành động không tag ai? Nhớ tag tên người ta nha!. Để biết thêm chi tiết hãy xài lệnh `y!ehelp fuck`")
 
 
 
