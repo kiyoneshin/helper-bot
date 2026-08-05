@@ -109,13 +109,17 @@ class EventStatsCog(commands.Cog):
         self.bot = bot
 
     @commands.hybrid_command(name="point", aliases=["bal", "vi"])
-    async def point_cmd(self, ctx: commands.Context) -> None:
-        """Kiểm tra số dư và tổng điểm sự kiện của bạn."""
-        uid = str(ctx.author.id)
+    async def point_cmd(self, ctx: commands.Context, member: Optional[discord.Member] = None) -> None:
+        """Kiểm tra số dư và tổng điểm sự kiện của bạn (hoặc người khác)."""
+        target = member or ctx.author
+        uid = str(target.id)
         profile = await get_or_create_event_profile(self.bot, uid)
         
         if not profile:
-            await ctx.send("Không thể lấy dữ liệu hồ sơ sự kiện của bạn lúc này. Vui lòng thử lại sau!")
+            if target == ctx.author:
+                await ctx.send("Không thể lấy dữ liệu hồ sơ sự kiện của bạn lúc này. Vui lòng thử lại sau!")
+            else:
+                await ctx.send("Không thể lấy dữ liệu hồ sơ sự kiện của người này. Có thể họ chưa tham gia!")
             return
 
         points = profile.get("points", 0)
@@ -130,8 +134,8 @@ class EventStatsCog(commands.Cog):
             rank = "Chúa Tể P2W 👑"
 
         embed = discord.Embed(
-            title=f"💳 Ví Sự Kiện Angelic — {ctx.author.display_name}",
-            description=f"Hạng của bạn: **{rank}**",
+            title=f"💳 Ví Sự Kiện Angelic — {target.display_name}",
+            description=f"Hạng của họ: **{rank}**" if target != ctx.author else f"Hạng của bạn: **{rank}**",
             color=0xffb6c1
         )
         embed.add_field(

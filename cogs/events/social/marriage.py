@@ -365,7 +365,7 @@ class MarriageCog(commands.Cog):
             formatted_promise = ""
             for uid_str in (str(mar["user1_id"]), str(mar["user2_id"])):
                 member2 = ctx.guild.get_member(int(uid_str)) if ctx.guild else None if ctx.guild else None
-                p_name = member2.display_name if member2 else f"User {uid_str}"
+                p_name = discord.utils.escape_markdown(member2.display_name) if member2 else f"User {uid_str}"
                 if uid_str in promise_data:
                     ptext = promise_data[uid_str]
                     ptext_lines = ptext.split('\n')

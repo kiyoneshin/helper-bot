@@ -38,9 +38,9 @@ CMD_DATA: dict[str, dict] = {
         "short": "Sử dụng một vật phẩm trong túi đồ.",
         "aliases": ["dung", "xai"],
         "cooldown": None,
-        "usage": "y!use <tên_vật_phẩm>",
-        "examples": ["y!use Cà Phê"],
-        "note": None,
+        "usage": "y!use <id_vật_phẩm> [@mục_tiêu]",
+        "examples": ["y!use 12", "y!use 41 @user"],
+        "note": "Bạn cần biết ID của vật phẩm (xem trong y!inv).",
     },
     "shop": {
         "name": "Cửa Hàng",
@@ -58,9 +58,9 @@ CMD_DATA: dict[str, dict] = {
         "short": "Mua vật phẩm từ cửa hàng.",
         "aliases": ["mua"],
         "cooldown": None,
-        "usage": "y!buy <số_lượng> <tên_vật_phẩm>",
-        "examples": ["y!buy 1 Cà Phê"],
-        "note": None,
+        "usage": "y!buy <id_vật_phẩm> [số_lượng]",
+        "examples": ["y!buy 1", "y!buy 2 10"],
+        "note": "Bạn cần biết ID của vật phẩm (xem trong y!shop).",
     },
     # ── CASINO ────────────────────────────────────────────────────────────────
     "coinflip": {
@@ -139,9 +139,9 @@ CMD_DATA: dict[str, dict] = {
         "short": "Tàu bay tăng hệ số x1.1→x99. Nhảy dù trước khi nổ để thắng.",
         "aliases": ["cr"],
         "cooldown": "Lobby 30s",
-        "usage": "y!crash <tiền_cược>",
-        "examples": ["y!crash 100k", "y!crash 1m"],
-        "note": "Chớp đúng thời cơ rút lui để kiếm thêm tiền.",
+        "usage": "y!crash",
+        "examples": ["y!crash", "y!cr"],
+        "note": "Gõ lệnh để mở sòng, sau đó nhấn nút Đặt Cược để chơi.",
     },
     "wheel": {
         "name": "Vòng Quay",
@@ -614,7 +614,7 @@ def build_detail_embed(cmd_key: str) -> discord.Embed:
 
     if cmd.get("aliases"):
         embed.add_field(
-            name="📛 Lệnh rút gọn",
+            name="📛 Lệnh rút gọn/Lệnh thay thế",
             value=" · ".join(f"`y!{a}`" for a in cmd["aliases"]),
             inline=True,
         )

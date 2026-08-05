@@ -117,8 +117,8 @@ CMD_DATA: dict[str, dict] = {
         "short": "Xem hướng dẫn toàn bộ các lệnh sự kiện với UI tương tác.",
         "aliases": [],
         "cooldown": None,
-        "usage": "y!ehelp",
-        "examples": ["y!ehelp"],
+        "usage": "y!ehelp [tên_lệnh]",
+        "examples": ["y!ehelp", "y!ehelp crash"],
         "note": None,
     },
     "help": {
@@ -127,8 +127,8 @@ CMD_DATA: dict[str, dict] = {
         "short": "Xem danh sách lệnh quản trị và hệ thống (đang xem đây nè).",
         "aliases": ["trogiup"],
         "cooldown": None,
-        "usage": "y!help",
-        "examples": ["y!help"],
+        "usage": "y!help [tên_lệnh]",
+        "examples": ["y!help", "y!help phattu"],
         "note": None,
     },
     # ── GIVEAWAY ──────────────────────────────────────────────────────────────
@@ -298,8 +298,8 @@ CMD_DATA: dict[str, dict] = {
         "short": "Kiểm tra giao diện chào mừng thành viên mới.",
         "aliases": [],
         "cooldown": None,
-        "usage": "y!test_welcome",
-        "examples": ["y!test_welcome"],
+        "usage": "y!test_welcome [@user]",
+        "examples": ["y!test_welcome", "y!test_welcome @User"],
         "note": "Dành cho Admin.",
     },
 }
@@ -404,7 +404,7 @@ def build_detail_embed(cmd_key: str) -> discord.Embed:
         color=COLOR_THEME,
     )
     if cmd.get("aliases"):
-        embed.add_field(name="📛 Lệnh rút gọn", value=" · ".join(f"`y!{a}`" for a in cmd["aliases"]), inline=True)
+        embed.add_field(name="📛 Lệnh rút gọn/Lệnh thay thế", value=" · ".join(f"`y!{a}`" for a in cmd["aliases"]), inline=True)
     if cmd.get("cooldown"):
         embed.add_field(name="⏱️ Cooldown", value=cmd["cooldown"], inline=True)
     embed.add_field(name="\u200b", value="\u200b", inline=False)
