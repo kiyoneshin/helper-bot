@@ -67,6 +67,8 @@ class WorkCog(commands.Cog):
         mar = await get_marriage(self.bot, str(uid))
         partner_id = None
         is_coop = False
+        ring_work_bonus = 1.0
+        pet_task_bonus = 0.0
         if mar:
             p_id_str = mar["user2_id"] if mar["user1_id"] == str(uid) else mar["user1_id"]
             partner_id = int(p_id_str)
@@ -74,11 +76,25 @@ class WorkCog(commands.Cog):
             if p_passed >= COOLDOWN_MINUTES * 60:
                 is_coop = True
                 self.cooldowns[partner_id] = now
+            
+            # Fetch Ring Buff
+            ring_id = mar.get("ring_id", 31)
+            from cogs.events.social.marriage import RING_BUFFS
+            buffs = RING_BUFFS.get(ring_id, RING_BUFFS[31])
+            ring_work_bonus = buffs.get("work_bonus", 1.0)
+            
+            # Fetch Pet Buff
+            pet_exp = float(mar.get('pet_exp', 0.0))
+            pet_type = mar.get("pet_type")
+            pet_level = int(pet_exp / 200) + 1 if pet_type else 0
+            if pet_type == "Sói": pet_task_bonus = min(pet_level * 0.025, 1.25)
+            elif pet_type == "Rồng": pet_task_bonus = pet_level * 0.01
                 
         if event["type"] == "gain":
             if is_coop:
-                amount = int(amount * 1.2)
-                story = event["text"].format(amount=f"**{amount:,}**") + f"\n\n💕 **CO-OP BONUS!** Vợ/chồng của bạn <@{partner_id}> đã xắn tay vào làm chung! Cả hai nhận được x1.2 phần thưởng!"
+                amount = int(amount * 1.2 * ring_work_bonus)
+                bonus_str = f" (Nhẫn x{ring_work_bonus})" if ring_work_bonus > 1.0 else ""
+                story = event["text"].format(amount=f"**{amount:,}**") + f"\n\n💕 **CO-OP BONUS!** Vợ/chồng của bạn <@{partner_id}> đã xắn tay vào làm chung! Cả hai nhận được x1.2 phần thưởng{bonus_str}!"
                 await add_event_points(self.bot, str(partner_id), float(amount), is_earned=True)
                 
                 # Check Task
@@ -90,9 +106,10 @@ class WorkCog(commands.Cog):
                         task_data["progress"] = task_data.get("progress", 0) + 1
                         if task_data["progress"] >= task_data["target"]:
                             task_data["completed"] = True
+                            task_reward = 100 * (1.0 + pet_task_bonus)
                             from cogs.common.db import update_intimacy
-                            await update_intimacy(self.bot, str(uid), 100)
-                            story += f"\n\n🎉 **Nhiệm Vụ Cặp Đôi Hoàn Thành!** (+100 DTM)"
+                            await update_intimacy(self.bot, str(uid), int(task_reward))
+                            story += f"\n\n🎉 **Nhiệm Vụ Cặp Đôi Hoàn Thành!** (+{task_reward:.1f} DTM)"
                         await execute_db(self.bot, "UPDATE marriages SET couple_task = $1::jsonb WHERE id = $2", json.dumps(task_data), mar["id"] if mar else 0)
             
             # Cộng tiền (is_earned=True để tính vào cả đua top)

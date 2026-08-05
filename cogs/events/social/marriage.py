@@ -395,6 +395,14 @@ class MarriageCog(commands.Cog):
                 
             marry_date_str = mar['marry_date'].strftime('%d/%m/%Y')
             
+            # Ring Buffs Info
+            buffs = RING_BUFFS.get(mar["ring_id"], RING_BUFFS[31])
+            ring_buff_texts = []
+            if buffs["dtm_bonus"] > 0: ring_buff_texts.append(f"+{int(buffs['dtm_bonus']*100)}% DTM")
+            if buffs["cd_reduction"] > 0: ring_buff_texts.append(f"-{int(buffs['cd_reduction']*100)}% Cooldown")
+            if buffs["work_bonus"] > 1.0: ring_buff_texts.append(f"x{buffs['work_bonus']} Work Bonus")
+            ring_buff_str = ", ".join(ring_buff_texts) if ring_buff_texts else "Không có"
+            
             desc = (
                 f"💖 **So Sweet** 💖\n\n"
                 f"{ctx.author.mention} 💖 <@{partner_id}>\n"
@@ -403,6 +411,7 @@ class MarriageCog(commands.Cog):
                 f"*** Been married for {days} days\n\n"
             )
             
+            pet_buff_str = ""
             if mar.get("pet_type"):
                 pet_exp = float(mar.get('pet_exp', 0.0))
                 if pet_exp < 1000:
@@ -424,10 +433,23 @@ class MarriageCog(commands.Cog):
                 display_name = f"{pet_name_db}" if pet_name_db else f"{base_type}"
                 desc += f"🐾 **Thú Cưng Chung**: {display_name} {icon} *(Lv.{pet_level} - {stage})*\n\n"
                 
+                if base_type == "Chó": pet_buff_str = f"+{min(pet_level * 1, 50)}% DTM nhận được"
+                elif base_type == "Mèo": pet_buff_str = f"-{min(pet_level * 0.75, 45):.2f}% thời gian hồi chiêu"
+                elif base_type == "Cáo": pet_buff_str = f"{min(pet_level * 0.25, 25):.2f}% tỉ lệ Bạo kích (x2 DTM)"
+                elif base_type == "Sói": pet_buff_str = f"Thưởng thêm +{min(pet_level * 2.5, 125)}% DTM khi hoàn thành nhiệm vụ"
+                elif base_type == "Cánh Cụt": pet_buff_str = f"Giảm {min(pet_level * 1, 50)}% tỉ lệ thất bại chọc ghẹo"
+                elif base_type == "Thỏ": pet_buff_str = f"{min(pet_level * 0.2, 15):.2f}% tỉ lệ hồi chiêu ngay lập tức"
+                elif base_type == "Rồng": pet_buff_str = f"+{pet_level*0.35:.2f}% DTM, -{pet_level*0.35:.2f}% CD, +{pet_level*1}% Task"
+                
             desc += (
                 f"***Promises for loving:***\n"
-                f"{formatted_promise}"
+                f"{formatted_promise}\n"
             )
+            
+            desc += f"🔰 **Hiệu Ứng (Buffs):**\n"
+            desc += f"💍 **Nhẫn:** {ring_buff_str}\n"
+            if mar.get("pet_type"):
+                desc += f"🐾 **Pet:** {pet_buff_str}\n"
             
             emb = discord.Embed(description=desc, color=discord.Color.from_rgb(255, 182, 193))
             emb.set_author(name="And after that... They live happily ever after~")
@@ -996,6 +1018,14 @@ class MarriageCog(commands.Cog):
         await update_marriage_interaction(self.bot, uid1)
         
         emb = discord.Embed(description=msg, color=discord.Color.pink())
+        
+        footer_text = []
+        if buffs["dtm_bonus"] > 0: footer_text.append(f"💍 Nhẫn: +{int(buffs['dtm_bonus']*100)}% DTM")
+        if buffs["cd_reduction"] > 0: footer_text.append(f"💍 Nhẫn: -{int(buffs['cd_reduction']*100)}% CD")
+        if pet_dtm_bonus > 0: footer_text.append(f"🐾 Pet: +{pet_dtm_bonus*100:.1f}% DTM")
+        if pet_cd_reduction > 0: footer_text.append(f"🐾 Pet: -{pet_cd_reduction*100:.1f}% CD")
+        if footer_text:
+            emb.set_footer(text=" | ".join(footer_text))
         
         gif_url = await fetch_anime_gif(action)
         if gif_url:
