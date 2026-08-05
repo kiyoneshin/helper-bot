@@ -175,3 +175,4 @@ pyrightconfig.json
 *.key
 repomix-output.xml
 .agents/
+cmds.md

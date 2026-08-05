@@ -6,7 +6,7 @@ __**HƯỚNG DẪN VÀ CÁC CÂU HỎI THƯỜNG ĐƯỢC HỎI VỀ SỰ KIỆN
 **A:** Đây là một sự kiện tương tác toàn diện trên server Angelic. Điểm Sự Kiện (Event Points) là loại tiền tệ duy nhất dùng trong suốt sự kiện này. Bạn dùng Điểm để tham gia các trò chơi cá cược (Casino), mua sắm vật phẩm đặc biệt, và đua Top. Điểm tích lũy (Total Earned) của bạn càng cao, bạn càng nhận được nhiều quà từ hệ thống Cột Mốc (Milestones).
 
 **Q2: Mục đích chính của sự kiện này là gì?**
-**A:** Mục tiêu của sự kiện là thu thập càng nhiều Điểm Sự Kiện càng tốt để mở khóa các Cột Mốc. Khi đạt mốc, bạn sẽ nhận được các Role độc quyền (Đội Cào Phím, Huyền Thoại) và các Vật Phẩm Chợ Đêm cực hiếm. Người chơi đạt Top server (y!etop) cũng sẽ nhận được phần thưởng vinh danh cuối sự kiện.
+**A:** Mục tiêu của sự kiện là thu thập càng nhiều Điểm Sự Kiện càng tốt để mở khóa các Cột Mốc. Khi đạt mốc, bạn sẽ nhận được các Danh hiệu độc quyền (Đội Cào Phím, Huyền Thoại) và các Vật Phẩm Chợ Đêm cực hiếm. Người chơi đạt Top server (y!etop) cũng sẽ nhận được phần thưởng vinh danh cuối sự kiện.
 
 **Q3: Sự kiện kéo dài bao lâu và khi nào kết thúc?**
 **A:** Sự kiện kéo dài liên tục và thay đổi theo từng Season. Điểm số có thể sẽ được reset sau khi tìm ra người thắng cuộc. Vui lòng theo dõi các bài ghim ở kênh thông báo sự kiện từ Admin để biết thời hạn chốt Top.
@@ -22,10 +22,13 @@ __**HƯỚNG DẪN VÀ CÁC CÂU HỎI THƯỜNG ĐƯỢC HỎI VỀ SỰ KIỆN
 
 **Q5: Xem thông tin tài khoản sự kiện như thế nào?**
 **A:** Cần phân biệt rõ các lệnh sau:
-- Xem Số dư, Thú cưng, Thẻ đồ, Kho đồ (Inventory): Dùng lệnh y!eprofile (hoặc y!ep / y!vi).
-- Xem Điểm Tích Lũy (Total Earned) và Mốc nhận quà: Dùng lệnh y!point.
-- Xem Bảng xếp hạng server: Dùng lệnh y!etop.
-- Xem thông tin tài khoản máy chủ chung (không thuộc event): Dùng lệnh y!menu.
+- Xem Số dư, Thẻ đồ: Dùng lệnh y!profile (hoặc y!p / y!pro / y!ep).
+- Xem Kho đồ (Inventory): Dùng lệnh y!inv.
+- Xem Thú Cưng, Nhẫn, Hôn nhân: Dùng lệnh y!marry (hoặc y!kethon).
+- Xem Điểm Tích Lũy (Total Earned) và Mốc nhận quà: Dùng lệnh y!qua (hoặc y!milestone / y!reward).
+- Xem Số Dư Hiện Tại và Xếp Hạng: Dùng lệnh y!point (hoặc y!bal / y!vi).
+- Xem Bảng xếp hạng sự kiện: Dùng lệnh y!etop (hoặc y!evtop).
+- Xem thông tin tài khoản Ban Quản Trị (nếu có): Dùng lệnh y!menu.
 
 **Q6: Phân biệt Điểm Tích Lũy (Total Earned) và Số Dư Hiện Tại?**
 **A:** - Số dư hiện tại (Points): Là tiền mặt bạn đang có. Nó tăng khi bạn cày cuốc, và giảm khi bạn mua đồ, chơi casino thua, hoặc tặng quà.
@@ -75,12 +78,12 @@ __**HƯỚNG DẪN VÀ CÁC CÂU HỎI THƯỜNG ĐƯỢC HỎI VỀ SỰ KIỆN
 - Lệnh y!quest (nhiệm vụ tân thủ): Chuỗi nhiệm vụ 1 lần duy nhất cho người mới chơi.
 
 **Q13: Nông trại (y!farm) và Máy Chế Biến (y!machine) có gì đặc biệt?**
-**A:** Bạn có thể mua hạt giống (y!shop) và trồng (y!farm). Thời gian thu hoạch từ 30 phút (Lúa Mì) đến 3 ngày (Hắc Ám).
+**A:** Bạn có thể mua hạt giống (y!shop) và trồng bằng (y!farm). Thời gian thu hoạch gồm: Lúa Mì (30 phút), Hướng Dương (12 tiếng), Ngôi Sao (24 tiếng). Có thể tưới nước (giảm thời gian mọc) hoặc dùng phân bón.
 Sau khi thu hoạch, bạn có thể bán ngay trong y!inv. Hoặc nếu muốn lãi cao hơn, hãy mang nông sản vào Máy Chế Biến (y!machine) để đóng gói thành những thành phẩm giá trị gấp nhiều lần!
 
 **Q14: Chặt Cây (y!chop) và Đào Mỏ (y!mine) hoạt động thế nào?**
 **A:** Tốn Thể lực (Stamina) cho mỗi lần thực hiện. Thể lực tối đa 100, tự hồi 1 điểm mỗi 18 giây.
-- Chặt cây (y!chop): Lấy gỗ và các loại nguyên liệu rừng. Cẩn thận bị sói cắn!
+- Chặt cây (y!chop): Thu thập các loại gỗ từ thường đến siêu hiếm. Cẩn thận bị thú dữ cắn mất điểm!
 - Đào mỏ (y!mine): Thu thập đá và quặng (đồng, sắt). Càng đào nhiều, tỉ lệ ra quặng quý càng cao.
 
 **Q15: Câu cá (y!fish) cần lưu ý điều gì?**
@@ -111,21 +114,23 @@ Lưu ý: Nếu nợ quá hạn ngân hàng, bạn sẽ bị cấm vào Casino.
 Còn y!choden là nơi bán các Thẻ Bài hắc ám chuyên dùng để "troll" và hãm hại người khác. Hàng ở Chợ Đêm bán giới hạn mỗi ngày. Để mua, dùng lệnh y!ebuy <id>.
 
 **Q20: Vật phẩm Chợ Đêm có các tác dụng cụ thể là gì?**
-**A:** Các thẻ bài sát phạt bao gồm:
-- Thẻ Cấm Ngôn (Búa gõ): Timeout mục tiêu (1p/5p).
-- Thẻ Trêu Ghẹo (Bom ảo giác): Bot ping mục tiêu 3 lần rồi xóa ngay lập tức.
-- Thẻ Sút Voice (Rút phích cắm): Kích mục tiêu khỏi kênh thoại.
-- Thẻ Đạo Tặc: Trộm điểm sự kiện ngẫu nhiên.
-- Thẻ Đổi Tên: Đổi biệt danh mục tiêu theo ý muốn.
-- Thẻ Bỏ Tù: Nhốt mục tiêu vào Chuồng Chó (Jail).
-- Thẻ Bảo Hộ (Miễn nhiễm): Chặn 1 lần bị người khác xài thẻ lên mình (Phải trang bị trước).
+**A:** Có tổng cộng 10 thẻ bài sát phạt bao gồm:
+- Bom Ảo Giác: Bot tag mục tiêu 3 lần liên tiếp rồi xóa ngay lập tức.
+- Búa Gõ 1 Phút / 5 Phút: Timeout mục tiêu (cấm chat/voice).
+- Thẻ Đổi Tên: Buộc mục tiêu đổi biệt danh thành tên tấu hài.
+- Bao Tay Đạo Chích: Trộm ngẫu nhiên 50–500 điểm sự kiện của mục tiêu.
+- Thẻ Rút Phích Cắm: Kích mục tiêu khỏi kênh thoại.
+- Thẻ Miễn Nhiễm: Tự động chặn 1 lần bị người khác dùng thẻ xấu lên mình.
+- Thẻ Đặc Xá: Cứu người khác khỏi tù hoặc tự cứu mình.
+- Thẻ Tống Giam: Gửi 1 người vào chuồng chó (50 lần lau dọn).
+- Trát Hầu Tòa (Fake Ban): Gửi một Embed dọa ban vĩnh viễn cực kỳ nghiêm trọng.
 
 **Q21: Chuồng Chó (Nhà Tù) hoạt động thế nào? Làm sao để thoát?**
-**A:** Nếu bị ai đó dùng Thẻ Bỏ Tù, bạn sẽ bị tống vào Chuồng Chó (bị Mute, không thể chat). Hệ thống sẽ yêu cầu số tiền bảo lãnh ngẫu nhiên.
-Để thoát ra, có 3 cách:
-1. Chờ hết thời gian án phạt.
-2. Dùng lệnh y!laudon (Lau dọn) liên tục trong kênh tù để giảm án (mỗi lần giảm vài phút).
-3. Người khác (hoặc chính bạn) có thể dùng lệnh y!baolanh và trả số điểm mà hệ thống yêu cầu để chuộc thân ngay lập tức!
+**A:** Nếu bị ai đó dùng Thẻ Bỏ Tù (chợ đen), bạn sẽ bị tống vào Chuồng Chó (bị Mute, không thể chat). Hệ thống sẽ yêu cầu một số lần "lao động công ích" nhất định.
+Để thoát ra, có các cách sau:
+1. Làm việc khổ sai: Dùng lệnh y!laudon (Lau dọn), y!sua (Toán), y!nhatxuong (Nhặt xương) liên tục trong kênh tù. Mỗi lần thực hiện thành công sẽ giảm đi 1 điểm phạt. Hết điểm phạt bạn sẽ được tự do.
+2. Chơi liều (Minigame Tù): Đánh tài xỉu bằng số điểm phạt (y!lcuoc) hoặc Cố gắng vượt ngục (y!lvuotnguc) với tỉ lệ 5% thành công thoát ngay lập tức, nhưng 95% thất bại sẽ bị nhân 3 án phạt.
+3. Nhờ vả: Người khác có thể dùng y!choccho hoặc y!choan để tương tác với bạn, hoặc dùng lệnh y!baolanh trả tiền chuộc thân cho bạn ngay lập tức (không cần làm việc)!
 Admin cũng có thể dùng Thẻ Đặc Xá (y!thatu) để thả bạn ra vô điều kiện.
 
 

@@ -121,15 +121,15 @@ ACTIONS = {
 }
 
 API_MAPPING = {
-    "poke": "poke", "pat": "pat", "slap": "slap", "punch": "bonk", 
-    "tickle": "smile", "bite": "bite", "hug": "hug", "cuddle": "cuddle", 
+    "poke": "poke", "pat": "pat", "slap": "slap", "punch": "punch", 
+    "tickle": "tickle", "bite": "bite", "hug": "hug", "cuddle": "cuddle", 
     "nom": "nom", "snuggle": "cuddle", "kiss": "kiss", "lick": "lick", 
-    "saylove": "blush", "fuck": "nsfw/waifu", "seg": "nsfw/waifu"
+    "saylove": "blush", "fuck": "kiss", "seg": "kiss"
 }
 
 async def fetch_anime_gif(action: str) -> Optional[str]:
     cat = API_MAPPING.get(action, "hug")
-    url = f"https://api.waifu.pics/{cat}" if "nsfw" in cat else f"https://api.waifu.pics/sfw/{cat}"
+    url = f"https://api.otakugifs.xyz/gif?reaction={cat}"
         
     try:
         async with aiohttp.ClientSession() as session:
