@@ -1,5 +1,10 @@
+# work_events.py
+# File chứa cấu hình các sự kiện cho lệnh y!work
+
 WORK_EVENTS = [
-    # ----------------- 35 SỰ KIỆN GAIN (NHẬN TIỀN) -----------------
+    # =========================================================================
+    # SỰ KIỆN GAIN (NHẬN TIỀN)
+    # =========================================================================
     {"type": "gain", "min_amount": 100, "max_amount": 500, "text": "Bạn đi quét lá ngoài công viên, tình cờ quét luôn tờ vé số trúng giải đặc biệt của ông chú đang ngủ gật. Bạn lén đem đổi và nhận được {amount} điểm."},
     {"type": "gain", "min_amount": 100, "max_amount": 700, "text": "Bạn mở dịch vụ xem bói online. Dù chỉ phán bừa dựa trên Google, khách hàng vẫn tin sái cổ và donate cho bạn {amount} điểm."},
     {"type": "gain", "min_amount": 200, "max_amount": 800, "text": "Đang đi bộ thì vấp phải cục gạch. Bạn tính chửi thề nhưng phát hiện dưới cục gạch là {amount} điểm do ai đó đánh rơi. Ấm no!"},
@@ -35,8 +40,25 @@ WORK_EVENTS = [
     {"type": "gain", "min_amount": 200, "max_amount": 600, "text": "Làm gia sư Toán nhưng lại dạy học sinh chơi game leo rank. Học sinh rank Cao Thủ, phụ huynh vui vẻ thưởng {amount} điểm."},
     {"type": "gain", "min_amount": 300, "max_amount": 900, "text": "Đi đường vớ được một cây chổi chà, mang về bán đấu giá với nhãn 'Chổi bay của Harry Potter' và lừa được {amount} điểm."},
     {"type": "gain", "min_amount": 100, "max_amount": 400, "text": "Giả vờ làm pháp sư đuổi tà cho người ta. Múa may quay cuồng rớt cmn cả cái quần, gia chủ tưởng phép thuật mới nên donate {amount} điểm."},
-    
-    # ----------------- 15 SỰ KIỆN LOSE (MẤT TIỀN) -----------------
+    {"type": "gain", "min_amount": 300, "max_amount": 850, "text": "Bạn livestream bán hàng online, áp dụng hệ tư tưởng 'chửi khách như hát hay'. Bất ngờ khách thích bị mắng nên chốt đơn ầm ầm, bạn kiếm được {amount} điểm."},
+    {"type": "gain", "min_amount": 200, "max_amount": 700, "text": "Tham gia show thực tế 'Anh Trai Say Hi', bạn vô tình ngủ gật lúc lên sóng. Biểu cảm 'vô tri' của bạn trở thành meme quốc dân, bạn nhận được cát-xê {amount} điểm."},
+    {"type": "gain", "min_amount": 400, "max_amount": 1200, "text": "Làm 'chiến thần check VAR' trên mạng xã hội, bạn bóc phốt thành công idol pha-ke bán kem trộn. Cộng đồng mạng chuyển khoản donate cho bạn {amount} điểm."},
+    {"type": "gain", "min_amount": 250, "max_amount": 900, "text": "Đăng ảnh đi làm nhưng caption 'chữa lành', flex vô tình cái đồng hồ Rolex fake. Một người tưởng đồ thật nên mua lại giá cao, bạn vớ bở {amount} điểm."},
+    {"type": "gain", "min_amount": 150, "max_amount": 600, "text": "Bạn mở dịch vụ 'chặn người yêu cũ' và 'đóng giả ngoại tình'. Nhờ sự mỏ hỗn và diễn xuất đỉnh cao, bạn thu về {amount} điểm phí dịch vụ."},
+    {"type": "gain", "min_amount": 500, "max_amount": 1500, "text": "Thử tạo ảnh bằng AI kiếm tiền, lỡ prompt ra hình 'Tổng tài cưỡi khủng long T-Rex đạp xích lô'. Bức ảnh viral toàn cầu, bạn nhận được tiền bản quyền {amount} điểm."},
+    {"type": "gain", "min_amount": 200, "max_amount": 750, "text": "Đang chạy xe thì chở trúng phú bà. Phú bà bị ấn tượng bởi sự 'overthinking' của bạn trên suốt chuyến đi nên tip hẳn {amount} điểm đi khám tâm lý."},
+    {"type": "gain", "min_amount": 300, "max_amount": 950, "text": "Đi làm lễ tân nhưng áp dụng chiến thuật 'ngoại giao cây tre', đu dây giữa sếp và đồng nghiệp xuất sắc. Cuối tháng sếp thưởng nóng {amount} điểm."},
+    {"type": "gain", "min_amount": 100, "max_amount": 450, "text": "Đăng tus 'Tìm mai đẹt ti ni', ai ngờ một đại gia lỡ tay bấm nhầm nút chuyển tiền thay vì nút like. Bạn húp trọn {amount} điểm."},
+    {"type": "gain", "min_amount": 250, "max_amount": 800, "text": "Làm KOC đi review quán ăn. Quán dở tệ nhưng bạn xài văn mẫu 'mlem mlem, hạt dẻ, nước dùng thanh ngọt'. Chủ quán vui vẻ lót tay {amount} điểm."},
+    {"type": "gain", "min_amount": 350, "max_amount": 1000, "text": "Bán khóa học 'Làm sao để hết vô tri trong 7 ngày'. Dù nội dung chỉ có 1 trang giấy trắng, nhiều gen Z vẫn mua ầm ầm giúp bạn bỏ túi {amount} điểm."},
+    {"type": "gain", "min_amount": 150, "max_amount": 500, "text": "Đang đi đường nhặt được cục đá, bạn mang lên mạng nói đây là 'đá năng lượng vũ trụ'. Một người chơi hệ tâm linh đã mua nó với giá {amount} điểm."},
+    {"type": "gain", "min_amount": 200, "max_amount": 600, "text": "Nhận cày thuê rank Cao Thủ, nhưng bạn toàn chọn Yasuo feed 0/10. Đối thủ thấy tội nghiệp quá nên donate cho bạn {amount} điểm để bạn ngưng chơi."},
+    {"type": "gain", "min_amount": 300, "max_amount": 900, "text": "Mở tiệm Tarot online, khách hỏi bao giờ có bồ. Bạn lật trúng lá the Fool và phán 'kiếp sau'. Khách nể quá tip {amount} điểm."},
+    {"type": "gain", "min_amount": 400, "max_amount": 1100, "text": "Bạn chế ra món 'Trà sữa mắm tôm trân châu lòng lợn'. Tưởng sập tiệm ai ngờ các idol tóp tóp thi nhau đến làm thử thách, cá kiếm được {amount} điểm."},
+
+    # =========================================================================
+    # SỰ KIỆN LOSE (MẤT TIỀN)
+    # =========================================================================
     {"type": "lose", "min_amount": 100, "max_amount": 500, "text": "Bạn giả vờ làm bác sĩ tiêm phòng, nhưng vì run tay tiêm trúng mông trưởng khoa. Bạn bị đuổi việc và phải đền bù {amount} điểm tiền thuốc."},
     {"type": "lose", "min_amount": 200, "max_amount": 600, "text": "Đi làm bảo vệ ngân hàng, buồn ngủ quá đem súng ra làm gối nằm. Cướp vô ôm tiền đi mất, bạn bị phạt {amount} điểm."},
     {"type": "lose", "min_amount": 150, "max_amount": 400, "text": "Mua phôi ép thẻ để làm bằng đại học giả, xui sao gặp đúng thầy hiệu trưởng đi mua thẻ điện thoại. Bạn mất trắng {amount} điểm chạy án."},
@@ -51,5 +73,20 @@ WORK_EVENTS = [
     {"type": "lose", "min_amount": 150, "max_amount": 500, "text": "Nhận bốc họ nhưng gặp con nợ là Chí Phèo rạch mặt ăn vạ. Bị công an bế đi đóng phạt {amount} điểm."},
     {"type": "lose", "min_amount": 300, "max_amount": 900, "text": "Chơi đồ hàng ngoài công viên, giả vờ là kỹ sư cầu đường rồi phá banh cái xích đu của thiếu nhi. Đền tài sản công cộng {amount} điểm."},
     {"type": "lose", "min_amount": 100, "max_amount": 350, "text": "Làm phiên dịch viên tiếng Nhật mà toàn dùng Google Dịch. Dịch 'Kính gửi giám đốc' thành 'Đầu moi giám đốc'. Phạt {amount} điểm."},
-    {"type": "lose", "min_amount": 250, "max_amount": 800, "text": "Bơm bánh xe dạo lỡ bơm căng quá làm nổ tung cái bánh xe siêu xe bò. Chạy thục mạng vẫn bị tóm, đền bù {amount} điểm."}
+    {"type": "lose", "min_amount": 250, "max_amount": 800, "text": "Bơm bánh xe dạo lỡ bơm căng quá làm nổ tung cái bánh xe siêu xe bò. Chạy thục mạng vẫn bị tóm, đền bù {amount} điểm."},
+    {"type": "lose", "min_amount": 200, "max_amount": 600, "text": "Đu trend tóp tóp nhảy múa giữa ngã tư. Bị công an phường bế lên uống nước chè, nộp phạt {amount} điểm."},
+    {"type": "lose", "min_amount": 300, "max_amount": 800, "text": "Thích làm 'chiến thần bóc phốt' nhưng check VAR nhầm người nhà của sếp. Sếp trừ thẳng tay {amount} điểm vào lương tháng này."},
+    {"type": "lose", "min_amount": 400, "max_amount": 1200, "text": "Chốt đơn mua blind box mong trúng secret, nhưng mở ra toàn figure fake. Tiền mất tật mang, bay màu {amount} điểm."},
+    {"type": "lose", "min_amount": 150, "max_amount": 500, "text": "Lỡ tay gửi nhầm sticker mèo 18+ vào group chat tổng công ty. Bị phòng nhân sự gọi lên trừ lương {amount} điểm vì tội vô tri."},
+    {"type": "lose", "min_amount": 500, "max_amount": 1500, "text": "Flex sổ đỏ trên mạng nhưng quên che địa chỉ. Trộm viếng thăm khuân sạch dàn PC yêu quý, thiệt hại {amount} điểm."},
+    {"type": "lose", "min_amount": 300, "max_amount": 900, "text": "Mua khoá học 'Thao túng tâm lý' trên mạng. Vừa học xong ra áp dụng thử với sếp, kết quả bị đấm sưng mắt và trừ {amount} điểm."},
+    {"type": "lose", "min_amount": 250, "max_amount": 750, "text": "Cố chấp đu idol, bao nguyên tiệm net để săn vé concert nhưng mạng lag đúng giây cuối. Tức giận đập phím, đền quán net {amount} điểm."},
+    {"type": "lose", "min_amount": 200, "max_amount": 650, "text": "Bắt chước idol mở tiệm làm nai-xừ (nails). Gọt lố tay làm đứt móng khách, phải đền bù thiệt hại tinh thần {amount} điểm."},
+    {"type": "lose", "min_amount": 150, "max_amount": 550, "text": "Đăng ảnh sống ảo bằng app kéo chân, nhưng kéo luôn cả cột điện cong queo. Bị cộng đồng mạng bế lên group tẩy chay, tốn {amount} điểm mua bài đính chính."},
+    {"type": "lose", "min_amount": 100, "max_amount": 400, "text": "Tham gia nhóm làm nhiệm vụ thả tim trên mạng. Mới thả tim được 2 cái thì bị lừa mất trắng {amount} điểm tiền cọc."},
+    {"type": "lose", "min_amount": 300, "max_amount": 1000, "text": "Bị 'kiếp nạn thứ 82' giáng xuống: vừa lãnh lương đi ăn lẩu, trượt chân ngã úp mặt vào nồi. Tiền đền nồi lẩu tốn {amount} điểm."},
+    {"type": "lose", "min_amount": 400, "max_amount": 1200, "text": "Hẹn hò qua mạng, nghe lời đối phương dụ dỗ đầu tư sàn chứng khoán. Sàn sập sau 30 phút, bạn bị lùa gà mất {amount} điểm."},
+    {"type": "lose", "min_amount": 150, "max_amount": 600, "text": "Chơi ngu lấy keo 502 vuốt tóc cho giống siêu Xay-da. Phải vào bệnh viện cạo trọc đầu, tốn {amount} điểm chi phí."},
+    {"type": "lose", "min_amount": 200, "max_amount": 700, "text": "Đang làm việc thì bị 'overthinking' khóc lóc bù lu bù loa. Sếp tưởng bạn bị áp lực nên cho nghỉ không lương 3 ngày, bốc hơi {amount} điểm."},
+    {"type": "lose", "min_amount": 500, "max_amount": 1500, "text": "Đi đường quẹt trúng xe tay ga. Vội vàng xài tuyệt chiêu 'mỏ hỗn' định lấp liếm nhưng gặp trúng giang hồ vặt. Bấm bụng đền {amount} điểm cho êm chuyện."},
 ]
