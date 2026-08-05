@@ -112,6 +112,8 @@ def _build_farm_embed(
     from cogs.events.mining.mining_config import MINING_LOOT
     from cogs.events.fishing.fishing_config import FISH_LOOT
     from cogs.events.idle_farm.config import SEEDS, QUALITY_EMOJIS, QUALITY_MULTIPLIERS
+    from cogs.events.idle_farm.machine_config import ARTISAN_GOODS
+    from cogs.events.woodcutting.woodcutting_config import WOODCUTTING_LOOT
 
     embed = discord.Embed(
         title="🌾 Hệ Sinh Thái — Túi Đồ Nông Trại",
@@ -129,8 +131,8 @@ def _build_farm_embed(
         embed.set_footer(text="💡 Dùng các nút bên dưới để bán nông sản.")
         return embed
 
-    seed_lines, crop_lines, ore_lines, fish_lines = [], [], [], []
-    total_crops_worth = total_ores_worth = total_fish_worth = 0
+    seed_lines, crop_lines, ore_lines, fish_lines, artisan_lines = [], [], [], [], []
+    total_crops_worth = total_ores_worth = total_fish_worth = total_artisan_worth = 0
 
     for item_id, count in inventory.items():
         if count <= 0:
@@ -165,16 +167,37 @@ def _build_farm_embed(
             parts = item_id.split("_")
             quality = parts[-1] if len(parts) > 1 else "normal"
             seed_id = "_".join(parts[:-1]) if len(parts) > 1 else item_id
-            seed_info = SEEDS.get(seed_id)
-            if seed_info:
-                emoji = QUALITY_EMOJIS.get(quality, "")
-                multiplier = QUALITY_MULTIPLIERS.get(quality, 1.0)
-                worth = int(seed_info["reward_min"] * multiplier)
-                total_crops_worth += worth * count
-                crop_lines.append(
-                    f"• `[{item_id}]` {seed_info['icon']} **{seed_info['name']}**"
-                    f" {emoji} (x{count}) — {worth:,} điểm/cái"
+
+            # Artisan Goods (Beer, Wine, Jam, Metal Bars)
+            if item_id in ARTISAN_GOODS:
+                artisan = ARTISAN_GOODS[item_id]
+                price = artisan.get("price", 0)
+                total_artisan_worth += price * count
+                artisan_lines.append(
+                    f"• `[{item_id}]` {artisan['icon']} **{artisan['name']}** (x{count})"
+                    f" — {price:,} điểm/cái"
                 )
+            # Wood items
+            elif item_id in WOODCUTTING_LOOT:
+                wood = WOODCUTTING_LOOT[item_id]
+                price = wood.get("price", 0)
+                total_ores_worth += price * count
+                ore_lines.append(
+                    f"• `[{item_id}]` {wood['icon']} **{wood['name']}** (x{count})"
+                    f" — {price:,} điểm/cái"
+                )
+            # Farm crops
+            elif seed_id in SEEDS:
+                seed_info = SEEDS.get(seed_id)
+                if seed_info:
+                    emoji = QUALITY_EMOJIS.get(quality, "")
+                    multiplier = QUALITY_MULTIPLIERS.get(quality, 1.0)
+                    worth = int(seed_info["reward_min"] * multiplier)
+                    total_crops_worth += worth * count
+                    crop_lines.append(
+                        f"• `[{item_id}]` {seed_info['icon']} **{seed_info['name']}**"
+                        f" {emoji} (x{count}) — {worth:,} điểm/cái"
+                    )
 
     desc_parts: list[str] = []
     if seed_lines:
@@ -182,9 +205,11 @@ def _build_farm_embed(
     if crop_lines:
         desc_parts.append("**📦 Nông sản:**\n" + "\n".join(crop_lines))
     if ore_lines:
-        desc_parts.append("**⛏️ Khoáng sản:**\n" + "\n".join(ore_lines))
+        desc_parts.append("**⛏️ Khoáng sản & Gỗ:**\n" + "\n".join(ore_lines))
     if fish_lines:
         desc_parts.append("**🐠 Cá:**\n" + "\n".join(fish_lines))
+    if artisan_lines:
+        desc_parts.append("**🏭 Thủ Công Phẩm:**\n" + "\n".join(artisan_lines))
 
     embed.description = "\n\n".join(desc_parts) if desc_parts else "*Kho trống.*"
 
@@ -195,6 +220,8 @@ def _build_farm_embed(
         footer_parts.append(f"⛏️ {total_ores_worth:,} điểm")
     if total_fish_worth > 0:
         footer_parts.append(f"🐠 {total_fish_worth:,} điểm")
+    if total_artisan_worth > 0:
+        footer_parts.append(f"🏭 {total_artisan_worth:,} điểm")
     if footer_parts:
         embed.add_field(
             name="💰 Tổng Giá Trị Ước Tính",

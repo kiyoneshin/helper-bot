@@ -143,6 +143,47 @@ ITEM_REGISTRY: dict[int, ItemEntry] = {
         "category":    "farm",
         "usable":      False,
     },
+    13: {
+        "id":          13,
+        "name":        "Hạt Giống Khoai Tây",
+        "icon":        "🥔",
+        "price":       200,
+        "description": "Thu hoạch sau 1 tiếng. 20% cơ hội nhân đôi sản lượng!",
+        "db_key":      "seed_potato",
+        "category":    "farm",
+        "usable":      False,
+    },
+    14: {
+        "id":          14,
+        "name":        "Hạt Giống Cà Chua",
+        "icon":        "🍅",
+        "price":       400,
+        "description": "Thu hoạch sau 3 tiếng. Nguyên liệu Mứt Cà Chua.",
+        "db_key":      "seed_tomato",
+        "category":    "farm",
+        "usable":      False,
+    },
+    15: {
+        "id":          15,
+        "name":        "Hạt Giống Dâu Tây",
+        "icon":        "🍓",
+        "price":       800,
+        "description": "Thu hoạch sau 6 tiếng. Nguyên liệu Rượu Dâu cao cấp.",
+        "db_key":      "seed_strawberry",
+        "category":    "farm",
+        "usable":      False,
+    },
+    16: {
+        "id":          16,
+        "name":        "Hạt Giống Bí Ngô",
+        "icon":        "🎃",
+        "price":       1200,
+        "description": "Thu hoạch sau 8 tiếng. Nguyên liệu Mứt Bí Ngô thơm ngon.",
+        "db_key":      "seed_pumpkin",
+        "category":    "farm",
+        "usable":      False,
+    },
+
 
     # ──────────────────────────────────────────────────────────
     # ID 20–29 : CHỢ ĐEN (BLACK MARKET)

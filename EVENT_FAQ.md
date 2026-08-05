@@ -78,16 +78,27 @@ __**HƯỚNG DẪN VÀ CÁC CÂU HỎI THƯỜNG ĐƯỢC HỎI VỀ SỰ KIỆN
 - Lệnh y!quest (nhiệm vụ tân thủ): Chuỗi nhiệm vụ 1 lần duy nhất cho người mới chơi.
 
 **Q13: Nông trại (y!farm) và Máy Chế Biến (y!machine) có gì đặc biệt?**
-**A:** Bạn có thể mua hạt giống (y!shop) và trồng bằng (y!farm). Thời gian thu hoạch gồm: Lúa Mì (30 phút), Hướng Dương (12 tiếng), Ngôi Sao (24 tiếng). Có thể tưới nước (giảm thời gian mọc) hoặc dùng phân bón.
-Sau khi thu hoạch, bạn có thể bán ngay trong y!inv. Hoặc nếu muốn lãi cao hơn, hãy mang nông sản vào Máy Chế Biến (y!machine) để đóng gói thành những thành phẩm giá trị gấp nhiều lần!
+**A:** Bạn có thể mua hạt giống (y!farmshop) và trồng bằng (y!farm). Có **7 loại cây trồng**:
+- 🌾 Lúa Mì: 30 phút | 🥔 Khoai Tây: 1 tiếng (20% được x2 sản lượng) | 🍅 Cà Chua: 3 tiếng
+- 🍓 Dâu Tây: 6 tiếng | 🎃 Bí Ngô: 8 tiếng | 🌻 Hướng Dương: 12 tiếng | ⭐ Ngôi Sao: 24 tiếng
+Thu hoạch xong, bán ngay trong y!bag hoặc mang vào **Máy Chế Biến (y!machine)** để tăng giá trị giao thông!
+
+Máy Chế Biến gồm 3 loại:
+- 🍺 **Thùng Ụ Rượu (Keg)**: Lúa Mì → Bia (x3), Dâu Tây → Rượu Dâu (x3.5), Ngôi Sao → Linh Tửu (x5)
+- 🪫 **Máy Làm Mứt (Jar)**: Cà Chua → Mứt Cà Chua (x2.5), Bí Ngô → Mứt Bí Ngô (x2.5)
+- 🔥 **Lò Rèn (Furnace)**: Quặng + Than → Phôi Kim Loại (x4~x5)
+Mỗi loại máy chỉ chạy 1 recipe một lúc và mất thời gian tương đương trồng cây. Dùng nút bấm trong y!machine hoặc lệnh y!craft để bỏ nguyên liệu vào.
 
 **Q14: Chặt Cây (y!chop) và Đào Mỏ (y!mine) hoạt động thế nào?**
 **A:** Tốn Thể lực (Stamina) cho mỗi lần thực hiện. Thể lực tối đa 100, tự hồi 1 điểm mỗi 18 giây.
-- Chặt cây (y!chop): Thu thập các loại gỗ từ thường đến siêu hiếm. Cẩn thận bị thú dữ cắn mất điểm!
-- Đào mỏ (y!mine): Thu thập đá và quặng (đồng, sắt). Càng đào nhiều, tỉ lệ ra quặng quý càng cao.
+- Chặt cây (y!chop): Thu thập gỗ từ Que Củi → Gỗ Thường → Gỗ Cứng → Nhựa Thông → Nhựa Cây. Riêu cấp cao càng có nhiều cơ hội ra loại hiếm hơn.
+- Đào mỏ (y!mine): Thu thập Đá → Than → Quặng Đồng → Quặng Sắt → Quặng Vàng → Kim Cương. Cuốc cấp cao cho phép ra Kim Cương.
+Cả hai đều có thể nâng cấp nông cụ lên tới Lv4 (Đ Vàng) bằng lệnh y!upgrade!
 
 **Q15: Câu cá (y!fish) cần lưu ý điều gì?**
 **A:** Mỗi lần thả cần (y!fish) tốn 3 Thể lực. Khi cá cắn câu, bạn phải ấn nút "🎣 Kéo Cần!" trong vòng 4.5 giây!
+Có **8 loại cá** từ Rác → Cá Chép → Cá Ngừ → Cá Hồi → Cá Nóc → Mực → Bạch Tuộc → Cá Huyền Thoại. Cại cần cấp cao hơn (Lv2~Lv4) tăng tỉ lệ cá hiếm. **Perfect Catch** (phản xạ trong 2 giây) còn kích hoạt bơ x2 tỉ lệ Bch Tuộc và Cá Huyền Thoại!
+Nâng cấp Cần Câu bằng lệnh y!upgrade. Cần Vàng (Lv4) đặc biệt cần Phiôi Vàng + Bạch Tuộc + Cá Huyền Thoại.
 - "Perfect Catch": Nếu bạn phản xạ kéo cần dưới 2 giây, tỉ lệ xuất hiện Mực và Cá Huyền Thoại sẽ được nhân đôi (x2)!
 
 **Q16: Làm sao để Nâng Cấp công cụ và Chế Tạo (Crafting)?**

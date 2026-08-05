@@ -45,6 +45,43 @@ SEEDS: Dict[str, SeedConfig] = {
         "reward_max": 200,
         "description": "Cây trồng cơ bản, thu hoạch nhanh."
     },
+    "potato": {
+        "name": "Khoai Tây",
+        "icon": "🥔",
+        "grow_time_seconds": 1 * 60 * 60,  # 1 tiếng
+        "cost": 200,
+        "reward_min": 250,
+        "reward_max": 400,
+        "description": "20% cơ hội nhân đôi thu hoạch.",
+        "double_chance": 0.20,  # 20% ra x2 sản lượng
+    },
+    "tomato": {
+        "name": "Cà Chua",
+        "icon": "🍅",
+        "grow_time_seconds": 3 * 60 * 60,  # 3 tiếng
+        "cost": 400,
+        "reward_min": 600,
+        "reward_max": 900,
+        "description": "Nguyên liệu chế biến Mứt Cà Chua."
+    },
+    "strawberry": {
+        "name": "Dâu Tây",
+        "icon": "🍓",
+        "grow_time_seconds": 6 * 60 * 60,  # 6 tiếng
+        "cost": 800,
+        "reward_min": 1500,
+        "reward_max": 2000,
+        "description": "Nguyên liệu chế biến Rượu Dâu cao cấp."
+    },
+    "pumpkin": {
+        "name": "Bí Ngô",
+        "icon": "🎃",
+        "grow_time_seconds": 8 * 60 * 60,  # 8 tiếng
+        "cost": 1200,
+        "reward_min": 2500,
+        "reward_max": 3500,
+        "description": "Nguyên liệu chế biến Mứt Bí Ngô thơm ngon."
+    },
     "sunflower": {
         "name": "Hướng Dương",
         "icon": "🌻",
@@ -61,6 +98,6 @@ SEEDS: Dict[str, SeedConfig] = {
         "cost": 2000,
         "reward_min": 5000,
         "reward_max": 10000,
-        "description": "Vật phẩm hiếm, có yếu tố ngẫu nhiên."
+        "description": "Vật phẩm hiếm, nguyên liệu chế Linh Tửu."
     }
 }
