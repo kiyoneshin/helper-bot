@@ -365,18 +365,18 @@ class MarriageCog(commands.Cog):
             formatted_promise = ""
             for uid_str in (str(mar["user1_id"]), str(mar["user2_id"])):
                 member2 = ctx.guild.get_member(int(uid_str)) if ctx.guild else None if ctx.guild else None
-                p_name = discord.utils.escape_markdown(member2.display_name) if member2 else f"User {uid_str}"
+                p_name = member2.display_name.replace('*', '').strip() if member2 else f"User {uid_str}"
                 if uid_str in promise_data:
                     ptext = promise_data[uid_str]
                     ptext_lines = ptext.split('\n')
                     for i, line in enumerate(ptext_lines):
                         if line.strip():
                             if i == 0:
-                                formatted_promise += f"💖 **{p_name}**: {line.strip()}\n"
+                                formatted_promise += f"💖 ***{p_name}***: {line.strip()}\n"
                             else:
                                 formatted_promise += f"    {line.strip()}\n"
                 else:
-                    formatted_promise += f"💔 **{p_name}**: chưa có lời thề non hẹn biển nào...\n"
+                    formatted_promise += f"💔 ***{p_name}***: chưa có lời thề non hẹn biển nào...\n"
                 
             marry_date_str = mar['marry_date'].strftime('%d/%m/%Y')
             
