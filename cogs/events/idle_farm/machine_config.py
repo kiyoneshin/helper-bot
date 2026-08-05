@@ -21,11 +21,13 @@ class RecipeConfig(TypedDict):
     description: str
 
 class MachineConfig(TypedDict):
+    id: int
     name: str
     icon: str
     description: str
     db_key: str
     recipes: List[str]           # danh sách recipe_id
+    ingredients: Dict[str, int]  # nguyên liệu để chế tạo ra máy
 
 # ---------------------------------------------------------------------------
 # SẢN PHẨM THỦ CÔNG (ARTISAN GOODS)
@@ -143,24 +145,34 @@ RECIPES: Dict[str, RecipeConfig] = {
 
 MACHINES: Dict[str, MachineConfig] = {
     "keg": {
+        "id": 61,
         "name": "Thùng Ủ Rượu",
         "icon": "🍺",
         "description": "Biến nông sản thành đồ uống giá trị cao.",
         "db_key": "keg",
         "recipes": ["keg_beer", "keg_wine_strawb", "keg_spirit_star"],
+        "ingredients": {"wood_normal": 30, "copper_bar": 1, "iron_bar": 1}
     },
     "jar": {
+        "id": 62,
         "name": "Máy Làm Mứt",
         "icon": "🫙",
         "description": "Chế biến rau củ thành mứt thơm ngon.",
         "db_key": "jar",
         "recipes": ["jar_tomato_jam", "jar_pumpkin_jam"],
+        "ingredients": {"wood_normal": 30, "stone": 20, "coal": 2}
     },
     "furnace": {
+        "id": 63,
         "name": "Lò Rèn",
         "icon": "🔥",
         "description": "Luyện quặng thành phôi kim loại cứng.",
         "db_key": "furnace",
         "recipes": ["furnace_copper", "furnace_iron", "furnace_gold"],
+        "ingredients": {"stone": 20, "copper_ore": 5}
     },
+}
+
+MACHINE_BY_ID: Dict[int, str] = {
+    machine["id"]: key for key, machine in MACHINES.items()
 }
