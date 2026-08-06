@@ -42,6 +42,26 @@ class SystemCog(commands.Cog, name="System"):
         except Exception as e:
             await ctx.send(f"❌ Lỗi khi tải lại `{extension}`:\n```py\n{e}\n```")
 
+    @commands.hybrid_command(name="prefix")
+    @commands.has_permissions(administrator=True)
+    async def prefix_cmd(self, ctx: commands.Context, new_prefix: str) -> None:
+        """🔧 [Admin] Đổi tiền tố (prefix) của bot trên toàn server."""
+        if len(new_prefix) > 10:
+            await ctx.send("❌ Prefix không được dài quá 10 ký tự!")
+            return
+            
+        try:
+            sql = '''
+                INSERT INTO bot_configs (config_key, config_value) 
+                VALUES ('prefix', $1)
+                ON CONFLICT (config_key) DO UPDATE SET config_value = EXCLUDED.config_value
+            '''
+            await self.bot.db_pool.execute(sql, new_prefix)
+            self.bot.custom_prefix = new_prefix
+            await ctx.send(f"✅ Đã đổi tiền tố của bot thành: `{new_prefix}`\n(Từ giờ hãy dùng `{new_prefix}help`)")
+        except Exception as e:
+            await ctx.send(f"❌ Lỗi khi đổi prefix: `{e}`")
+
 
 async def setup(bot: commands.Bot) -> None:
     await bot.add_cog(SystemCog(bot))

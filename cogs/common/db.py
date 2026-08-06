@@ -209,6 +209,14 @@ async def init_all_tables(bot: Any) -> bool:
                 );
             ''')
             
+            # Bảng cấu hình bot (dành cho prefix, thiết lập chung)
+            await conn.execute('''
+                CREATE TABLE IF NOT EXISTS bot_configs (
+                    config_key VARCHAR(50) PRIMARY KEY,
+                    config_value TEXT
+                );
+            ''')
+            
         log.info("🌸 Toàn bộ Database (Staff + Event) đã được khởi tạo và cấu trúc chuẩn xác!")
         return True
     except Exception as e:

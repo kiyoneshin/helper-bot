@@ -31,7 +31,10 @@ def get_custom_prefix(bot, message: discord.Message):
     """
     Hàm xác định prefix cho mỗi tin nhắn gửi lên.
     """
-    prefixes = ["y!", "Y!"]
+    custom_pfx = getattr(bot, "custom_prefix", "y!")
+    prefixes = [custom_pfx, custom_pfx.upper(), custom_pfx.lower()]
+    prefixes = list(dict.fromkeys(prefixes)) # Xóa phần tử trùng lặp
+    
     prefixes.extend(commands.when_mentioned(bot, message))
     
     if message.reference and isinstance(message.reference.resolved, discord.Message):
@@ -50,6 +53,7 @@ class StaffBot(commands.Bot):
         )
         self.db_pool: Optional[asyncpg.Pool] = None
         self.trap_channel_id: int = TRAP_CHANNEL_ID
+        self.custom_prefix: str = "y!"
 
     async def setup_hook(self):
         # Khởi tạo kết nối PostgreSQL
@@ -58,6 +62,15 @@ class StaffBot(commands.Bot):
             log.info("Kết nối PostgreSQL thành công!")
             from cogs.common.db import init_all_tables
             await init_all_tables(self)
+            
+            # Load custom_prefix
+            try:
+                row = await self.db_pool.fetchrow("SELECT config_value FROM bot_configs WHERE config_key = 'prefix'")
+                if row and row["config_value"]:
+                    self.custom_prefix = row["config_value"]
+            except Exception as e:
+                log.error(f"Lỗi khi nạp custom_prefix: {e}")
+                
         else:
             log.error("Không thể khởi tạo db_pool!")
 
