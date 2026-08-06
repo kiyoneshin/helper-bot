@@ -149,8 +149,42 @@ class CooldownsCog(commands.Cog):
                 else:
                     machine_str = f"0/{total_machines} ({format_timedelta(timedelta(seconds=dur))})"
                     
+        # Check Farm Crops
+        total_slots = farm_data.get("slots", 3)
+        crops = farm_data.get("crops", {})
+        total_ready = 0
+        total_growing = 0
+        earliest_crop = float('inf')
+
+        from cogs.events.idle_farm.farm_db import calculate_crop_status
+        from cogs.events.idle_farm.config import STATUS_READY, STATUS_GROWING, STATUS_WITHERED
+
+        for slot_id in range(1, total_slots + 1):
+            slot_id_str = str(slot_id)
+            if slot_id_str in crops:
+                status, remaining = calculate_crop_status(crops[slot_id_str], slot_id_str, crops)
+                if status == STATUS_READY or status == STATUS_WITHERED:
+                    total_ready += 1
+                elif status == STATUS_GROWING:
+                    total_growing += 1
+                    if remaining < earliest_crop:
+                        earliest_crop = remaining
+
+        farm_ready = False
+        farm_str = ""
+        if total_growing == 0 and total_ready == 0:
+            farm_ready = True
+            farm_str = f"--/{total_slots}"
+        elif total_ready > 0:
+            farm_ready = True
+            farm_str = f"{total_ready}/{total_slots} 🧺"
+        else:
+            farm_ready = False
+            farm_str = f"0/{total_slots} ({format_timedelta(timedelta(seconds=earliest_crop))})"
+
         progress_lines = [
-            _format_cd(stamina_ready, "chop | fish | mine | farm", stamina_str),
+            _format_cd(stamina_ready, "chop | fish | mine", stamina_str),
+            _format_cd(farm_ready, "farm", farm_str),
             _format_cd(machine_ready, "machine / craft", machine_str),
         ]
         
@@ -159,7 +193,7 @@ class CooldownsCog(commands.Cog):
         # -------------------------------------------------------------
         # 3. ACTIONS (💞 Tương tác cặp đôi)
         # -------------------------------------------------------------
-        marriage_cog = self.bot.get_cog("Marriage")
+        marriage_cog = self.bot.get_cog("MarriageCog")
         actions_lines = []
         if marriage_cog:
             user_cd_dict = marriage_cog.action_cooldowns.get(user_id, {})
