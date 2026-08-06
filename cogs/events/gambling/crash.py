@@ -472,7 +472,7 @@ class CrashGame(commands.Cog):
     @crash_cmd.error
     async def crash_cmd_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument)):
-            await ctx.send(f"❌ {ctx.author.mention} Tính lên tàu bay dạo không vé hả? Cú pháp: `y!crash <tiền_cược>`. Để biết thêm chi tiết hãy xài lệnh `y!ehelp crash`")
+            await ctx.send(f"❌ {ctx.author.mention} Tính lên tàu bay dạo không vé hả? Cú pháp: `{ctx.prefix}crash <tiền_cược>`. Để biết thêm chi tiết hãy xài lệnh `{ctx.prefix}ehelp crash`")
         elif isinstance(error, commands.CommandInvokeError):
             log.error("Loi crash_cmd: %s", error.original, exc_info=True)
             await ctx.send(

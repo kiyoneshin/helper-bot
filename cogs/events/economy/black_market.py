@@ -175,7 +175,7 @@ class BlackMarketCog(commands.Cog):
         """🛒 Mua vật phẩm từ Chợ Đêm theo mã số ID vật phẩm"""
         now_vn = datetime.now(UTC7)
         if not (0 <= now_vn.hour < 2):
-            await ctx.send("❌ Chợ Đêm hiện đang đóng cửa! Gõ `y!choden` để xem thời gian mở lại.", delete_after=5.0)
+            await ctx.send("❌ Chợ Đêm hiện đang đóng cửa! Gõ `{ctx.prefix}choden` để xem thời gian mở lại.", delete_after=5.0)
             return
 
         uid = str(ctx.author.id)

@@ -915,7 +915,7 @@ class MultiDice(commands.Cog):
     @multidice_cmd.error
     async def multidice_cmd_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument)):
-            await ctx.send(f"❌ {ctx.author.mention} Lắc xí ngầu tập thể mà không có cắc bạc nào à? Cú pháp: `y!md <tiền_cược> <@user1> <@user2>...`. Để biết thêm chi tiết hãy xài lệnh `y!ehelp md`")
+            await ctx.send(f"❌ {ctx.author.mention} Lắc xí ngầu tập thể mà không có cắc bạc nào à? Cú pháp: `{ctx.prefix}md <tiền_cược> <@user1> <@user2>...`. Để biết thêm chi tiết hãy xài lệnh `{ctx.prefix}ehelp md`")
 
 
     async def _resolve_game(

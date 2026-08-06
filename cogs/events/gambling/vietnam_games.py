@@ -152,7 +152,7 @@ class VietnamGames(commands.Cog):
     @taixiu_cmd.error
     async def taixiu_cmd_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument)):
-            await ctx.send(f"❌ {ctx.author.mention} Muốn làm đại gia Tài Xỉu mà không đặt cược à? Cú pháp: `y!tx <tai/xiu> <tiền_cược | all>`. Để biết thêm chi tiết hãy xài lệnh `y!ehelp tx`")
+            await ctx.send(f"❌ {ctx.author.mention} Muốn làm đại gia Tài Xỉu mà không đặt cược à? Cú pháp: `{ctx.prefix}tx <tai/xiu> <tiền_cược | all>`. Để biết thêm chi tiết hãy xài lệnh `{ctx.prefix}ehelp tx`")
 
 
     async def _exec_taixiu(self, ctx: commands.Context, choice: str, bet: int, uid: str, balance: int) -> None:

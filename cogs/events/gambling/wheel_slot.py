@@ -262,7 +262,7 @@ class WheelSlots(commands.Cog):
     @wheel_cmd.error
     async def wheel_cmd_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument)):
-            await ctx.send(f"❌ {ctx.author.mention} Quay tay bằng không khí à? Cú pháp: `y!wheel <tiền_cược | all>`. Để biết thêm chi tiết hãy xài lệnh `y!ehelp wheel`")
+            await ctx.send(f"❌ {ctx.author.mention} Quay tay bằng không khí à? Cú pháp: `{ctx.prefix}wheel <tiền_cược | all>`. Để biết thêm chi tiết hãy xài lệnh `{ctx.prefix}ehelp wheel`")
 
 
     async def _exec_wheel(self, ctx: commands.Context, bet: int, uid: str, balance: int) -> None:
@@ -366,7 +366,7 @@ class WheelSlots(commands.Cog):
     @slots_cmd.error
     async def slots_cmd_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument)):
-            await ctx.send(f"❌ {ctx.author.mention} Đút xèng vào máy đi chứ! Cú pháp: `y!slots <tiền_cược | all>`. Để biết thêm chi tiết hãy xài lệnh `y!ehelp slots`")
+            await ctx.send(f"❌ {ctx.author.mention} Đút xèng vào máy đi chứ! Cú pháp: `{ctx.prefix}slots <tiền_cược | all>`. Để biết thêm chi tiết hãy xài lệnh `{ctx.prefix}ehelp slots`")
 
 
     async def _exec_slots(self, ctx: commands.Context, bet: int, uid: str, balance: int) -> None:
