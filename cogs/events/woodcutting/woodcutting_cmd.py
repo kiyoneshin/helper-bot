@@ -17,7 +17,7 @@ class WoodcuttingCog(commands.Cog, name="Woodcutting"):
         """🪓 Vào Rừng đốn củi."""
         user_id = str(ctx.author.id)
 
-        stamina = await get_and_update_stamina(self.bot, user_id)
+        stamina = await get_and_update_stamina(self.bot, user_id, ctx.channel.id)
         farm_data = await get_farm_data(self.bot, user_id)
 
         embed = build_woodcutting_embed(ctx.author, stamina, farm_data)

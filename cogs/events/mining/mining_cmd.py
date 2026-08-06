@@ -24,7 +24,7 @@ class MiningCog(commands.Cog, name="Mining"):
         user_id = str(ctx.author.id)
 
         # 1. Tính thể lực hiện tại (bao gồm hồi phục theo thời gian)
-        stamina = await get_and_update_stamina(self.bot, user_id)
+        stamina = await get_and_update_stamina(self.bot, user_id, ctx.channel.id)
 
         # 2. Lấy farm_data để hiển thị kho quặng
         farm_data = await get_farm_data(self.bot, user_id)

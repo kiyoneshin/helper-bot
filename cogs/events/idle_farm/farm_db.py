@@ -78,7 +78,7 @@ async def get_farm_data(bot: commands.Bot, user_id: str) -> Dict[str, Any]:
         log.warning(f"Lỗi parse farm_data cho {user_id}: {e}")
         return default_data
 
-async def get_and_update_stamina(bot: commands.Bot, user_id: str) -> int:
+async def get_and_update_stamina(bot: commands.Bot, user_id: str, channel_id: int | None = None) -> int:
     """
     Tính toán và cập nhật thể lực hiện tại dựa trên thời gian đã trôi qua.
     Chống gian lận: elapsed time bị kẹp tối đa bằng thời gian cần để đầy thể lực.
@@ -102,10 +102,18 @@ async def get_and_update_stamina(bot: commands.Bot, user_id: str) -> int:
 
     farm_data["stamina"] = new_stamina
     farm_data["last_stamina_update"] = now
+    
+    if channel_id:
+        farm_data["last_channel_id"] = channel_id
+        
+    if new_stamina < MAX_STAMINA:
+        farm_data["stamina_notified"] = False
+    else:
+        farm_data["stamina_notified"] = True
+
     await save_farm_data(bot, user_id, farm_data)
 
     return new_stamina
-
 async def save_farm_data(bot: commands.Bot, user_id: str, farm_data: Dict[str, Any]) -> None:
     """
     Lưu dữ liệu farm ngược lại CSDL.

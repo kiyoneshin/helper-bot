@@ -346,6 +346,16 @@ CMD_DATA: dict[str, dict] = {
         "examples": ["y!divorce", "y!lydi"],
         "note": "Hành động này sẽ xóa toàn bộ điểm thân mật và thú cưng chung.",
     },
+    "cooldowns": {
+        "name": "Bảng Hồi Chiêu",
+        "emoji": "⏱️",
+        "short": "Xem thời gian hồi chiêu của tất cả các lệnh.",
+        "aliases": ["cd", "rd"],
+        "cooldown": None,
+        "usage": "y!cooldowns",
+        "examples": ["y!cd"],
+        "note": "Giúp bạn kiểm soát tiến độ cày cuốc. Bot tự động ping khi Thể Lực đầy 100/100.",
+    },
     "promise": {
         "name": "Lời Thề",
         "emoji": "💌",

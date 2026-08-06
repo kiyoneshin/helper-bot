@@ -23,7 +23,7 @@ class FishingCog(commands.Cog, name="Fishing"):
         user_id = str(ctx.author.id)
 
         # 1. Cập nhật & tính thể lực, đồng thời lấy farm_data (có rod_level)
-        stamina   = await get_and_update_stamina(self.bot, user_id)
+        stamina = await get_and_update_stamina(self.bot, user_id, ctx.channel.id)
         farm_data = await get_farm_data(self.bot, user_id)
 
         # 2. Tạo giao diện và gửi
