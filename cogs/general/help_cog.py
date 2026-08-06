@@ -366,7 +366,7 @@ def build_home_embed(bot: commands.Bot, author: discord.Member | discord.User) -
     return embed
 
 
-def build_category_embed(cat_name: str) -> discord.Embed:
+def build_category_embed(cat_name: str, prefix: str = 'y!') -> discord.Embed:
     cat = CATEGORY_DATA.get(cat_name)
     if not cat:
         return discord.Embed(title="❌ Không tìm thấy danh mục", color=discord.Color.red())
@@ -380,13 +380,13 @@ def build_category_embed(cat_name: str) -> discord.Embed:
         if cmd:
             aliases_list = cmd.get("aliases", [])
             if len(aliases_list) > 3:
-                aliases_str = f" · `{'`, `'.join(f'{ctx.prefix}{a}' for a in aliases_list[:3])}` (+{len(aliases_list)-3})"
+                aliases_str = f" · `{'`, `'.join(f'{prefix}{a}' for a in aliases_list[:3])}` (+{len(aliases_list)-3})"
             elif aliases_list:
-                aliases_str = f" · `{'`, `'.join(f'{ctx.prefix}{a}' for a in aliases_list)}`"
+                aliases_str = f" · `{'`, `'.join(f'{prefix}{a}' for a in aliases_list)}`"
             else:
                 aliases_str = ""
             embed.add_field(
-                name=f"{cmd['emoji']} `{ctx.prefix}{key}`{aliases_str}",
+                name=f"{cmd['emoji']} `{prefix}{key}`{aliases_str}",
                 value=cmd["short"],
                 inline=False,
             )
@@ -394,7 +394,7 @@ def build_category_embed(cat_name: str) -> discord.Embed:
     return embed
 
 
-def build_detail_embed(cmd_key: str) -> discord.Embed:
+def build_detail_embed(cmd_key: str, prefix: str = 'y!') -> discord.Embed:
     cmd = CMD_DATA.get(cmd_key)
     if not cmd:
         return discord.Embed(title="❌ Không tìm thấy lệnh", color=discord.Color.red())
@@ -404,7 +404,7 @@ def build_detail_embed(cmd_key: str) -> discord.Embed:
         color=COLOR_THEME,
     )
     if cmd.get("aliases"):
-        embed.add_field(name="📛 Lệnh rút gọn/Lệnh thay thế", value=" · ".join(f"`{ctx.prefix}{a}`" for a in cmd["aliases"]), inline=True)
+        embed.add_field(name="📛 Lệnh rút gọn/Lệnh thay thế", value=" · ".join(f"`{prefix}{a}`" for a in cmd["aliases"]), inline=True)
     if cmd.get("cooldown"):
         embed.add_field(name="⏱️ Cooldown", value=cmd["cooldown"], inline=True)
     embed.add_field(name="\u200b", value="\u200b", inline=False)
@@ -462,7 +462,7 @@ class _CategorySelect(discord.ui.Select):
 
     async def callback(self, interaction: discord.Interaction):
         cat_name = self.values[0]
-        embed = build_category_embed(cat_name)
+        embed = build_category_embed(cat_name, prefix=getattr(self.bot, 'custom_prefix', 'y!'))
         view = CategoryView(self.bot, self.author, cat_name)
         view.message = self.view.message  # type: ignore
         await interaction.response.edit_message(embed=embed, view=view)
@@ -562,7 +562,7 @@ class _BackButton(discord.ui.Button):
 
     async def callback(self, interaction: discord.Interaction):
         view: DetailView = self.view  # type: ignore
-        embed = build_category_embed(view.cat_name)
+        embed = build_category_embed(view.cat_name, prefix=getattr(view.bot, 'custom_prefix', 'y!'))
         new_view = CategoryView(view.bot, view.author, view.cat_name)
         new_view.message = view.message
         await interaction.response.edit_message(embed=embed, view=new_view)
@@ -612,7 +612,7 @@ class HelpCog(commands.Cog):
                         break
                 
                 if target_cat:
-                    embed = build_detail_embed(cmd_key)
+                    embed = build_detail_embed(cmd_key, prefix=getattr(self.bot, 'custom_prefix', 'y!'))
                     view = DetailView(self.bot, ctx.author, target_cat)
                     view.message = await ctx.send(embed=embed, view=view)
                     return

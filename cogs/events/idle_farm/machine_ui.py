@@ -433,7 +433,7 @@ class MachineView(discord.ui.View):
                     
             if not idle_slot_id:
                 return await interaction.response.send_message(
-                    f"❌ Bạn không có cái {MACHINES[machine_id]['name']} nào đang trống! Vui lòng Thu Hoạch máy cũ hoặc xây thêm máy mới bằng lệnh `{ctx.prefix}craft`.", 
+                    f"❌ Bạn không có cái {MACHINES[machine_id]['name']} nào đang trống! Vui lòng Thu Hoạch máy cũ hoặc xây thêm máy mới bằng lệnh `{getattr(self.bot, 'custom_prefix', 'y!')}craft`.", 
                     ephemeral=True
                 )
 

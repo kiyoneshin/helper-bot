@@ -1,4 +1,4 @@
-﻿"""
+"""
 duck_race.py — Cog Đua Vịt Sự Kiện (Scheduled Duck Race)
 =========================================================
 Chu kỳ: Mỗi 4 tiếng một lần (0h, 4h, 8h, 12h, 16h, 20h — giờ Việt Nam UTC+7)

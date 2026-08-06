@@ -238,7 +238,7 @@ class BankingCog(commands.Cog):
                 await debt_channel.send(
                     f"🚨🚨 **CẢNH BÁO VỠ NỢ** 🚨🚨\n"
                     f"<@{uid}> đã âm vốn liên tiếp 2 ngày! Ngân hàng đã **SIẾT TÀI SẢN & KHÓA TÀI KHOẢN**.\n"
-                    f"Trạng thái Hôn Nhân đã bị hủy bỏ! Yêu cầu sử dụng lệnh `{ctx.prefix}trano` để thanh toán khoản nợ **{new_debt:,.0f}** ngay lập tức!"
+                    f"Trạng thái Hôn Nhân đã bị hủy bỏ! Yêu cầu sử dụng lệnh `{getattr(self.bot, 'custom_prefix', 'y!')}trano` để thanh toán khoản nợ **{new_debt:,.0f}** ngay lập tức!"
                 )
                 
         log.info("[Banking] Hoàn tất quét lãi suất hàng ngày.")

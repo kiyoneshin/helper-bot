@@ -377,7 +377,7 @@ class InventorySelect(discord.ui.Select):
                 label="Quà Tặng",
                 value="gift",
                 emoji="🎁",
-                description=f"Quà để tặng người thương ({ctx.prefix}gift)",
+                description=f"Quà để tặng người thương ({getattr(self.bot, 'custom_prefix', 'y!')}gift)",
                 default=(current == "gift"),
             ),
         ]
@@ -546,7 +546,7 @@ class UnifiedInventoryCog(commands.Cog):
     @commands.hybrid_command(
         name="use",
         aliases=["dung", "xai"],
-        description=f"✨ Dùng vật phẩm theo ID số. Cú pháp: {ctx.prefix}use <id> [@mục tiêu]",
+        description=f"✨ Dùng vật phẩm theo ID số. Cú pháp: {getattr(self.bot, 'custom_prefix', 'y!')}use <id> [@mục tiêu]",
     )
     async def use_cmd(
         self,
@@ -558,7 +558,7 @@ class UnifiedInventoryCog(commands.Cog):
         item = get_item_by_id(item_id)
         if item is None:
             await ctx.send(
-                f"❌ Không tìm thấy vật phẩm với ID `{item_id}`! Dùng `{ctx.prefix}inv` để xem túi đồ.",
+                f"❌ Không tìm thấy vật phẩm với ID `{item_id}`! Dùng `{getattr(self.bot, 'custom_prefix', 'y!')}inv` để xem túi đồ.",
                 delete_after=5.0,
             )
             return

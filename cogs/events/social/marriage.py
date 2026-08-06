@@ -268,7 +268,8 @@ class PetAdoptConfirmView(discord.ui.View):
         for child in self.children:
             if isinstance(child, (discord.ui.Button, discord.ui.Select)):
                 child.disabled = True
-        await interaction.response.edit_message(content=f"🎉 Bạn đã đổi thú cưng thành công! Chào mừng bé **{self.new_base_name} Sơ Sinh** đến với gia đình! (Kinh nghiệm thú cưng đã reset về 0). Dùng `{ctx.prefix}namepet` để đặt tên nhé.", view=self)
+        prefix = getattr(self.bot, 'custom_prefix', 'y!')
+        await interaction.response.edit_message(content=f"🎉 Bạn đã đổi thú cưng thành công! Chào mừng bé **{self.new_base_name} Sơ Sinh** đến với gia đình! (Kinh nghiệm thú cưng đã reset về 0). Dùng `{prefix}namepet` để đặt tên nhé.", view=self)
 
     @discord.ui.button(label="Hủy bỏ", style=discord.ButtonStyle.gray)
     async def cancel(self, interaction: discord.Interaction, button: discord.ui.Button):

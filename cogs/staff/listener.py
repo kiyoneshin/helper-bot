@@ -94,9 +94,10 @@ class StaffListenerCog(commands.Cog):
                         self.reply_tracker[staff_id] = []
                         
                         display_role = db_role
+                        prefix = getattr(self.bot, 'custom_prefix', 'y!')
                         reminder_text = (
                             f"Nếu bạn thấy {display_role} <@{staff_id}> nhiệt tình, "
-                            f"hãy đừng ngần ngại bỏ ra 1 phút sử dụng lệnh `{ctx.prefix}menu` chọn đến "
+                            f"hãy đừng ngần ngại bỏ ra 1 phút sử dụng lệnh `{prefix}menu` chọn đến "
                             f"{display_role} để vote cho họ nhé!"
                         )
                         await message.channel.send(reminder_text)
