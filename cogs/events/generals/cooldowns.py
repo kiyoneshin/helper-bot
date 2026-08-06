@@ -34,8 +34,12 @@ def format_timedelta(td: timedelta) -> str:
 
 def _format_cd(is_ready: bool, label: str, duration_str: str = "") -> str:
     if is_ready:
-        return f"✅ ~~ **{label}**"
-    return f"🕒 ~~ **{label}** ({duration_str})"
+        if duration_str:
+            return f"✅ — **{label}** ({duration_str})"
+        return f"✅ — **{label}**"
+    if duration_str:
+        return f"🕒 — **{label}** ({duration_str})"
+    return f"🕒 — **{label}**"
 
 class CooldownsCog(commands.Cog):
     """⏱️ Bảng hiển thị thời gian hồi chiêu của các lệnh."""
@@ -101,47 +105,56 @@ class CooldownsCog(commands.Cog):
             _format_cd(work_ready, "work", work_str)
         ]
         
-        embed.add_field(name="🎁 Rewards", value="\\n".join(rewards_lines), inline=False)
+        embed.add_field(name="🎁 Rewards", value="\n".join(rewards_lines), inline=False)
         
         # -------------------------------------------------------------
         # 2. PROGRESS (✨ Tiến độ)
         # -------------------------------------------------------------
         farm_data = await get_farm_data(self.bot, user_id)
         from cogs.events.mining.mining_config import MAX_STAMINA, STAMINA_REGEN_INTERVAL_SECONDS
-        stamina = await get_and_update_stamina(self.bot, user_id, ctx.channel.id) # Gán channel_id vào đây để Auto-Ping hoạt động khi họ check cd
+        stamina = await get_and_update_stamina(self.bot, user_id, ctx.channel.id) 
         
-        stamina_ready = (stamina == MAX_STAMINA)
-        stamina_str = ""
+        stamina_ready = (stamina >= MAX_STAMINA)
+        stamina_str = f"{stamina}/{MAX_STAMINA}"
         if not stamina_ready:
             missing = MAX_STAMINA - stamina
             seconds_to_full = missing * STAMINA_REGEN_INTERVAL_SECONDS
-            stamina_str = format_timedelta(timedelta(seconds=seconds_to_full))
+            stamina_str += f" ({format_timedelta(timedelta(seconds=seconds_to_full))})"
             
         machine_queue = _get_queue_list(farm_data)
         machine_ready = False
         machine_str = ""
         
-        if not machine_queue:
+        total_machines = len(machine_queue)
+        if total_machines == 0:
             machine_ready = True
+            machine_str = "--/0"
         else:
-            # Check if any is done
-            if any(item.get("status") == "done" for _, item in machine_queue):
+            total_ready = sum(1 for _, item in machine_queue if item.get("status") == "done")
+            total_processing = sum(1 for _, item in machine_queue if item.get("status") == "processing")
+            
+            if total_processing == 0 and total_ready == 0:
                 machine_ready = True
+                machine_str = f"--/{total_machines}"
+            elif total_ready > 0:
+                machine_ready = True
+                machine_str = f"{total_ready}/{total_machines} 🧺"
             else:
-                # Find earliest finish time
+                machine_ready = False
                 earliest = min((item.get("finish_time", 0) for _, item in machine_queue if item.get("status") == "processing"), default=0)
-                if earliest > now_ts:
-                    machine_ready = False
-                    machine_str = format_timedelta(timedelta(seconds=earliest - now_ts))
-                else:
+                dur = earliest - now_ts
+                if dur <= 0:
                     machine_ready = True
+                    machine_str = f"Sẵn sàng/{total_machines}"
+                else:
+                    machine_str = f"0/{total_machines} ({format_timedelta(timedelta(seconds=dur))})"
                     
         progress_lines = [
             _format_cd(stamina_ready, "chop | fish | mine | farm", stamina_str),
             _format_cd(machine_ready, "machine / craft", machine_str),
         ]
         
-        embed.add_field(name="✨ Progress", value="\\n".join(progress_lines), inline=False)
+        embed.add_field(name="✨ Progress", value="\n".join(progress_lines), inline=False)
         
         # -------------------------------------------------------------
         # 3. ACTIONS (💞 Tương tác cặp đôi)
@@ -155,25 +168,22 @@ class CooldownsCog(commands.Cog):
                 tier_actions = [k for k, v in ACTIONS.items() if v["tier"] == tier]
                 if not tier_actions: continue
                 
-                # Check cooldowns for these actions
+                tier_parts = []
                 for action in tier_actions:
                     last_time = user_cd_dict.get(action, 0)
                     cd_seconds = ACTION_TIERS[tier]["cd"]
-                    
-                    # Cần lấy buff cooldown từ partner, nhưng để nhanh ta dùng cd gốc 
-                    # vì cd thực tế được check khi chạy lệnh, nếu họ dùng lệnh sẽ được giảm
                     passed = now_ts - last_time
+                    
                     if passed < cd_seconds:
-                        actions_lines.append(_format_cd(False, action, format_timedelta(timedelta(seconds=cd_seconds - passed))))
+                        rem = cd_seconds - passed
+                        tier_parts.append(f"{action} {format_timedelta(timedelta(seconds=rem))}")
                     else:
-                        actions_lines.append(_format_cd(True, action))
+                        tier_parts.append(f"{action} ✅")
+                        
+                actions_lines.append(f"**Tier {tier}:** " + " — ".join(tier_parts))
                         
         if actions_lines:
-            # Chỉ hiển thị 10 action tiêu biểu nhất hoặc gom nhóm nếu quá nhiều
-            if len(actions_lines) > 8:
-                embed.add_field(name="💞 Actions", value="\\n".join(actions_lines[:8]) + "\\n*... và nhiều hành động khác*", inline=False)
-            else:
-                embed.add_field(name="💞 Actions", value="\\n".join(actions_lines), inline=False)
+            embed.add_field(name="💞 Actions", value="\n".join(actions_lines), inline=False)
 
         
         embed.set_footer(text="Gợi ý: Hệ thống sẽ tự động nhắn tin (Ping) nhắc nhở bạn khi Thể Lực hồi đầy 100/100!")
