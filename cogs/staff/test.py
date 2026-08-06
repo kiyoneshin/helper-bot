@@ -22,7 +22,7 @@ def is_tester():
         if ctx.author.id not in TESTER_IDS:
             await ctx.send(
                 "⚠️ **Quyền truy cập bị từ chối!**\n"
-                "➡️ Các lệnh `y!test_...` chỉ dành riêng cho người kiểm thử hệ thống (Developer/Tester)."
+                f"➡️ Các lệnh `{ctx.prefix}test_...` chỉ dành riêng cho người kiểm thử hệ thống (Developer/Tester)."
             )
             return False
         return True

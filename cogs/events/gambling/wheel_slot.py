@@ -235,7 +235,8 @@ class WheelSlots(commands.Cog):
 
     @commands.hybrid_command(
         name="wheel",
-        description=f"Quay vòng may mắn — {ctx.prefix}wheel <tiền_cược>",
+        aliases=["vqmm"],
+        description="Quay vòng may mắn — Cú pháp: wheel <tiền_cược>",
     )
     async def wheel_cmd(self, ctx: commands.Context, bet_raw: str) -> None:
         """
@@ -340,8 +341,8 @@ class WheelSlots(commands.Cog):
 
     @commands.hybrid_command(
         name="slots",
-        aliases=["slot"],
-        description=f"Chơi Máy Xẻng (Slots) — {ctx.prefix}slots <tiền_cược>",
+        aliases=["mayxeng"],
+        description="Chơi Máy Xẻng (Slots) — Cú pháp: slots <tiền_cược>",
     )
     async def slots_cmd(self, ctx: commands.Context, bet_raw: str) -> None:
         """

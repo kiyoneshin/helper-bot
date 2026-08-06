@@ -93,7 +93,7 @@ class CooldownsCog(commands.Cog):
         work_str = ""
         work_cog = self.bot.get_cog("WorkCog")
         if work_cog:
-            last_work = work_cog.cooldowns.get(ctx.author.id, 0)
+            last_work = getattr(work_cog, 'cooldowns', {}).get(ctx.author.id, 0)
             passed = now_ts - last_work
             if passed < 10 * 60:
                 work_ready = False
@@ -196,7 +196,7 @@ class CooldownsCog(commands.Cog):
         marriage_cog = self.bot.get_cog("MarriageCog")
         actions_lines = []
         if marriage_cog:
-            user_cd_dict = marriage_cog.action_cooldowns.get(user_id, {})
+            user_cd_dict = getattr(marriage_cog, 'action_cooldowns', {}).get(user_id, {})
             # Group actions by tier
             for tier in [1, 2, 3, 4]:
                 tier_actions = [k for k, v in ACTIONS.items() if v["tier"] == tier]

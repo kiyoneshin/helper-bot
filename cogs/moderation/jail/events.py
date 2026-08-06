@@ -59,7 +59,8 @@ class JailEvents(commands.Cog):
             return
 
         # Bỏ qua lệnh (bắt đầu bằng prefix)
-        if message.content.startswith(("y!", "!", "/", ".")):
+        custom_prefix = getattr(self.bot, 'custom_prefix', 'y!')
+        if message.content.startswith((custom_prefix, "!", "/", ".")):
             return
 
         # Bỏ qua tin nhắn trống (chỉ có attachment/sticker/embed)

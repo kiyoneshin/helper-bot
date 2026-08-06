@@ -37,16 +37,17 @@ def _build_regular_embed(
     author: discord.Member | discord.User,
     inv: dict[str, int],
     category: str,
+    prefix: str = 'y!',
 ) -> discord.Embed:
     """
     Xây dựng Embed cho vật phẩm thông thường (Event/BlackMarket)
     Định dạng: [ID] Icon Tên vật phẩm (xQTY) — Mô tả
     """
     CATEGORY_META = {
-        "event":       ("🎪 Vật phẩm Sự kiện",       0x9b59b6, "💡 Sử dụng: `y!use <id>`"),
-        "blackmarket": ("🌙 Vật phẩm Chợ đen",        0x2b2d31, "💡 Sử dụng: `y!use <id>`"),
-        "ring":        ("💍 Nhẫn Cưới & Trang sức",  0xff69b4, "💡 Dùng `y!marry` hoặc `y!upgrade_ring`"),
-        "gift":        ("🎁 Quà Tặng",                0xf1c40f, "💡 Dùng `y!gift` để tặng"),
+        "event":       ("🎪 Vật phẩm Sự kiện",       0x9b59b6, f"💡 Sử dụng: `{{prefix}}use <id>`"),
+        "blackmarket": ("🌙 Vật phẩm Chợ đen",        0x2b2d31, f"💡 Sử dụng: `{{prefix}}use <id>`"),
+        "ring":        ("💍 Nhẫn Cưới & Trang sức",  0xff69b4, f"💡 Dùng `{prefix}marry` hoặc `{prefix}upgrade_ring`"),
+        "gift":        ("🎁 Quà Tặng",                0xf1c40f, f"💡 Dùng `{prefix}gift` để tặng"),
     }
     title, color, footer = CATEGORY_META.get(category, ("🎒 Túi đồ", 0x7289da, ""))
 
@@ -58,7 +59,7 @@ def _build_regular_embed(
     embed.set_thumbnail(url=author.display_avatar.url)
 
     if not inv:
-        embed.description = "*Mục này đang trống không. Hãy ghé `y!shop` để sắm đồ!*"
+        embed.description = f"*Mục này đang trống không. Hãy ghé `{prefix}shop` để sắm đồ!*"
     else:
         lines: list[str] = []
         # Tra cứu theo db_key để lấy ID và mô tả từ ITEM_REGISTRY
@@ -377,7 +378,7 @@ class InventorySelect(discord.ui.Select):
                 label="Quà Tặng",
                 value="gift",
                 emoji="🎁",
-                description=f"Quà để tặng người thương ({getattr(self.bot, 'custom_prefix', 'y!')}gift)",
+                description=f"Quà để tặng người thương ({getattr(getattr(getattr(self, 'view', None), 'bot', None), 'custom_prefix', 'y!')}gift)",
                 default=(current == "gift"),
             ),
         ]
@@ -546,7 +547,7 @@ class UnifiedInventoryCog(commands.Cog):
     @commands.hybrid_command(
         name="use",
         aliases=["dung", "xai"],
-        description=f"✨ Dùng vật phẩm theo ID số. Cú pháp: {getattr(self.bot, 'custom_prefix', 'y!')}use <id> [@mục tiêu]",
+        description="✨ Dùng vật phẩm theo ID số. Cú pháp: use <id> [@mục tiêu]",
     )
     async def use_cmd(
         self,
@@ -558,7 +559,7 @@ class UnifiedInventoryCog(commands.Cog):
         item = get_item_by_id(item_id)
         if item is None:
             await ctx.send(
-                f"❌ Không tìm thấy vật phẩm với ID `{item_id}`! Dùng `{getattr(self.bot, 'custom_prefix', 'y!')}inv` để xem túi đồ.",
+                f"❌ Không tìm thấy vật phẩm với ID `{item_id}`! Dùng `{getattr(getattr(getattr(self, 'view', None), 'bot', None), 'custom_prefix', 'y!')}inv` để xem túi đồ.",
                 delete_after=5.0,
             )
             return

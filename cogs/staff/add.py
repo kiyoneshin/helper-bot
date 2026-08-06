@@ -178,7 +178,7 @@ class AddPhotoAfterRegisterView(discord.ui.View):
         except asyncio.TimeoutError:
             await interaction.followup.send(
                 "**Đã hết thời gian 60 giây!** Bạn chưa gửi ảnh nào. "
-                "Hãy bấm nút **Thêm ảnh mới** để thử lại, hoặc dùng `y!set` để cập nhật ảnh sau.",
+                f"Hãy bấm nút **Thêm ảnh mới** để thử lại, hoặc dùng `{getattr(interaction.client, 'custom_prefix', 'y!')}set` để cập nhật ảnh sau.",
                 ephemeral=True,
             )
             return
@@ -292,7 +292,7 @@ class AddPhotoAfterRegisterView(discord.ui.View):
 
         await interaction.followup.send(
             f"Đã thêm thành công **{len(new_photos)}** bức ảnh vào hồ sơ của bạn!\n"
-            "Bạn có thể dùng `y!set` để quản lý thêm/xóa ảnh bất cứ lúc nào.",
+            f"Bạn có thể dùng `{getattr(interaction.client, 'custom_prefix', 'y!')}set` để quản lý thêm/xóa ảnh bất cứ lúc nào.",
             ephemeral=True,
         )
 
@@ -375,7 +375,7 @@ class StaffAddCog(commands.Cog):
             )
             await ctx.send(
                 "**Bạn không có chức vụ hợp lệ để thực hiện lệnh này!**\n"
-                "Lệnh `y!add` chỉ dành cho Owner, Admin và Recep của Server.",
+                f"Lệnh `{ctx.prefix}add` chỉ dành cho Owner, Admin và Recep của Server.",
                 delete_after=15,
             )
             return
@@ -400,7 +400,7 @@ class StaffAddCog(commands.Cog):
             )
             await ctx.send(
                 "**Hồ sơ của bạn đã tồn tại trong hệ thống!**\n"
-                "Vui lòng dùng lệnh `y!set` để chỉnh sửa thông tin của mình.",
+                f"Vui lòng dùng lệnh `{ctx.prefix}set` để chỉnh sửa thông tin của mình.",
                 delete_after=15,
             )
             return

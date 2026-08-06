@@ -46,7 +46,7 @@ def _format_price(price: int | None) -> str:
     return f"{price:,} điểm" if price is not None else "Không bán"
 
 
-def build_shop_embed(category: str, author: discord.Member | discord.User) -> discord.Embed:
+def build_shop_embed(category: str, author: discord.Member | discord.User, prefix: str = 'y!') -> discord.Embed:
     """Tạo Embed danh sách cửa hàng theo category."""
     CATEGORY_META = {
         "event":       ("🎪 Cửa Hàng Sự Kiện",       0x9b59b6),
@@ -72,9 +72,9 @@ def build_shop_embed(category: str, author: discord.Member | discord.User) -> di
         embed.description = "*Không có vật phẩm nào để mua ở mục này.*"
 
     if category == "blackmarket":
-        embed.set_footer(text="💡 Lưu ý: Cửa hàng này chỉ để xem. Bạn chỉ có thể mua bằng lệnh y!ebuy khi Chợ Đêm mở (y!choden)!")
+        embed.set_footer(text=f"💡 Lưu ý: Cửa hàng này chỉ để xem. Bạn chỉ có thể mua bằng lệnh {prefix}ebuy khi Chợ Đêm mở ({prefix}choden)!")
     else:
-        embed.set_footer(text="💡 Hướng dẫn: Dùng lệnh y!buy <id> [số_lượng] để mua vật phẩm.")
+        embed.set_footer(text=f"💡 Hướng dẫn: Dùng lệnh {prefix}buy <id> [số_lượng] để mua vật phẩm.")
     return embed
 
 
@@ -121,7 +121,7 @@ class ShopSelect(discord.ui.Select):
                 label="Quà Tặng",
                 value="gift",
                 emoji="🎁",
-                description=f"Quà để tặng người thương ({getattr(self.bot, 'custom_prefix', 'y!')}gift)",
+                description=f"Quà để tặng người thương ({getattr(getattr(getattr(self, 'view', None), 'bot', None), 'custom_prefix', 'y!')}gift)",
                 default=(current_category == "gift"),
             ),
         ]
@@ -246,7 +246,7 @@ async def _buy_event_item(
         else:
             await ctx.send(
                 f"✅ {ctx.author.mention} Đã mua **{amount}x {item['icon']} {item['name']}** "
-                f"với giá **{total:,}** điểm. Vật phẩm đã nằm trong `{getattr(self.bot, 'custom_prefix', 'y!')}inv`!",
+                f"với giá **{total:,}** điểm. Vật phẩm đã nằm trong `{getattr(bot, 'custom_prefix', 'y!')}inv`!",
                 delete_after=10.0,
             )
     else:
@@ -317,7 +317,7 @@ async def _buy_blackmarket_item(
 
     await ctx.send(
         f"✅ {ctx.author.mention} Đã mua **{amount}x {item['icon']} {item['name']}** "
-        f"với giá **{total:,}** điểm. Dùng `{getattr(self.bot, 'custom_prefix', 'y!')}use {item['id']}` để sử dụng!",
+        f"với giá **{total:,}** điểm. Dùng `{getattr(bot, 'custom_prefix', 'y!')}use {item['id']}` để sử dụng!",
         delete_after=10.0,
     )
 
@@ -339,14 +339,14 @@ class ShopCog(commands.Cog):
     )
     async def shop_cmd(self, ctx: commands.Context) -> None:
         """Mở cửa hàng tổng hợp bằng Dropdown UI."""
-        embed = build_shop_embed("event", ctx.author)
+        embed = build_shop_embed("event", ctx.author, prefix=ctx.prefix or 'y!')
         view = ShopView(ctx.author, "event")
         view.message = await ctx.send(embed=embed, view=view)
 
     @commands.hybrid_command(
         name="buy",
         aliases=["mua"],
-        description=f"🛒 Mua vật phẩm theo ID. Cú pháp: {getattr(self.bot, 'custom_prefix', 'y!')}buy <id> [số_lượng]",
+        description="🛒 Mua vật phẩm theo ID. Cú pháp: buy <id> [số_lượng]",
     )
     async def buy_cmd(self, ctx: commands.Context, item_id: int, amount: int = 1) -> None:
         """Mua vật phẩm theo ID số trong ITEM_REGISTRY."""
@@ -366,7 +366,7 @@ class ShopCog(commands.Cog):
         # Block black market buying
         if item["category"] == "blackmarket":
             await ctx.send(
-                "❌ Bạn không thể mua trực tiếp vật phẩm chợ đen ở đây! Hãy chờ Chợ Đêm mở (`y!choden`) và dùng lệnh `y!ebuy`.",
+                f"❌ Bạn không thể mua trực tiếp vật phẩm chợ đen ở đây! Hãy chờ Chợ Đêm mở (`{getattr(self.bot, 'custom_prefix', 'y!')}choden`) và dùng lệnh `{getattr(self.bot, 'custom_prefix', 'y!')}ebuy`.",
                 delete_after=7.0,
             )
             return

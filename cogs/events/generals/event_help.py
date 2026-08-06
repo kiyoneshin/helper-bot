@@ -771,7 +771,7 @@ class _CommandSelect(discord.ui.Select):
 
     async def callback(self, interaction: discord.Interaction):
         cmd_key = self.values[0]
-        embed = build_detail_embed(cmd_key, prefix=getattr(self.bot, 'custom_prefix', 'y!'))
+        embed = build_detail_embed(cmd_key, prefix=str(getattr(self.bot, 'custom_prefix', 'y!')))
         view = DetailView(self.bot, self.author, self.cat_name)
         view.message = self.view.message  # type: ignore
         await interaction.response.edit_message(embed=embed, view=view)
@@ -879,7 +879,7 @@ class EventHelpCog(commands.Cog):
                         break
                 
                 if target_cat:
-                    embed = build_detail_embed(cmd_key, prefix=ctx.prefix)
+                    embed = build_detail_embed(cmd_key, prefix=ctx.prefix or 'y!')
                     view = DetailView(self.bot, ctx.author, target_cat)
                     view.message = await ctx.send(embed=embed, view=view)
                     return

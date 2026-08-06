@@ -18,7 +18,7 @@ class FarmTasksCog(commands.Cog):
         self.bot = bot
         self.check_stamina_full.start()
 
-    def cog_unload(self) -> None:
+    async def cog_unload(self) -> None:
         self.check_stamina_full.cancel()
 
     @tasks.loop(minutes=1)
@@ -49,7 +49,7 @@ class FarmTasksCog(commands.Cog):
                     
                     if channel_id:
                         channel = self.bot.get_channel(int(channel_id))
-                        if channel:
+                        if isinstance(channel, discord.TextChannel | discord.Thread | discord.VoiceChannel):
                             try:
                                 await channel.send(
                                     f"⚡ <@{user_id}> Thể lực của bạn đã hồi đầy **{MAX_STAMINA}/{MAX_STAMINA}**! Đã đến lúc trở lại làm việc rồi đó~ 🌟"

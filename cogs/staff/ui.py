@@ -89,7 +89,7 @@ class StaffUICog(commands.Cog):
         if not target_id:
             await ctx.send(
                 "❌ **Vui lòng nhập ID hoặc ping nhân sự muốn xem đánh giá!**\n"
-                "Ví dụ chuẩn: `y!fb <@468428368828956692>` hoặc `y!fb 468428368828956692`"
+                f"Ví dụ chuẩn: `{ctx.prefix}fb <@468428368828956692>` hoặc `{ctx.prefix}fb 468428368828956692`"
             )
             return
 

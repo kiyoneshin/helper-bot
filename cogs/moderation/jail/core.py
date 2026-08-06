@@ -1,7 +1,7 @@
 """
 jail/core.py — JailCore Cog
 ============================
-Xử lý cốt lõi: Tống giam (y!phattu), thả tự do (y!thatu, y!laudon),
+Xử lý cốt lõi: Tống giam ({ctx.prefix}phattu), thả tự do ({ctx.prefix}thatu, {ctx.prefix}laudon),
 helper functions cho toàn bộ hệ thống jail.
 """
 from __future__ import annotations
@@ -254,7 +254,7 @@ class JailCore(commands.Cog):
         if existing:
             await ctx.send(
                 f"⚠️ {ctx.author.mention} {member.mention} đang bóc lịch rồi! "
-                "Muốn thêm tội thì dùng `y!choccho`."
+                f"Muốn thêm tội thì dùng `{ctx.prefix}choccho`."
             )
             return
 
@@ -320,7 +320,7 @@ class JailCore(commands.Cog):
             ),
             color=COLOR_JAIL,
         )
-        embed.set_footer(text="Dùng y!laudon để cải tạo • Angelic Moderation")
+        embed.set_footer(text=f"Dùng {ctx.prefix}laudon để cải tạo • Angelic Moderation")
         await ctx.send(embed=embed)
 
         jail_channel = self.bot.get_channel(JAIL_CHANNEL_ID)
@@ -330,14 +330,14 @@ class JailCore(commands.Cog):
                 description=(
                     f"{member.mention}, chào mừng đến với Chuồng Chó! Dưới đây là các cách để bạn sớm thấy ánh mặt trời:\n\n"
                     "🧹 **Lao động công ích:**\n"
-                    "• `y!laudon`: Lau dọn giảm 1 án (Cooldown: 5s)\n\n"
+                    f"• `{ctx.prefix}laudon`: Lau dọn giảm 1 án (Cooldown: 5s)\n\n"
                     "🧮 **Cày chay (Trí tuệ & Nhân phẩm):**\n"
-                    "• `y!sua`: Giải toán cấp tốc giảm 2 án (Cooldown: 15s)\n"
-                    "• `y!nhatxuong`: Nhặt xương 70% giảm 5 án, 30% cắn ngược +1 án (Cooldown: 30s)\n\n"
+                    f"• `{ctx.prefix}sua`: Giải toán cấp tốc giảm 2 án (Cooldown: 15s)\n"
+                    f"• `{ctx.prefix}nhatxuong`: Nhặt xương 70% giảm 5 án, 30% cắn ngược +1 án (Cooldown: 30s)\n\n"
                     "🎲 **Sinh tử (Cờ bạc & Liều mạng):**\n"
-                    "• `y!lcuoc`: Tung đồng xu 50% giảm 5 án, 50% tăng 10 án (Cooldown: 20s)\n"
-                    "• `y!lvuotnguc`: 5% thoát ngay lập tức, 95% nhân 3 án và bị bêu rếu (Cooldown: 5 phút)\n\n"
-                    "💸 **Bảo lãnh:** Hãy nhờ bạn bè dùng `y!baolanh @bạn` để chuộc bạn ra bằng điểm sự kiện!\n\n"
+                    f"• `{ctx.prefix}lcuoc`: Tung đồng xu 50% giảm 5 án, 50% tăng 10 án (Cooldown: 20s)\n"
+                    f"• `{ctx.prefix}lvuotnguc`: 5% thoát ngay lập tức, 95% nhân 3 án và bị bêu rếu (Cooldown: 5 phút)\n\n"
+                    f"💸 **Bảo lãnh:** Hãy nhờ bạn bè dùng `{ctx.prefix}baolanh @bạn` để chuộc bạn ra bằng điểm sự kiện!\n\n"
                     "⚠️ **NỘI QUY:** Mọi tin nhắn chat thường trong này phải kết thúc bằng chữ `gâu` hoặc `ẳng`, nếu không sẽ bị ăn tát!"
                 ),
                 color=COLOR_JAIL

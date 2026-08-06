@@ -56,8 +56,10 @@ class SystemCog(commands.Cog, name="System"):
                 VALUES ('prefix', $1)
                 ON CONFLICT (config_key) DO UPDATE SET config_value = EXCLUDED.config_value
             '''
-            await self.bot.db_pool.execute(sql, new_prefix)
-            self.bot.custom_prefix = new_prefix
+            db_pool = getattr(self.bot, 'db_pool', None)
+            if db_pool:
+                await db_pool.execute(sql, new_prefix)
+            self.bot.custom_prefix = new_prefix  # type: ignore
             await ctx.send(f"✅ Đã đổi tiền tố của bot thành: `{new_prefix}`\n(Từ giờ hãy dùng `{new_prefix}help`)")
         except Exception as e:
             await ctx.send(f"❌ Lỗi khi đổi prefix: `{e}`")

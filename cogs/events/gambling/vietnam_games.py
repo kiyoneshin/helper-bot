@@ -115,9 +115,9 @@ class VietnamGames(commands.Cog):
         self.bot = bot
 
     @commands.hybrid_command(
-        name="taixiu",
-        aliases=["tx"],
-        description=f"Chơi Tài Xỉu (Sic Bo) — {ctx.prefix}tx <tai/xiu> <tiền_cược>",
+        name="tx",
+        aliases=["taixiu"],
+        description="Chơi Tài Xỉu (Sic Bo) — Cú pháp: tx <tai/xiu> <tiền_cược>",
     )
     async def taixiu_cmd(self, ctx: commands.Context, choice: str, bet_raw: str) -> None:
         """

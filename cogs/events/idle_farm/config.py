@@ -3,8 +3,11 @@ config.py — Cấu hình hệ thống Idle Farm
 =======================================
 Định nghĩa hạt giống, trạng thái cây trồng và các hằng số.
 """
-
-from typing import TypedDict, Dict
+from typing import Dict, TypedDict
+try:
+    from typing import NotRequired
+except ImportError:
+    from typing_extensions import NotRequired
 
 class SeedConfig(TypedDict):
     name: str
@@ -14,6 +17,7 @@ class SeedConfig(TypedDict):
     reward_min: int
     reward_max: int
     description: str
+    double_chance: NotRequired[float | int]
 
 # Hằng số trạng thái cây
 STATUS_EMPTY = "EMPTY"
@@ -101,3 +105,4 @@ SEEDS: Dict[str, SeedConfig] = {
         "description": "Vật phẩm hiếm, nguyên liệu chế Linh Tửu."
     }
 }
+

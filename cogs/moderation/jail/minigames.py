@@ -2,8 +2,8 @@
 jail/minigames.py — JailGames Cog
 ==================================
 Minigame sinh tử cho tù nhân:
-  y!lcuoc     — Tung đồng xu: Thắng −5 án | Thua +10 án
-  y!lvuotnguc — 5% tự do | 95% nhân 3 án + tag Admin
+  {ctx.prefix}lcuoc     — Tung đồng xu: Thắng −5 án | Thua +10 án
+  {ctx.prefix}lvuotnguc — 5% tự do | 95% nhân 3 án + tag Admin
 """
 from __future__ import annotations
 

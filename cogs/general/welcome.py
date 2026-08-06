@@ -44,8 +44,8 @@ class WelcomeCog(commands.Cog):
     async def test_welcome_cmd(self, ctx: commands.Context, target: Optional[discord.Member] = None):
         """
         Lệnh giả lập sự kiện thành viên mới vào server để test Welcome.
-        - Cú pháp 1: y!test_welcome             -> Mặc định ping ID 468428368828956692
-        - Cú pháp 2: y!test_welcome @user / ID  -> Ping người được chỉ định
+        - Cú pháp 1: {ctx.prefix}test_welcome             -> Mặc định ping ID 468428368828956692
+        - Cú pháp 2: {ctx.prefix}test_welcome @user / ID  -> Ping người được chỉ định
         """
         # 1. Chốt chặn cho Pylance: Đảm bảo lệnh đang chạy trong Server (Guild) chứ không phải DMs
         if not ctx.guild:

@@ -2,8 +2,8 @@
 jail/tasks.py — JailTasks Cog
 ==============================
 Cơ chế "Cày chay" cho tù nhân:
-  y!sua       — Giải toán (cộng/trừ/nhân/chia có dấu ngoặc) để giảm 2 án
-  y!nhatxuong — RNG 70% giảm 5 án, 30% tăng 1 án
+  {ctx.prefix}sua       — Giải toán (cộng/trừ/nhân/chia có dấu ngoặc) để giảm 2 án
+  {ctx.prefix}nhatxuong — RNG 70% giảm 5 án, 30% tăng 1 án
 """
 from __future__ import annotations
 

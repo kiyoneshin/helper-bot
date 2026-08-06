@@ -2,9 +2,9 @@
 jail/interaction.py — JailInteraction Cog
 ==========================================
 Tương tác cộng đồng với tù nhân:
-  y!choccho @user — Tăng 1 án phạt (cooldown 5 phút/người)
+  {ctx.prefix}choccho @user — Tăng 1 án phạt (cooldown 5 phút/người)
   y!choan @user   — Giảm 1 án phạt (cooldown 60 giây/người)
-  y!baolanh @user — Trả tiền chuộc để thả tù
+  {ctx.prefix}baolanh @user — Trả tiền chuộc để thả tù
 """
 from __future__ import annotations
 

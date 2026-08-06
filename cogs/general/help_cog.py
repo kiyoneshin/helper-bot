@@ -36,8 +36,8 @@ CMD_DATA: dict[str, dict] = {
         "short": "Tống một thành viên vào Chuồng Chó (Jail). Chỉ Admin/Owner.",
         "aliases": ["jail", "giam"],
         "cooldown": None,
-        "usage": "y!phattu <@user> <số_lần_dọn> [lý do]",
-        "examples": ["y!phattu @User 10 Spam"],
+        f"usage": "{ctx.prefix}phattu <@user> <số_lần_dọn> [lý do]",
+        f"examples": ["{ctx.prefix}phattu @User 10 Spam"],
         "note": "Tù nhân phải lau dọn đủ số lần mới được thả.",
     },
     "thatu": {
@@ -46,8 +46,8 @@ CMD_DATA: dict[str, dict] = {
         "short": "Thả sớm một thành viên khỏi Chuồng Chó. Chỉ Admin/Owner.",
         "aliases": ["unjail", "free"],
         "cooldown": None,
-        "usage": "y!thatu <@user>",
-        "examples": ["y!thatu @User"],
+        f"usage": "{ctx.prefix}thatu <@user>",
+        f"examples": ["{ctx.prefix}thatu @User"],
         "note": None,
     },
     "laudon": {
@@ -56,8 +56,8 @@ CMD_DATA: dict[str, dict] = {
         "short": "Tù nhân lau dọn để giảm số lần án phạt còn lại.",
         "aliases": ["clean", "cosua"],
         "cooldown": "5s",
-        "usage": "y!laudon",
-        "examples": ["y!laudon"],
+        f"usage": "{ctx.prefix}laudon",
+        f"examples": ["{ctx.prefix}laudon"],
         "note": "Mỗi lần giảm 1 án. Chỉ dùng được trong Chuồng Chó.",
     },
     "baolanh": {
@@ -66,8 +66,8 @@ CMD_DATA: dict[str, dict] = {
         "short": "Trả tiền bảo lãnh để chuộc một tù nhân về.",
         "aliases": ["bail", "bl"],
         "cooldown": None,
-        "usage": "y!baolanh <@user>",
-        "examples": ["y!baolanh @BanBe"],
+        f"usage": "{ctx.prefix}baolanh <@user>",
+        f"examples": ["{ctx.prefix}baolanh @BanBe"],
         "note": "Chi phí tùy thuộc vào số lần phạt còn lại.",
     },
     "sua": {
@@ -76,8 +76,8 @@ CMD_DATA: dict[str, dict] = {
         "short": "Tù nhân giải toán nhanh để giảm 2 án. CD 15s.",
         "aliases": ["giaibai", "toan"],
         "cooldown": "15s",
-        "usage": "y!sua",
-        "examples": ["y!sua"],
+        f"usage": "{ctx.prefix}sua",
+        f"examples": ["{ctx.prefix}sua"],
         "note": "Phép toán có cộng/trừ/nhân/chia và ngoặc.",
     },
     "nhatxuong": {
@@ -86,8 +86,8 @@ CMD_DATA: dict[str, dict] = {
         "short": "70% giảm 5 án, 30% bị cắn ngược tăng 1 án. CD 30s.",
         "aliases": ["nxt", "xuong"],
         "cooldown": "30s",
-        "usage": "y!nhatxuong",
-        "examples": ["y!nhatxuong"],
+        f"usage": "{ctx.prefix}nhatxuong",
+        f"examples": ["{ctx.prefix}nhatxuong"],
         "note": None,
     },
     "lcuoc": {
@@ -96,8 +96,8 @@ CMD_DATA: dict[str, dict] = {
         "short": "Tung đồng xu: 50% giảm 5 án / 50% tăng 10 án. CD 20s.",
         "aliases": ["lc", "jailflip"],
         "cooldown": "20s",
-        "usage": "y!lcuoc",
-        "examples": ["y!lcuoc"],
+        f"usage": "{ctx.prefix}lcuoc",
+        f"examples": ["{ctx.prefix}lcuoc"],
         "note": "Liều cao, thưởng lớn, phạt cũng lớn!",
     },
     "lvuotnguc": {
@@ -106,8 +106,8 @@ CMD_DATA: dict[str, dict] = {
         "short": "5% thoát hoàn toàn, 95% bị bắt lại và nhân 3 án. CD 5 phút.",
         "aliases": ["lvn", "break"],
         "cooldown": "5 phút",
-        "usage": "y!lvuotnguc",
-        "examples": ["y!lvuotnguc"],
+        f"usage": "{ctx.prefix}lvuotnguc",
+        f"examples": ["{ctx.prefix}lvuotnguc"],
         "note": "Nếu thất bại sẽ bị công khai bêu rếu ở kênh chung. Liều thì liều!",
     },
     # ── TIỆN ÍCH ──────────────────────────────────────────────────────────────
@@ -198,8 +198,8 @@ CMD_DATA: dict[str, dict] = {
         "short": "Xem danh sách toàn bộ bài đánh giá của một nhân sự.",
         "aliases": ["fb"],
         "cooldown": None,
-        "usage": "y!fb <@user | id>",
-        "examples": ["y!fb @User"],
+        f"usage": "{ctx.prefix}fb <@user | id>",
+        f"examples": ["{ctx.prefix}fb @User"],
         "note": "Dành cho việc theo dõi hiệu suất của nhân sự.",
     },
     "add": {
@@ -208,8 +208,8 @@ CMD_DATA: dict[str, dict] = {
         "short": "Tạo hồ sơ cá nhân mới cho Staff.",
         "aliases": ["register", "dangky", "themhoso"],
         "cooldown": None,
-        "usage": "y!add",
-        "examples": ["y!add"],
+        f"usage": "{ctx.prefix}add",
+        f"examples": ["{ctx.prefix}add"],
         "note": "Bạn cần có ID Staff hợp lệ.",
     },
     "set": {
@@ -218,8 +218,8 @@ CMD_DATA: dict[str, dict] = {
         "short": "Chỉnh sửa hồ sơ cá nhân của Staff.",
         "aliases": ["editprofile", "suahoso"],
         "cooldown": None,
-        "usage": "y!set",
-        "examples": ["y!set"],
+        f"usage": "{ctx.prefix}set",
+        f"examples": ["{ctx.prefix}set"],
         "note": "Chỉ được sửa hồ sơ của chính mình.",
     },
     "rule": {
@@ -342,12 +342,12 @@ CATEGORY_DATA: dict[str, dict] = {
 # BUILDERS
 # =============================================================================
 
-def build_home_embed(bot: commands.Bot, author: discord.Member | discord.User) -> discord.Embed:
+def build_home_embed(bot: commands.Bot, author: discord.Member | discord.User, prefix: str = 'y!') -> discord.Embed:
     embed = discord.Embed(
         title=f"🛡️ Trung Tâm Hỗ Trợ — {author.display_name}",
         description=(
             "Chào mừng! Đây là bảng điều khiển lệnh quản trị và hệ thống.\n\n"
-            "Để xem lệnh **sự kiện**, hãy dùng `y!ehelp`.\n\n"
+            f"Để xem lệnh **sự kiện**, hãy dùng `{prefix}ehelp`.\n\n"
             "**📋 Chọn danh mục bên dưới để xem chi tiết:**"
         ),
         color=COLOR_THEME,
@@ -574,7 +574,8 @@ class _HomeButton2(discord.ui.Button):
 
     async def callback(self, interaction: discord.Interaction):
         view: DetailView = self.view  # type: ignore
-        embed = build_home_embed(view.bot, view.author)
+        prefix = getattr(view.bot, 'custom_prefix', 'y!')
+        embed = build_home_embed(view.bot, view.author, prefix=prefix)
         new_view = HomeView(view.bot, view.author)
         new_view.message = view.message
         await interaction.response.edit_message(embed=embed, view=new_view)
@@ -617,7 +618,7 @@ class HelpCog(commands.Cog):
                     view.message = await ctx.send(embed=embed, view=view)
                     return
                     
-        embed = build_home_embed(self.bot, ctx.author)
+        embed = build_home_embed(self.bot, ctx.author, prefix=ctx.prefix or 'y!')
         view = HomeView(self.bot, ctx.author)
         view.message = await ctx.send(embed=embed, view=view)
 

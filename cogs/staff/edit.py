@@ -448,7 +448,7 @@ class StaffEditCog(commands.Cog):
             if not records:
                 await ctx.send(
                     "**ID của bạn chưa có trong hệ thống Database!**\n"
-                    "Lệnh `y!set` chỉ dành cho các thành viên Ban Quản Trị (Owner, Admin, Recep) đã được thêm vào danh sách.\n"
+                    f"Lệnh `{ctx.prefix}set` chỉ dành cho các thành viên Ban Quản Trị (Owner, Admin, Recep) đã được thêm vào danh sách.\n"
                     "Nếu bạn là Staff mới, vui lòng nhờ Admin sử dụng lệnh thêm nhân sự trước nhé!"
                 )
                 return
