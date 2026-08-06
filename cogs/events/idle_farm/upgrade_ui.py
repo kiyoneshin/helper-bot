@@ -22,6 +22,19 @@ from cogs.events.fishing.fishing_config import (
 from cogs.events.woodcutting.woodcutting_config import (
     AXE_UPGRADE_COST, AXE_NAMES, MAX_AXE_LEVEL, WOODCUTTING_LOOT
 )
+from cogs.events.idle_farm.machine_config import ARTISAN_GOODS
+
+# Bảng tra cứu tên/icon toàn bộ vật phẩm hỗ trợ trong upgrade
+_ALL_UPGRADE_ITEMS: Dict[str, dict] = {
+    **MINING_LOOT, **FISH_LOOT, **WOODCUTTING_LOOT,
+    # Artisan Goods (Phôi kim loại, sản phẩm chế biến)
+    "copper_bar":    {"name": "Phôi Đồng",    "icon": "🔶"},
+    "iron_bar":      {"name": "Phôi Sắt",     "icon": "⬜"},
+    "gold_bar":      {"name": "Phôi Vàng",    "icon": "🌟"},
+    "pine_resin":    {"name": "Nhựa Thông",   "icon": "🫙"},
+    "octopus":       {"name": "Bạch Tuộc",    "icon": "🐙"},
+    "legendary_fish":{"name": "Cá Huyền Thoại","icon": "🐉"},
+}
 
 
 # ---------------------------------------------------------------------------
@@ -64,10 +77,10 @@ def build_upgrade_embed(author: discord.Member | discord.User, farm_data: Dict[s
         pick_info = "✅ Đã đạt cấp tối đa!"
     else:
         cost_pts, cost_items = PICKAXE_UPGRADE_COST[pickaxe_level]
-        all_items = {**MINING_LOOT, **FISH_LOOT, **WOODCUTTING_LOOT}
         items_str = ", ".join(
-            f"{all_items[k]['icon']} {v}x {all_items[k]['name']}" for k, v in cost_items.items() if k in all_items
-        )
+            f"{_ALL_UPGRADE_ITEMS[k]['icon']} {v}x {_ALL_UPGRADE_ITEMS[k]['name']}"
+            for k, v in cost_items.items() if k in _ALL_UPGRADE_ITEMS
+        ) or "_(không rõ nguyên liệu)_"
         # Kiểm tra đủ nguyên liệu
         has_items = all(inventory.get(k, 0) >= v for k, v in cost_items.items())
         can_afford = points >= cost_pts
@@ -86,13 +99,10 @@ def build_upgrade_embed(author: discord.Member | discord.User, farm_data: Dict[s
         rod_info = "✅ Đã đạt cấp tối đa!"
     else:
         cost_pts, cost_items = ROD_UPGRADE_COST[rod_level]
-        # Lấy tên item từ cả MINING_LOOT lẫn FISH_LOOT
-        all_items = {**MINING_LOOT, **FISH_LOOT}
         items_str = ", ".join(
-            f"{all_items[k]['icon']} {v}x {all_items[k]['name']}"
-            for k, v in cost_items.items()
-            if k in all_items
-        )
+            f"{_ALL_UPGRADE_ITEMS[k]['icon']} {v}x {_ALL_UPGRADE_ITEMS[k]['name']}"
+            for k, v in cost_items.items() if k in _ALL_UPGRADE_ITEMS
+        ) or "_(không rõ nguyên liệu)_"
         has_items = all(inventory.get(k, 0) >= v for k, v in cost_items.items())
         can_afford = points >= cost_pts
         status = "✅ Đủ vật liệu" if (has_items and can_afford) else "❌ Chưa đủ"
@@ -110,12 +120,10 @@ def build_upgrade_embed(author: discord.Member | discord.User, farm_data: Dict[s
         axe_info = "✅ Đã đạt cấp tối đa!"
     else:
         cost_pts, cost_items = AXE_UPGRADE_COST[axe_level]
-        all_items = {**MINING_LOOT, **FISH_LOOT, **WOODCUTTING_LOOT}
         items_str = ", ".join(
-            f"{all_items[k]['icon']} {v}x {all_items[k]['name']}"
-            for k, v in cost_items.items()
-            if k in all_items
-        )
+            f"{_ALL_UPGRADE_ITEMS[k]['icon']} {v}x {_ALL_UPGRADE_ITEMS[k]['name']}"
+            for k, v in cost_items.items() if k in _ALL_UPGRADE_ITEMS
+        ) or "_(không rõ nguyên liệu)_"
         has_items = all(inventory.get(k, 0) >= v for k, v in cost_items.items())
         can_afford = points >= cost_pts
         status = "✅ Đủ vật liệu" if (has_items and can_afford) else "❌ Chưa đủ"
