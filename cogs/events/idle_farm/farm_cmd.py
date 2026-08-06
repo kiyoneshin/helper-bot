@@ -156,3 +156,6 @@ class IdleFarmCog(commands.Cog):
             f"🏗️ {ctx.author.mention} Đã xây thành công **{quantity}x {machine['icon']} {machine['name']}**!\n"
             f"*Dùng `y!machine` để xem máy mới trong nhà và bắt đầu chế biến.*"
         )
+
+async def setup(bot: commands.Bot) -> None:
+    await bot.add_cog(IdleFarmCog(bot))
