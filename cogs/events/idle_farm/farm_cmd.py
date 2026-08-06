@@ -65,9 +65,8 @@ class IdleFarmCog(commands.Cog):
         user_id = str(ctx.author.id)
         farm_data = await get_farm_data(self.bot, user_id)
         embed = build_machine_embed(ctx.author, farm_data)
-        view = MachineView(self.bot, user_id, ctx.author, farm_data)
+        view = MachineView(self.bot, user_id, farm_data, ctx.author)
         await ctx.send(embed=embed, view=view)
-
 
     @commands.hybrid_command(name="craft", aliases=["chebien2", "bophuong"])
     @check_not_locked()
