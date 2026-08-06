@@ -175,7 +175,7 @@ class BlackMarketCog(commands.Cog):
         """🛒 Mua vật phẩm từ Chợ Đêm theo mã số ID vật phẩm"""
         now_vn = datetime.now(UTC7)
         if not (0 <= now_vn.hour < 2):
-            await ctx.send("❌ Chợ Đêm hiện đang đóng cửa! Gõ `{ctx.prefix}choden` để xem thời gian mở lại.", delete_after=5.0)
+            await ctx.send(f"❌ Chợ Đêm hiện đang đóng cửa! Gõ `{ctx.prefix}choden` để xem thời gian mở lại.", delete_after=5.0)
             return
 
         uid = str(ctx.author.id)
@@ -189,7 +189,7 @@ class BlackMarketCog(commands.Cog):
 
         if slot_id not in shop_data:
             await ctx.send(
-                f"❌ Mã số không hợp lệ! Vui lòng nhập đúng mã số vật phẩm đang bán trong `y!choden`.",
+                f"❌ Mã số không hợp lệ! Vui lòng nhập đúng mã số vật phẩm đang bán trong `{ctx.prefix}choden`.",
                 delete_after=5.0,
             )
             return
@@ -258,7 +258,7 @@ class BlackMarketCog(commands.Cog):
         # 6. Thông báo thành công
         await ctx.send(
             f"🛒 Mua thành công **{quantity}x {item_name}** với giá **{total_price:,}** điểm. "
-            f"Hãy dùng `y!use {slot_id}` để xài!"
+            f"Hãy dùng `{ctx.prefix}use {slot_id}` để xài!"
         )
 
 async def setup(bot: Any) -> None:

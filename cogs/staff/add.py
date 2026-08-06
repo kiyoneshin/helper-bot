@@ -353,7 +353,7 @@ class StaffAddCog(commands.Cog):
         author = ctx.author
         discord_id = str(author.id)
 
-        log.info(f"[{author.display_name} | {discord_id}] Gọi lệnh y!add.")
+        log.info(f"[{author.display_name} | {discord_id}] Gọi lệnh {ctx.prefix}add.")
 
         # --- Bước 1: Lệnh chỉ dùng trong Server ---
         if not isinstance(author, discord.Member):
@@ -371,7 +371,7 @@ class StaffAddCog(commands.Cog):
 
         if assigned_role is None:
             log.warning(
-                f"[{author.display_name} | {discord_id}] Không có role hợp lệ, từ chối lệnh y!add."
+                f"[{author.display_name} | {discord_id}] Không có role hợp lệ, từ chối lệnh {ctx.prefix}add."
             )
             await ctx.send(
                 "**Bạn không có chức vụ hợp lệ để thực hiện lệnh này!**\n"
@@ -396,7 +396,7 @@ class StaffAddCog(commands.Cog):
 
         if records:
             log.info(
-                f"[{author.display_name} | {discord_id}] Hồ sơ đã tồn tại, hướng dẫn dùng y!set."
+                f"[{author.display_name} | {discord_id}] Hồ sơ đã tồn tại, hướng dẫn dùng {ctx.prefix}set."
             )
             await ctx.send(
                 "**Hồ sơ của bạn đã tồn tại trong hệ thống!**\n"

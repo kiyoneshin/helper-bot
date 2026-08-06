@@ -405,12 +405,12 @@ class StaffUICog(commands.Cog):
     @renewdb_cmd.error
     async def renewdb_cmd_error(self, ctx: commands.Context, error):
         if isinstance(error, commands.MissingPermissions):
-            await ctx.send("Bạn không có quyền sử dụng lệnh này! Chỉ Admin/Owner mới được dùng `y!renewdb`.")
+            await ctx.send(f"Bạn không có quyền sử dụng lệnh này! Chỉ Admin/Owner mới được dùng `{ctx.prefix}renewdb`.")
 
 
     async def renewdb_error(self, ctx: commands.Context, error):
         if isinstance(error, commands.MissingPermissions):
-            await ctx.send("Bạn không có quyền sử dụng lệnh này! Chỉ Admin/Owner mới được dùng `y!renewdb`.")
+            await ctx.send(f"Bạn không có quyền sử dụng lệnh này! Chỉ Admin/Owner mới được dùng `{ctx.prefix}renewdb`.")
 
 
 async def setup(bot):

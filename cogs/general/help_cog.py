@@ -380,13 +380,13 @@ def build_category_embed(cat_name: str) -> discord.Embed:
         if cmd:
             aliases_list = cmd.get("aliases", [])
             if len(aliases_list) > 3:
-                aliases_str = f" · `{'`, `'.join(f'y!{a}' for a in aliases_list[:3])}` (+{len(aliases_list)-3})"
+                aliases_str = f" · `{'`, `'.join(f'{ctx.prefix}{a}' for a in aliases_list[:3])}` (+{len(aliases_list)-3})"
             elif aliases_list:
-                aliases_str = f" · `{'`, `'.join(f'y!{a}' for a in aliases_list)}`"
+                aliases_str = f" · `{'`, `'.join(f'{ctx.prefix}{a}' for a in aliases_list)}`"
             else:
                 aliases_str = ""
             embed.add_field(
-                name=f"{cmd['emoji']} `y!{key}`{aliases_str}",
+                name=f"{cmd['emoji']} `{ctx.prefix}{key}`{aliases_str}",
                 value=cmd["short"],
                 inline=False,
             )
@@ -404,7 +404,7 @@ def build_detail_embed(cmd_key: str) -> discord.Embed:
         color=COLOR_THEME,
     )
     if cmd.get("aliases"):
-        embed.add_field(name="📛 Lệnh rút gọn/Lệnh thay thế", value=" · ".join(f"`y!{a}`" for a in cmd["aliases"]), inline=True)
+        embed.add_field(name="📛 Lệnh rút gọn/Lệnh thay thế", value=" · ".join(f"`{ctx.prefix}{a}`" for a in cmd["aliases"]), inline=True)
     if cmd.get("cooldown"):
         embed.add_field(name="⏱️ Cooldown", value=cmd["cooldown"], inline=True)
     embed.add_field(name="\u200b", value="\u200b", inline=False)

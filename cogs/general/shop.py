@@ -121,7 +121,7 @@ class ShopSelect(discord.ui.Select):
                 label="Quà Tặng",
                 value="gift",
                 emoji="🎁",
-                description="Quà để tặng người thương (y!gift)",
+                description=f"Quà để tặng người thương ({ctx.prefix}gift)",
                 default=(current_category == "gift"),
             ),
         ]
@@ -246,7 +246,7 @@ async def _buy_event_item(
         else:
             await ctx.send(
                 f"✅ {ctx.author.mention} Đã mua **{amount}x {item['icon']} {item['name']}** "
-                f"với giá **{total:,}** điểm. Vật phẩm đã nằm trong `y!inv`!",
+                f"với giá **{total:,}** điểm. Vật phẩm đã nằm trong `{ctx.prefix}inv`!",
                 delete_after=10.0,
             )
     else:
@@ -317,7 +317,7 @@ async def _buy_blackmarket_item(
 
     await ctx.send(
         f"✅ {ctx.author.mention} Đã mua **{amount}x {item['icon']} {item['name']}** "
-        f"với giá **{total:,}** điểm. Dùng `y!use {item['id']}` để sử dụng!",
+        f"với giá **{total:,}** điểm. Dùng `{ctx.prefix}use {item['id']}` để sử dụng!",
         delete_after=10.0,
     )
 
@@ -346,7 +346,7 @@ class ShopCog(commands.Cog):
     @commands.hybrid_command(
         name="buy",
         aliases=["mua"],
-        description="🛒 Mua vật phẩm theo ID. Cú pháp: y!buy <id> [số_lượng]",
+        description=f"🛒 Mua vật phẩm theo ID. Cú pháp: {ctx.prefix}buy <id> [số_lượng]",
     )
     async def buy_cmd(self, ctx: commands.Context, item_id: int, amount: int = 1) -> None:
         """Mua vật phẩm theo ID số trong ITEM_REGISTRY."""
@@ -358,7 +358,7 @@ class ShopCog(commands.Cog):
         if item is None:
             await ctx.send(
                 f"❌ Không tìm thấy vật phẩm với ID `{item_id}`! "
-                f"Dùng `y!shop` để xem danh sách.",
+                f"Dùng `{ctx.prefix}shop` để xem danh sách.",
                 delete_after=5.0,
             )
             return

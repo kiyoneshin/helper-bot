@@ -108,7 +108,7 @@ class JailInteraction(commands.Cog):
                 delete_after=6.0,
             )
         elif isinstance(error, commands.MissingRequiredArgument):
-            await ctx.send("❌ Cú pháp: `y!choccho <@member>`", delete_after=5.0)
+            await ctx.send(f"❌ Cú pháp: `{ctx.prefix}choccho <@member>`", delete_after=5.0)
         elif isinstance(error, commands.BadArgument):
             await ctx.send("❌ Không tìm thấy thành viên đó.", delete_after=5.0)
 
@@ -170,7 +170,7 @@ class JailInteraction(commands.Cog):
                 delete_after=6.0,
             )
         elif isinstance(error, commands.MissingRequiredArgument):
-            await ctx.send("❌ Cú pháp: `y!choan <@member>`", delete_after=5.0)
+            await ctx.send(f"❌ Cú pháp: `{ctx.prefix}choan <@member>`", delete_after=5.0)
         elif isinstance(error, commands.BadArgument):
             await ctx.send("❌ Không tìm thấy thành viên đó.", delete_after=5.0)
 
@@ -285,7 +285,7 @@ class JailInteraction(commands.Cog):
                 delete_after=6.0,
             )
         elif isinstance(error, commands.MissingRequiredArgument):
-            await ctx.send("❌ Cú pháp: `y!baolanh <@member>`", delete_after=5.0)
+            await ctx.send(f"❌ Cú pháp: `{ctx.prefix}baolanh <@member>`", delete_after=5.0)
         elif isinstance(error, commands.BadArgument):
             await ctx.send("❌ Không tìm thấy thành viên đó.", delete_after=5.0)
 

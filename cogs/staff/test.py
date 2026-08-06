@@ -53,7 +53,7 @@ class StaffTestCog(commands.Cog):
     async def test_reply_trigger(self, ctx: commands.Context, target: Optional[str] = None):
         target_id = extract_id(target)
         if not target_id:
-            await ctx.send("⚠️ **Thiếu thông tin!**\n Vui lòng ping hoặc nhập ID: `y!test_reply 468428368828956692`")
+            await ctx.send(f"⚠️ **Thiếu thông tin!**\n Vui lòng ping hoặc nhập ID: `{ctx.prefix}test_reply 468428368828956692`")
             return
         
         try:
@@ -68,7 +68,7 @@ class StaffTestCog(commands.Cog):
             # Giả lập gửi ngay tin nhắn nhắc nhở mà tính năng lắng nghe 10 reply hay làm
             reminder_text = (
                 f"➡️ **[TEST TRIGGER]** Nếu bạn thấy {db_role} <@{target_id}> ({display_name}) nhiệt tình, "
-                f"hãy đừng ngần ngại bỏ ra 1 phút sử dụng lệnh `y!menu` chọn đến "
+                f"hãy đừng ngần ngại bỏ ra 1 phút sử dụng lệnh `{ctx.prefix}menu` chọn đến "
                 f"{db_role} để vote cho họ nhé!"
             )
             await ctx.send(reminder_text)
@@ -81,7 +81,7 @@ class StaffTestCog(commands.Cog):
     async def test_inject_vote(self, ctx: commands.Context, target: Optional[str] = None, score: Optional[float] = None):
         target_id = extract_id(target)
         if not target_id or score is None:
-            await ctx.send("⚠️ **Sai cú pháp!**\n➡️ Cú pháp chuẩn: `y!test_vote <ID hoặc @user> <điểm>` (Ví dụ: `y!test_vote 4684... 4.8`)")
+            await ctx.send(f"⚠️ **Sai cú pháp!**\n➡️ Cú pháp chuẩn: `{ctx.prefix}test_vote <ID hoặc @user> <điểm>` (Ví dụ: `{ctx.prefix}test_vote 4684... 4.8`)")
             return
 
         if not (0.0 <= score <= 5.0):
@@ -134,7 +134,7 @@ class StaffTestCog(commands.Cog):
     async def test_reset_data(self, ctx: commands.Context, target: Optional[str] = None):
         target_id = extract_id(target)
         if not target_id:
-            await ctx.send("⚠️ **Thiếu thông tin!**\n➡️ Vui lòng nhập ID hoặc ping: `y!test_reset 468428368828956692`")
+            await ctx.send(f"⚠️ **Thiếu thông tin!**\n➡️ Vui lòng nhập ID hoặc ping: `{ctx.prefix}test_reset 468428368828956692`")
             return
 
         try:

@@ -355,7 +355,7 @@ def check_not_locked():
         row = await fetchrow_db(ctx.bot, "SELECT is_locked FROM event_profiles WHERE discord_id = $1", str(ctx.author.id))
         if row and row["is_locked"]:
             await ctx.send(f"❌ {ctx.author.mention} **Tài khoản của bạn đã bị khóa do vỡ nợ ngân hàng!**\n"
-                           f"Vui lòng sử dụng lệnh `y!trano` để thanh toán nợ và mở khóa.")
+                           f"Vui lòng sử dụng lệnh `{ctx.prefix}trano` để thanh toán nợ và mở khóa.")
             return False
         return True
     return commands.check(predicate)
@@ -434,4 +434,4 @@ async def update_task_progress(bot: Any, discord_id: Union[str, int], action_typ
             )
             
     except Exception as e:
-        log.error(f"Lỗi update_task_progress cho user {discord_id}: {e}", exc_info=True)
+        log.error(f"Lỗi update_task_progress cho user {discord_id}: {e}", exc_info=True)

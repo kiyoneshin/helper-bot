@@ -84,13 +84,13 @@ class IdleFarmCog(commands.Cog):
         except ValueError:
             return await ctx.send(
                 f"❌ {ctx.author.mention} ID máy phải là số! (Ví dụ: Keg là `61`).\n"
-                f"*Dùng `y!recipe` để xem ID của từng máy.*"
+                f"*Dùng `{ctx.prefix}recipe` để xem ID của từng máy.*"
             )
 
         if machine_numeric not in MACHINE_BY_ID:
             return await ctx.send(
                 f"❌ {ctx.author.mention} Không tìm thấy máy nào có ID `{machine_numeric}`!\n"
-                f"*Dùng `y!recipe` để xem ID hợp lệ.*"
+                f"*Dùng `{ctx.prefix}recipe` để xem ID hợp lệ.*"
             )
 
         machine_key = MACHINE_BY_ID[machine_numeric]
@@ -153,7 +153,7 @@ class IdleFarmCog(commands.Cog):
 
         await ctx.send(
             f"🏗️ {ctx.author.mention} Đã xây thành công **{quantity}x {machine['icon']} {machine['name']}**!\n"
-            f"*Dùng `y!machine` để xem máy mới trong nhà và bắt đầu chế biến.*"
+            f"*Dùng `{ctx.prefix}machine` để xem máy mới trong nhà và bắt đầu chế biến.*"
         )
 
 async def setup(bot: commands.Bot) -> None:

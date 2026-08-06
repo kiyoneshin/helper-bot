@@ -359,7 +359,7 @@ class MarriageCog(commands.Cog):
         if not target:
             mar = await get_marriage(self.bot, uid)
             if not mar:
-                return await ctx.send("❌ Bạn chưa kết hôn với ai cả! Hãy dùng `{ctx.prefix}marry @user` để cầu hôn nhé.")
+                return await ctx.send(f"❌ Bạn chưa kết hôn với ai cả! Hãy dùng `{ctx.prefix}marry @user` để cầu hôn nhé.")
                 
             partner_id = mar["user2_id"] if mar["user1_id"] == uid else mar["user1_id"]
             
@@ -652,7 +652,7 @@ class MarriageCog(commands.Cog):
             return await ctx.send("❌ Link ảnh không hợp lệ (Phải bắt đầu bằng http/https).")
             
         await execute_db(self.bot, "UPDATE marriages SET custom_image = $1 WHERE id = $2", url, mar["id"])
-        await ctx.send("✅ Đã cập nhật ảnh thành công! Bạn có thể gõ `{ctx.prefix}marry` để kiểm tra.")
+        await ctx.send(f"✅ Đã cập nhật ảnh thành công! Bạn có thể gõ `{ctx.prefix}marry` để kiểm tra.")
 
     @commands.hybrid_command(name="pet", aliases=["thucung"])
     async def pet_cmd(self, ctx: commands.Context):
@@ -662,7 +662,7 @@ class MarriageCog(commands.Cog):
         if not mar:
             return await ctx.send("❌ Bạn chưa kết hôn!")
         if not mar.get("pet_type"):
-            return await ctx.send("❌ Hai bạn chưa nhận nuôi thú cưng nào cả! Dùng `{ctx.prefix}adopt` nhé.")
+            return await ctx.send(f"❌ Hai bạn chưa nhận nuôi thú cưng nào cả! Dùng `{ctx.prefix}adopt` nhé.")
             
         pet_exp = float(mar.get('pet_exp', 0.0))
         base_type = mar["pet_type"]
@@ -735,7 +735,7 @@ class MarriageCog(commands.Cog):
             f"**Cấp Độ:** Lv.{pet_level}  *(EXP: {current_exp_in_level:.1f}/200)*\n\n"
             f"🌟 **Kỹ Năng Độc Quyền:** `{skill_name}`\n"
             f"-> {skill_desc}\n\n"
-            f"*(Nhận EXP thú cưng bằng cách tương tác, làm nhiệm vụ hoặc đi làm `y!work`)*"
+            f"*(Nhận EXP thú cưng bằng cách tương tác, làm nhiệm vụ hoặc đi làm `{ctx.prefix}work`)*"
         )
         
         emb = discord.Embed(title="🐾 Hồ Sơ Thú Cưng", description=desc, color=discord.Color.gold())
@@ -749,7 +749,7 @@ class MarriageCog(commands.Cog):
         if not mar:
             return await ctx.send("❌ Bạn chưa kết hôn!")
         if not mar.get("pet_type"):
-            return await ctx.send("❌ Hai bạn chưa nhận nuôi thú cưng nào cả! Dùng `{ctx.prefix}adopt` nhé.")
+            return await ctx.send(f"❌ Hai bạn chưa nhận nuôi thú cưng nào cả! Dùng `{ctx.prefix}adopt` nhé.")
         
         if len(pet_name) > 30:
             return await ctx.send("❌ Tên thú cưng quá dài (tối đa 30 ký tự).")
@@ -774,7 +774,7 @@ class MarriageCog(commands.Cog):
         from cogs.common.item_config import get_item_by_id
         item = get_item_by_id(item_id)
         if not item or item["category"] != "gift":
-            return await ctx.send("❌ ID vật phẩm không hợp lệ! Hãy chọn ID của Quà Tặng trong `{ctx.prefix}shop`.")
+            return await ctx.send(f"❌ ID vật phẩm không hợp lệ! Hãy chọn ID của Quà Tặng trong `{ctx.prefix}shop`.")
             
         # Check inventory
         from cogs.common.db import fetchrow_db
@@ -1038,13 +1038,13 @@ class MarriageCog(commands.Cog):
         """💞 Xem danh sách các hành động tương tác cặp đôi."""
         embed = discord.Embed(
             title="💞 Hành Động Cặp Đôi",
-            description="Các lệnh tương tác đặc biệt dành cho vợ/chồng. Thời gian hồi chiêu và DTM nhận được tùy thuộc vào độ thân mật và Nhẫn cưới.\nCú pháp: `y!<hành_động> <@user>`",
+            description=f"Các lệnh tương tác đặc biệt dành cho vợ/chồng. Thời gian hồi chiêu và DTM nhận được tùy thuộc vào độ thân mật và Nhẫn cưới.\nCú pháp: `{ctx.prefix}<hành_động> <@user>`",
             color=discord.Color.pink()
         )
-        embed.add_field(name="🤜 Bạo lực", value="`y!slap` (tat), `y!punch` (dam), `y!bite` (can), `y!tickle` (choclet)", inline=False)
-        embed.add_field(name="💖 Nhẹ nhàng", value="`y!poke` (choc), `y!pat` (xoadau), `y!saylove` (noiyeu, iuem, iuanh)", inline=False)
-        embed.add_field(name="🤗 Ôm ấp", value="`y!hug` (om), `y!cuddle` (auyem), `y!snuggle` (nung, nũng)", inline=False)
-        embed.add_field(name="💋 Thân mật", value="`y!kiss` (hon, hun), `y!lick` (liem), `y!nom` (mam), `y!fuck` (seg)", inline=False)
+        embed.add_field(name=f"🤜 Bạo lực", value=f"`{ctx.prefix}slap` (tat), `{ctx.prefix}punch` (dam), `{ctx.prefix}bite` (can), `{ctx.prefix}tickle` (choclet)", inline=False)
+        embed.add_field(name=f"💖 Nhẹ nhàng", value=f"`{ctx.prefix}poke` (choc), `{ctx.prefix}pat` (xoadau), `{ctx.prefix}saylove` (noiyeu, iuem, iuanh)", inline=False)
+        embed.add_field(name=f"🤗 Ôm ấp", value=f"`{ctx.prefix}hug` (om), `{ctx.prefix}cuddle` (auyem), `{ctx.prefix}snuggle` (nung, nũng)", inline=False)
+        embed.add_field(name=f"💋 Thân mật", value=f"`{ctx.prefix}kiss` (hon, hun), `{ctx.prefix}lick` (liem), `{ctx.prefix}nom` (mam), `{ctx.prefix}fuck` (seg)", inline=False)
         await ctx.send(embed=embed)
 
     # Lệnh Action Tiers

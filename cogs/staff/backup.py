@@ -185,7 +185,7 @@ class StaffBackupCog(commands.Cog):
     @backup_cmd.error
     async def backup_cmd_error(self, ctx: commands.Context, error):
         if isinstance(error, commands.MissingPermissions):
-            await ctx.send("Bạn không có quyền sử dụng lệnh này! Chỉ Admin/Owner mới được dùng `y!backup`.")
+            await ctx.send(f"Bạn không có quyền sử dụng lệnh này! Chỉ Admin/Owner mới được dùng `{ctx.prefix}backup`.")
 
 
     async def backup_error(self, ctx: commands.Context, error):

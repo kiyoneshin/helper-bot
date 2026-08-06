@@ -103,7 +103,7 @@ class GlobalErrorHandler(commands.Cog):
                     msg = f"{ctx.author.mention}, lệnh đúng là `{usage_str}`. Để biết thêm chi tiết hãy xài lệnh `{help_cmd} {cmd_name}`"
                 await ctx.send(msg, delete_after=30.0)
             else:
-                await ctx.send(f"{ctx.author.mention}, lệnh đúng là `{ctx.prefix}{cmd_name} <các_tham_số>`. Để biết thêm chi tiết hãy xài lệnh `y!help {cmd_name}`", delete_after=30.0)
+                await ctx.send(f"{ctx.author.mention}, lệnh đúng là `{ctx.prefix}{cmd_name} <các_tham_số>`. Để biết thêm chi tiết hãy xài lệnh `{ctx.prefix}help {cmd_name}`", delete_after=30.0)
             return
         
         # Bỏ qua lỗi UserNotFound hoặc MemberNotFound và in ra lỗi đẹp

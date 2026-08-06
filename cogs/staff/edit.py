@@ -458,11 +458,11 @@ class StaffEditCog(commands.Cog):
             embed = view.build_preview_embed()
             
             view.message = await ctx.send(embed=embed, view=view)
-            log.info(f"🛠️ {ctx.author.display_name} vừa mở bảng chỉnh sửa hồ sơ y!set.")
+            log.info(f"🛠️ {ctx.author.display_name} vừa mở bảng chỉnh sửa hồ sơ {ctx.prefix}set.")
             
         except Exception as e:
             await ctx.send(f"Lỗi khi tải dữ liệu hồ sơ: {e}")
-            log.error(f"Lỗi y!set: {e}")
+            log.error(f"Lỗi {ctx.prefix}set: {e}")
 
 async def setup(bot):
     await bot.add_cog(StaffEditCog(bot))

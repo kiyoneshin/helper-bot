@@ -201,7 +201,7 @@ async def notify_cooldown(ctx: commands.Context, delay: float, cmd_name: str) ->
     await asyncio.sleep(delay)
     try:
         await ctx.send(
-            f"🔔 {ctx.author.mention} Lệnh `y!{cmd_name}` đã hồi xong, tiếp tục cải tạo đi!",
+            f"🔔 {ctx.author.mention} Lệnh `{ctx.prefix}{cmd_name}` đã hồi xong, tiếp tục cải tạo đi!",
             delete_after=10.0
         )
     except Exception:
@@ -347,7 +347,7 @@ class JailCore(commands.Cog):
                     content=(
                         f"🚨 Cửa ngục khép lại! {member.mention} (a.k.a **{dog_name}**) vừa bị tống vào đây.\n"
                         f"Lý do: **{reason}**\n"
-                        f"Hãy dùng `y!laudon` **{clean_count}** lần để chuộc lỗi! 🧹"
+                        f"Hãy dùng `{ctx.prefix}laudon` **{clean_count}** lần để chuộc lỗi! 🧹"
                     ),
                     embed=embed_guide
                 )
@@ -433,7 +433,7 @@ class JailCore(commands.Cog):
     @phattu_cmd.error
     async def phattu_error(self, ctx: commands.Context, error: Exception) -> None:
         if isinstance(error, commands.MissingRequiredArgument):
-            await ctx.send("❌ Thiếu thông tin! Cú pháp: `y!phattu <@member> <số_lần_dọn> [lý do]`")
+            await ctx.send(f"❌ Thiếu thông tin! Cú pháp: `{ctx.prefix}phattu <@member> <số_lần_dọn> [lý do]`")
         elif isinstance(error, commands.MissingAnyRole):
             await ctx.send("❌ Mày không đủ quyền! Chỉ có **Owner** và **Admin** mới được dùng.")
         elif isinstance(error, commands.BadArgument):

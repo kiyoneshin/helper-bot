@@ -52,7 +52,7 @@ class RecipesCog(commands.Cog, name="Recipes"):
         """🛠️ Xem bách khoa toàn thư công thức nâng cấp & chế tạo."""
         embed = discord.Embed(
             title="📜 Bách Khoa Toàn Thư Công Thức",
-            description="Tổng hợp tất cả các công thức nâng cấp công cụ và chế tạo trong nông trại.\nSử dụng lệnh `y!upgrade` để nâng cấp công cụ, `y!craft` để dùng máy.",
+            description=f"Tổng hợp tất cả các công thức nâng cấp công cụ và chế tạo trong nông trại.\nSử dụng lệnh `{ctx.prefix}upgrade` để nâng cấp công cụ, `{ctx.prefix}craft` để dùng máy.",
             color=0xf39c12,
         )
 

@@ -282,7 +282,7 @@ class RoleSelectDropdown(discord.ui.Select):
         if not records:
             empty_embed = discord.Embed(
                 title=f"📋 Danh sách {selected_role.upper()}",
-                description=f"🌸 Hiện tại chưa có nhân sự nào giữ vị trí **{selected_role.upper()}** trong server.\n\n*Admin có thể sử dụng lệnh `y!add` hoặc kiểm tra lại bằng lệnh `y!checkdb`.*",
+                description=f"🌸 Hiện tại chưa có nhân sự nào giữ vị trí **{selected_role.upper()}** trong server.\n\n*Admin có thể sử dụng lệnh `{ctx.prefix}add` hoặc kiểm tra lại bằng lệnh `{ctx.prefix}checkdb`.*",
                 color=0xffb6c1
             )
             back_view = BackOnlyView(self.author_id)

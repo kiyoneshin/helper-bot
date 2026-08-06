@@ -193,7 +193,7 @@ class Rewards(commands.Cog):
             title="💎 Lương Tuần Đã Về!",
             description=(
                 f"🎉 Chúc mừng bạn đã nhận **{total_reward:,}** điểm lương tuần!\n"
-                f"Hãy dùng số điểm này thật khôn ngoan tại `y!shop` hoặc các sòng bài Casino nhé!"
+                f"Hãy dùng số điểm này thật khôn ngoan tại `{ctx.prefix}shop` hoặc các sòng bài Casino nhé!"
             ),
             color=0xFFD700  # Màu vàng
         )

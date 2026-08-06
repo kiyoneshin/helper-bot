@@ -96,7 +96,7 @@ class StaffListenerCog(commands.Cog):
                         display_role = db_role
                         reminder_text = (
                             f"Nếu bạn thấy {display_role} <@{staff_id}> nhiệt tình, "
-                            f"hãy đừng ngần ngại bỏ ra 1 phút sử dụng lệnh `y!menu` chọn đến "
+                            f"hãy đừng ngần ngại bỏ ra 1 phút sử dụng lệnh `{ctx.prefix}menu` chọn đến "
                             f"{display_role} để vote cho họ nhé!"
                         )
                         await message.channel.send(reminder_text)
