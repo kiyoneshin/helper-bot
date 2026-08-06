@@ -26,8 +26,8 @@ CMD_DATA: dict[str, dict] = {
         "short": "Mở Menu tương tác để quản lý hồ sơ nhân sự (BQT).",
         "aliases": ["staff", "bqt"],
         "cooldown": None,
-        "usage": "y!menu",
-        "examples": ["y!menu"],
+        "usage": "{prefix}menu",
+        "examples": ["{prefix}menu"],
         "note": "Bạn cần chọn đúng category tương ứng trong Menu.",
     },
     "phattu": {
@@ -36,8 +36,8 @@ CMD_DATA: dict[str, dict] = {
         "short": "Tống một thành viên vào Chuồng Chó (Jail). Chỉ Admin/Owner.",
         "aliases": ["jail", "giam"],
         "cooldown": None,
-        f"usage": "{ctx.prefix}phattu <@user> <số_lần_dọn> [lý do]",
-        f"examples": ["{ctx.prefix}phattu @User 10 Spam"],
+        "usage": "{prefix}phattu <@user> <số_lần_dọn> [lý do]",
+        "examples": ["{prefix}phattu @User 10 Spam"],
         "note": "Tù nhân phải lau dọn đủ số lần mới được thả.",
     },
     "thatu": {
@@ -46,8 +46,8 @@ CMD_DATA: dict[str, dict] = {
         "short": "Thả sớm một thành viên khỏi Chuồng Chó. Chỉ Admin/Owner.",
         "aliases": ["unjail", "free"],
         "cooldown": None,
-        f"usage": "{ctx.prefix}thatu <@user>",
-        f"examples": ["{ctx.prefix}thatu @User"],
+        "usage": "{prefix}thatu <@user>",
+        "examples": ["{prefix}thatu @User"],
         "note": None,
     },
     "laudon": {
@@ -56,8 +56,8 @@ CMD_DATA: dict[str, dict] = {
         "short": "Tù nhân lau dọn để giảm số lần án phạt còn lại.",
         "aliases": ["clean", "cosua"],
         "cooldown": "5s",
-        f"usage": "{ctx.prefix}laudon",
-        f"examples": ["{ctx.prefix}laudon"],
+        "usage": "{prefix}laudon",
+        "examples": ["{prefix}laudon"],
         "note": "Mỗi lần giảm 1 án. Chỉ dùng được trong Chuồng Chó.",
     },
     "baolanh": {
@@ -66,8 +66,8 @@ CMD_DATA: dict[str, dict] = {
         "short": "Trả tiền bảo lãnh để chuộc một tù nhân về.",
         "aliases": ["bail", "bl"],
         "cooldown": None,
-        f"usage": "{ctx.prefix}baolanh <@user>",
-        f"examples": ["{ctx.prefix}baolanh @BanBe"],
+        "usage": "{prefix}baolanh <@user>",
+        "examples": ["{prefix}baolanh @BanBe"],
         "note": "Chi phí tùy thuộc vào số lần phạt còn lại.",
     },
     "sua": {
@@ -76,8 +76,8 @@ CMD_DATA: dict[str, dict] = {
         "short": "Tù nhân giải toán nhanh để giảm 2 án. CD 15s.",
         "aliases": ["giaibai", "toan"],
         "cooldown": "15s",
-        f"usage": "{ctx.prefix}sua",
-        f"examples": ["{ctx.prefix}sua"],
+        "usage": "{prefix}sua",
+        "examples": ["{prefix}sua"],
         "note": "Phép toán có cộng/trừ/nhân/chia và ngoặc.",
     },
     "nhatxuong": {
@@ -86,8 +86,8 @@ CMD_DATA: dict[str, dict] = {
         "short": "70% giảm 5 án, 30% bị cắn ngược tăng 1 án. CD 30s.",
         "aliases": ["nxt", "xuong"],
         "cooldown": "30s",
-        f"usage": "{ctx.prefix}nhatxuong",
-        f"examples": ["{ctx.prefix}nhatxuong"],
+        "usage": "{prefix}nhatxuong",
+        "examples": ["{prefix}nhatxuong"],
         "note": None,
     },
     "lcuoc": {
@@ -96,8 +96,8 @@ CMD_DATA: dict[str, dict] = {
         "short": "Tung đồng xu: 50% giảm 5 án / 50% tăng 10 án. CD 20s.",
         "aliases": ["lc", "jailflip"],
         "cooldown": "20s",
-        f"usage": "{ctx.prefix}lcuoc",
-        f"examples": ["{ctx.prefix}lcuoc"],
+        "usage": "{prefix}lcuoc",
+        "examples": ["{prefix}lcuoc"],
         "note": "Liều cao, thưởng lớn, phạt cũng lớn!",
     },
     "lvuotnguc": {
@@ -106,8 +106,8 @@ CMD_DATA: dict[str, dict] = {
         "short": "5% thoát hoàn toàn, 95% bị bắt lại và nhân 3 án. CD 5 phút.",
         "aliases": ["lvn", "break"],
         "cooldown": "5 phút",
-        f"usage": "{ctx.prefix}lvuotnguc",
-        f"examples": ["{ctx.prefix}lvuotnguc"],
+        "usage": "{prefix}lvuotnguc",
+        "examples": ["{prefix}lvuotnguc"],
         "note": "Nếu thất bại sẽ bị công khai bêu rếu ở kênh chung. Liều thì liều!",
     },
     # ── TIỆN ÍCH ──────────────────────────────────────────────────────────────
@@ -117,8 +117,8 @@ CMD_DATA: dict[str, dict] = {
         "short": "Xem hướng dẫn toàn bộ các lệnh sự kiện với UI tương tác.",
         "aliases": [],
         "cooldown": None,
-        "usage": "y!ehelp [tên_lệnh]",
-        "examples": ["y!ehelp", "`y!ehelp crash`"],
+        "usage": "{prefix}ehelp [tên_lệnh]",
+        "examples": ["{prefix}ehelp", "`{prefix}ehelp crash`"],
         "note": None,
     },
     "help": {
@@ -127,8 +127,8 @@ CMD_DATA: dict[str, dict] = {
         "short": "Xem danh sách lệnh quản trị và hệ thống (đang xem đây nè).",
         "aliases": ["trogiup"],
         "cooldown": None,
-        "usage": "y!help [tên_lệnh]",
-        "examples": ["y!help", "y!help phattu"],
+        "usage": "{prefix}help [tên_lệnh]",
+        "examples": ["{prefix}help", "{prefix}help phattu"],
         "note": None,
     },
     # ── GIVEAWAY ──────────────────────────────────────────────────────────────
@@ -138,8 +138,8 @@ CMD_DATA: dict[str, dict] = {
         "short": "Tạo Giveaway thường bằng menu tương tác.",
         "aliases": [],
         "cooldown": None,
-        "usage": "y!ga",
-        "examples": ["y!ga"],
+        "usage": "{prefix}ga",
+        "examples": ["{prefix}ga"],
         "note": "Hệ thống sẽ gửi menu cấu hình thời gian, giải thưởng, v.v.",
     },
     "fga": {
@@ -148,9 +148,9 @@ CMD_DATA: dict[str, dict] = {
         "short": "Tạo Flash Giveaway chia thành nhiều đợt nhỏ liên tục.",
         "aliases": [],
         "cooldown": None,
-        "usage": "y!fga",
-        "examples": ["y!fga"],
-        "note": "Giống y!ga nhưng có thêm chức năng batch.",
+        "usage": "{prefix}fga",
+        "examples": ["{prefix}fga"],
+        "note": "Giống {prefix}ga nhưng có thêm chức năng batch.",
     },
     "gaban": {
         "name": "Cấm Giveaway",
@@ -158,8 +158,8 @@ CMD_DATA: dict[str, dict] = {
         "short": "Cấm một người chơi tham gia mọi Giveaway của bot.",
         "aliases": ["gablacklist"],
         "cooldown": None,
-        "usage": "y!gaban <@user> [lý do]",
-        "examples": ["y!gaban @User Gian lận"],
+        "usage": "{prefix}gaban <@user> [lý do]",
+        "examples": ["{prefix}gaban @User Gian lận"],
         "note": "Chỉ Admin mới có thể dùng lệnh này.",
     },
     "gaunban": {
@@ -168,8 +168,8 @@ CMD_DATA: dict[str, dict] = {
         "short": "Gỡ cấm tham gia Giveaway cho người chơi.",
         "aliases": ["gaunblacklist"],
         "cooldown": None,
-        "usage": "y!gaunban <@user>",
-        "examples": ["y!gaunban @User"],
+        "usage": "{prefix}gaunban <@user>",
+        "examples": ["{prefix}gaunban @User"],
         "note": "Chỉ Admin mới có thể dùng lệnh này.",
     },
     "gabanlist": {
@@ -178,8 +178,8 @@ CMD_DATA: dict[str, dict] = {
         "short": "Xem danh sách những người đang bị cấm tham gia Giveaway.",
         "aliases": ["gabannedlist"],
         "cooldown": None,
-        "usage": "y!gabanlist",
-        "examples": ["y!gabanlist"],
+        "usage": "{prefix}gabanlist",
+        "examples": ["{prefix}gabanlist"],
         "note": None,
     },
     "gareroll": {
@@ -188,8 +188,8 @@ CMD_DATA: dict[str, dict] = {
         "short": "Quay lại ngẫu nhiên để chọn người thắng mới.",
         "aliases": ["garr"],
         "cooldown": None,
-        "usage": "y!gareroll <link_tin_nhắn_ga> [số_người]",
-        "examples": ["y!gareroll https://discord.com/channels/... 1"],
+        "usage": "{prefix}gareroll <link_tin_nhắn_ga> [số_người]",
+        "examples": ["{prefix}gareroll https://discord.com/channels/... 1"],
         "note": "Lệnh này dành cho Admin/Host quay bù người thắng.",
     },
     "feedback": {
@@ -198,8 +198,8 @@ CMD_DATA: dict[str, dict] = {
         "short": "Xem danh sách toàn bộ bài đánh giá của một nhân sự.",
         "aliases": ["fb"],
         "cooldown": None,
-        f"usage": "{ctx.prefix}fb <@user | id>",
-        f"examples": ["{ctx.prefix}fb @User"],
+        "usage": "{prefix}fb <@user | id>",
+        "examples": ["{prefix}fb @User"],
         "note": "Dành cho việc theo dõi hiệu suất của nhân sự.",
     },
     "add": {
@@ -208,8 +208,8 @@ CMD_DATA: dict[str, dict] = {
         "short": "Tạo hồ sơ cá nhân mới cho Staff.",
         "aliases": ["register", "dangky", "themhoso"],
         "cooldown": None,
-        f"usage": "{ctx.prefix}add",
-        f"examples": ["{ctx.prefix}add"],
+        "usage": "{prefix}add",
+        "examples": ["{prefix}add"],
         "note": "Bạn cần có ID Staff hợp lệ.",
     },
     "set": {
@@ -218,8 +218,8 @@ CMD_DATA: dict[str, dict] = {
         "short": "Chỉnh sửa hồ sơ cá nhân của Staff.",
         "aliases": ["editprofile", "suahoso"],
         "cooldown": None,
-        f"usage": "{ctx.prefix}set",
-        f"examples": ["{ctx.prefix}set"],
+        "usage": "{prefix}set",
+        "examples": ["{prefix}set"],
         "note": "Chỉ được sửa hồ sơ của chính mình.",
     },
     "rule": {
@@ -228,8 +228,8 @@ CMD_DATA: dict[str, dict] = {
         "short": "Xem bảng điều lệ server Angelic.",
         "aliases": ["rules", "luat", "dieule"],
         "cooldown": None,
-        "usage": "y!rule",
-        "examples": ["y!rule"],
+        "usage": "{prefix}rule",
+        "examples": ["{prefix}rule"],
         "note": None,
     },
     "checkdb": {
@@ -238,8 +238,8 @@ CMD_DATA: dict[str, dict] = {
         "short": "Kiểm tra toàn bộ danh sách đang có trong Database.",
         "aliases": [],
         "cooldown": None,
-        "usage": "y!checkdb",
-        "examples": ["y!checkdb"],
+        "usage": "{prefix}checkdb",
+        "examples": ["{prefix}checkdb"],
         "note": "Chỉ dành cho Quản lý.",
     },
     "renewdb": {
@@ -248,8 +248,8 @@ CMD_DATA: dict[str, dict] = {
         "short": "Đồng bộ và làm sạch Database với Server Discord thực tế.",
         "aliases": ["syncdb", "refreshdb"],
         "cooldown": None,
-        "usage": "y!renewdb",
-        "examples": ["y!renewdb"],
+        "usage": "{prefix}renewdb",
+        "examples": ["{prefix}renewdb"],
         "note": "Chỉ dành cho Admin/Owner.",
     },
     "myreviews": {
@@ -258,8 +258,8 @@ CMD_DATA: dict[str, dict] = {
         "short": "Xem lịch sử đánh giá staff của bạn.",
         "aliases": ["myfeedbacks", "myfb", "myrv"],
         "cooldown": None,
-        "usage": "y!myreviews",
-        "examples": ["y!myreviews"],
+        "usage": "{prefix}myreviews",
+        "examples": ["{prefix}myreviews"],
         "note": None,
     },
     "top": {
@@ -268,8 +268,8 @@ CMD_DATA: dict[str, dict] = {
         "short": "Xem bảng xếp hạng nhân sự.",
         "aliases": ["lb", "bxh", "leaderboard"],
         "cooldown": None,
-        "usage": "y!top",
-        "examples": ["y!top"],
+        "usage": "{prefix}top",
+        "examples": ["{prefix}top"],
         "note": "Top điểm, lượt đánh giá và số dư.",
     },
     "backup": {
@@ -278,8 +278,8 @@ CMD_DATA: dict[str, dict] = {
         "short": "Kích hoạt backup database thủ công ngay lập tức.",
         "aliases": [],
         "cooldown": None,
-        "usage": "y!backup",
-        "examples": ["y!backup"],
+        "usage": "{prefix}backup",
+        "examples": ["{prefix}backup"],
         "note": "Chỉ dành cho Admin/Owner.",
     },
     "synclv": {
@@ -288,8 +288,8 @@ CMD_DATA: dict[str, dict] = {
         "short": "Quét lịch sử và đồng bộ Level từ Arcane.",
         "aliases": [],
         "cooldown": None,
-        "usage": "y!synclv",
-        "examples": ["y!synclv"],
+        "usage": "{prefix}synclv",
+        "examples": ["{prefix}synclv"],
         "note": "Dành cho Admin.",
     },
     "test_welcome": {
@@ -298,8 +298,8 @@ CMD_DATA: dict[str, dict] = {
         "short": "Kiểm tra giao diện chào mừng thành viên mới.",
         "aliases": [],
         "cooldown": None,
-        "usage": "y!test_welcome [@user]",
-        "examples": ["y!test_welcome", "y!test_welcome @User"],
+        "usage": "{prefix}test_welcome [@user]",
+        "examples": ["{prefix}test_welcome", "{prefix}test_welcome @User"],
         "note": "Dành cho Admin.",
     },
 }
@@ -408,11 +408,11 @@ def build_detail_embed(cmd_key: str, prefix: str = 'y!') -> discord.Embed:
     if cmd.get("cooldown"):
         embed.add_field(name="⏱️ Cooldown", value=cmd["cooldown"], inline=True)
     embed.add_field(name="\u200b", value="\u200b", inline=False)
-    embed.add_field(name="📝 Cú pháp", value=f"`{cmd['usage']}`", inline=False)
+    embed.add_field(name="📝 Cú pháp", value=f"`{cmd['usage'].replace('{prefix}', prefix)}`", inline=False)
     if cmd.get("examples"):
-        embed.add_field(name="💡 Ví dụ", value="\n".join(f"`{e}`" for e in cmd["examples"]), inline=False)
+        embed.add_field(name="💡 Ví dụ", value="\n".join(f"`{e.replace('{prefix}', prefix)}`" for e in cmd["examples"]), inline=False)
     if cmd.get("note"):
-        embed.add_field(name="ℹ️ Ghi chú", value=cmd["note"], inline=False)
+        embed.add_field(name="ℹ️ Ghi chú", value=cmd["note"].replace("{prefix}", prefix), inline=False)
     embed.set_footer(text="Nhấn ◀ Quay Lại để về danh sách lệnh")
     return embed
 

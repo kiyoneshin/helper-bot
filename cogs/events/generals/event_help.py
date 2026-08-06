@@ -28,8 +28,8 @@ CMD_DATA: dict[str, dict] = {
         "short": "Xem túi đồ của bạn.",
         "aliases": ["bag", "tuido", "khodo", "inventory"],
         "cooldown": None,
-        "usage": "y!inv",
-        "examples": ["y!inv"],
+        "usage": "{prefix}inv",
+        "examples": ["{prefix}inv"],
         "note": None,
     },
     "use": {
@@ -38,8 +38,8 @@ CMD_DATA: dict[str, dict] = {
         "short": "Sử dụng một vật phẩm trong túi đồ.",
         "aliases": ["dung", "xai"],
         "cooldown": None,
-        "usage": "y!use <id_vật_phẩm> [@mục_tiêu]",
-        "examples": ["y!use 12", "y!use 41 @user"],
+        "usage": "{prefix}use <id_vật_phẩm> [@mục_tiêu]",
+        "examples": ["{prefix}use 12", "{prefix}use 41 @user"],
         "note": "Bạn cần biết ID của vật phẩm (xem trong y!inv).",
     },
     "shop": {
@@ -48,8 +48,8 @@ CMD_DATA: dict[str, dict] = {
         "short": "Xem danh sách vật phẩm trong cửa hàng.",
         "aliases": ["cuahang", "store"],
         "cooldown": None,
-        "usage": "y!shop",
-        "examples": ["y!shop"],
+        "usage": "{prefix}shop",
+        "examples": ["{prefix}shop"],
         "note": None,
     },
     "buy": {
@@ -58,8 +58,8 @@ CMD_DATA: dict[str, dict] = {
         "short": "Mua vật phẩm từ cửa hàng.",
         "aliases": ["mua"],
         "cooldown": None,
-        "usage": "y!buy <id_vật_phẩm> [số_lượng]",
-        "examples": ["y!buy 1", "y!buy 2 10"],
+        "usage": "{prefix}buy <id_vật_phẩm> [số_lượng]",
+        "examples": ["{prefix}buy 1", "{prefix}buy 2 10"],
         "note": "Bạn cần biết ID của vật phẩm (xem trong y!shop).",
     },
     # ── CASINO ────────────────────────────────────────────────────────────────
@@ -69,8 +69,8 @@ CMD_DATA: dict[str, dict] = {
         "short": "Tung đồng xu H/T. Thắng x1.9, đứng xu Jackpot x5.0.",
         "aliases": ["cf"],
         "cooldown": None,
-        "usage": "y!cf <h/t> <tiền_cược | all>",
-        "examples": ["y!cf h 50k", "y!cf t all"],
+        "usage": "{prefix}cf <h/t> <tiền_cược | all>",
+        "examples": ["{prefix}cf h 50k", "{prefix}cf t all"],
         "note": "Tỉ lệ: Thắng 44% / Thua 55% / Đứng xu 1%",
     },
     "cups": {
@@ -79,8 +79,8 @@ CMD_DATA: dict[str, dict] = {
         "short": "Đoán ly có bảo vật trong 3 ly. Chọn đúng nhận x2.3.",
         "aliases": [],
         "cooldown": "30s timeout",
-        "usage": "y!cups <tiền_cược | all>",
-        "examples": ["y!cups 10k", "y!cups all"],
+        "usage": "{prefix}cups <tiền_cược | all>",
+        "examples": ["{prefix}cups 10k", "{prefix}cups all"],
         "note": "Cần nhấn nút trong 30s, hết giờ sòng trả lại tiền.",
     },
     "dice": {
@@ -89,8 +89,8 @@ CMD_DATA: dict[str, dict] = {
         "short": "Lắc xúc xắc 7 mặt. Mặt 4-6 thắng x1.25~x2.0. Mặt 7 nổ hũ x8.0 tiền cược.",
         "aliases": [],
         "cooldown": None,
-        "usage": "y!dice <tiền_cược | all>",
-        "examples": ["y!dice 100k", "y!dice all"],
+        "usage": "{prefix}dice <tiền_cược | all>",
+        "examples": ["{prefix}dice 100k", "{prefix}dice all"],
         "note": "Mặt 1-3 thua 25%~100%. Mặt 4-6 thắng x1.25~x2.0. Mặt 7 nổ hũ x8.0 tiền cược.",
     },
     "roulette": {
@@ -99,8 +99,8 @@ CMD_DATA: dict[str, dict] = {
         "short": "Cò quay tử thần. Sống sót lần 1-5 nhận x1.1→x5.0.",
         "aliases": ["shot"],
         "cooldown": None,
-        "usage": "y!shot <tiền_cược | all>",
-        "examples": ["y!shot 50k", "y!shot all"],
+        "usage": "{prefix}shot <tiền_cược | all>",
+        "examples": ["{prefix}shot 50k", "{prefix}shot all"],
         "note": "Mỗi lần bóp cò tăng xác suất chết. Rút lui sớm để chốt lời an toàn.",
     },
     "adopt": {
@@ -109,8 +109,8 @@ CMD_DATA: dict[str, dict] = {
         "short": "Nhận nuôi thú cưng để tăng hiệu ứng tương tác.",
         "aliases": [],
         "cooldown": 0,
-        "usage": "y!adopt <tên_thú_cưng>",
-        "examples": ["y!adopt dog", "y!adopt cat"],
+        "usage": "{prefix}adopt <tên_thú_cưng>",
+        "examples": ["{prefix}adopt dog", "{prefix}adopt cat"],
         "note": "Yêu cầu 200 DTM để nhận nuôi. Nếu đã có thú cưng, bạn có thể nhận bé mới nhưng EXP thú cưng sẽ quay về 0.",
     },
     "namepet": {
@@ -119,8 +119,8 @@ CMD_DATA: dict[str, dict] = {
         "short": "Đặt hoặc đổi tên riêng cho Thú cưng chung của hai bạn.",
         "aliases": [],
         "cooldown": 0,
-        "usage": "y!namepet <tên_thú_cưng>",
-        "examples": ["y!namepet Bông Tuyết", "y!namepet Bé Mực"],
+        "usage": "{prefix}namepet <tên_thú_cưng>",
+        "examples": ["{prefix}namepet Bông Tuyết", "{prefix}namepet Bé Mực"],
         "note": "Hai bạn cần phải nhận nuôi thú cưng (y!adopt) trước khi đặt tên. Tối đa 30 ký tự.",
     },
     "pet": {
@@ -129,8 +129,8 @@ CMD_DATA: dict[str, dict] = {
         "short": "Xem thông tin chi tiết thú cưng, cấp độ và buff kỹ năng đặc thù.",
         "aliases": ["thucung"],
         "cooldown": 0,
-        "usage": "y!pet",
-        "examples": ["y!pet"],
+        "usage": "{prefix}pet",
+        "examples": ["{prefix}pet"],
         "note": "Mỗi loại thú cưng có kỹ năng ĐỘC QUYỀN khác nhau. Nhận EXP thú cưng bằng cách đi làm (y!work), làm nhiệm vụ (y!task) hoặc dùng lệnh hành động.",
     },
     "crash": {
@@ -139,8 +139,8 @@ CMD_DATA: dict[str, dict] = {
         "short": "Tàu bay tăng hệ số x1.1→x99. Nhảy dù trước khi nổ để thắng.",
         "aliases": ["cr"],
         "cooldown": "Lobby 30s",
-        "usage": "y!crash",
-        "examples": ["y!crash", "y!cr"],
+        "usage": "{prefix}crash",
+        "examples": ["{prefix}crash", "{prefix}cr"],
         "note": "Gõ lệnh để mở sòng, sau đó nhấn nút Đặt Cược để chơi.",
     },
     "wheel": {
@@ -149,8 +149,8 @@ CMD_DATA: dict[str, dict] = {
         "short": "Vòng quay 16 ô. Ô Tím x9.0, Xanh lá x1.8.",
         "aliases": [],
         "cooldown": None,
-        "usage": "y!wheel <tiền_cược | all>",
-        "examples": ["y!wheel 50k", "y!wheel all"],
+        "usage": "{prefix}wheel <tiền_cược | all>",
+        "examples": ["{prefix}wheel 50k", "{prefix}wheel all"],
         "note": "Thua ô Vàng tuy mất trắng tiền cược nhưng được tặng 1 vé xổ số!",
     },
     "slots": {
@@ -159,8 +159,8 @@ CMD_DATA: dict[str, dict] = {
         "short": "Quay máy 5 cuộn. 5 biểu tượng giống nhau = Nổ hũ Jackpot.",
         "aliases": ["slot"],
         "cooldown": None,
-        "usage": "y!slots <tiền_cược | all>",
-        "examples": ["y!slots 100k", "y!slots all"],
+        "usage": "{prefix}slots <tiền_cược | all>",
+        "examples": ["{prefix}slots 100k", "{prefix}slots all"],
         "note": "Nhiều cấp độ thắng tùy số biểu tượng trùng.",
     },
     "taixiu": {
@@ -169,8 +169,8 @@ CMD_DATA: dict[str, dict] = {
         "short": "Lắc 3 xúc xắc. Tài (11-17) / Xỉu (4-10). Thắng x1.95.",
         "aliases": ["tx"],
         "cooldown": None,
-        "usage": "y!tx <tai/xiu> <tiền_cược | all>",
-        "examples": ["y!tx tai 100k", "y!tx xiu all"],
+        "usage": "{prefix}tx <tai/xiu> <tiền_cược | all>",
+        "examples": ["{prefix}tx tai 100k", "{prefix}tx xiu all"],
         "note": "Bão (ra 3 con 1 hoặc 3 con 6): Mất sạch.",
     },
     "baucua": {
@@ -179,8 +179,8 @@ CMD_DATA: dict[str, dict] = {
         "short": "Bàn Bầu Cua Tôm Cá chung. Sảnh cược tương tác.",
         "aliases": ["bc"],
         "cooldown": None,
-        "usage": "y!bc",
-        "examples": ["y!bc"],
+        "usage": "{prefix}bc",
+        "examples": ["{prefix}bc"],
         "note": "Gồm 6 con: Bầu, Cua, Tôm, Cá, Nai, Gà. Đặt cược bằng tin nhắn trong sảnh: `<tên_con> <số_tiền>`.",
     },
     "betvit": {
@@ -189,8 +189,8 @@ CMD_DATA: dict[str, dict] = {
         "short": "Cược vào màu vịt. Vịt thắng, bạn thắng theo tỉ lệ pool.",
         "aliases": ["bv", "bevit"],
         "cooldown": None,
-        "usage": "y!betvit <màu> <tiền>",
-        "examples": ["y!betvit do 50k", "y!bv xanh 100k"],
+        "usage": "{prefix}betvit <màu> <tiền>",
+        "examples": ["{prefix}betvit do 50k", "{prefix}bv xanh 100k"],
         "note": "Màu: do, xanh, vang, hong, yon. Xem tỉ lệ: `y!xemvit`. Hủy cược: `y!huybet`.",
     },
     "xoso": {
@@ -199,8 +199,8 @@ CMD_DATA: dict[str, dict] = {
         "short": "Vé số kiến thiết. Đổi đời sau một đêm.",
         "aliases": ["lottery", "xs"],
         "cooldown": None,
-        "usage": "y!xoso [mua|ban] [số_lượng]",
-        "examples": ["y!xoso", "y!xoso mua 5", "y!xoso ban 12"],
+        "usage": "{prefix}xoso [mua|ban] [số_lượng]",
+        "examples": ["{prefix}xoso", "{prefix}xoso mua 5", "{prefix}xoso ban 12"],
         "note": "Gõ y!xoso để xem thông tin. Kết quả xổ lúc cuối ngày.",
     },
     "multidice": {
@@ -209,8 +209,8 @@ CMD_DATA: dict[str, dict] = {
         "short": "Xúc Xắc PvP nhiều người. Điểm cao nhất ăn cả nồi.",
         "aliases": ["md", "quanhung"],
         "cooldown": None,
-        "usage": "y!md <tiền_cược> [@user1 @user2...]",
-        "examples": ["y!md 100k @Bạn_A @Bạn_B"],
+        "usage": "{prefix}md <tiền_cược> [@user1 @user2...]",
+        "examples": ["{prefix}md 100k @Bạn_A @Bạn_B"],
         "note": "Có thể mời tối đa nhiều người. Tự động chia thưởng khi kết thúc.",
     },
     # ── KINH TẾ ───────────────────────────────────────────────────────────────
@@ -220,8 +220,8 @@ CMD_DATA: dict[str, dict] = {
         "short": "Nhận thưởng 500 điểm mỗi ngày. Chuỗi càng dài, thưởng càng lớn.",
         "aliases": ["diemdanh"],
         "cooldown": "24h",
-        "usage": "y!daily",
-        "examples": ["y!daily"],
+        "usage": "{prefix}daily",
+        "examples": ["{prefix}daily"],
         "note": "Thưởng chuỗi (streak) cộng thêm tối đa 500 điểm/ngày.",
     },
     "weekly": {
@@ -230,8 +230,8 @@ CMD_DATA: dict[str, dict] = {
         "short": "Nhận lương 5,000 điểm mỗi tuần (7 ngày/lần).",
         "aliases": ["luongtuan"],
         "cooldown": "7 ngày",
-        "usage": "y!weekly",
-        "examples": ["y!weekly"],
+        "usage": "{prefix}weekly",
+        "examples": ["{prefix}weekly"],
         "note": None,
     },
     "point": {
@@ -240,8 +240,8 @@ CMD_DATA: dict[str, dict] = {
         "short": "Kiểm tra số dư điểm và thông tin sự kiện của bạn (hoặc người khác).",
         "aliases": ["bal", "vi"],
         "cooldown": None,
-        "usage": "y!point [@user]",
-        "examples": ["y!point", "y!point @BanBe"],
+        "usage": "{prefix}point [@user]",
+        "examples": ["{prefix}point", "{prefix}point @BanBe"],
         "note": None,
     },
     "etop": {
@@ -250,8 +250,8 @@ CMD_DATA: dict[str, dict] = {
         "short": "Xem Top 10 người chơi có nhiều điểm tích lũy nhất server.",
         "aliases": ["evtop", "eventtop", "eventop"],
         "cooldown": None,
-        "usage": "y!etop",
-        "examples": ["y!etop"],
+        "usage": "{prefix}etop",
+        "examples": ["{prefix}etop"],
         "note": None,
     },
     "milestone": {
@@ -260,8 +260,8 @@ CMD_DATA: dict[str, dict] = {
         "short": "Xem các cột mốc phần thưởng và tiến độ đạt mốc hiện tại.",
         "aliases": ["qua", "reward"],
         "cooldown": None,
-        "usage": "y!milestone",
-        "examples": ["y!milestone"],
+        "usage": "{prefix}milestone",
+        "examples": ["{prefix}milestone"],
         "note": "Đạt mốc rồi dùng `y!claim` hoặc `y!nhanqua` để nhận thưởng.",
     },
     "shop": {
@@ -270,8 +270,8 @@ CMD_DATA: dict[str, dict] = {
         "short": "Xem các vật phẩm có thể mua bằng điểm sự kiện.",
         "aliases": ["cuahang", "store"],
         "cooldown": None,
-        "usage": "y!shop",
-        "examples": ["y!shop"],
+        "usage": "{prefix}shop",
+        "examples": ["{prefix}shop"],
         "note": "Mua vật phẩm bằng lệnh `y!buy <ID> [số_lượng]`.",
     },
     "black_market": {
@@ -280,8 +280,8 @@ CMD_DATA: dict[str, dict] = {
         "short": "Shop bí ẩn thay đổi hàng ngày. Hàng độc, hiếm và... bất thường.",
         "aliases": ["chodem", "blackmarket", "bm"],
         "cooldown": None,
-        "usage": "y!choden",
-        "examples": ["y!choden"],
+        "usage": "{prefix}choden",
+        "examples": ["{prefix}choden"],
         "note": "Hàng reset mỗi 00:00 UTC+7. Số lượng kho có hạn, ai nhanh thì được.",
     },
     "vayno": {
@@ -290,8 +290,8 @@ CMD_DATA: dict[str, dict] = {
         "short": "Vay tiền từ ngân hàng dựa trên 50% điểm tích lũy của bạn.",
         "aliases": ["vay", "loan"],
         "cooldown": None,
-        "usage": "y!vayno <số_tiền>",
-        "examples": ["y!vayno 100k"],
+        "usage": "{prefix}vayno <số_tiền>",
+        "examples": ["{prefix}vayno 100k"],
         "note": "Lãi suất 1%/ngày. Trả nợ bằng `y!trano`. Vỡ nợ sẽ bị khóa tài khoản!",
     },
     # ── KHU SINH THÁI ─────────────────────────────────────────────────────────
@@ -301,8 +301,8 @@ CMD_DATA: dict[str, dict] = {
         "short": "Mở giao diện Nông Trại. Trồng, chăm sóc và thu hoạch mùa vụ.",
         "aliases": ["nongtrai"],
         "cooldown": None,
-        "usage": "y!farm",
-        "examples": ["y!farm"],
+        "usage": "{prefix}farm",
+        "examples": ["{prefix}farm"],
         "note": "Mua hạt giống bằng `y!shop`. Upgrade ô đất: `y!upgrade`.",
     },
     "mine": {
@@ -311,8 +311,8 @@ CMD_DATA: dict[str, dict] = {
         "short": "Tiến vào hang động đào quặng. Càng vào sâu càng nhiều quặng quý.",
         "aliases": ["dao", "khoamo", "mining"],
         "cooldown": None,
-        "usage": "y!mine",
-        "examples": ["y!mine"],
+        "usage": "{prefix}mine",
+        "examples": ["{prefix}mine"],
         "note": "Tốn 4 Thể Lực mỗi lần đào. Bán quặng bằng `y!inv ban`.",
     },
     "fish": {
@@ -321,8 +321,8 @@ CMD_DATA: dict[str, dict] = {
         "short": "Thả cần đợi cá cắn. Cá hiếm bán được nhiều điểm hơn.",
         "aliases": ["cauca", "fishing", "caca"],
         "cooldown": None,
-        "usage": "y!fish",
-        "examples": ["y!fish"],
+        "usage": "{prefix}fish",
+        "examples": ["{prefix}fish"],
         "note": "Tốn 3 Thể Lực mỗi lần câu. Nâng cấp cần câu để tăng tỉ lệ cá hiếm.",
     },
     # ── HỆ THỐNG TÌNH YÊU ──────────────────────────────────────────────────────
@@ -332,8 +332,8 @@ CMD_DATA: dict[str, dict] = {
         "short": "Cầu hôn một người để chính thức thành vợ chồng.",
         "aliases": ["kethon"],
         "cooldown": None,
-        "usage": "y!marry [@user] [ring_id]",
-        "examples": ["y!marry @BanGai 31", "y!kethon @Crush 32"],
+        "usage": "{prefix}marry [@user] [ring_id]",
+        "examples": ["{prefix}marry @BanGai 31", "{prefix}kethon @Crush 32"],
         "note": "Nhẫn ID 31-34 mua trong y!shop.",
     },
     "divorce": {
@@ -342,8 +342,8 @@ CMD_DATA: dict[str, dict] = {
         "short": "Đơn phương ly hôn người hiện tại.",
         "aliases": ["lydi", "lyhon"],
         "cooldown": None,
-        "usage": "y!divorce",
-        "examples": ["y!divorce", "y!lydi"],
+        "usage": "{prefix}divorce",
+        "examples": ["{prefix}divorce", "{prefix}lydi"],
         "note": "Hành động này sẽ xóa toàn bộ điểm thân mật và thú cưng chung.",
     },
     "cooldowns": {
@@ -352,8 +352,8 @@ CMD_DATA: dict[str, dict] = {
         "short": "Xem thời gian hồi chiêu của tất cả các lệnh.",
         "aliases": ["cd", "rd"],
         "cooldown": None,
-        "usage": "y!cooldowns",
-        "examples": ["y!cd"],
+        "usage": "{prefix}cooldowns",
+        "examples": ["{prefix}cd"],
         "note": "Giúp bạn kiểm soát tiến độ cày cuốc. Bot tự động ping khi Thể Lực đầy 100/100.",
     },
     "promise": {
@@ -362,8 +362,8 @@ CMD_DATA: dict[str, dict] = {
         "short": "Khắc ghi lời thề non hẹn biển lên Profile Tình Yêu.",
         "aliases": ["hua"],
         "cooldown": None,
-        "usage": "y!promise <lời_hứa>",
-        "examples": ["y!promise Anh hứa sẽ yêu em mãi mãi"],
+        "usage": "{prefix}promise <lời_hứa>",
+        "examples": ["{prefix}promise Anh hứa sẽ yêu em mãi mãi"],
         "note": "Bất cứ lúc nào cũng có thể đổi lại lời hứa.",
     },
     "gift": {
@@ -372,8 +372,8 @@ CMD_DATA: dict[str, dict] = {
         "short": "Tặng quà mua từ Cửa Hàng (Quà Tặng) cho vợ/chồng. Tăng DTM.",
         "aliases": ["tangqua"],
         "cooldown": 0,
-        "usage": "y!gift <@user> <id_quà>",
-        "examples": ["y!gift @nguoiyeu 41", "y!gift 123456789 42"],
+        "usage": "{prefix}gift <@user> <id_quà>",
+        "examples": ["{prefix}gift @nguoiyeu 41", "{prefix}gift 123456789 42"],
         "note": "Quà tặng phải mua trong Cửa Hàng (y!shop mục Quà Tặng) trước khi dùng lệnh này. Mỗi món quà có lượng DTM tăng thêm riêng.",
     },
     "upgradering": {
@@ -382,8 +382,8 @@ CMD_DATA: dict[str, dict] = {
         "short": "Đổi sang Nhẫn cấp cao hơn để nhận thêm buff DTM và giảm Cooldown.",
         "aliases": ["nangcapnhan"],
         "cooldown": None,
-        "usage": "y!upgradering <ring_id>",
-        "examples": ["y!upgradering 33"],
+        "usage": "{prefix}upgradering <ring_id>",
+        "examples": ["{prefix}upgradering 33"],
         "note": "Bạn cần mua sẵn nhẫn mới trong túi đồ (y!inv) trước.",
     },
     "setimage": {
@@ -392,8 +392,8 @@ CMD_DATA: dict[str, dict] = {
         "short": "Cài ảnh kỷ niệm hiển thị dưới Profile Tình Yêu.",
         "aliases": ["setanh"],
         "cooldown": None,
-        "usage": "y!setimage <link_ảnh>",
-        "examples": ["y!setimage https://example.com/image.png"],
+        "usage": "{prefix}setimage <link_ảnh>",
+        "examples": ["{prefix}setimage https://example.com/image.png"],
         "note": "Link ảnh phải kết thúc bằng .png, .jpg hoặc .gif",
     },
     "coupletask": {
@@ -402,8 +402,8 @@ CMD_DATA: dict[str, dict] = {
         "short": "Nhận 1 nhiệm vụ ngẫu nhiên chung cho cả 2 người. Hoàn thành để lấy +100 DTM.",
         "aliases": [],
         "cooldown": "1 lần/ngày",
-        "usage": "y!coupletask",
-        "examples": ["y!coupletask"],
+        "usage": "{prefix}coupletask",
+        "examples": ["{prefix}coupletask"],
         "note": "Ngày mới (sau 0h) sẽ nhận được task mới.",
     },
     "actions": {
@@ -412,8 +412,8 @@ CMD_DATA: dict[str, dict] = {
         "short": "Các lệnh tương tác đặc biệt dành cho vợ/chồng.",
         "aliases": ["om", "hon", "tat", "can", "seg", "hug", "kiss", "slap", "punch", "bite", "tickle", "poke", "pat", "saylove", "cuddle", "snuggle", "lick", "nom", "fuck", "hun", "dam", "choclet", "choc", "xoadau", "noiyeu", "iuem", "iuanh", "auyem", "nung", "nũng", "liem", "mam", "hanhdong", "hd"],
         "cooldown": 0,
-        "usage": "y!<hành_động> <@user>",
-        "examples": ["y!hug @VoYeu", "y!kiss @ChongYeu"],
+        "usage": "{prefix}<hành_động> <@user>",
+        "examples": ["{prefix}hug @VoYeu", "{prefix}kiss @ChongYeu"],
         "note": (
             "Bao gồm các lệnh sau (có thể dùng tên tiếng Anh hoặc alias tiếng Việt):\n"
             "- 🤜 **Bạo lực:** `y!slap` (tat), `y!punch` (dam), `y!bite` (can), `y!tickle` (choclet)\n"
@@ -429,8 +429,8 @@ CMD_DATA: dict[str, dict] = {
         "short": "Trả nợ cho ngân hàng để tránh bị khóa tài khoản.",
         "aliases": ["tra", "payloan"],
         "cooldown": None,
-        "usage": "y!trano <số_tiền | all>",
-        "examples": ["y!trano 50k", "y!trano all"],
+        "usage": "{prefix}trano <số_tiền | all>",
+        "examples": ["{prefix}trano 50k", "{prefix}trano all"],
         "note": "Bạn cần trả cả gốc lẫn lãi.",
     },
     "ebuy": {
@@ -439,8 +439,8 @@ CMD_DATA: dict[str, dict] = {
         "short": "Mua vật phẩm trực tiếp từ Chợ Đen.",
         "aliases": ["muadem", "bmbuy"],
         "cooldown": None,
-        "usage": "y!ebuy <id_vật_phẩm> [số_lượng]",
-        "examples": ["y!ebuy 1", "y!ebuy 2 5"],
+        "usage": "{prefix}ebuy <id_vật_phẩm> [số_lượng]",
+        "examples": ["{prefix}ebuy 1", "{prefix}ebuy 2 5"],
         "note": "Số lượng kho có hạn, hãy nhanh tay!",
     },
     "recipe": {
@@ -449,8 +449,8 @@ CMD_DATA: dict[str, dict] = {
         "short": "Xem bách khoa toàn thư công thức nông cụ & máy móc.",
         "aliases": ["recipes"],
         "cooldown": None,
-        "usage": "y!recipe",
-        "examples": ["y!recipe"],
+        "usage": "{prefix}recipe",
+        "examples": ["{prefix}recipe"],
         "note": "Thu thập nguyên liệu từ Nông Trại/Đào Mỏ để chế tạo.",
     },
     "task": {
@@ -459,8 +459,8 @@ CMD_DATA: dict[str, dict] = {
         "short": "Hoàn thành các nhiệm vụ nhỏ mỗi ngày để lấy phần thưởng.",
         "aliases": ["tasks", "nhiemvu"],
         "cooldown": None,
-        "usage": "y!task",
-        "examples": ["y!task"],
+        "usage": "{prefix}task",
+        "examples": ["{prefix}task"],
         "note": "Nhiệm vụ reset vào lúc 0:00 mỗi ngày.",
     },
     "quest": {
@@ -469,8 +469,8 @@ CMD_DATA: dict[str, dict] = {
         "short": "Xem và nhận thưởng từ chuỗi nhiệm vụ tân thủ.",
         "aliases": ["quests"],
         "cooldown": None,
-        "usage": "y!quest",
-        "examples": ["y!quest"],
+        "usage": "{prefix}quest",
+        "examples": ["{prefix}quest"],
         "note": "Nhiệm vụ tân thủ chỉ làm 1 lần duy nhất.",
     },
     "work": {
@@ -479,8 +479,8 @@ CMD_DATA: dict[str, dict] = {
         "short": "Gõ phím đi làm nhận lương. Có tỉ lệ gặp boss/trúng mánh.",
         "aliases": ["w"],
         "cooldown": "5p",
-        "usage": "y!work",
-        "examples": ["y!work", "y!w"],
+        "usage": "{prefix}work",
+        "examples": ["{prefix}work", "{prefix}w"],
         "note": "Đôi khi sẽ bị sếp la nếu làm việc không chăm chỉ.",
     },
     "upgrade": {
@@ -489,8 +489,8 @@ CMD_DATA: dict[str, dict] = {
         "short": "Nâng cấp ô đất hoặc cần câu bằng nguyên liệu.",
         "aliases": ["nangcap", "morong"],
         "cooldown": None,
-        "usage": "y!upgrade",
-        "examples": ["y!upgrade"],
+        "usage": "{prefix}upgrade",
+        "examples": ["{prefix}upgrade"],
         "note": "Cần nguyên liệu để mở khóa tính năng cao cấp.",
     },
     "machine": {
@@ -499,8 +499,8 @@ CMD_DATA: dict[str, dict] = {
         "short": "Mở giao diện Máy Chế Biến để làm ra vật phẩm cấp cao.",
         "aliases": ["chebien", "maymoc"],
         "cooldown": None,
-        "usage": "y!machine",
-        "examples": ["y!machine"],
+        "usage": "{prefix}machine",
+        "examples": ["{prefix}machine"],
         "note": "Tăng giá trị nông sản/quặng khi bán (x2 - x5).",
     },
     "craft": {
@@ -509,8 +509,8 @@ CMD_DATA: dict[str, dict] = {
         "short": "Dùng nguyên liệu gỗ/đá/phôi để chế tạo máy (Keg, Jar, Furnace).",
         "aliases": ["chebien2", "bophuong"],
         "cooldown": None,
-        "usage": "y!craft <id_máy> [số_lượng]",
-        "examples": ["y!craft 61 2", "y!craft 63 1"],
+        "usage": "{prefix}craft <id_máy> [số_lượng]",
+        "examples": ["{prefix}craft 61 2", "{prefix}craft 63 1"],
         "note": "Sau khi xây xong, máy sẽ nằm trong 10 slot của y!machine.",
     },
     "chop": {
@@ -519,8 +519,8 @@ CMD_DATA: dict[str, dict] = {
         "short": "Tiến vào rừng sâu chặt gỗ. Có rủi ro bị sói cắn.",
         "aliases": ["chatcay", "woodcut"],
         "cooldown": None,
-        "usage": "y!chop",
-        "examples": ["y!chop"],
+        "usage": "{prefix}chop",
+        "examples": ["{prefix}chop"],
         "note": "Tốn 3 Thể Lực mỗi lần chặt.",
     },
 
@@ -593,7 +593,7 @@ def build_home_embed(bot: commands.Bot, author: discord.Member | discord.User) -
     return embed
 
 
-def build_category_embed(cat_name: str, prefix: str = "y!") -> discord.Embed:
+def build_category_embed(cat_name: str, prefix: str = "{prefix}") -> discord.Embed:
     cat = CATEGORY_DATA.get(cat_name)
     if not cat:
         return discord.Embed(title="❌ Không tìm thấy danh mục", color=discord.Color.red())
@@ -622,7 +622,7 @@ def build_category_embed(cat_name: str, prefix: str = "y!") -> discord.Embed:
     return embed
 
 
-def build_detail_embed(cmd_key: str, prefix: str = "y!") -> discord.Embed:
+def build_detail_embed(cmd_key: str, prefix: str = "{prefix}") -> discord.Embed:
     cmd = CMD_DATA.get(cmd_key)
     if not cmd:
         return discord.Embed(title="❌ Không tìm thấy lệnh", color=discord.Color.red())
@@ -643,16 +643,16 @@ def build_detail_embed(cmd_key: str, prefix: str = "y!") -> discord.Embed:
         embed.add_field(name="⏱️ Cooldown", value=cmd["cooldown"], inline=True)
 
     embed.add_field(name="\u200b", value="\u200b", inline=False)
-    embed.add_field(name="📝 Cú pháp", value=f"`{cmd['usage'].replace('y!', prefix)}`", inline=False)
+    embed.add_field(name="📝 Cú pháp", value=f"`{cmd['usage'].replace('{prefix}', prefix)}`", inline=False)
 
     if cmd.get("examples"):
         embed.add_field(
             name="💡 Ví dụ",
-            value="\n".join(f"`{e.replace('y!', prefix)}`" for e in cmd["examples"]),
+            value="\n".join(f"`{e.replace('{prefix}', prefix)}`" for e in cmd["examples"]),
             inline=False,
         )
     if cmd.get("note"):
-        embed.add_field(name="ℹ️ Ghi chú", value=cmd["note"], inline=False)
+        embed.add_field(name="ℹ️ Ghi chú", value=cmd["note"].replace('{prefix}', prefix), inline=False)
 
     embed.set_footer(text="Nhấn ◀ Quay Lại để về danh sách lệnh")
     return embed

@@ -63,18 +63,18 @@ class GlobalErrorHandler(commands.Cog):
             
             usage_str = None
             example_str = None
-            help_cmd = "y!help"
+            help_cmd = f"{ctx.prefix}help"
 
             # Tìm trong event_help
             try:
                 from cogs.events.generals.event_help import CMD_DATA as E_CMD_DATA
                 for k, v in E_CMD_DATA.items():
                     if cmd_name == k or cmd_name in v.get("aliases", []):
-                        usage_str = v.get('usage', '')
+                        usage_str = v.get('usage', '').replace('{prefix}', ctx.prefix)
                         examples = v.get('examples', [])
                         if examples:
-                            example_str = examples[0]
-                        help_cmd = "y!ehelp"
+                            example_str = examples[0].replace('{prefix}', ctx.prefix)
+                        help_cmd = f"{ctx.prefix}ehelp"
                         break
             except Exception:
                 pass
@@ -85,11 +85,11 @@ class GlobalErrorHandler(commands.Cog):
                     from cogs.general.help_cog import CMD_DATA as G_CMD_DATA
                     for k, v in G_CMD_DATA.items():
                         if cmd_name == k or cmd_name in v.get("aliases", []):
-                            usage_str = v.get('usage', '')
+                            usage_str = v.get('usage', '').replace('{prefix}', ctx.prefix)
                             examples = v.get('examples', [])
                             if examples:
-                                example_str = examples[0]
-                            help_cmd = "y!help"
+                                example_str = examples[0].replace('{prefix}', ctx.prefix)
+                            help_cmd = f"{ctx.prefix}help"
                             break
                 except Exception:
                     pass
