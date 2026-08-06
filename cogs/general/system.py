@@ -1,0 +1,47 @@
+"""
+system.py — Lệnh Hệ Thống
+=========================
+Chứa lệnh kiểm tra độ trễ (ping) và nạp lại code (reload).
+"""
+import time
+import discord
+from discord.ext import commands
+
+class SystemCog(commands.Cog, name="System"):
+    """⚙️ Lệnh Hệ Thống (Ping, Reload)"""
+    def __init__(self, bot: commands.Bot) -> None:
+        self.bot = bot
+
+    @commands.hybrid_command(name="ping")
+    async def ping_cmd(self, ctx: commands.Context) -> None:
+        """🏓 Kiểm tra độ trễ của Bot."""
+        start_time = time.perf_counter()
+        message = await ctx.send("🏓 Đang kiểm tra Ping...")
+        end_time = time.perf_counter()
+
+        api_latency = round(self.bot.latency * 1000)
+        bot_latency = round((end_time - start_time) * 1000)
+
+        embed = discord.Embed(title="🏓 Pong!", color=discord.Color.green())
+        embed.add_field(name="API Latency (Đường truyền tới Discord)", value=f"`{api_latency}ms`", inline=False)
+        embed.add_field(name="Bot Latency (Độ trễ xử lý code)", value=f"`{bot_latency}ms`", inline=False)
+        
+        await message.edit(content=None, embed=embed)
+
+    @commands.command(name="reload")
+    @commands.is_owner()
+    async def reload_cmd(self, ctx: commands.Context, extension: str) -> None:
+        """🔄 [Admin] Nạp lại một file code (cog) mà không cần tắt bot."""
+        try:
+            # Nếu người dùng nhập vd: "events.generals.cooldowns" thì thêm "cogs."
+            if not extension.startswith("cogs."):
+                extension = f"cogs.{extension}"
+            
+            await self.bot.reload_extension(extension)
+            await ctx.send(f"✅ Đã tải lại thành công: `{extension}`")
+        except Exception as e:
+            await ctx.send(f"❌ Lỗi khi tải lại `{extension}`:\n```py\n{e}\n```")
+
+
+async def setup(bot: commands.Bot) -> None:
+    await bot.add_cog(SystemCog(bot))
