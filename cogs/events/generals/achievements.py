@@ -3,9 +3,8 @@ from discord.ext import commands
 from typing import Any, Dict
 import json
 
-from cogs.common.db import fetchrow_db, execute_db, get_or_create_event_profile
+from cogs.common.db import fetchrow_db, execute_db, get_or_create_event_profile, extract_id
 from cogs.events.generals.achievements_config import ACHIEVEMENTS, ACH_CATEGORIES
-from cogs.common.utils import extract_id
 from cogs.common.item_config import ITEM_REGISTRY
 
 # =====================================================================
