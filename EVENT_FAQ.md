@@ -110,19 +110,19 @@ Sau đó, dùng lệnh `{prefix}upgrade` để nâng cấp Cuốc, Cần Câu, h
 - Lắc Tài Xỉu (`{prefix}tx`), Bầu Cua (`{prefix}baucua`), Đổ xúc xắc (`{prefix}dice`), Xúc xắc nhóm (`{prefix}md`).
 - Vòng Quay (`{prefix}wheel`), Máy xẻng (`{prefix}slots`), Tàu bay (`{prefix}crash`).
 - Đua Vịt (`{prefix}betvit`): Đua mỗi 4h một lần.
-- Xổ Số (`{prefix}xoso`): Xổ 18h mỗi ngày. Dùng "`{prefix}xoso` mua" để tậu vé!
+- Xổ Số (`{prefix}xoso`): Xổ 18h mỗi ngày. Dùng `{prefix}xoso mua` để tậu vé!
 - Lật xu (`{prefix}cf`), Úp cốc (`{prefix}cups`), Cò quay sinh tử (`{prefix}roulette`).
 Lưu ý: Nếu nợ quá hạn ngân hàng, bạn sẽ bị cấm vào Casino.
 
 **Q18: Hệ thống Ngân hàng và Vay Nợ (`{prefix}vayno`) ra sao?**
-**A:** Nếu hết vốn, hãy gõ `{prefix}vayno` <số_tiền>. Hạn mức vay tối đa bằng 50% tổng điểm tích lũy của bạn. Nợ sẽ tự sinh lãi mỗi ngày. Nếu không trả nợ (`{prefix}trano`) và để số dư tài khoản về âm liên tục, tài khoản sẽ bị Khóa/Phong Tỏa cho tới khi nộp đủ tiền.
+**A:** Nếu hết vốn, hãy gõ `{prefix}vayno <số_tiền>`. Hạn mức vay tối đa bằng 50% tổng điểm tích lũy của bạn. Nợ sẽ tự sinh lãi mỗi ngày. Nếu không trả nợ (`{prefix}trano`) và để số dư tài khoản về âm liên tục, tài khoản sẽ bị Khóa/Phong Tỏa cho tới khi nộp đủ tiền.
 
 
 ### Phần 4: Chợ Đêm & Tù Tội (Tương Tác Xã Hội)
 
 **Q19: Chợ Đêm (`{prefix}choden`) khác gì với Cửa Hàng thường (`{prefix}shop`)?**
 **A:** `{prefix}shop` dùng để mua vật phẩm sinh tồn, nhẫn, hạt giống, quà tặng...
-Còn `{prefix}choden` là nơi bán các Thẻ Bài hắc ám chuyên dùng để "troll" và hãm hại người khác. Hàng ở Chợ Đêm bán giới hạn mỗi ngày. Để mua, dùng lệnh `{prefix}ebuy` <id>.
+Còn `{prefix}choden` là nơi bán các Thẻ Bài hắc ám chuyên dùng để "troll" và hãm hại người khác. Hàng ở Chợ Đêm bán giới hạn mỗi ngày. Để mua, dùng lệnh `{prefix}ebuy <id>`.
 
 **Q20: Vật phẩm Chợ Đêm có các tác dụng cụ thể là gì?**
 **A:** Có tổng cộng 10 thẻ bài sát phạt bao gồm:
@@ -148,13 +148,13 @@ Admin cũng có thể dùng Thẻ Đặc Xá (`{prefix}thatu`) để thả bạn
 ### Phần 5: Tình Yêu & Gia Đình (Gắn kết)
 
 **Q22: Hệ thống Tình Yêu (Marriage) là gì và làm sao để kết hôn?**
-**A:** Bạn có thể cầu hôn bằng lệnh `{prefix}marry` @user <id_nhẫn> (Nhẫn mua trong `{prefix}shop`). Nếu được đồng ý, hai bạn sẽ thành vợ chồng và mở khóa Profile Tình Yêu! Xem profile bằng lệnh `{prefix}marry`.
+**A:** Bạn có thể cầu hôn bằng lệnh `{prefix}marry @user <id_nhẫn>` (Nhẫn mua trong `{prefix}shop`). Nếu được đồng ý, hai bạn sẽ thành vợ chồng và mở khóa Profile Tình Yêu! Xem profile bằng lệnh `{prefix}marry`.
 
 **Q23: Điểm Thân Mật (DTM) là gì và làm sao để cày DTM?**
 **A:** DTM là chỉ số tình cảm của vợ chồng. Cày bằng cách:
 1. Dùng lệnh hành động (`{prefix}hug`, `{prefix}kiss`, `{prefix}poke`...) với đối phương.
 2. Làm Nhiệm vụ Cặp đôi (`{prefix}coupletask`) mỗi ngày (+100 DTM).
-3. Tặng đồ (`{prefix}gift` <id_quà>): DTM tăng theo giá trị món quà bạn mua trong `{prefix}shop`.
+3. Tặng đồ (`{prefix}gift <id_quà>`): DTM tăng theo giá trị món quà bạn mua trong `{prefix}shop`.
 (Lưu ý: Đừng nhầm lẫn DTM với Pet EXP. DTM là của cặp đôi, Pet EXP là của Thú cưng. Pet EXP sẽ tăng gấp đôi lượng DTM khi bạn tương tác, ngoài ra cày việc `{prefix}work` và `{prefix}task` cũng tăng Pet EXP).
 
 **Q24: Nhẫn kết hôn, Thú Cưng hoạt động như thế nào và mỗi loài có kỹ năng gì?**
@@ -170,9 +170,9 @@ Hệ thống thú cưng bao gồm 8 loài với 8 kỹ năng ĐỘC QUYỀN:
 - 🐰 Thỏ (Nhanh Nhẹn): Có tỷ lệ Hồi chiêu ngay lập tức (Reset CD) sau khi hành động!
 - 🐻 Gấu (Ấm Áp): Tăng DTM nhận được khi tặng quà cho nhau (`{prefix}gift`).
 - 🐉 Rồng (Uy Cực): Kỹ năng toàn năng, buff mọi chỉ số ở mức độ trung bình.
-(Lưu ý: Bạn có thể đổi sang Thú cưng khác bằng lệnh `{prefix}adopt` <thú_mới>, thú cũ sẽ ra đi và EXP thú cưng sẽ bị reset về 0).
+(Lưu ý: Bạn có thể đổi sang Thú cưng khác bằng lệnh `{prefix}adopt <thú_mới>`, thú cũ sẽ ra đi và EXP thú cưng sẽ bị reset về 0).
 
 **Q25: Cài ảnh, Lời hứa & Ly hôn ra sao?**
-**A:** Dùng `{prefix}setimage` <link_ảnh> để cài hình kỷ niệm ở cuối Profile.
-Dùng `{prefix}promise` <nội_dung> để khắc lời thề.
+**A:** Dùng `{prefix}setimage <link_ảnh>` để cài hình kỷ niệm ở cuối Profile.
+Dùng `{prefix}promise <nội_dung>` để khắc lời thề.
 Tình cảm rạn nứt? Bạn có thể đơn phương ly hôn bất cứ lúc nào bằng `{prefix}divorce` (Lưu ý: Mất sạch DTM và thú cưng!). Hệ thống cũng sẽ tự ly hôn nếu 2 bạn không tương tác trong 3 ngày.
