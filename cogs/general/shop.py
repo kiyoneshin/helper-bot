@@ -383,6 +383,7 @@ class ShopCog(commands.Cog):
             elif tab in ["ring", "nhan", "nhẫn"]: category = "ring"
             elif tab in ["gift", "qua", "quà"]: category = "gift"
             elif tab in ["event", "sukien"]: category = "event"
+            elif tab in ["lb", "lootbox", "hopqua"]: category = "lootbox"
 
         embed = build_shop_embed(category, ctx.author, prefix=ctx.prefix or ctx.bot.custom_prefix)
         view = ShopView(ctx.author, category)
@@ -424,7 +425,10 @@ class ShopCog(commands.Cog):
             return
 
         # Route đến đúng handler theo category
-        if item["category"] in ["event", "ring", "gift", "lootbox"]:
+        if item["category"] == "lootbox":
+            amount = 1  # Force amount to 1 for lootboxes to prevent buying multiple in one cooldown
+            await _buy_event_item(ctx, self.bot, item, amount)
+        elif item["category"] in ["event", "ring", "gift"]:
             await _buy_event_item(ctx, self.bot, item, amount)
         elif item["category"] == "farm":
             await _buy_farm_item(ctx, self.bot, item, amount)

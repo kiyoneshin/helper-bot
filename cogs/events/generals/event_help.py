@@ -545,17 +545,17 @@ CMD_DATA: dict[str, dict] = {
         "cooldown": None,
         "usage": "{prefix}lb open <tier> [qty] | {prefix}lb info | {prefix}lb history",
         "examples": ["{prefix}lb open epic 2", "{prefix}lb open c 10", "{prefix}lb info"],
-        "note": "Bạn có thể dùng từ viết tắt (c, u, r, e, l, g) thay cho tên tier đầy đủ.",
+        "note": "Bạn có thể dùng từ viết tắt (c, u, r, e, l, g) hoặc số ID (60, 61...) thay cho tên tier đầy đủ.",
     },
     "pray": {
         "name": "Cầu Nguyện",
         "emoji": "🙏",
-        "short": "Tăng thêm +1 Luck (may mắn) mỗi 30 phút.",
-        "aliases": ["caunguyen"],
-        "cooldown": "30 phút",
+        "short": "Tăng thêm +1 Luck (may mắn) mỗi 10 phút. Tối đa 1500 Luck.",
+        "aliases": ["caunguyen", "prayer"],
+        "cooldown": "10 phút",
         "usage": "{prefix}pray",
         "examples": ["{prefix}pray"],
-        "note": "Luck càng cao, tỉ lệ rớt lootbox và tỉ lệ ra hàng hiếm khi mở hộp càng cao.",
+        "note": "Luck càng cao, tỉ lệ rớt lootbox từ hoạt động hệ sinh thái (đào mỏ, chặt cây, câu cá) và tỉ lệ ra hàng hiếm khi mở hộp càng cao.",
     },
 }
 

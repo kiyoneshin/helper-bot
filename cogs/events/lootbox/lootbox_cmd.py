@@ -407,3 +407,6 @@ class LootboxCog(commands.Cog):
 
 async def setup(bot: commands.Bot):
     await bot.add_cog(LootboxCog(bot))
+
+async def setup(bot: commands.Bot):
+    await bot.add_cog(LootboxCog(bot))
