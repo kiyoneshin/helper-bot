@@ -1,7 +1,7 @@
 """
 wheel_slot.py — Cog Vòng Quay May Mắn (Wheel of Fortune)
 =========================================================
-Lệnh: y!wheel <tien_cuoc>
+Lệnh: kwheel <tien_cuoc>
 
 Vòng quay gồm 16 ô theo tỷ lệ:
   🟪 Tím      (1 ô,  6.25%) → x9.0  (+800%)
@@ -230,7 +230,7 @@ class WheelSlots(commands.Cog):
         self.bot = bot
 
     # ─────────────────────────────────────────────────────────────────────────
-    # LỆNH CHÍNH: y!wheel
+    # LỆNH CHÍNH: kwheel
     # ─────────────────────────────────────────────────────────────────────────
 
     @commands.hybrid_command(
@@ -336,7 +336,7 @@ class WheelSlots(commands.Cog):
 
 
     # ─────────────────────────────────────────────────────────────────────────
-    # LỆNH MÁY XẺNG: y!slots
+    # LỆNH MÁY XẺNG: kslots
     # ─────────────────────────────────────────────────────────────────────────
 
     @commands.hybrid_command(

@@ -91,7 +91,7 @@ def build_fishing_embed(author: discord.Member | discord.User, stamina: int, far
         embed.add_field(name="🎒 Giỏ Cá Của Bạn", value="\n".join(inv_lines), inline=False)
 
     embed.set_thumbnail(url=author.display_avatar.url)
-    embed.set_footer(text="Dùng y!bag để bán cá. Thể lực hồi 1 điểm mỗi 18 giây.")
+    embed.set_footer(text="Dùng kbag để bán cá. Thể lực hồi 1 điểm mỗi 18 giây.")
     return embed
 
 

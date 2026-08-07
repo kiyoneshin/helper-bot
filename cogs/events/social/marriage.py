@@ -286,7 +286,7 @@ class PetAdoptConfirmView(discord.ui.View):
         for child in self.children:
             if isinstance(child, (discord.ui.Button, discord.ui.Select)):
                 child.disabled = True
-        prefix = getattr(self.bot, 'custom_prefix', 'y!')
+        prefix = self.bot.custom_prefix
         await interaction.response.edit_message(content=f"🎉 Bạn đã đổi thú cưng thành công! Chào mừng bé **{self.new_base_name} Sơ Sinh** đến với gia đình! (Kinh nghiệm thú cưng đã reset về 0). Dùng `{prefix}namepet` để đặt tên nhé.", view=self)
 
     @discord.ui.button(label="Hủy bỏ", style=discord.ButtonStyle.gray)
@@ -519,7 +519,7 @@ class MarriageCog(commands.Cog):
     @marry_cmd.error
     async def marry_cmd_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument)):
-            await ctx.send(f"❌ {ctx.author.mention} Đòi cưới mà không thèm tag tên người ta? Ai thèm lấy! Cú pháp: `{ctx.prefix}marry <@user>`. Để biết thêm chi tiết hãy xài lệnh `{ctx.prefix}ehelp marry`")
+            await ctx.send(f"❌ {ctx.author.mention} Đòi cưới mà không thèm tag tên người ta? Ai thèm lấk Cú pháp: `{ctx.prefix}marry <@user>`. Để biết thêm chi tiết hãy xài lệnh `{ctx.prefix}ehelp marry`")
 
 
     @commands.hybrid_command(name="divorce", aliases=["lydi", "lyhon", "lidi"])
@@ -552,7 +552,7 @@ class MarriageCog(commands.Cog):
 
     @commands.hybrid_command(name="promise", aliases=["hua"])
     async def promise_cmd(self, ctx: commands.Context, *, text: str):
-        """💌 Khắc ghi lời thề non hẹn biển (Chỉ hiện trong y!marry)."""
+        """💌 Khắc ghi lời thề non hẹn biển (Chỉ hiện trong lệnh marry)."""
         uid = str(ctx.author.id)
         mar = await get_marriage(self.bot, uid)
         if not mar:
@@ -661,7 +661,7 @@ class MarriageCog(commands.Cog):
 
     @commands.hybrid_command(name="setimage", aliases=["setanh"])
     async def setimage_cmd(self, ctx: commands.Context, url: str):
-        """🖼️ Thiết lập ảnh kỉ niệm cho profile y!marry của 2 bạn."""
+        """🖼️ Thiết lập ảnh kỉ niệm cho profile lệnh marry của 2 bạn."""
         uid = str(ctx.author.id)
         mar = await get_marriage(self.bot, uid)
         if not mar:

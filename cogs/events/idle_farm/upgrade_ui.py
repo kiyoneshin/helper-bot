@@ -2,7 +2,7 @@
 upgrade_ui.py — Giao diện Nâng cấp Nông trại & Dụng cụ
 ========================================================
 Bao gồm:
-  • Mở rộng ô đất (y!upgrade)
+  • Mở rộng ô đất (kupgrade)
   • Nâng cấp Cuốc chim (pickaxe_level)
   • Nâng cấp Cần câu (rod_level)
 """

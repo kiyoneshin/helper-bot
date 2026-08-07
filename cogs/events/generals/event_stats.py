@@ -1,7 +1,7 @@
 """
 event_stats.py — Quản lý điểm số & Bảng xếp hạng sự kiện
 ======================================================
-Cung cấp các lệnh y!point (xem ví) và y!etop (bảng xếp hạng).
+Cung cấp các lệnh kpoint (xem ví) và ketop (bảng xếp hạng).
 """
 import discord
 from discord.ext import commands
@@ -169,7 +169,7 @@ class EventStatsCog(commands.Cog):
             inline=True if debt == 0 else False
         )
         
-        embed.set_footer(text="Gõ y!shop để xem cửa hàng đổi quà nhé! 🌸")
+        embed.set_footer(text=f"Gõ {ctx.prefix}shop để xem cửa hàng đổi quà nhé! 🌸")
         await ctx.send(embed=embed)
         
         # Nhiệm vụ

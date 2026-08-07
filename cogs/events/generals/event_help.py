@@ -1,5 +1,5 @@
 """
-event_help.py — Hệ Thống Trợ Giúp Sự Kiện 3 Tầng (y!ehelp)
+event_help.py — Hệ Thống Trợ Giúp Sự Kiện 3 Tầng (kehelp)
 ============================================================
 Kiến trúc:
   Tầng 1 - Home     : Danh sách danh mục (Dropdown → Tầng 2)
@@ -298,12 +298,26 @@ CMD_DATA: dict[str, dict] = {
     "farm": {
         "name": "Nông Trại",
         "emoji": "🌻",
-        "short": "Mở giao diện Nông Trại. Trồng, chăm sóc và thu hoạch mùa vụ.",
+        "short": "Mở giao diện Nông Trại. Xem cây trồng, thu hoạch và chăm sóc mùa vụ.",
         "aliases": ["nongtrai"],
         "cooldown": None,
         "usage": "{prefix}farm",
         "examples": ["{prefix}farm"],
-        "note": "Mua hạt giống bằng `{prefix}shop`. Upgrade ô đất: `{prefix}upgrade`.",
+        "note": "Mua hạt giống bằng `{prefix}shop farm`. Gieo trồng bằng `{prefix}plant <loại> <ô>`. Nâng cấp: `{prefix}upgrade`.",
+    },
+    "plant": {
+        "name": "Gieo Hạt Giống",
+        "emoji": "🌱",
+        "short": "Gieo hạt giống vào các ô đất chỉ định, hỗ trợ nhiều ô cùng lúc.",
+        "aliases": ["gieo", "trong"],
+        "cooldown": None,
+        "usage": "{prefix}plant <loại_hạt> <ô1> [ô2] ...",
+        "examples": ["{prefix}plant wheat 1 2 3", "{prefix}plant tomato 1, 2, 3", "{prefix}gieo potato 4"],
+        "note": (
+            "Các loại hạt giống hợp lệ: `wheat`, `potato`, `tomato`, `strawberry`, `pumpkin`, `sunflower`, `star`.\n"
+            "Nhập nhiều ô cách nhau bằng dấu cách hoặc dấu phẩy. Bot sẽ kiểm tra số hạt giống và trạng thái ô đất trước khi trồng.\n"
+            "Bạn có thể xem số hạt đang có trong `{prefix}farm`."
+        ),
     },
     "mine": {
         "name": "Đào Mỏ",
@@ -550,7 +564,7 @@ CATEGORY_DATA: dict[str, dict] = {
         "emoji": "🌱",
         "title": "Hệ Sinh Thái (Ecosystem)",
         "desc": "Khu vực sinh thái tự nhiên. Bạn có thể trồng trọt, khai thác tài nguyên và chế biến chúng.",
-        "commands": ["farm", "upgrade", "machine", "craft", "mine", "fish", "chop", "recipe"],
+        "commands": ["farm", "plant", "upgrade", "machine", "craft", "mine", "fish", "chop", "recipe"],
         "cogs": ["IdleFarmCog", "Mining", "Fishing", "Woodcutting", "Recipes"],
     },
     "Hệ Thống Tình Yêu": {
@@ -707,7 +721,7 @@ class _CategorySelect(discord.ui.Select):
 
     async def callback(self, interaction: discord.Interaction):
         cat_name = self.values[0]
-        embed = build_category_embed(cat_name, prefix=getattr(self.bot, 'custom_prefix', 'y!'))
+        embed = build_category_embed(cat_name, prefix=self.bot.custom_prefix)
         view = CategoryView(self.bot, self.author, cat_name)
         view.message = self.view.message  # type: ignore
         await interaction.response.edit_message(embed=embed, view=view)
@@ -771,7 +785,7 @@ class _CommandSelect(discord.ui.Select):
 
     async def callback(self, interaction: discord.Interaction):
         cmd_key = self.values[0]
-        embed = build_detail_embed(cmd_key, prefix=str(getattr(self.bot, 'custom_prefix', 'y!')))
+        embed = build_detail_embed(cmd_key, prefix=str(self.bot.custom_prefix))
         view = DetailView(self.bot, self.author, self.cat_name)
         view.message = self.view.message  # type: ignore
         await interaction.response.edit_message(embed=embed, view=view)
@@ -828,7 +842,7 @@ class _BackButton(discord.ui.Button):
 
     async def callback(self, interaction: discord.Interaction):
         view: DetailView = self.view  # type: ignore
-        embed = build_category_embed(view.cat_name, prefix=getattr(view.bot, 'custom_prefix', 'y!'))
+        embed = build_category_embed(view.cat_name, prefix=view.bot.custom_prefix)
         new_view = CategoryView(view.bot, view.author, view.cat_name)
         new_view.message = view.message
         await interaction.response.edit_message(embed=embed, view=new_view)
@@ -849,7 +863,7 @@ class _HomeButton2(discord.ui.Button):
 
 
 # =============================================================================
-# COG — Lệnh y!ehelp
+# COG — Lệnh kehelp
 # =============================================================================
 
 class EventHelpCog(commands.Cog):
@@ -879,7 +893,7 @@ class EventHelpCog(commands.Cog):
                         break
                 
                 if target_cat:
-                    embed = build_detail_embed(cmd_key, prefix=ctx.prefix or 'y!')
+                    embed = build_detail_embed(cmd_key, prefix=ctx.prefix or ctx.bot.custom_prefix)
                     view = DetailView(self.bot, ctx.author, target_cat)
                     view.message = await ctx.send(embed=embed, view=view)
                     return

@@ -7,7 +7,7 @@ Nơi tích hợp các thành phần DB, UI vào lệnh bot.
 import discord
 from discord.ext import commands
 
-from .farm_db import get_farm_data
+from .farm_db import get_farm_data, plant_seeds_batch
 from cogs.common.db import fetchval_db, check_not_locked
 from .farm_ui import FarmView, build_farm_embed
 from .upgrade_ui import UpgradeView, build_upgrade_embed
@@ -43,6 +43,50 @@ class IdleFarmCog(commands.Cog):
         # 4. Gửi kết quả
         await ctx.send(embed=embed, view=view)
 
+    @commands.hybrid_command(
+        name="plant",
+        aliases=["gieo", "trong"],
+        description="🌱 Gieo hạt giống vào các ô đất chỉ định. VD: lệnh plant wheat 1 2 3",
+    )
+    @check_not_locked()
+    async def plant_cmd(self, ctx: commands.Context, seed_type: str, *, slots_str: str) -> None:
+        """🌱 Gieo hạt giống vào các ô đất chỉ định."""
+        from cogs.events.idle_farm.config import SEEDS
+        user_id = str(ctx.author.id)
+        prefix = ctx.prefix or ctx.bot.custom_prefix
+
+        # Parse seed type: có thể là tên tiếng anh hoặc ID item_config
+        seed_key = seed_type.lower()
+        if seed_key not in SEEDS:
+            # Thử tìm theo tên tiếng Việt
+            found = next((k for k, v in SEEDS.items() if v["name"].lower() == seed_key), None)
+            if found:
+                seed_key = found
+            else:
+                seed_list = "\n".join(
+                    f"• `{k}` — {v['icon']} {v['name']} ({v['grow_time_seconds']//60} phút, giá {v['cost']:,} điểm)"
+                    for k, v in SEEDS.items()
+                )
+                return await ctx.send(
+                    f"❌ Không tìm thấy hạt giống `{seed_type}`!\n"
+                    f"**Danh sách hạt giống hợp lệ:**\n{seed_list}\n\n"
+                    f"*Cú pháp: `{prefix}plant <loại_hạt> <ô 1> <ô 2> ...`*"
+                )
+
+        # Parse danh sách ô đất (tách bằng khoảng trắng hoặc dấu phẩy)
+        import re
+        raw_numbers = re.findall(r'\d+', slots_str)
+        if not raw_numbers:
+            return await ctx.send(
+                f"❌ Bạn chưa nhập số ô đất nào!\n"
+                f"*Cú pháp: `{prefix}plant <loại_hạt> <ô 1> <ô 2> ...`\n"
+                f"Ví dụ: `{prefix}plant wheat 1 2 3` hoặc `{prefix}plant wheat 1, 2, 3`*"
+            )
+
+        slot_ids = [int(n) for n in raw_numbers]
+        ok, msg = await plant_seeds_batch(self.bot, user_id, seed_key, slot_ids)
+        await ctx.send(msg)
+
 
     @commands.hybrid_command(name="upgrade", aliases=["nangcap", "morong"])
     async def upgrade_cmd(self, ctx: commands.Context) -> None:
@@ -71,7 +115,7 @@ class IdleFarmCog(commands.Cog):
     @commands.hybrid_command(name="craft", aliases=["chebien2", "bophuong"])
     @check_not_locked()
     async def craft_cmd(self, ctx: commands.Context, machine_id_str: str, quantity: int = 1) -> discord.Message | None:
-        """⚙️ Chế tạo máy mới. VD: y!craft 61 2 (61 = Keg)"""
+        """⚙️ Chế tạo máy mới. VD: kcraft 61 2 (61 = Keg)"""
         from .farm_db import get_farm_data, save_farm_data
         from .machine_config import MACHINE_BY_ID, MACHINES
         from .machine_ui import _get_queue_list, MAX_QUEUE_SLOTS, _get_item_display_name

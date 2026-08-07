@@ -69,7 +69,7 @@ class EventCoreCog(commands.Cog):
         if message.author.bot or not message.guild:
             return
 
-        if message.content.startswith(("y!", "Y!", "/", "-")):
+        if message.content.startswith(("k", "Y!", "/", "-")):
             return
 
         user_id = str(message.author.id)
@@ -365,7 +365,7 @@ class EventCoreCog(commands.Cog):
             color=0xffb6c1
         )
         embed.set_thumbnail(url=ctx.guild.icon.url if ctx.guild.icon else None)
-        embed.set_footer(text="Hãy dùng điểm này để đổi quà trong y!shop nhé! 🌸")
+        embed.set_footer(text=f"Hãy dùng điểm này để đổi quà trong {ctx.prefix}shop nhé! 🌸")
         
         await msg.edit(content=None, embed=embed)
         log.info(f"🎉 [GIVE ALL] {ctx.author.display_name} đã phát {_fmt(val)} điểm cho {len(valid_members)} thành viên.")

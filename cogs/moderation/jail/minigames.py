@@ -29,7 +29,7 @@ from .core import (
 
 
 class JailGames(commands.Cog):
-    """🎲 Hệ Thống Chuồng Chó — Minigame (y!lcuoc, y!lvuotnguc)"""
+    """🎲 Hệ Thống Chuồng Chó — Minigame (klcuoc, klvuotnguc)"""
 
     def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
@@ -174,7 +174,7 @@ class JailGames(commands.Cog):
                 title="🎊 VƯỢT NGỤC THÀNH CÔNG!",
                 description=(
                     f"🏃💨 {ctx.author.mention} **LỌT RÀO!**\n\n"
-                    "Không ai ngăn được mày! Tự do hoàn toàn — role và nickname đã khôi phục!\n"
+                    "Không ai ngăn được màk Tự do hoàn toàn — role và nickname đã khôi phục!\n"
                     "*(Đừng để bị bắt lại lần nữa nhé...)*"
                 ),
                 color=COLOR_FREE,

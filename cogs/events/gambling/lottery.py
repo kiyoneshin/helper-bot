@@ -295,13 +295,13 @@ class Lottery(commands.Cog):
             value=last_winner_str,
             inline=False
         )
-        embed.set_footer(text="Gõ y!xoso mua <sl> hoặc y!xoso ban <sl> để tham gia.")
+        embed.set_footer(text="Gõ kxoso mua <sl> hoặc kxoso ban <sl> để tham gia.")
 
         await ctx.send(embed=embed)
 
     @xoso_cmd.command(name="mua", aliases=["buy"])
     async def mua_cmd(self, ctx: commands.Context, amount: int) -> None:
-        """Mua vé số. Cú pháp: y!xoso mua <số_lượng>"""
+        """Mua vé số. Cú pháp: kxoso mua <số_lượng>"""
         uid = str(ctx.author.id)
         # Gọi helper dùng chung với shop_cog.py để không lặp code
         ok, msg = await buy_lottery_tickets(self.bot, uid, amount, self.is_locked)
@@ -309,9 +309,9 @@ class Lottery(commands.Cog):
 
     @xoso_cmd.command(name="ban", aliases=["sell"])
     async def ban_cmd(self, ctx: commands.Context, amount: int) -> None:
-        """Bán vé số lại cho hệ thống (hoàn tiền gốc). Cú pháp: y!xoso ban <số_lượng>"""
+        """Bán vé số lại cho hệ thống (hoàn tiền gốc). Cú pháp: kxoso ban <số_lượng>"""
         if self.is_locked:
-            await ctx.send(f"🔒 {ctx.author.mention} Máy đang xổ mà đòi trả vé à? Chơi dơ vậy!", delete_after=5.0)
+            await ctx.send(f"🔒 {ctx.author.mention} Máy đang xổ mà đòi trả vé à? Chơi dơ vậk", delete_after=5.0)
             return
 
         if amount <= 0:

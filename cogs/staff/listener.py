@@ -94,7 +94,7 @@ class StaffListenerCog(commands.Cog):
                         self.reply_tracker[staff_id] = []
                         
                         display_role = db_role
-                        prefix = getattr(self.bot, 'custom_prefix', 'y!')
+                        prefix = self.bot.custom_prefix
                         reminder_text = (
                             f"Nếu bạn thấy {display_role} <@{staff_id}> nhiệt tình, "
                             f"hãy đừng ngần ngại bỏ ra 1 phút sử dụng lệnh `{prefix}menu` chọn đến "

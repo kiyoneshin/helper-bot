@@ -1,119 +1,12 @@
-import typing
 import time
 from typing import Any, Dict
 import discord
 from discord.ext import commands
 
 from .config import SEEDS, STATUS_GROWING, STATUS_READY, STATUS_WITHERED, WATER_BONUS, QUALITY_EMOJIS
-from .farm_db import plant_seed, water_all, harvest_all, calculate_crop_status, get_farm_data, remove_crop
+from .farm_db import water_all, harvest_all, calculate_crop_status, get_farm_data, remove_crop
 from cogs.common.db import fetchval_db, deduct_event_points, add_event_points
 
-class PlantSeedSelect(discord.ui.Select):
-    """Dropdown Menu hiển thị hạt giống đang có trong túi đồ để trồng."""
-    
-    def __init__(self, bot: commands.Bot, farm_data: Dict[str, Any]):
-        self.bot = bot
-        options = []
-        inventory = farm_data.get("inventory", {})
-        
-        has_seeds = False
-        for item_id, count in inventory.items():
-            if item_id.startswith("seed_") and count > 0:
-                seed_id = item_id[5:] # bỏ "seed_"
-                seed_info = SEEDS.get(seed_id)
-                if seed_info:
-                    has_seeds = True
-                    options.append(
-                        discord.SelectOption(
-                            label=f"Gieo: {seed_info['name']} (Còn {count})",
-                            value=seed_id,
-                            emoji=seed_info['icon']
-                        )
-                    )
-                    
-        if not has_seeds:
-            options.append(
-                discord.SelectOption(
-                    label="Túi đồ rỗng! (Dùng y!farmshop để mua)",
-                    value="empty",
-                    emoji="🪹"
-                )
-            )
-            
-        super().__init__(
-            placeholder="🌱 Chọn hạt giống để gieo trồng...",
-            min_values=1,
-            max_values=1,
-            options=options[:25], # Max 25 options
-            row=0,
-            disabled=not has_seeds
-        )
-        
-    async def callback(self, interaction: discord.Interaction):
-        view: "FarmView" = self.view  # type: ignore
-        user_id = str(interaction.user.id)
-        
-        if user_id != view.user_id:
-            await interaction.response.send_message("❌ Bạn không thể tương tác với nông trại của người khác!", ephemeral=True)
-            return
-
-        selected_seed = self.values[0]
-        if selected_seed == "empty":
-            return
-            
-        seed_info = typing.cast(typing.Dict[str, typing.Any], dict(SEEDS.get(selected_seed, {})))
-        await interaction.response.send_modal(PlantSlotModal(self.bot, user_id, view.author, selected_seed, seed_info, view))
-
-class PlantSlotModal(discord.ui.Modal):
-    slot_input = discord.ui.TextInput(
-        label="Nhập số thứ tự ô đất (1-9)",
-        placeholder="Chỉ nhập số nguyên...",
-        min_length=1,
-        max_length=2,
-        required=True
-    )
-    
-    def __init__(self, bot: commands.Bot, user_id: str, author: discord.Member | discord.User, seed_id: str, seed_info: dict, view: "FarmView"):
-        super().__init__(title=f"Gieo: {seed_info.get('name', seed_id)}")
-        self.bot = bot
-        self.user_id = user_id
-        self.author = author
-        self.seed_id = seed_id
-        self.seed_info = seed_info
-        self.view_obj = view
-        
-    async def on_submit(self, interaction: discord.Interaction):
-        try:
-            slot_id = int(self.slot_input.value.strip())
-        except ValueError:
-            await interaction.response.send_message("❌ Số ô không hợp lệ! Vui lòng chỉ nhập số.", ephemeral=True)
-            return
-            
-        farm_data = await get_farm_data(self.bot, self.user_id)
-        max_slots = farm_data.get("slots", 3)
-        crops = farm_data.get("crops", {})
-        
-        if slot_id < 1 or slot_id > max_slots:
-            await interaction.response.send_message(f"❌ Ô số {slot_id} chưa được mở khóa! (Bạn đang có {max_slots} ô)", ephemeral=True)
-            return
-            
-        if str(slot_id) in crops:
-            await interaction.response.send_message(f"❌ Ô số {slot_id} đã có cây trồng rồi!", ephemeral=True)
-            return
-            
-        ok, msg = await plant_seed(self.bot, self.user_id, str(slot_id), self.seed_id)
-        if not ok:
-            await interaction.response.send_message(f"❌ {msg}", ephemeral=True)
-            return
-            
-        new_farm_data = await get_farm_data(self.bot, self.user_id)
-        new_embed = build_farm_embed(self.author, new_farm_data)
-        
-        new_view = FarmView(self.bot, self.user_id, self.author, new_farm_data)
-        await interaction.response.edit_message(embed=new_embed, view=new_view)
-        
-        seed_name = self.seed_info.get('name', self.seed_id)
-        await interaction.followup.send(f"✅ Bạn đã gieo **{seed_name}** tại Ô {slot_id}!", ephemeral=True)
 
 class FarmView(discord.ui.View):
     """View chính của Nông Trại chứa các nút tương tác."""
@@ -123,9 +16,9 @@ class FarmView(discord.ui.View):
         self.bot = bot
         self.user_id = user_id
         self.author = author
-        self.add_item(PlantSeedSelect(bot, farm_data))
+        # Dropdown gieo trồng đã được thay thế bằng lệnh kplant
         
-    @discord.ui.button(label="Tưới Nước Tất Cả", emoji="💧", style=discord.ButtonStyle.primary, row=1)
+    @discord.ui.button(label="Tưới Nước Tất Cả", emoji="💧", style=discord.ButtonStyle.primary, row=0)
     async def water_btn(self, interaction: discord.Interaction, button: discord.ui.Button):
         if str(interaction.user.id) != self.user_id:
             await interaction.response.send_message("❌ Bạn không thể tương tác với nông trại của người khác!", ephemeral=True)

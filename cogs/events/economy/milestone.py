@@ -1,8 +1,8 @@
 """
 milestone.py — Hệ thống Cột Mốc Sự Kiện (Event Battle Pass)
 ===========================================================
-Lệnh y!qua để xem tiến trình
-Lệnh y!nhanqua để nhận phần thưởng
+Lệnh kqua để xem tiến trình
+Lệnh knhanqua để nhận phần thưởng
 """
 
 from __future__ import annotations
@@ -107,7 +107,7 @@ class MilestoneCog(commands.Cog):
             if claimed:
                 status = "✅ Đã nhận"
             elif total_earned >= moc_diem:
-                status = "🎁 Có thể nhận (Gõ y!nhanqua)"
+                status = "🎁 Có thể nhận (Gõ knhanqua)"
             else:
                 status = "🔒 Chưa đạt"
                 
@@ -137,7 +137,7 @@ class MilestoneCog(commands.Cog):
                 inline=False
             )
             
-        embed.set_footer(text="Gõ y!nhanqua để hốt hết quà có thể nhận!")
+        embed.set_footer(text="Gõ knhanqua để hốt hết quà có thể nhận!")
         await ctx.send(embed=embed)
 
     @commands.hybrid_command(name="nhanqua", aliases=["claim"])

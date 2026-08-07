@@ -1,7 +1,7 @@
 """
 multi_dice.py — Cog Xúc Xắc Quần Hùng (Multi Dice PvP)
 =======================================================
-Lệnh: y!multidice <tiền_cược> [@user1] [@user2]...
+Lệnh: kmultidice <tiền_cược> [@user1] [@user2]...
 
 4 Giai Đoạn:
   1. Chiêu mộ: Ping danh sách, bấm nút đồng ý / bỏ chạy (60s).
@@ -643,7 +643,7 @@ class SpectatorBetView(discord.ui.View):
         uid = interaction.user.id
         if uid not in self.spectator_bets or not self.spectator_bets[uid]:
             await interaction.response.send_message(
-                f"❌ {interaction.user.mention} Mày có cược gì đâu mà hủy!",
+                f"❌ {interaction.user.mention} Mày có cược gì đâu mà hủk",
                 delete_after=5.0,
             )
             return
@@ -698,7 +698,7 @@ class MultiDice(commands.Cog):
     ) -> None:
         """
         Xúc Xắc Quần Hùng — Cược PvP cùng bạn bè.
-        Cú pháp: y!multidice <tiền_cược> [@user1] [@user2]...
+        Cú pháp: kmultidice <tiền_cược> [@user1] [@user2]...
         """
         host = ctx.author
         if not isinstance(host, discord.Member):

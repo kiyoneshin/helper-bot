@@ -379,7 +379,7 @@ class DuckRace(commands.Cog):
 
     @commands.command(name="betvit", aliases=["bv", "bevit"])
     async def betvit_cmd(self, ctx: commands.Context, color_raw: str, bet_raw: str) -> None:
-        """Đặt cược vào một chú vịt. Cú pháp: y!betvit <màu> <tiền>"""
+        """Đặt cược vào một chú vịt. Cú pháp: kbetvit <màu> <tiền>"""
         if self.is_locked:
             await ctx.send(
                 f"🔒 {ctx.author.mention} Sổ đã đóng rồi cha nội! "
@@ -418,7 +418,7 @@ class DuckRace(commands.Cog):
                 await ctx.send(
                     f"⚠️ {ctx.author.mention} Mày đã cược vào {ex_emoji} **{ex_label}** "
                     f"({ex_bet:,}) rồi!\n"
-                    "Muốn đổi con khác thì `y!huybet` để rút về trước đã."
+                    "Muốn đổi con khác thì `khuybet` để rút về trước đã."
                 )
                 return
             else:
@@ -475,7 +475,7 @@ class DuckRace(commands.Cog):
                 f"{ctx.author.mention} đã chốt kèo vào **{duck_label}**!\n"
                 f"Tiền đặt: **{bet:,}** (đã trừ khỏi ví ngay)\n"
                 f"Số dư còn lại: **{balance - bet:,}**\n\n"
-                "Muốn rút về? Gõ `y!huybet` trước khi sổ đóng."
+                "Muốn rút về? Gõ `khuybet` trước khi sổ đóng."
             ),
             color=COLOR_INFO,
         )
@@ -487,14 +487,14 @@ class DuckRace(commands.Cog):
         if isinstance(error, commands.MissingRequiredArgument):
             await ctx.send(
                 f"❌ {ctx.author.mention} Thiếu thông tin kèo!\n"
-                "Cú pháp: `y!betvit <màu_vịt> <tiền_cược>`\n"
+                "Cú pháp: `kbetvit <màu_vịt> <tiền_cược>`\n"
                 "Các vịt: `do`, `xanh`, `vang`, `hong`, `yon`\n"
-                "Ví dụ: `y!betvit yon 500k`"
+                "Ví dụ: `kbetvit yon 500k`"
             )
 
     @commands.command(name="huybet", aliases=["hb", "cancelbet"])
     async def huybet_cmd(self, ctx: commands.Context) -> None:
-        """Hủy cược hiện tại và nhận lại 100% tiền. Cú pháp: y!huybet"""
+        """Hủy cược hiện tại và nhận lại 100% tiền. Cú pháp: khuybet"""
         if self.is_locked:
             await ctx.send(
                 f"🔒 {ctx.author.mention} Hết đường rút rồi — sổ đã đóng!\n"
@@ -511,7 +511,7 @@ class DuckRace(commands.Cog):
         if existing is None:
             await ctx.send(
                 f"❌ {ctx.author.mention} Mày chưa có kèo nào để hủy cả!\n"
-                "Dùng `y!betvit <màu> <tiền>` để đặt cược."
+                "Dùng `kbetvit <màu> <tiền>` để đặt cược."
             )
             return
 
@@ -530,7 +530,7 @@ class DuckRace(commands.Cog):
 
     @commands.command(name="xemvit", aliases=["xv", "duckpool"])
     async def xemvit_cmd(self, ctx: commands.Context) -> None:
-        """Xem tổng pool cược và odds ước tính. Cú pháp: y!xemvit"""
+        """Xem tổng pool cược và odds ước tính. Cú pháp: kxemvit"""
         stats = await _get_pool_stats(self.bot)
         total_pool = sum(stats.values())
 
@@ -572,7 +572,7 @@ class DuckRace(commands.Cog):
         else:
             embed.add_field(
                 name="🎯 Cược Của Bạn",
-                value="Chưa đặt cược. Dùng `y!betvit <màu> <tiền>` nào!",
+                value="Chưa đặt cược. Dùng `kbetvit <màu> <tiền>` nào!",
                 inline=False,
             )
 

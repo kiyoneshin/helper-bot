@@ -155,7 +155,7 @@ async def init_all_tables(bot: Any) -> bool:
                     negative_streak INT DEFAULT 0
                 );
             ''')
-            # Index phục vụ cho lệnh đua top y!etop cực nhanh
+            # Index phục vụ cho lệnh đua top ketop cực nhanh
             await conn.execute('''
                 CREATE INDEX IF NOT EXISTS idx_event_leaderboard ON event_profiles (total_earned DESC);
             ''')
@@ -322,7 +322,7 @@ async def add_event_points(bot: Any, discord_id: Union[str, int], amount: float,
     """
     Cộng điểm cho user.
     - is_earned=True (Mặc định): Cộng vào cả `points` (tiêu xài) lẫn `total_earned` (đua top). Dùng khi cày chat, voice, thắng game.
-    - is_earned=False: Chỉ cộng vào `points` (tiêu xài). Dùng cho lệnh Admin y!give hoặc lì xì không tính vào đua top.
+    - is_earned=False: Chỉ cộng vào `points` (tiêu xài). Dùng cho lệnh Admin kgive hoặc lì xì không tính vào đua top.
     """
     if amount <= 0: return False
     uid = str(discord_id)

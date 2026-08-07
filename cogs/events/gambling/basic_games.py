@@ -2,10 +2,10 @@
 basic_games.py — Cog Trò Chơi Cơ Bản Casino Angelic
 =====================================================
 Bao gồm 4 trò chơi:
-  - Coinflip  : y!cf / y!coinflip <h/t> <tien_cuoc>
-  - Cups      : y!cups <tien_cuoc>        (Interactive Button UI)
-  - Dice 7    : y!dice <tien_cuoc>
-  - Roulette  : y!shot / y!roulette <tien_cuoc> (Interactive Russian Roulette)
+  - Coinflip  : kcf / kcoinflip <h/t> <tien_cuoc>
+  - Cups      : kcups <tien_cuoc>        (Interactive Button UI)
+  - Dice 7    : kdice <tien_cuoc>
+  - Roulette  : kshot / kroulette <tien_cuoc> (Interactive Russian Roulette)
 """
 
 import random
@@ -467,7 +467,7 @@ class CupsView(discord.ui.View):
 
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
         if interaction.user.id != self.author.id:
-            await interaction.response.send_message("❌ Mày đứng xem thôi, không phải sòng của mày!", ephemeral=True)
+            await interaction.response.send_message("❌ Mày đứng xem thôi, không phải sòng của màk", ephemeral=True)
             return False
         return True
 
@@ -542,7 +542,7 @@ class CupsView(discord.ui.View):
         if self.message:
             try:
                 embed = discord.Embed(
-                    title="🥤 Cups — Nhát Gan Bỏ Chạy!",
+                    title="🥤 Cups — Nhát Gan Bỏ Chạk",
                     description=f"Ngâm quá 30 giây không dám bốc.\nTiền cược **{self.bet:,}** được **trả lại** nguyên vẹn.\n\n🥤  🥤  🥤",
                     color=0x95a5a6,
                 )
@@ -571,7 +571,7 @@ class RouletteView(discord.ui.View):
 
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
         if interaction.user.id != self.author.id:
-            await interaction.response.send_message("❌ Nín thở ngồi xem thôi, không phải sòng của mày!", ephemeral=True)
+            await interaction.response.send_message("❌ Nín thở ngồi xem thôi, không phải sòng của màk", ephemeral=True)
             return False
         return True
 
@@ -667,7 +667,7 @@ class RouletteView(discord.ui.View):
             emo = "🟢"
         else:
             title = "🔫 Cò Quay Tử Thần — Húp An Toàn!"
-            desc = f"Biết điều đấy! Ôm nhẹ **{payout:,}** về sau khi né được **{self.survived_rounds}** phát đạn."
+            desc = f"Biết điều đấk Ôm nhẹ **{payout:,}** về sau khi né được **{self.survived_rounds}** phát đạn."
             if auto_cashout and self.survived_rounds == 5:
                 desc = f"BÀN TAY VÀNG TRONG LÀNG BÓP CÒ! Sống sót qua 5 viên lép!\nNổ hũ ẵm trọn **{payout:,}**."
             elif is_timeout:

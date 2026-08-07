@@ -85,7 +85,7 @@ class RecipesCog(commands.Cog, name="Recipes"):
             f"🔹 **[ID: 61] 🍺 Thùng Ủ Rượu (Keg):** **30** {_get_item_name('wood_normal')} + **1** {_get_item_name('copper_bar')} + **1** {_get_item_name('iron_bar')}",
             f"🔹 **[ID: 62] 🫙 Máy Làm Mứt (Jar):** **30** {_get_item_name('wood_normal')} + **20** {_get_item_name('stone')} + **2** {_get_item_name('coal')}",
             f"🔹 **[ID: 63] 🔥 Lò Rèn (Furnace):** **20** {_get_item_name('stone')} + **5** {_get_item_name('copper_ore')}",
-            "*(Dùng lệnh `y!craft <id>` để xây máy vào 10 slot của bạn)*"
+            "*(Dùng lệnh `kcraft <id>` để xây máy vào 10 slot của bạn)*"
         ]
         embed.add_field(name="🏗️ Công Thức Xây Máy", value="\n".join(build_machine_lines), inline=False)
 

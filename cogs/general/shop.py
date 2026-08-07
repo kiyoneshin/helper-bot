@@ -1,5 +1,5 @@
 """
-shop_cog.py — Cog Cửa Hàng Hợp Nhất (y!shop & y!buy)
+shop_cog.py — Cog Cửa Hàng Hợp Nhất (kshop & kbuy)
 =====================================================
 Hiển thị toàn bộ shop theo Dropdown Menu, mua đồ bằng ID số.
 """
@@ -46,7 +46,7 @@ def _format_price(price: int | None) -> str:
     return f"{price:,} điểm" if price is not None else "Không bán"
 
 
-def build_shop_embed(category: str, author: discord.Member | discord.User, prefix: str = 'y!') -> discord.Embed:
+def build_shop_embed(category: str, author: discord.Member | discord.User, prefix: str = 'k') -> discord.Embed:
     """Tạo Embed danh sách cửa hàng theo category."""
     CATEGORY_META = {
         "event":       ("🎪 Cửa Hàng Sự Kiện",       0x9b59b6),
@@ -121,7 +121,7 @@ class ShopSelect(discord.ui.Select):
                 label="Quà Tặng",
                 value="gift",
                 emoji="🎁",
-                description=f"Quà để tặng người thương ({getattr(getattr(getattr(self, 'view', None), 'bot', None), 'custom_prefix', 'y!')}gift)",
+                description=f"Quà để tặng người thương ({self.view.bot.custom_prefix}gift)",
                 default=(current_category == "gift"),
             ),
         ]
@@ -246,7 +246,7 @@ async def _buy_event_item(
         else:
             await ctx.send(
                 f"✅ {ctx.author.mention} Đã mua **{amount}x {item['icon']} {item['name']}** "
-                f"với giá **{total:,}** điểm. Vật phẩm đã nằm trong `{getattr(bot, 'custom_prefix', 'y!')}inv`!",
+                f"với giá **{total:,}** điểm. Vật phẩm đã nằm trong `{bot.custom_prefix}inv`!",
                 delete_after=10.0,
             )
     else:
@@ -317,7 +317,7 @@ async def _buy_blackmarket_item(
 
     await ctx.send(
         f"✅ {ctx.author.mention} Đã mua **{amount}x {item['icon']} {item['name']}** "
-        f"với giá **{total:,}** điểm. Dùng `{getattr(bot, 'custom_prefix', 'y!')}use {item['id']}` để sử dụng!",
+        f"với giá **{total:,}** điểm. Dùng `{bot.custom_prefix}use {item['id']}` để sử dụng!",
         delete_after=10.0,
     )
 
@@ -348,7 +348,7 @@ class ShopCog(commands.Cog):
             elif tab in ["gift", "qua", "quà"]: category = "gift"
             elif tab in ["event", "sukien"]: category = "event"
 
-        embed = build_shop_embed(category, ctx.author, prefix=ctx.prefix or 'y!')
+        embed = build_shop_embed(category, ctx.author, prefix=ctx.prefix or ctx.bot.custom_prefix)
         view = ShopView(ctx.author, category)
         view.message = await ctx.send(embed=embed, view=view)
 
@@ -367,7 +367,7 @@ class ShopCog(commands.Cog):
         if item is None:
             await ctx.send(
                 f"❌ Không tìm thấy vật phẩm với ID `{item_id}`! "
-                f"Dùng `{getattr(self.bot, 'custom_prefix', 'y!')}shop` để xem danh sách.",
+                f"Dùng `{self.bot.custom_prefix}shop` để xem danh sách.",
                 delete_after=5.0,
             )
             return
@@ -375,7 +375,7 @@ class ShopCog(commands.Cog):
         # Block black market buying
         if item["category"] == "blackmarket":
             await ctx.send(
-                f"❌ Bạn không thể mua trực tiếp vật phẩm chợ đen ở đây! Hãy chờ Chợ Đêm mở (`{getattr(self.bot, 'custom_prefix', 'y!')}choden`) và dùng lệnh `{getattr(self.bot, 'custom_prefix', 'y!')}ebuy`.",
+                f"❌ Bạn không thể mua trực tiếp vật phẩm chợ đen ở đây! Hãy chờ Chợ Đêm mở (`{self.bot.custom_prefix}choden`) và dùng lệnh `{self.bot.custom_prefix}ebuy`.",
                 delete_after=7.0,
             )
             return

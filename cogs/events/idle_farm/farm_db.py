@@ -231,6 +231,66 @@ async def plant_seed(bot: commands.Bot, user_id: str, slot_id: str, seed_type: s
     await save_farm_data(bot, user_id, farm_data)
     return True, "Trồng thành công!"
 
+async def plant_seeds_batch(bot: commands.Bot, user_id: str, seed_type: str, slot_ids_raw: list[int]) -> Tuple[bool, str]:
+    """
+    Trồng hàng loạt hạt giống vào nhiều ô đất cùng lúc (1 lần ghi DB).
+    Kiểm tra đầy đủ: hạt giống hợp lệ, ô hợp lệ, ô trống, đủ số lượng hạt giống.
+    """
+    if seed_type not in config.SEEDS:
+        return False, f"❌ Không tìm thấy hạt giống loại `{seed_type}`!"
+
+    if not slot_ids_raw:
+        return False, "❌ Bạn chưa nhập số ô đất nào!"
+
+    farm_data = await get_farm_data(bot, user_id)
+    inventory = (farm_data or {}).get("inventory", {})
+    crops = (farm_data or {}).get("crops", {})
+    max_slots = (farm_data or {}).get("slots", 3)
+
+    seed_item_id = f"seed_{seed_type}"
+    seed_count = inventory.get(seed_item_id, 0)
+    seed_info = config.SEEDS[seed_type]
+
+    # Loại trùng và sắp xếp
+    slot_ids = sorted(set(slot_ids_raw))
+
+    # Kiểm tra từng ô
+    invalid_slots = [s for s in slot_ids if s < 1 or s > max_slots]
+    if invalid_slots:
+        return False, f"❌ Ô đất **{', '.join(str(s) for s in invalid_slots)}** chưa được mở khóa! (Bạn đang có **{max_slots} ô**)."
+
+    occupied_slots = [s for s in slot_ids if str(s) in crops]
+    if occupied_slots:
+        return False, f"❌ Ô đất **{', '.join(str(s) for s in occupied_slots)}** đã có cây trồng rồi!"
+
+    needed = len(slot_ids)
+    if seed_count < needed:
+        return False, (
+            f"❌ Không đủ hạt giống **{seed_info['icon']} {seed_info['name']}**!\n"
+            f"Cần **{needed}** hạt nhưng bạn chỉ có **{seed_count}** hạt."
+        )
+
+    # Trồng vào tất cả các ô
+    now = int(time.time())
+    for s in slot_ids:
+        crops[str(s)] = {
+            "seed": seed_type,
+            "planted_at": now,
+            "watered": False
+        }
+
+    # Trừ hạt giống (1 lần)
+    inventory[seed_item_id] = seed_count - needed
+    if inventory[seed_item_id] <= 0:
+        del inventory[seed_item_id]
+
+    farm_data["crops"] = crops
+    farm_data["inventory"] = inventory
+    await save_farm_data(bot, user_id, farm_data)
+
+    slot_str = ", ".join(f"**Ô {s}**" for s in slot_ids)
+    return True, f"✅ Đã gieo **{needed}x {seed_info['icon']} {seed_info['name']}** vào {slot_str}!"
+
 async def buy_seed(bot: commands.Bot, user_id: str, seed_type: str, amount: int = 1) -> Tuple[bool, str]:
     """
     Mua hạt giống và thêm vào inventory.

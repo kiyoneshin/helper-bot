@@ -1,5 +1,5 @@
 """
-cooldowns.py — Lệnh y!cd (Cooldowns)
+cooldowns.py — Lệnh kcd (Cooldowns)
 =====================================
 Hiển thị thời gian hồi chiêu của các lệnh trong bot.
 """

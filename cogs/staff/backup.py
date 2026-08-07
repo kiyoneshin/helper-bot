@@ -5,7 +5,7 @@ Tính năng:
   - Tự động xuất toàn bộ dữ liệu sử dụng pg_dump với Custom Format (-F c).
   - Lịch trình: chạy lúc 04:00:00 sáng mỗi ngày theo múi giờ UTC+7.
   - Gửi file đính kèm vào kênh backup kín (LOG_CHANNEL_ID).
-  - Lệnh y!backup: kích hoạt thủ công ngay lập tức (Admin/Owner).
+  - Lệnh kbackup: kích hoạt thủ công ngay lập tức (Admin/Owner).
 """
 
 import discord
@@ -159,7 +159,7 @@ class StaffBackupCog(commands.Cog):
 
 
     # ──────────────────────────────────────────────────────────────────
-    # LỆNH THỦ CÔNG: y!backup
+    # LỆNH THỦ CÔNG: kbackup
     # ──────────────────────────────────────────────────────────────────
 
     @commands.hybrid_command(name="backup", description="[Admin/Owner] Kích hoạt backup database thủ công ngay lập tức.")

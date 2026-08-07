@@ -203,7 +203,7 @@ class StaffUICog(commands.Cog):
 
 
     # ──────────────────────────────────────────────────────────────────
-    # LỆNH ĐỒNG BỘ VÀ LÀM SẠCH DATABASE: y!renewdb
+    # LỆNH ĐỒNG BỘ VÀ LÀM SẠCH DATABASE: krenewdb
     # ──────────────────────────────────────────────────────────────────
     @commands.hybrid_command(name="renewdb", aliases=["syncdb", "refreshdb"], description="Đồng bộ và làm sạch Database với Server Discord thực tế")
     @commands.has_permissions(administrator=True)

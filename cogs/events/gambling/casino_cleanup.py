@@ -69,7 +69,7 @@ class CasinoCleanupCog(commands.Cog):
             # Việc đó sẽ được xử lý trong on_message_edit.
             
             # (Lưu ý: Nếu một View không bao giờ bị disable qua code, nó sẽ tồn tại vĩnh viễn, 
-            # nhưng phần lớn các lệnh general như y!shop, y!inv đều có on_timeout disable nút).
+            # nhưng phần lớn các lệnh general như kshop, kinv đều có on_timeout disable nút).
             pass
 
     @commands.Cog.listener()

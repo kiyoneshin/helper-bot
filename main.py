@@ -31,7 +31,7 @@ def get_custom_prefix(bot, message: discord.Message):
     """
     Hàm xác định prefix cho mỗi tin nhắn gửi lên.
     """
-    custom_pfx = getattr(bot, "custom_prefix", "y!")
+    custom_pfx = bot.custom_prefix
     prefixes = [custom_pfx, custom_pfx.upper(), custom_pfx.lower()]
     prefixes = list(dict.fromkeys(prefixes)) # Xóa phần tử trùng lặp
     
@@ -53,7 +53,7 @@ class StaffBot(commands.Bot):
         )
         self.db_pool: Optional[asyncpg.Pool] = None
         self.trap_channel_id: int = TRAP_CHANNEL_ID
-        self.custom_prefix: str = "y!"
+        self.custom_prefix: str = "k"
 
     async def setup_hook(self):
         # Khởi tạo kết nối PostgreSQL

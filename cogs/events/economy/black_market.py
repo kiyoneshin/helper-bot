@@ -103,7 +103,7 @@ class BlackMarketCog(commands.Cog):
         await _init_black_market_table(self.bot)
 
     # ------------------------------------------------------------------
-    # LỆNH XEM SHOP: y!choden / y!chodem / y!blackmarket
+    # LỆNH XEM SHOP: kchoden / kchodem / kblackmarket
     # ------------------------------------------------------------------
     @commands.hybrid_command(name="choden", aliases=["chodem", "blackmarket", "bm"])
     async def black_market_cmd(self, ctx: commands.Context) -> None:
@@ -139,8 +139,8 @@ class BlackMarketCog(commands.Cog):
             description=(
                 "Chợ Đêm chỉ mở mỗi ngày với **3 vật phẩm ngẫu nhiên** và số lượng cực hạn.\n"
                 f"Sẽ đóng cửa sau **<t:{close_ts}:R>**.\n\n"
-                "💡 Mua nhanh: `y!ebuy <mã số> [số lượng]`\n"
-                "🎒 Xài item: `y!use <mã số> [@mục tiêu]`\n\u200b"
+                f"💡 Mua nhanh: `{ctx.prefix}ebuy <mã số> [số lượng]`\n"
+                f"🎒 Xài item: `{ctx.prefix}use <mã số> [@mục tiêu]`\n\u200b"
             ),
             color=0x2b2d31,
         )
@@ -168,7 +168,7 @@ class BlackMarketCog(commands.Cog):
         await ctx.send(embed=embed)
 
     # ------------------------------------------------------------------
-    # LỆNH MUA NHANH: y!ebuy <slot_id> [quantity]
+    # LỆNH MUA NHANH: kebuy <slot_id> [quantity]
     # ------------------------------------------------------------------
     @commands.hybrid_command(name="ebuy", aliases=["muadem", "bmbuy"])
     async def event_buy_cmd(self, ctx: commands.Context, slot_id: str, quantity: int = 1) -> None:

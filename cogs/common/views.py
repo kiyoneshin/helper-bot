@@ -224,7 +224,7 @@ class BaseStaffView(discord.ui.View):
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
         if interaction.user.id != self.author_id:
             await interaction.response.send_message(
-                "Bạn không thể thao tác trên bảng menu của người khác! Hãy tự gõ `y!menu` để xem nhé.",
+                "Bạn không thể thao tác trên bảng menu của người khác! Hãy tự gõ `kmenu` để xem nhé.",
                 ephemeral=True
             )
             return False
@@ -282,7 +282,7 @@ class RoleSelectDropdown(discord.ui.Select):
         if not records:
             empty_embed = discord.Embed(
                 title=f"📋 Danh sách {selected_role.upper()}",
-                description=f"🌸 Hiện tại chưa có nhân sự nào giữ vị trí **{selected_role.upper()}** trong server.\n\n*Admin có thể sử dụng lệnh `{getattr(bot, 'custom_prefix', 'y!')}add` hoặc kiểm tra lại bằng lệnh `{getattr(bot, 'custom_prefix', 'y!')}checkdb`.*",
+                description=f"🌸 Hiện tại chưa có nhân sự nào giữ vị trí **{selected_role.upper()}** trong server.\n\n*Admin có thể sử dụng lệnh `{bot.custom_prefix}add` hoặc kiểm tra lại bằng lệnh `{bot.custom_prefix}checkdb`.*",
                 color=0xffb6c1
             )
             back_view = BackOnlyView(self.author_id)

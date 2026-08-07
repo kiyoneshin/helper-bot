@@ -1,8 +1,8 @@
 """
 vietnam_games.py — Cog Trò Chơi Dân Gian Việt Nam
 ==================================================
-Lệnh: y!taixiu / y!tx <tai/xiu> <tien_cuoc>
-       y!baucua / y!bc (Theo dõi bằng chat thời gian thực)
+Lệnh: ktaixiu / ktx <tai/xiu> <tien_cuoc>
+       kbaucua / kbc (Theo dõi bằng chat thời gian thực)
 """
 
 import asyncio
@@ -130,7 +130,7 @@ class VietnamGames(commands.Cog):
         if choice not in ("tai", "xiu"):
             await ctx.send(
                 f"❌ {ctx.author.mention} Bấm bậy bạ gì vậy? Dùng `tai` hoặc `xiu`.\n"
-                "Cú pháp: `y!tx <tai/xiu> <tiền_cược>`"
+                "Cú pháp: `ktx <tai/xiu> <tiền_cược>`"
             )
             return
 

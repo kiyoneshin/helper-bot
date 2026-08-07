@@ -1,6 +1,6 @@
 
 """
-inventory_cog.py — Cog Túi Đồ Hợp Nhất (y!inv / y!bag / y!use)
+inventory_cog.py — Cog Túi Đồ Hợp Nhất (kinv / kbag / kuse)
 ================================================================
 Hiển thị toàn bộ túi đồ theo Dropdown, bán nông sản bằng Modal,
 dùng vật phẩm bằng ID số.
@@ -37,7 +37,7 @@ def _build_regular_embed(
     author: discord.Member | discord.User,
     inv: dict[str, int],
     category: str,
-    prefix: str = 'y!',
+    prefix: str = 'k',
 ) -> discord.Embed:
     """
     Xây dựng Embed cho vật phẩm thông thường (Event/BlackMarket)
@@ -378,7 +378,7 @@ class InventorySelect(discord.ui.Select):
                 label="Quà Tặng",
                 value="gift",
                 emoji="🎁",
-                description=f"Quà để tặng người thương ({getattr(getattr(getattr(self, 'view', None), 'bot', None), 'custom_prefix', 'y!')}gift)",
+                description=f"Quà để tặng người thương ({self.view.bot.custom_prefix}gift)",
                 default=(current == "gift"),
             ),
         ]
@@ -559,7 +559,7 @@ class UnifiedInventoryCog(commands.Cog):
         item = get_item_by_id(item_id)
         if item is None:
             await ctx.send(
-                f"❌ Không tìm thấy vật phẩm với ID `{item_id}`! Dùng `{getattr(getattr(getattr(self, 'view', None), 'bot', None), 'custom_prefix', 'y!')}inv` để xem túi đồ.",
+                f"❌ Không tìm thấy vật phẩm với ID `{item_id}`! Dùng `{self.view.bot.custom_prefix}inv` để xem túi đồ.",
                 delete_after=5.0,
             )
             return

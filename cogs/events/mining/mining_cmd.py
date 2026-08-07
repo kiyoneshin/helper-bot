@@ -1,5 +1,5 @@
 """
-mining_cmd.py — Lệnh y!mine cho Khu Mỏ
+mining_cmd.py — Lệnh kmine cho Khu Mỏ
 ========================================
 Khởi tạo giao diện Khu Mỏ và hiển thị cho người chơi.
 """

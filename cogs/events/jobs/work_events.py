@@ -1,5 +1,5 @@
 # work_events.py
-# File chứa cấu hình các sự kiện cho lệnh y!work
+# File chứa cấu hình các sự kiện cho lệnh kwork
 
 WORK_EVENTS = [
     # =========================================================================

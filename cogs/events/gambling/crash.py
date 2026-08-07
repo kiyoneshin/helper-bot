@@ -1,7 +1,7 @@
 """
 crash.py — Cog Minigame "Quả Bóng Tham Lam" (Crash / Aviator)
 ==============================================================
-Lệnh: y!crash
+Lệnh: kcrash
 Cơ chế:
   - Lobby 30s: Người chơi đặt cược qua Button + Modal.
     Tiền bị trừ NGAY LẬP TỨC khi đặt thành công.
@@ -528,7 +528,7 @@ class CrashGame(commands.Cog):
 
         try:
             closing_embed = _build_lobby_embed(players_bets, 0)
-            closing_embed.title = "🎈 Sảnh Đã Đóng — Bóng Chuẩn Bị Bay!"
+            closing_embed.title = "🎈 Sảnh Đã Đóng — Bóng Chuẩn Bị Bak"
             closing_embed.color = 0xFF8C00
             closing_view = discord.ui.View()
             disabled_btn  = discord.ui.Button(

@@ -20,7 +20,7 @@ def get_main_embed() -> discord.Embed:
 
 
 def get_rules_embed() -> discord.Embed:
-    """Tạo Embed hiển thị bảng luật riêng cho lệnh y!rule"""
+    """Tạo Embed hiển thị bảng luật riêng cho lệnh krule"""
     embed = discord.Embed(
         title="📜 ĐIỀU LỆ SERVER ANGELIC ໒꒱",
         description=(

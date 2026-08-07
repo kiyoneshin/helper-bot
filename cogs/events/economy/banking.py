@@ -1,7 +1,7 @@
 """
 banking.py — Hệ thống Ngân Hàng & Vay Nợ Sự Kiện
 ===================================================
-Quản lý các lệnh y!vayno, y!trano và tính lãi hàng ngày (tasks.loop).
+Quản lý các lệnh kvayno, ktrano và tính lãi hàng ngày (tasks.loop).
 Phạt vỡ nợ: Khóa lệnh nếu số dư hiện tại - tổng nợ < 0 liên tiếp trong 2 ngày.
 """
 
@@ -111,7 +111,7 @@ class BankingCog(commands.Cog):
                 description=f"✅ Giao dịch vay nợ thành công!\n\n💸 **Số tiền vay:** `{amount:,.0f}` điểm\n💰 **Số dư mới:** `{new_pts:,.0f}` điểm\n📉 **Tổng nợ hiện tại:** `{new_debt:,.0f}` điểm",
                 color=0x00FF00
             )
-            embed.set_footer(text="Lãi suất vay là 1%/ngày. Hãy nhớ y!trano nhé!")
+            embed.set_footer(text="Lãi suất vay là 1%/ngày. Hãy nhớ ktrano nhé!")
             await ctx.send(embed=embed)
         else:
             await ctx.send("❌ Đã có lỗi xảy ra khi vay nợ.")
@@ -238,7 +238,7 @@ class BankingCog(commands.Cog):
                 await debt_channel.send(
                     f"🚨🚨 **CẢNH BÁO VỠ NỢ** 🚨🚨\n"
                     f"<@{uid}> đã âm vốn liên tiếp 2 ngày! Ngân hàng đã **SIẾT TÀI SẢN & KHÓA TÀI KHOẢN**.\n"
-                    f"Trạng thái Hôn Nhân đã bị hủy bỏ! Yêu cầu sử dụng lệnh `{getattr(self.bot, 'custom_prefix', 'y!')}trano` để thanh toán khoản nợ **{new_debt:,.0f}** ngay lập tức!"
+                    f"Trạng thái Hôn Nhân đã bị hủy bỏ! Yêu cầu sử dụng lệnh `{self.bot.custom_prefix}trano` để thanh toán khoản nợ **{new_debt:,.0f}** ngay lập tức!"
                 )
                 
         log.info("[Banking] Hoàn tất quét lãi suất hàng ngày.")

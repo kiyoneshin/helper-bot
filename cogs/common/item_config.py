@@ -16,7 +16,7 @@ Cấu trúc mỗi item:
   description (str)          : Mô tả vật phẩm.
   db_key      (str)          : Key lưu trong Database.
   category    (str)          : "event" | "farm" | "blackmarket"
-  usable      (bool)         : Có dùng bằng y!use không.
+  usable      (bool)         : Có dùng bằng lệnh use không.
 """
 
 from typing import TypedDict
@@ -121,7 +121,7 @@ ITEM_REGISTRY: dict[int, ItemEntry] = {
         "description": "Cây cơ bản, thu hoạch sau 30 phút.",
         "db_key":      "seed_wheat",       # key trong farm_data.inventory
         "category":    "farm",
-        "usable":      False,              # Dùng qua y!farm, không y!use
+        "usable":      False,              # Dùng qua lệnh farm, không lệnh use
     },
     11: {
         "id":          11,
@@ -297,7 +297,7 @@ ITEM_REGISTRY: dict[int, ItemEntry] = {
         "name":        "Nhẫn Cỏ",
         "icon":        "🌿",
         "price":       1000,
-        "description": "Biểu tượng tình yêu giản dị. (Không có buff). Dùng: y!marry @user 31",
+        "description": "Biểu tượng tình yêu giản dị. (Không có buff). Dùng: lệnh marry @user 31",
         "db_key":      "ring_31",
         "category":    "ring",
         "usable":      False,
@@ -307,7 +307,7 @@ ITEM_REGISTRY: dict[int, ItemEntry] = {
         "name":        "Nhẫn Bạc",
         "icon":        "💍",
         "price":       10000,
-        "description": "Tăng 10% Điểm Thân Mật (DTM) khi tương tác. Mở khóa y!adopt.",
+        "description": "Tăng 10% Điểm Thân Mật (DTM) khi tương tác. Mở khóa kadopt.",
         "db_key":      "ring_32",
         "category":    "ring",
         "usable":      False,
@@ -327,7 +327,7 @@ ITEM_REGISTRY: dict[int, ItemEntry] = {
         "name":        "Nhẫn Kim Cương",
         "icon":        "💎",
         "price":       200000,
-        "description": "Tăng 50% DTM. Giảm 25% Cooldown. Nhân 1.5 phần thưởng khi y!work chung.",
+        "description": "Tăng 50% DTM. Giảm 25% Cooldown. Nhân 1.5 phần thưởng khi kwork chung.",
         "db_key":      "ring_34",
         "category":    "ring",
         "usable":      False,

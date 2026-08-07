@@ -35,7 +35,7 @@ class WorkCog(commands.Cog):
                 
                 funny_waits = [
                     "Bình tĩnh đi ba, làm gì mà hối như ma đuổi vậy?",
-                    "Cái gì cũng phải từ từ, sức người có hạn chứ đâu phải máy cày!",
+                    "Cái gì cũng phải từ từ, sức người có hạn chứ đâu phải máy càk",
                     "Vừa mới làm xong mà chưa gì đã đòi làm tiếp? Đòi vắt kiệt sức lao động hả?",
                     "Cơ thể đang cạn kiệt năng lượng, đi nghỉ mát xíu rồi quay lại nhé!",
                     "Chủ thầu đang uống trà đá, chưa giao việc đâu.",

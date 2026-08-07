@@ -52,7 +52,7 @@ def _generate_math_problem() -> tuple[str, int]:
 
 
 class JailTasks(commands.Cog):
-    """🧠 Hệ Thống Chuồng Chó — Cày Chay (y!sua, y!nhatxuong)"""
+    """🧠 Hệ Thống Chuồng Chó — Cày Chay (ksua, knhatxuong)"""
 
     def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot

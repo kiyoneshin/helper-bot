@@ -1,5 +1,5 @@
 """
-fishing_cmd.py — Lệnh y!fish cho Minigame Câu Cá
+fishing_cmd.py — Lệnh kfish cho Minigame Câu Cá
 ==================================================
 """
 import discord

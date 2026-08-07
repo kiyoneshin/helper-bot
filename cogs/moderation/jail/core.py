@@ -237,7 +237,7 @@ class JailCore(commands.Cog):
         if ctx.guild is None:
             return
         if member.bot:
-            await ctx.send(f"❌ {ctx.author.mention} Bot thì giam cái gì mậy!")
+            await ctx.send(f"❌ {ctx.author.mention} Bot thì giam cái gì mậk")
             return
         if member.id == ctx.author.id:
             await ctx.send(f"❌ {ctx.author.mention} Tự giam mình à? Thích làm phạm nhân ghê!")

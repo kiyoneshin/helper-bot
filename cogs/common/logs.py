@@ -54,7 +54,7 @@ def build_log_add(
     contact: Optional[str],
     tags: list,
 ) -> discord.Embed:
-    """🟢 Thêm Mới Hồ Sơ (y!add)"""
+    """🟢 Thêm Mới Hồ Sơ (kadd)"""
     embed = discord.Embed(
         title="📋 Nhật Ký: Đăng Ký Hồ Sơ Mới",
         color=COLOR_ADD,
@@ -87,7 +87,7 @@ def build_log_edit_info(
     old_contact: str,
     new_contact: str,
 ) -> discord.Embed:
-    """🟡 Chỉnh Sửa Thông Tin Hồ Sơ (y!set → Sửa Thông Tin)"""
+    """🟡 Chỉnh Sửa Thông Tin Hồ Sơ (kset → Sửa Thông Tin)"""
     embed = discord.Embed(
         title="✏️ Nhật Ký: Cập Nhật Thông Tin Hồ Sơ",
         color=COLOR_EDIT,
@@ -120,7 +120,7 @@ def build_log_edit_tags(
     old_tags: list,
     new_tags: list,
 ) -> discord.Embed:
-    """🟡 Chỉnh Sửa Tags (y!set → Sửa Tags)"""
+    """🟡 Chỉnh Sửa Tags (kset → Sửa Tags)"""
     embed = discord.Embed(
         title="🏷️ Nhật Ký: Cập Nhật Tags",
         color=COLOR_EDIT,
@@ -147,7 +147,7 @@ def build_log_edit_photos(
     count: int,
     total_after: int,
 ) -> discord.Embed:
-    """🟡 Thêm / Xóa Ảnh (y!set → Cập nhật Ảnh)"""
+    """🟡 Thêm / Xóa Ảnh (kset → Cập nhật Ảnh)"""
     action_str = f"Thêm {count} ảnh mới" if action == "add" else f"Xóa 1 ảnh"
     embed = discord.Embed(
         title="Nhật Ký: Cập Nhật Ảnh Profile",

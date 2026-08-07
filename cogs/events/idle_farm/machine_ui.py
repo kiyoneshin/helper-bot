@@ -1,9 +1,9 @@
 """
-machine_ui.py — Giao diện hệ thống Máy Chế Biến (y!machine)
+machine_ui.py — Giao diện hệ thống Máy Chế Biến (kmachine)
 =============================================================
 Hiển thị 10 slot đặt máy cố định.
-- Lệnh y!craft dùng để chế tạo máy ( Keg, Jar, Furnace ) và đặt vào slot trống.
-- Giao diện y!machine hiển thị 10 slot.
+- Lệnh kcraft dùng để chế tạo máy ( Keg, Jar, Furnace ) và đặt vào slot trống.
+- Giao diện kmachine hiển thị 10 slot.
 - Nút bấm Keg/Jar/Furnace tìm máy trống trong slot để thao tác chế biến.
 - Nút Thu Hoạch gom hết thành phẩm đã xong.
 """
@@ -125,7 +125,7 @@ def build_machine_embed(
     if ready_count:
         header += f"\n🧺 **{ready_count}** thành phẩm đang chờ thu hoạch! Nhấn nút **Thu Hoạch** nhé."
     else:
-        header += "\n*Dùng lệnh `y!craft <id>` để xây thêm máy vào các slot trống.*"
+        header += "\n*Dùng lệnh `kcraft <id>` để xây thêm máy vào các slot trống.*"
     embed.description = header
 
     lines = []
@@ -171,7 +171,7 @@ def build_machine_embed(
 
     embed.set_thumbnail(url=author.display_avatar.url)
     embed.set_footer(
-        text="Dùng y!bag để bán thành phẩm  |  y!craft <id_máy> để xây máy mới"
+        text="Dùng kbag để bán thành phẩm  |  kcraft <id_máy> để xây máy mới"
     )
     return embed
 
@@ -433,7 +433,7 @@ class MachineView(discord.ui.View):
                     
             if not idle_slot_id:
                 return await interaction.response.send_message(
-                    f"❌ Bạn không có cái {MACHINES[machine_id]['name']} nào đang trống! Vui lòng Thu Hoạch máy cũ hoặc xây thêm máy mới bằng lệnh `{getattr(self.bot, 'custom_prefix', 'y!')}craft`.", 
+                    f"❌ Bạn không có cái {MACHINES[machine_id]['name']} nào đang trống! Vui lòng Thu Hoạch máy cũ hoặc xây thêm máy mới bằng lệnh `{self.bot.custom_prefix}craft`.", 
                     ephemeral=True
                 )
 
