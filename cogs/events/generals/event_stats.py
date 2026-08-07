@@ -175,15 +175,21 @@ class EventStatsCog(commands.Cog):
         # Nhiệm vụ
         await update_task_progress(self.bot, uid, "check_bal", 1)
 
-    @commands.hybrid_command(name="etop", aliases=["evtop", "eventtop", "eventop"])
+    @commands.hybrid_command(name="etop", aliases=["evtop", "eventtop", "eventop", "top"])
     async def etop_cmd(self, ctx: commands.Context) -> None:
         """Xem Bảng Xếp Hạng Đua Top Điểm Sự Kiện."""
-        view = TopLeaderboardView(self.bot, ctx.guild)
-        emb = await view._generate_embed()
-        await ctx.send(embed=emb, view=view)
-        
-        # Nhiệm vụ
-        await update_task_progress(self.bot, ctx.author.id, "check_top", 1)
+        try:
+            view = TopLeaderboardView(self.bot, ctx.guild)
+            emb = await view._generate_embed()
+            await ctx.send(embed=emb, view=view)
+            
+            # Nhiệm vụ
+            await update_task_progress(self.bot, ctx.author.id, "check_top", 1)
+        except Exception as e:
+            import traceback
+            with open("error_etop.txt", "w") as f:
+                f.write(traceback.format_exc())
+            await ctx.send(f"Đã xảy ra lỗi: {e}")
 
 
 async def setup(bot: commands.Bot) -> None:
