@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import json
 import logging
-from typing import Any
+from typing import Any, Optional
 
 import discord
 from discord.ext import commands
@@ -335,12 +335,21 @@ class ShopCog(commands.Cog):
     @commands.hybrid_command(
         name="shop",
         aliases=["cuahang", "store"],
-        description="🛒 Xem cửa hàng vật phẩm (Sự kiện, Nông trại, Chợ đen)",
+        description="🛒 Xem cửa hàng vật phẩm. Mở nhanh tab: shop [farm/bm/ring/gift]",
     )
-    async def shop_cmd(self, ctx: commands.Context) -> None:
+    async def shop_cmd(self, ctx: commands.Context, tab: Optional[str] = None) -> None:
         """Mở cửa hàng tổng hợp bằng Dropdown UI."""
-        embed = build_shop_embed("event", ctx.author, prefix=ctx.prefix or 'y!')
-        view = ShopView(ctx.author, "event")
+        category = "event"
+        if tab:
+            tab = tab.lower()
+            if tab in ["farm", "nongtrai"]: category = "farm"
+            elif tab in ["bm", "blackmarket", "choden"]: category = "blackmarket"
+            elif tab in ["ring", "nhan", "nhẫn"]: category = "ring"
+            elif tab in ["gift", "qua", "quà"]: category = "gift"
+            elif tab in ["event", "sukien"]: category = "event"
+
+        embed = build_shop_embed(category, ctx.author, prefix=ctx.prefix or 'y!')
+        view = ShopView(ctx.author, category)
         view.message = await ctx.send(embed=embed, view=view)
 
     @commands.hybrid_command(
