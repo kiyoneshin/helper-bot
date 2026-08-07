@@ -16,11 +16,9 @@ ROLE_LEVELS = {
     5: 1533400375443324959,
     15: 1533405894933610497,
     30: 1533406979014398043,
-    45: 1533408225439912020,
-    60: 1533409372779319326,
-    75: 1533412010795073636,
-    90: 1533412552577519686,
-    100: 1533412803682238515
+    50: 1533408225439912020,
+    75: 1533409372779319326,
+    100: 1533412010795073636
 }
 
 class ArcaneLevelSync(commands.Cog):
@@ -59,25 +57,41 @@ class ArcaneLevelSync(commands.Cog):
     async def _assign_level_roles(self, member: discord.Member, level: int):
         """
         Tính toán và gán TẤT CẢ các role cấp độ mà user đủ điều kiện, nếu user chưa có.
-        Giữ lại các role trước đó (VD: Lv 60 có role lv 5, 15, 30, 45, 60).
+        Gỡ bỏ các role cấp độ không đủ điều kiện (ví dụ: bị reset level).
         """
         guild = member.guild
         roles_to_add = []
-        for req_level, role_id in ROLE_LEVELS.items():
-            if level >= req_level:
-                role = guild.get_role(role_id)
-                if role and role not in member.roles:
-                    roles_to_add.append(role)
+        roles_to_remove = []
         
-        if roles_to_add:
-            try:
+        for req_level, role_id in ROLE_LEVELS.items():
+            role = guild.get_role(role_id)
+            if not role:
+                continue
+                
+            if level >= req_level:
+                # Đủ level -> Thêm vào nếu chưa có
+                if role not in member.roles:
+                    roles_to_add.append(role)
+            else:
+                # Không đủ level -> Xóa nếu đang có
+                if role in member.roles:
+                    roles_to_remove.append(role)
+        
+        try:
+            if roles_to_add:
                 await member.add_roles(*roles_to_add, reason=f"Đạt Arcane level {level}")
                 await asyncio.sleep(1) # Tránh rate limit của API Discord
                 log.info(f"Đã gán {len(roles_to_add)} role level cho {member.display_name}")
-            except discord.Forbidden:
-                log.error(f"❌ Thiếu quyền gán role cho {member.display_name}. Vui lòng kiểm tra vị trí Role của Bot!")
-            except discord.HTTPException as e:
-                log.error(f"❌ Lỗi API khi gán role cho {member.display_name}: {e}")
+                
+            if roles_to_remove:
+                await member.remove_roles(*roles_to_remove, reason=f"Level hiện tại ({level}) không đủ điều kiện")
+                await asyncio.sleep(1) # Tránh rate limit của API Discord
+                log.info(f"Đã gỡ {len(roles_to_remove)} role level cũ cho {member.display_name}")
+                
+        except discord.Forbidden:
+            log.error(f"❌ Thiếu quyền gán/gỡ role cho {member.display_name}. Vui lòng kiểm tra vị trí Role của Bot!")
+        except discord.HTTPException as e:
+            log.error(f"❌ Lỗi API khi quản lý role cho {member.display_name}: {e}")
 
     @commands.hybrid_command(name="synclv", description="Quét lịch sử và đồng bộ Level từ Arcane (Dành cho Admin)")
     @commands.has_permissions(administrator=True)
