@@ -410,7 +410,7 @@ CMD_DATA: dict[str, dict] = {
         "name": "Hành Động Cặp Đôi",
         "emoji": "💞",
         "short": "Các lệnh tương tác đặc biệt dành cho vợ/chồng.",
-        "aliases": ["om", "hon", "tat", "can", "seg", "hug", "kiss", "slap", "punch", "bite", "tickle", "poke", "pat", "saylove", "cuddle", "snuggle", "lick", "nom", "fuck", "hun", "dam", "choclet", "choc", "xoadau", "noiyeu", "iuem", "iuanh", "auyem", "nung", "nũng", "liem", "mam", "hanhdong", "hd"],
+        "aliases": ["om", "hon", "tat", "can", "dutdit", "seg", "hug", "kiss", "slap", "punch", "bite", "tickle", "poke", "pat", "saylove", "cuddle", "snuggle", "lick", "nom", "fuck", "hun", "dam", "choclet", "choc", "xoadau", "noiyeu", "iuem", "iuanh", "auyem", "nung", "nũng", "liem", "mam", "hanhdong", "hd"],
         "cooldown": 0,
         "usage": "{prefix}<hành_động> <@user>",
         "examples": ["{prefix}hug @VoYeu", "{prefix}kiss @ChongYeu"],
@@ -419,7 +419,7 @@ CMD_DATA: dict[str, dict] = {
             "- 🤜 **Bạo lực:** `{prefix}slap` (tat), `{prefix}punch` (dam), `{prefix}bite` (can), `{prefix}tickle` (choclet)\n"
             "- 💖 **Nhẹ nhàng:** `{prefix}poke` (choc), `{prefix}pat` (xoadau), `{prefix}saylove` (noiyeu, iuem, iuanh)\n"
             "- 🤗 **Ôm ấp:** `{prefix}hug` (om), `{prefix}cuddle` (auyem), `{prefix}snuggle` (nung, nũng)\n"
-            "- 💋 **Thân mật:** `{prefix}kiss` (hon, hun), `{prefix}lick` (liem), `{prefix}nom` (mam), `{prefix}fuck` (seg)\n"
+            "- 💋 **Thân mật:** `{prefix}kiss` (hon, hun), `{prefix}lick` (liem), `{prefix}nom` (mam, cắn yêu), `{prefix}fuck`, `{prefix}dutdit` (seg)\n"
             "*(Lưu ý: Thời gian hồi chiêu và lượng DTM nhận được tùy thuộc vào độ 'thân mật' của hành động và cấp bậc Nhẫn cưới của bạn)*"
         ),
     },

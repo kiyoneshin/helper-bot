@@ -1,4 +1,4 @@
-import discord
+﻿import discord
 from discord.ext import commands, tasks
 import time
 import random
@@ -100,6 +100,11 @@ ACTIONS = {
         "{author} liếm nhẹ lên má {partner} chụt chụt 😋",
         "{author} liếm môi {partner} gợi tình~"
     ]},
+    "nom":    {"tier": 2, "msg": [
+        "{author} cắn yêu một phát vào má {partner} 😋",
+        "{author} nhay nhay cắn nhẹ vào tai {partner} ~",
+        "{author} ngoạm nhẹ vào tay {partner} nũng nịu 🐾"
+    ]},
     "saylove":{"tier": 3, "msg": [
         "{author} thì thầm: 'Yêu {partner} nhiều lắm luôn á' 💕",
         "{author} nhìn sâu vào mắt {partner}: 'Mình thuộc về nhau nhé' 💖",
@@ -113,21 +118,34 @@ ACTIONS = {
     ,
         "{partner} bị {author} xoay vần đủ tư thế đến mức không thở nổi 🔞🔥"
     ]},
-    "seg":    {"tier": 4, "msg": [
-        "{author} và {partner} đang tận hưởng đêm xuân đáng nhớ 🔞🔥",
-        "{author} đang nhấp nhô nhịp nhàng cùng {partner} 🔞🔥",
-        "Tiếng rên rỉ của {partner} hòa cùng nhịp thở gấp gáp của {author}... 🔞🔥"
+    "dutdit":    {"tier": 4, "msg": [
+        "{author} vừa xỏ khuyên cho {partner} từ phía sau 🏳️‍🌈🔥",
+        "{author} và {partner} đang chơi đấu kiếm vô cùng căng thẳng ⚔️♂️",
+        "{author} thì thầm vào tai {partner}: 'Dầu dừa hay Dầu ăn đây cưng?' 🧴😏",
+        "{partner} khóc thét khi {author} bất ngờ 'thông chốt' không báo trước 🚀🍑",
+        "{author} và {partner} đang 'chơi gay' một cách vô cùng nồng nhiệt 👬🔥"
     ]},
 }
 
 API_MAPPING = {
     "poke": "poke", "pat": "pat", "slap": "slap", "punch": "punch", 
     "tickle": "tickle", "bite": "bite", "hug": "hug", "cuddle": "cuddle", 
-    "nom": "nom", "snuggle": "cuddle", "kiss": "kiss", "lick": "lick", 
-    "saylove": "blush", "fuck": "kiss", "seg": "kiss"
+    "nom": "bite", "snuggle": "cuddle", "kiss": "kiss", "lick": "lick", 
+    "saylove": "blush", "fuck": "kiss", "dutdit": "kiss"
 }
 
+DUTDIT_GIFS = [
+    "https://media.tenor.com/FwIe16w4OToAAAAC/yaoi.gif",
+    "https://media.tenor.com/bKjK3m3wT2oAAAAd/anime-gay.gif",
+    "https://media.tenor.com/p5k0K3P32UAAAAAd/yaoi-kiss.gif",
+    "https://media.tenor.com/5l3-r4G1K2EAAAAC/kiss-anime.gif",
+    "https://media.tenor.com/qL-9Y4zL9E4AAAAC/yaoi.gif"
+]
+
 async def fetch_anime_gif(action: str) -> Optional[str]:
+    if action == "dutdit":
+        return random.choice(DUTDIT_GIFS)
+        
     cat = API_MAPPING.get(action, "hug")
     url = f"https://api.otakugifs.xyz/gif?reaction={cat}"
         
@@ -886,9 +904,14 @@ class MarriageCog(commands.Cog):
         uid1 = str(ctx.author.id)
         mar = await get_marriage(self.bot, uid1)
         
+        if target is None and ctx.message.reference and getattr(ctx.message.reference, 'resolved', None):
+            replied_msg = ctx.message.reference.resolved
+            if isinstance(replied_msg, discord.Message) and isinstance(replied_msg.author, discord.Member):
+                target = replied_msg.author
+
         if target is None:
             if not mar:
-                return await ctx.send(f"❌ {ctx.author.mention} Tính tự kỷ hay gì mà xài hành động không tag ai? Nhớ tag tên người ta nha!. Để biết thêm chi tiết hãy xài lệnh `{ctx.prefix}ehelp {action}`")
+                return await ctx.send(f"❌ {ctx.author.mention} Tính tự kỷ hay gì mà xài hành động không tag ai? Nhớ tag tên hoặc reply tin nhắn của người ta nha! Xem chi tiết: `{ctx.prefix}ehelp {action}`")
             
             partner_id = mar["user2_id"] if mar["user1_id"] == uid1 else mar["user1_id"]
             if ctx.guild:
@@ -953,7 +976,7 @@ class MarriageCog(commands.Cog):
         base_cd = ACTION_TIERS[act["tier"]]["cd"]
         base_dtm = ACTION_TIERS[act["tier"]]["dtm"]
         
-        actual_cd = base_cd * (1.0 - buffs["cd_reduction"] - pet_cd_reduction)
+        actual_cd = base_cd * (1.0 - buffs["cd_reduction"]) * (1.0 - pet_cd_reduction)
         
         # Check Cooldown
         if uid1 not in self.action_cooldowns: self.action_cooldowns[uid1] = {}
@@ -975,7 +998,7 @@ class MarriageCog(commands.Cog):
             self.action_cooldowns[uid1][action] = now
         
         # Calculate DTM
-        actual_dtm = float(base_dtm * (1.0 + buffs["dtm_bonus"] + pet_dtm_bonus))
+        actual_dtm = float(base_dtm * (1.0 + buffs["dtm_bonus"]) * (1.0 + pet_dtm_bonus))
         
         crit_msg = ""
         if pet_crit_chance > 0 and random.random() < pet_crit_chance:
@@ -1045,7 +1068,8 @@ class MarriageCog(commands.Cog):
         embed.add_field(name=f"🤜 Bạo lực", value=f"`{ctx.prefix}slap` (tat), `{ctx.prefix}punch` (dam), `{ctx.prefix}bite` (can), `{ctx.prefix}tickle` (choclet)", inline=False)
         embed.add_field(name=f"💖 Nhẹ nhàng", value=f"`{ctx.prefix}poke` (choc), `{ctx.prefix}pat` (xoadau), `{ctx.prefix}saylove` (noiyeu, iuem, iuanh)", inline=False)
         embed.add_field(name=f"🤗 Ôm ấp", value=f"`{ctx.prefix}hug` (om), `{ctx.prefix}cuddle` (auyem), `{ctx.prefix}snuggle` (nung, nũng)", inline=False)
-        embed.add_field(name=f"💋 Thân mật", value=f"`{ctx.prefix}kiss` (hon, hun), `{ctx.prefix}lick` (liem), `{ctx.prefix}nom` (mam), `{ctx.prefix}fuck` (seg)", inline=False)
+        embed.add_field(name=f"💋 Thân mật", value=f"`{ctx.prefix}kiss` (hon, hun), `{ctx.prefix}lick` (liem), `{ctx.prefix}nom` (mam, cắn yêu), `{ctx.prefix}fuck`, `{ctx.prefix}dutdit` (seg)", inline=False)
+        embed.set_footer(text="Ghi chú: Lệnh có thể dùng bằng cách tag người khác hoặc reply tin nhắn của họ.")
         await ctx.send(embed=embed)
 
     # Lệnh Action Tiers
@@ -1055,7 +1079,7 @@ class MarriageCog(commands.Cog):
     @poke.error
     async def poke_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument)):
-            await ctx.send(f"❌ {ctx.author.mention} Tính tự kỷ hay gì mà xài hành động không tag ai? Nhớ tag tên người ta nha!. Để biết thêm chi tiết hãy xài lệnh `{ctx.prefix}ehelp poke`")
+            await ctx.send(f"❌ {ctx.author.mention} Tính tự kỷ hay gì mà xài hành động không tìm thấy ai? Nhớ tag tên hoặc reply tin nhắn của người ta nha! Xem chi tiết: `{ctx.prefix}ehelp poke`")
 
     @commands.hybrid_command(aliases=["xoadau"])
     async def pat(self, ctx, target: Optional[discord.Member] = None): await self.handle_action(ctx, target, "pat")
@@ -1063,7 +1087,7 @@ class MarriageCog(commands.Cog):
     @pat.error
     async def pat_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument)):
-            await ctx.send(f"❌ {ctx.author.mention} Tính tự kỷ hay gì mà xài hành động không tag ai? Nhớ tag tên người ta nha!. Để biết thêm chi tiết hãy xài lệnh `{ctx.prefix}ehelp pat`")
+            await ctx.send(f"❌ {ctx.author.mention} Tính tự kỷ hay gì mà xài hành động không tìm thấy ai? Nhớ tag tên hoặc reply tin nhắn của người ta nha! Xem chi tiết: `{ctx.prefix}ehelp pat`")
 
     @commands.hybrid_command(aliases=["tat"])
     async def slap(self, ctx, target: Optional[discord.Member] = None): await self.handle_action(ctx, target, "slap")
@@ -1071,7 +1095,7 @@ class MarriageCog(commands.Cog):
     @slap.error
     async def slap_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument)):
-            await ctx.send(f"❌ {ctx.author.mention} Tính tự kỷ hay gì mà xài hành động không tag ai? Nhớ tag tên người ta nha!. Để biết thêm chi tiết hãy xài lệnh `{ctx.prefix}ehelp slap`")
+            await ctx.send(f"❌ {ctx.author.mention} Tính tự kỷ hay gì mà xài hành động không tìm thấy ai? Nhớ tag tên hoặc reply tin nhắn của người ta nha! Xem chi tiết: `{ctx.prefix}ehelp slap`")
 
     @commands.hybrid_command(aliases=["dam"])
     async def punch(self, ctx, target: Optional[discord.Member] = None): await self.handle_action(ctx, target, "punch")
@@ -1079,7 +1103,7 @@ class MarriageCog(commands.Cog):
     @punch.error
     async def punch_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument)):
-            await ctx.send(f"❌ {ctx.author.mention} Tính tự kỷ hay gì mà xài hành động không tag ai? Nhớ tag tên người ta nha!. Để biết thêm chi tiết hãy xài lệnh `{ctx.prefix}ehelp punch`")
+            await ctx.send(f"❌ {ctx.author.mention} Tính tự kỷ hay gì mà xài hành động không tìm thấy ai? Nhớ tag tên hoặc reply tin nhắn của người ta nha! Xem chi tiết: `{ctx.prefix}ehelp punch`")
 
     @commands.hybrid_command(aliases=["choclet"])
     async def tickle(self, ctx, target: Optional[discord.Member] = None): await self.handle_action(ctx, target, "tickle")
@@ -1087,7 +1111,7 @@ class MarriageCog(commands.Cog):
     @tickle.error
     async def tickle_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument)):
-            await ctx.send(f"❌ {ctx.author.mention} Tính tự kỷ hay gì mà xài hành động không tag ai? Nhớ tag tên người ta nha!. Để biết thêm chi tiết hãy xài lệnh `{ctx.prefix}ehelp tickle`")
+            await ctx.send(f"❌ {ctx.author.mention} Tính tự kỷ hay gì mà xài hành động không tìm thấy ai? Nhớ tag tên hoặc reply tin nhắn của người ta nha! Xem chi tiết: `{ctx.prefix}ehelp {ctx.command.name}`")
 
     @commands.hybrid_command(aliases=["can"])
     async def bite(self, ctx, target: Optional[discord.Member] = None): await self.handle_action(ctx, target, "bite")
@@ -1095,7 +1119,7 @@ class MarriageCog(commands.Cog):
     @bite.error
     async def bite_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument)):
-            await ctx.send(f"❌ {ctx.author.mention} Tính tự kỷ hay gì mà xài hành động không tag ai? Nhớ tag tên người ta nha!. Để biết thêm chi tiết hãy xài lệnh `{ctx.prefix}ehelp bite`")
+            await ctx.send(f"❌ {ctx.author.mention} Tính tự kỷ hay gì mà xài hành động không tìm thấy ai? Nhớ tag tên hoặc reply tin nhắn của người ta nha! Xem chi tiết: `{ctx.prefix}ehelp bite`")
 
     
     @commands.hybrid_command(aliases=["om"])
@@ -1104,7 +1128,7 @@ class MarriageCog(commands.Cog):
     @hug.error
     async def hug_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument)):
-            await ctx.send(f"❌ {ctx.author.mention} Tính tự kỷ hay gì mà xài hành động không tag ai? Nhớ tag tên người ta nha!. Để biết thêm chi tiết hãy xài lệnh `{ctx.prefix}ehelp hug`")
+            await ctx.send(f"❌ {ctx.author.mention} Tính tự kỷ hay gì mà xài hành động không tìm thấy ai? Nhớ tag tên hoặc reply tin nhắn của người ta nha! Xem chi tiết: `{ctx.prefix}ehelp hug`")
 
     @commands.hybrid_command(aliases=["auyem"])
     async def cuddle(self, ctx, target: Optional[discord.Member] = None): await self.handle_action(ctx, target, "cuddle")
@@ -1112,7 +1136,7 @@ class MarriageCog(commands.Cog):
     @cuddle.error
     async def cuddle_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument)):
-            await ctx.send(f"❌ {ctx.author.mention} Tính tự kỷ hay gì mà xài hành động không tag ai? Nhớ tag tên người ta nha!. Để biết thêm chi tiết hãy xài lệnh `{ctx.prefix}ehelp cuddle`")
+            await ctx.send(f"❌ {ctx.author.mention} Tính tự kỷ hay gì mà xài hành động không tìm thấy ai? Nhớ tag tên hoặc reply tin nhắn của người ta nha! Xem chi tiết: `{ctx.prefix}ehelp cuddle`")
 
     @commands.hybrid_command(aliases=["mam"])
     async def nom(self, ctx, target: Optional[discord.Member] = None): await self.handle_action(ctx, target, "nom")
@@ -1120,7 +1144,7 @@ class MarriageCog(commands.Cog):
     @nom.error
     async def nom_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument)):
-            await ctx.send(f"❌ {ctx.author.mention} Tính tự kỷ hay gì mà xài hành động không tag ai? Nhớ tag tên người ta nha!. Để biết thêm chi tiết hãy xài lệnh `{ctx.prefix}ehelp nom`")
+            await ctx.send(f"❌ {ctx.author.mention} Tính tự kỷ hay gì mà xài hành động không tìm thấy ai? Nhớ tag tên hoặc reply tin nhắn của người ta nha! Xem chi tiết: `{ctx.prefix}ehelp nom`")
 
     @commands.hybrid_command(aliases=["nung", "nũng"])
     async def snuggle(self, ctx, target: Optional[discord.Member] = None): await self.handle_action(ctx, target, "snuggle")
@@ -1128,7 +1152,7 @@ class MarriageCog(commands.Cog):
     @snuggle.error
     async def snuggle_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument)):
-            await ctx.send(f"❌ {ctx.author.mention} Tính tự kỷ hay gì mà xài hành động không tag ai? Nhớ tag tên người ta nha!. Để biết thêm chi tiết hãy xài lệnh `{ctx.prefix}ehelp snuggle`")
+            await ctx.send(f"❌ {ctx.author.mention} Tính tự kỷ hay gì mà xài hành động không tìm thấy ai? Nhớ tag tên hoặc reply tin nhắn của người ta nha! Xem chi tiết: `{ctx.prefix}ehelp snuggle`")
 
     
     @commands.hybrid_command(aliases=["hon", "hun"])
@@ -1137,7 +1161,7 @@ class MarriageCog(commands.Cog):
     @kiss.error
     async def kiss_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument)):
-            await ctx.send(f"❌ {ctx.author.mention} Tính tự kỷ hay gì mà xài hành động không tag ai? Nhớ tag tên người ta nha!. Để biết thêm chi tiết hãy xài lệnh `{ctx.prefix}ehelp kiss`")
+            await ctx.send(f"❌ {ctx.author.mention} Tính tự kỷ hay gì mà xài hành động không tìm thấy ai? Nhớ tag tên hoặc reply tin nhắn của người ta nha! Xem chi tiết: `{ctx.prefix}ehelp kiss`")
 
     @commands.hybrid_command(aliases=["liem"])
     async def lick(self, ctx, target: Optional[discord.Member] = None): await self.handle_action(ctx, target, "lick")
@@ -1145,7 +1169,7 @@ class MarriageCog(commands.Cog):
     @lick.error
     async def lick_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument)):
-            await ctx.send(f"❌ {ctx.author.mention} Tính tự kỷ hay gì mà xài hành động không tag ai? Nhớ tag tên người ta nha!. Để biết thêm chi tiết hãy xài lệnh `{ctx.prefix}ehelp lick`")
+            await ctx.send(f"❌ {ctx.author.mention} Tính tự kỷ hay gì mà xài hành động không tìm thấy ai? Nhớ tag tên hoặc reply tin nhắn của người ta nha! Xem chi tiết: `{ctx.prefix}ehelp lick`")
 
     @commands.hybrid_command(aliases=["noiyeu", "iuem", "iuanh"])
     async def saylove(self, ctx, target: Optional[discord.Member] = None): await self.handle_action(ctx, target, "saylove")
@@ -1153,18 +1177,23 @@ class MarriageCog(commands.Cog):
     @saylove.error
     async def saylove_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument)):
-            await ctx.send(f"❌ {ctx.author.mention} Tính tự kỷ hay gì mà xài hành động không tag ai? Nhớ tag tên người ta nha!. Để biết thêm chi tiết hãy xài lệnh `{ctx.prefix}ehelp saylove`")
+            await ctx.send(f"❌ {ctx.author.mention} Tính tự kỷ hay gì mà xài hành động không tìm thấy ai? Nhớ tag tên hoặc reply tin nhắn của người ta nha! Xem chi tiết: `{ctx.prefix}ehelp saylove`")
 
-    
-    @commands.hybrid_command(aliases=["seg"])
+    @commands.hybrid_command()
     async def fuck(self, ctx, target: Optional[discord.Member] = None): await self.handle_action(ctx, target, "fuck")
 
     @fuck.error
     async def fuck_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument)):
-            await ctx.send(f"❌ {ctx.author.mention} Tính tự kỷ hay gì mà xài hành động không tag ai? Nhớ tag tên người ta nha!. Để biết thêm chi tiết hãy xài lệnh `{ctx.prefix}ehelp fuck`")
+            await ctx.send(f"❌ {ctx.author.mention} Tính tự kỷ hay gì mà xài hành động không tìm thấy ai? Nhớ tag tên hoặc reply tin nhắn của người ta nha! Xem chi tiết: `{ctx.prefix}ehelp fuck`")
 
+    @commands.hybrid_command(aliases=["seg"])
+    async def dutdit(self, ctx, target: Optional[discord.Member] = None): await self.handle_action(ctx, target, "dutdit")
 
+    @dutdit.error
+    async def dutdit_error(self, ctx: commands.Context, error: Exception):
+        if isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument)):
+            await ctx.send(f"❌ {ctx.author.mention} Tính tự kỷ hay gì mà xài hành động không tìm thấy ai? Nhớ tag tên hoặc reply tin nhắn của người ta nha! Xem chi tiết: `{ctx.prefix}ehelp dutdit`")
 
     # ---------------------------------------------------------
     # BACKGROUND TASK: ANTI GHOSTING
