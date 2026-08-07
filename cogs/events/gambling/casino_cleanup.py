@@ -45,7 +45,7 @@ class CasinoCleanupCog(commands.Cog):
         if not has_components:
             # Phân loại Kết quả cá cược hay thông báo thường
             is_gambling_result = False
-            keywords = ["tài xỉu", "bầu cua", "dice", "tàu bay", "crash", "roulette", "coinflip", "cups", "xổ số", "kết quả", "cốc", "ly", "shot", "nga"]
+            keywords = ["tài xỉu", "bầu cua", "dice", "tàu bay", "crash", "roulette", "coinflip", "cups", "xổ số", "kết quả", "cốc", "ly", "shot", "ngửa"]
             
             for emb in message.embeds:
                 text_to_check = f"{emb.title or ''} {emb.author.name if emb.author else ''} {emb.description or ''}".lower()
@@ -117,7 +117,7 @@ class CasinoCleanupCog(commands.Cog):
         if all_disabled:
             is_gambling_result = False
             keywords = [
-                "tài xỉu", "bầu cua", "dice", "tàu bay", "crash", "roulette", "coinflip", "cups", "xổ số", "kết quả", "cốc", "ly", "shot", "nga",
+                "tài xỉu", "bầu cua", "dice", "tàu bay", "crash", "roulette", "coinflip", "cups", "xổ số", "kết quả", "cốc", "ly", "shot", "ngửa",
                 "bảo vật", "nhặt lộc", "chúc mừng", "chúa tể", "nhân phẩm", "mvp", "danh sách", "tham gia", "vinh danh", "tan biến"
             ]
             

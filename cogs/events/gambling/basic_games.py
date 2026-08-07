@@ -247,7 +247,7 @@ class BasicGames(commands.Cog):
             return
 
         new_balance = balance + delta
-        face_map = {"h": "NGẮA 🌕", "t": "SẤP 🌑"}
+        face_map = {"h": "NGỬA 🌕", "t": "SẤP 🌑"}
         your_pick = face_map[choice]
         if outcome == "side":
             landed = "ĐỨNG 🟡"
