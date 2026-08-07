@@ -217,11 +217,52 @@ async def init_all_tables(bot: Any) -> bool:
                 );
             ''')
             
-        log.info("🌸 Toàn bộ Database (Staff + Event) đã được khởi tạo và cấu trúc chuẩn xác!")
+            # ── BẢNG VOICE MASTER ────────────────────────────────────────
+            await conn.execute('''
+                CREATE TABLE IF NOT EXISTS voice_setups (
+                    guild_id                  BIGINT PRIMARY KEY,
+                    join_to_create_channel_id BIGINT NOT NULL,
+                    category_id               BIGINT
+                );
+            ''')
+            await conn.execute('''
+                CREATE TABLE IF NOT EXISTS voice_role_perms (
+                    id               SERIAL PRIMARY KEY,
+                    guild_id         BIGINT NOT NULL,
+                    role_id          BIGINT NOT NULL,
+                    can_lock         BOOLEAN NOT NULL DEFAULT FALSE,
+                    can_hide         BOOLEAN NOT NULL DEFAULT FALSE,
+                    can_change_limit BOOLEAN NOT NULL DEFAULT FALSE,
+                    can_change_name  BOOLEAN NOT NULL DEFAULT FALSE,
+                    can_transfer     BOOLEAN NOT NULL DEFAULT FALSE,
+                    priority         INT     NOT NULL DEFAULT 0,
+                    UNIQUE (guild_id, role_id)
+                );
+            ''')
+            await conn.execute('''
+                CREATE INDEX IF NOT EXISTS idx_voice_role_perms_guild
+                    ON voice_role_perms (guild_id);
+            ''')
+            await conn.execute('''
+                CREATE TABLE IF NOT EXISTS active_voice_channels (
+                    channel_id BIGINT PRIMARY KEY,
+                    guild_id   BIGINT NOT NULL,
+                    owner_id   BIGINT NOT NULL,
+                    created_at TIMESTAMP WITH TIME ZONE
+                        DEFAULT (CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Ho_Chi_Minh')
+                );
+            ''')
+            await conn.execute('''
+                CREATE INDEX IF NOT EXISTS idx_active_voice_guild
+                    ON active_voice_channels (guild_id);
+            ''')
+
+        log.info("🌸 Toàn bộ Database (Staff + Event + VoiceMaster) đã được khởi tạo và cấu trúc chuẩn xác!")
         return True
     except Exception as e:
         log.error(f"❌ Lỗi nghiêm trọng khi khởi tạo bảng Database: {e}", exc_info=True)
         return False
+
 
 
 # =====================================================================
