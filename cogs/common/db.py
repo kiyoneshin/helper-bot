@@ -89,6 +89,14 @@ async def init_all_tables(bot: Any) -> bool:
 
     try:
         async with pool.acquire() as conn:
+            # ── BẢNG ANTI-SPAM MEDIA ───────────────────────────────────
+            await conn.execute('''
+                CREATE TABLE IF NOT EXISTS media_mutes (
+                    discord_id BIGINT PRIMARY KEY,
+                    expire_at TIMESTAMP WITH TIME ZONE NOT NULL
+                );
+            ''')
+
             # ── BẢNG 1 & 2: HỆ THỐNG STAFF CŨ ──────────────────────────
             await conn.execute('''
                 CREATE TABLE IF NOT EXISTS profiles (
