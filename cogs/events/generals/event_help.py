@@ -537,7 +537,26 @@ CMD_DATA: dict[str, dict] = {
         "examples": ["{prefix}chop"],
         "note": "Tốn 3 Thể Lực mỗi lần chặt.",
     },
-
+    "lb": {
+        "name": "Lootbox",
+        "emoji": "📦",
+        "short": "Hệ thống hộp quà may mắn rớt từ hoạt động.",
+        "aliases": ["lootbox"],
+        "cooldown": None,
+        "usage": "{prefix}lb open <tier> [qty] | {prefix}lb info | {prefix}lb history",
+        "examples": ["{prefix}lb open epic 2", "{prefix}lb open c 10", "{prefix}lb info"],
+        "note": "Bạn có thể dùng từ viết tắt (c, u, r, e, l, g) thay cho tên tier đầy đủ.",
+    },
+    "pray": {
+        "name": "Cầu Nguyện",
+        "emoji": "🙏",
+        "short": "Tăng thêm +1 Luck (may mắn) mỗi 30 phút.",
+        "aliases": ["caunguyen"],
+        "cooldown": "30 phút",
+        "usage": "{prefix}pray",
+        "examples": ["{prefix}pray"],
+        "note": "Luck càng cao, tỉ lệ rớt lootbox và tỉ lệ ra hàng hiếm khi mở hộp càng cao.",
+    },
 }
 
 CATEGORY_DATA: dict[str, dict] = {
@@ -551,8 +570,8 @@ CATEGORY_DATA: dict[str, dict] = {
     "Kinh Tế & Kho Đồ": {
         "emoji": "🛒",
         "desc": "Quản lý điểm, túi đồ, cửa hàng, cột mốc và ngân hàng.",
-        "commands": ["inv", "use", "buy", "daily", "weekly", "point", "etop", "milestone", "shop", "black_market", "ebuy", "vayno", "trano"],
-        "cogs": ["InventoryCog", "ShopCog", "EventShopCog", "Rewards", "MilestoneCog", "BlackMarketCog", "BankingCog"],
+        "commands": ["inv", "use", "buy", "daily", "weekly", "point", "etop", "milestone", "shop", "black_market", "ebuy", "vayno", "trano", "lb", "pray"],
+        "cogs": ["InventoryCog", "ShopCog", "EventShopCog", "Rewards", "MilestoneCog", "BlackMarketCog", "BankingCog", "LootboxCog"],
     },
     "Nhiệm Vụ & Công Việc": {
         "emoji": "📋",

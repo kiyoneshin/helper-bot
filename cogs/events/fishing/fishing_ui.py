@@ -194,6 +194,16 @@ class FishingView(discord.ui.View):
             fish_id, is_perfect = get_fishing_loot(rod_level, reaction_time)
             fish_info = FISH_LOOT[fish_id]
 
+            # 4. Lưu DB (cập nhật lootbox nếu có)
+            from cogs.events.lootbox.lootbox_cmd import _get_luck_and_boost, _add_lootbox_to_inventory
+            from cogs.events.lootbox.lootbox_config import get_activity_lootbox_drop, TIER_EMOJIS, TIER_NAMES
+            luck, boost_active = await _get_luck_and_boost(self.bot, self.user_id)
+            lb_tier = get_activity_lootbox_drop("fish", luck, boost_active)
+            lb_msg = ""
+            if lb_tier:
+                await _add_lootbox_to_inventory(self.bot, self.user_id, lb_tier, 1)
+                lb_msg = f"\n🎁 **Rớt thêm:** 1x {TIER_EMOJIS[lb_tier]} {TIER_NAMES[lb_tier]}"
+
             inventory = farm_data.setdefault("inventory", {})
             inventory[fish_id] = inventory.get(fish_id, 0) + 1
             await save_farm_data(self.bot, self.user_id, farm_data)
@@ -203,7 +213,7 @@ class FishingView(discord.ui.View):
             prefix = "⚡ **Perfect Catch!** " if is_perfect else "🎉 **Tuyệt vời!** "
             rare_tag = " 🎉🎉🎉 **CỰC HIẾM!**" if fish_info["rare_rank"] >= 3 else ""
             result_msg = (
-                f"{prefix}Bạn đã câu được **1x {fish_info['icon']} {fish_info['name']}**!{rare_tag}\n"
+                f"{prefix}Bạn đã câu được **1x {fish_info['icon']} {fish_info['name']}**!{rare_tag}{lb_msg}\n"
                 f"*(Phản xạ: **{reaction_time}s**)*"
             )
 

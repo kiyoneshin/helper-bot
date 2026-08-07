@@ -101,10 +101,10 @@ ITEM_REGISTRY: dict[int, ItemEntry] = {
     },
     6: {
         "id":          6,
-        "name":        "Thẻ Tăng Tốc",
-        "icon":        "⚡",
+        "name":        "Thẻ Tăng Vận",
+        "icon":        "✨",
         "price":       None,              # Không bán trong shop — chỉ nhận qua sự kiện
-        "description": "Giảm 50% thời gian hồi thể lực trong 30 phút.",
+        "description": "Tăng 50% tỉ lệ drop lootbox từ fish/mine/chop và tăng tỉ lệ rank cao khi mở hộp trong 30 phút.",
         "db_key":      "boost_card",
         "category":    "event",
         "usable":      True,
@@ -435,6 +435,70 @@ ITEM_REGISTRY: dict[int, ItemEntry] = {
         "db_key":      "gift_50",
         "category":    "gift",
         "usable":      False,
+    },
+
+    # ──────────────────────────────────────────────────────────
+    # ID 60–65 : LOOTBOX
+    # ──────────────────────────────────────────────────────────
+    60: {
+        "id":          60,
+        "name":        "Lootbox Common",
+        "icon":        "📦",
+        "price":       500,
+        "description": "Hộp may mắn phổ thông. Drop vật phẩm rank 0-1 từ fish/mine/chop.",
+        "db_key":      "lb_60",
+        "category":    "lootbox",
+        "usable":      True,
+    },
+    61: {
+        "id":          61,
+        "name":        "Lootbox Uncommon",
+        "icon":        "🟢",
+        "price":       1_500,
+        "description": "Hộp may mắn không phổ biến. Drop vật phẩm rank 0-2.",
+        "db_key":      "lb_61",
+        "category":    "lootbox",
+        "usable":      True,
+    },
+    62: {
+        "id":          62,
+        "name":        "Lootbox Rare",
+        "icon":        "🔵",
+        "price":       4_000,
+        "description": "Hộp may mắn hiếm. Drop vật phẩm rank 0-3, có thể ra Mực hoặc Quặng Vàng.",
+        "db_key":      "lb_62",
+        "category":    "lootbox",
+        "usable":      True,
+    },
+    63: {
+        "id":          63,
+        "name":        "Lootbox Epic",
+        "icon":        "🟣",
+        "price":       12_000,
+        "description": "Hộp may mắn sử thi. Drop vật phẩm rank 0-4, có thể ra Bạch Tuộc hay Kim Cương!",
+        "db_key":      "lb_63",
+        "category":    "lootbox",
+        "usable":      True,
+    },
+    64: {
+        "id":          64,
+        "name":        "Lootbox Legendary",
+        "icon":        "🟠",
+        "price":       None,              # Không bán — chỉ earn qua fish/mine/chop
+        "description": "Hộp huyền thoại. Drop rank 0-5 với cơ hội ra Cá Huyền Thoại!",
+        "db_key":      "lb_64",
+        "category":    "lootbox",
+        "usable":      True,
+    },
+    65: {
+        "id":          65,
+        "name":        "Lootbox Godly",
+        "icon":        "🌟",
+        "price":       None,              # Không bán — cực hiếm, chỉ drop ngẫu nhiên
+        "description": "Hộp thần thánh siêu hiếm. Drop rank cao nhất + Bonus điểm/thẻ BM!",
+        "db_key":      "lb_65",
+        "category":    "lootbox",
+        "usable":      True,
     },
 }
 

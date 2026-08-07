@@ -204,8 +204,31 @@ async def init_all_tables(bot: Any) -> bool:
                 await conn.execute('''
                     CREATE INDEX IF NOT EXISTS idx_marriages_users ON marriages (user1_id, user2_id);
                 ''')
+
+                # ── LOOTBOX: Thêm cột luck/pray vào event_profiles ──────────────
+                await conn.execute('''
+                    ALTER TABLE event_profiles ADD COLUMN IF NOT EXISTS luck_points INT DEFAULT 0;
+                    ALTER TABLE event_profiles ADD COLUMN IF NOT EXISTS last_pray TIMESTAMPTZ;
+                    ALTER TABLE event_profiles ADD COLUMN IF NOT EXISTS lb_buy_cooldown JSONB DEFAULT '{}'::jsonb;
+                ''')
+
             except Exception as e:
                 log.error(f"Lỗi ALTER TABLE event_profiles hoặc khởi tạo MARRIAGES: {e}", exc_info=True)
+
+            # ── BẢNG LOOTBOX HISTORY ─────────────────────────────────────────────
+            await conn.execute('''
+                CREATE TABLE IF NOT EXISTS lootbox_history (
+                    id SERIAL PRIMARY KEY,
+                    discord_id VARCHAR NOT NULL,
+                    tier_id INT NOT NULL,
+                    drops JSONB NOT NULL DEFAULT '[]'::jsonb,
+                    count INT NOT NULL DEFAULT 1,
+                    opened_at TIMESTAMPTZ DEFAULT NOW()
+                );
+            ''')
+            await conn.execute('''
+                CREATE INDEX IF NOT EXISTS idx_lb_history ON lootbox_history (discord_id, tier_id, opened_at DESC);
+            ''')
                 
             # Tạo bảng user_tasks (Nhiệm vụ Ngày/Tuần/Sự kiện)
             await conn.execute('''

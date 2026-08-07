@@ -106,6 +106,21 @@ class Rewards(commands.Cog):
         streak_bonus = (streak_multiplier - 1) * 100 if streak_multiplier > 0 else 0
         total_reward = base_reward + streak_bonus
 
+        # Lootbox theo chuỗi streak (max 21 ngày)
+        # streak 3-6: Common, 7-13: Uncommon, 14-20: Rare, 21+: Epic
+        lb_tier = None
+        lb_name = None
+        lb_emoji = None
+        from cogs.events.lootbox.lootbox_config import LB_COMMON, LB_UNCOMMON, LB_RARE, LB_EPIC
+        if daily_streak >= 15:
+            lb_tier, lb_name, lb_emoji = LB_EPIC, "Lootbox Epic", "🟣"
+        elif daily_streak >= 10:
+            lb_tier, lb_name, lb_emoji = LB_RARE, "Lootbox Rare", "🔵"
+        elif daily_streak >= 6:
+            lb_tier, lb_name, lb_emoji = LB_UNCOMMON, "Lootbox Uncommon", "🟢"
+        elif daily_streak >= 3:
+            lb_tier, lb_name, lb_emoji = LB_COMMON, "Lootbox Common", "📦"
+
         # Cập nhật DB
         await execute_db(
             self.bot,
@@ -116,12 +131,18 @@ class Rewards(commands.Cog):
         # Cộng tiền
         await add_event_points(self.bot, uid, total_reward, is_earned=True)
 
+        lb_text = ""
+        if lb_tier:
+            from cogs.events.lootbox.lootbox_cmd import _add_lootbox_to_inventory
+            await _add_lootbox_to_inventory(self.bot, uid, lb_tier, 1)
+            lb_text = f"\n🎁 **Thưởng Thêm:** 1x {lb_emoji} {lb_name}"
+
         # Trả về thông báo
         embed = discord.Embed(
             title="🎁 Điểm Danh Hàng Ngày",
             description=(
                 f"✅ Nhận thành công **{total_reward:,}** điểm!\n"
-                f"*(Cơ bản: {base_reward:,} + Thưởng chuỗi: {streak_bonus:,})*\n\n"
+                f"*(Cơ bản: {base_reward:,} + Thưởng chuỗi: {streak_bonus:,})*{lb_text}\n\n"
                 f"🔥 **Chuỗi hiện tại:** {daily_streak} ngày\n"
                 f"*(Chuỗi càng dài thưởng càng lớn. Hãy quay lại vào ngày mai để không làm đứt chuỗi nhé!)*"
             ),
@@ -188,11 +209,17 @@ class Rewards(commands.Cog):
         # Cộng tiền
         await add_event_points(self.bot, uid, total_reward, is_earned=True)
 
+        # Thưởng thêm Lootbox
+        from cogs.events.lootbox.lootbox_config import LB_COMMON
+        from cogs.events.lootbox.lootbox_cmd import _add_lootbox_to_inventory
+        await _add_lootbox_to_inventory(self.bot, uid, LB_COMMON, 2)
+
         # Trả về thông báo
         embed = discord.Embed(
             title="💎 Lương Tuần Đã Về!",
             description=(
                 f"🎉 Chúc mừng bạn đã nhận **{total_reward:,}** điểm lương tuần!\n"
+                f"🎁 **Thưởng Thêm:** 2x 📦 Lootbox Common\n"
                 f"Hãy dùng số điểm này thật khôn ngoan tại `{ctx.prefix}shop` hoặc các sòng bài Casino nhé!"
             ),
             color=0xFFD700  # Màu vàng

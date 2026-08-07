@@ -147,8 +147,17 @@ class TaskCog(commands.Cog):
                 if mar and mar["pet_type"]:
                     await execute_db(self.bot, "UPDATE marriages SET pet_exp = pet_exp + 100 WHERE id = $1", mar["id"])
                     pet_msg = " và Thú cưng +100 EXP"
+
+                lb_msg = ""
+                lb_tier = conf.get("lb_reward_tier")
+                lb_chance = conf.get("lb_reward_chance", 0)
+                if lb_tier and random.randint(1, 100) <= lb_chance:
+                    from cogs.events.lootbox.lootbox_cmd import _add_lootbox_to_inventory
+                    from cogs.events.lootbox.lootbox_config import TIER_EMOJIS, TIER_NAMES
+                    await _add_lootbox_to_inventory(self.bot, str(uid), lb_tier, 1)
+                    lb_msg = f" 🎁 {TIER_EMOJIS[lb_tier]} {TIER_NAMES[lb_tier]}"
                     
-                claimed_messages.append(f"✅ Đã nhận thưởng nhiệm vụ ngày #{idx} (+{tdata['reward']:,} điểm{pet_msg})")
+                claimed_messages.append(f"✅ Đã nhận thưởng nhiệm vụ ngày #{idx} (+{tdata['reward']:,} điểm{pet_msg}{lb_msg})")
                 db_changed = True
 
             status = "COMPLETED" if tdata["claimed"] else f"{tdata['progress']}/{tdata['target']}"
@@ -179,8 +188,17 @@ class TaskCog(commands.Cog):
                 if mar and mar["pet_type"]:
                     await execute_db(self.bot, "UPDATE marriages SET pet_exp = pet_exp + 300 WHERE id = $1", mar["id"])
                     pet_msg = " và Thú cưng +300 EXP"
+
+                lb_msg = ""
+                lb_tier = conf.get("lb_reward_tier")
+                lb_chance = conf.get("lb_reward_chance", 0)
+                if lb_tier and random.randint(1, 100) <= lb_chance:
+                    from cogs.events.lootbox.lootbox_cmd import _add_lootbox_to_inventory
+                    from cogs.events.lootbox.lootbox_config import TIER_EMOJIS, TIER_NAMES
+                    await _add_lootbox_to_inventory(self.bot, str(uid), lb_tier, 1)
+                    lb_msg = f" 🎁 {TIER_EMOJIS[lb_tier]} {TIER_NAMES[lb_tier]}"
                     
-                claimed_messages.append(f"🌟 Đã nhận thưởng nhiệm vụ tuần #{idx} (+{tdata['reward']:,} điểm{pet_msg})")
+                claimed_messages.append(f"🌟 Đã nhận thưởng nhiệm vụ tuần #{idx} (+{tdata['reward']:,} điểm{pet_msg}{lb_msg})")
                 db_changed = True
 
             status = "COMPLETED" if tdata["claimed"] else f"{tdata['progress']}/{tdata['target']}"
@@ -236,7 +254,17 @@ class TaskCog(commands.Cog):
                 tdata["claimed"] = True
                 await add_event_points(self.bot, uid, tdata["reward"], is_earned=True)
                 await update_event_stat(self.bot, uid, "quests", 1)
-                claimed_messages.append(f"🏆 Đã hoàn thành siêu nhiệm vụ: **{conf['name']}** (+{tdata['reward']:,} điểm)")
+                
+                lb_msg = ""
+                lb_tier = conf.get("lb_reward_tier")
+                lb_chance = conf.get("lb_reward_chance", 0)
+                if lb_tier and random.randint(1, 100) <= lb_chance:
+                    from cogs.events.lootbox.lootbox_cmd import _add_lootbox_to_inventory
+                    from cogs.events.lootbox.lootbox_config import TIER_EMOJIS, TIER_NAMES
+                    await _add_lootbox_to_inventory(self.bot, str(uid), lb_tier, 1)
+                    lb_msg = f" 🎁 {TIER_EMOJIS[lb_tier]} {TIER_NAMES[lb_tier]}"
+
+                claimed_messages.append(f"🏆 Đã hoàn thành siêu nhiệm vụ: **{conf['name']}** (+{tdata['reward']:,} điểm{lb_msg})")
                 db_changed = True
 
             status = "COMPLETED" if tdata["claimed"] else f"{tdata['progress']}/{tdata['target']}"

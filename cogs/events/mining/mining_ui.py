@@ -139,7 +139,16 @@ class MiningView(discord.ui.View):
         inventory = farm_data.setdefault("inventory", {})
         inventory[loot_id] = inventory.get(loot_id, 0) + quantity
 
-        # 4. Lưu DB
+        # 4. Lưu DB (cập nhật lootbox nếu có)
+        from cogs.events.lootbox.lootbox_cmd import _get_luck_and_boost, _add_lootbox_to_inventory
+        from cogs.events.lootbox.lootbox_config import get_activity_lootbox_drop, TIER_EMOJIS, TIER_NAMES
+        luck, boost_active = await _get_luck_and_boost(self.bot, self.user_id)
+        lb_tier = get_activity_lootbox_drop("mine", luck, boost_active)
+        lb_msg = ""
+        if lb_tier:
+            await _add_lootbox_to_inventory(self.bot, self.user_id, lb_tier, 1)
+            lb_msg = f"\n🎁 **Rớt thêm:** 1x {TIER_EMOJIS[lb_tier]} {TIER_NAMES[lb_tier]}"
+
         await save_farm_data(self.bot, self.user_id, farm_data)
         await update_event_stat(self.bot, self.user_id, "mines", quantity)
 
@@ -151,7 +160,7 @@ class MiningView(discord.ui.View):
         new_embed = build_mining_embed(self.author, new_stamina, farm_data)
         await interaction.response.edit_message(embed=new_embed, view=self)
         await interaction.followup.send(
-            f"⛏️ Bạn vừa đào được **{quantity}x {loot_info['icon']} {loot_info['name']}**!{double_str} "
-            f"(Thể lực: {new_stamina}/{MAX_STAMINA})",
+            f"⛏️ Bạn vừa đào được **{quantity}x {loot_info['icon']} {loot_info['name']}**!{double_str}{lb_msg}\n"
+            f"*(Thể lực: {new_stamina}/{MAX_STAMINA})*",
             ephemeral=True,
         )

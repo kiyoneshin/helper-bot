@@ -54,6 +54,7 @@ def build_shop_embed(category: str, author: discord.Member | discord.User, prefi
         "blackmarket": ("🌙 Cửa Hàng Chợ Đen",        0x2b2d31),
         "ring":        ("💍 Tiệm Kim Hoàn",           0xffb6c1),
         "gift":        ("🎁 Quà Tặng",                0xff69b4),
+        "lootbox":     ("🎁 Cửa Hàng Lootbox",        0x3498db),
     }
     title, color = CATEGORY_META.get(category, ("🛒 Cửa Hàng", 0x7289da))
 
@@ -124,6 +125,13 @@ class ShopSelect(discord.ui.Select):
                 description=f"Quà để tặng người thương ({self.view.bot.custom_prefix}gift)",
                 default=(current_category == "gift"),
             ),
+            discord.SelectOption(
+                label="Lootbox",
+                value="lootbox",
+                emoji="📦",
+                description="Hộp quà may mắn (có giới hạn mua)",
+                default=(current_category == "lootbox"),
+            ),
         ]
         super().__init__(
             placeholder="Chọn danh mục cửa hàng...",
@@ -186,7 +194,7 @@ async def _buy_event_item(
         is_locked = lottery_cog.is_locked if lottery_cog else False
         ok, msg = await buy_lottery_tickets(bot, str(ctx.author.id), amount, is_locked)
         await ctx.send(f"{ctx.author.mention} {msg}", delete_after=10.0)
-    elif item["category"] in ["event", "ring", "gift"]:
+    elif item["category"] in ["event", "ring", "gift", "lootbox"]:
         uid = str(ctx.author.id)
         price = item["price"]
         if price is None:
@@ -204,6 +212,31 @@ async def _buy_event_item(
             if count is not None and count >= 5:
                 await ctx.send("❌ Rất tiếc, vật phẩm này đã đạt giới hạn 5 người đổi!", delete_after=5.0)
                 return
+
+        # Special logic for lootbox 6h cooldown
+        from datetime import datetime, timezone, timedelta
+        if item["category"] == "lootbox":
+            row = await fetchrow_db(bot, "SELECT lb_buy_cooldown FROM event_profiles WHERE discord_id = $1", uid)
+            if row:
+                cd_data = row["lb_buy_cooldown"]
+                if isinstance(cd_data, str):
+                    cd_data = json.loads(cd_data)
+                cd_data = cd_data or {}
+                
+                lb_id = str(item["id"])
+                last_buy_ts = cd_data.get(lb_id)
+                now = datetime.now(timezone.utc)
+                if last_buy_ts:
+                    last_buy = datetime.fromtimestamp(last_buy_ts, tz=timezone.utc)
+                    from cogs.events.lootbox.lootbox_config import LB_BUY_COOLDOWN_HOURS
+                    if now < last_buy + timedelta(hours=LB_BUY_COOLDOWN_HOURS):
+                        next_time = last_buy + timedelta(hours=LB_BUY_COOLDOWN_HOURS)
+                        await ctx.send(f"❌ Bạn đã mua loại hộp này gần đây rồi. Hãy quay lại vào <t:{int(next_time.timestamp())}:R>!", delete_after=10.0)
+                        return
+                
+                # Cập nhật cooldown
+                cd_data[lb_id] = int(now.timestamp())
+                await execute_db(bot, "UPDATE event_profiles SET lb_buy_cooldown = $1::jsonb WHERE discord_id = $2", json.dumps(cd_data), uid)
 
         await get_or_create_event_profile(bot, uid)
         ok = await deduct_event_points(bot, uid, total)
