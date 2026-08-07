@@ -6,7 +6,7 @@ __**HƯỚNG DẪN VÀ CÁC CÂU HỎI THƯỜNG ĐƯỢC HỎI VỀ SỰ KIỆN
 **A:** Đây là một sự kiện tương tác toàn diện trên server Angelic. Điểm Sự Kiện (Event Points) là loại tiền tệ duy nhất dùng trong suốt sự kiện này. Bạn dùng Điểm để tham gia các trò chơi cá cược (Casino), mua sắm vật phẩm đặc biệt, và đua Top. Điểm tích lũy (Total Earned) của bạn càng cao, bạn càng nhận được nhiều quà từ hệ thống Cột Mốc (Milestones).
 
 **Q2: Mục đích chính của sự kiện này là gì?**
-**A:** Mục tiêu của sự kiện là thu thập càng nhiều Điểm Sự Kiện càng tốt để mở khóa các Cột Mốc. Khi đạt mốc, bạn sẽ nhận được các Danh hiệu độc quyền (Đội Cào Phím, Huyền Thoại) và các Vật Phẩm Chợ Đêm cực hiếm. Người chơi đạt Top server ({prefix}etop) cũng sẽ nhận được phần thưởng vinh danh cuối sự kiện.
+**A:** Mục tiêu của sự kiện là thu thập càng nhiều Điểm Sự Kiện càng tốt để mở khóa các Cột Mốc. Khi đạt mốc, bạn sẽ nhận được các Danh hiệu độc quyền (Đội Cào Phím, Huyền Thoại) và các Vật Phẩm Chợ Đêm cực hiếm. Người chơi đạt Top server (`{prefix}etop`) cũng sẽ nhận được phần thưởng vinh danh cuối sự kiện.
 
 **Q3: Sự kiện kéo dài bao lâu và khi nào kết thúc?**
 **A:** Sự kiện kéo dài liên tục và thay đổi theo từng Season. Điểm số có thể sẽ được reset sau khi tìm ra người thắng cuộc. Vui lòng theo dõi các bài ghim ở kênh thông báo sự kiện từ Admin để biết thời hạn chốt Top.
@@ -14,31 +14,31 @@ __**HƯỚNG DẪN VÀ CÁC CÂU HỎI THƯỜNG ĐƯỢC HỎI VỀ SỰ KIỆN
 **Q4: Làm thế nào để kiếm được Điểm Sự Kiện?**
 **A:** Có 6 cách chính để bạn làm giàu:
 1. Tương tác: Chat cùng mọi người, treo room voice (từ 2 người trở lên, không tắt tiếng).
-2. Điểm danh: Điểm danh hàng ngày ({prefix}daily) và hàng tuần ({prefix}weekly).
-3. Làm việc & Nhiệm vụ: Gõ {prefix}work đi làm, hoàn thành {prefix}task mỗi ngày.
-4. Khu Sinh Thái (An Toàn): Chơi Nông trại, Đào mỏ, Câu cá, Chặt cây để thu thập nguyên liệu và bán ({prefix}inv).
-5. Casino (Rủi ro cao): Đánh cờ bạc ({prefix}baucua, {prefix}tx, {prefix}cf, {prefix}xoso...).
-6. Vay Nợ ({prefix}vayno): Vay vốn từ ngân hàng nếu cạn kiệt tài chính.
+2. Điểm danh: Điểm danh hàng ngày (`{prefix}daily`) và hàng tuần (`{prefix}weekly`).
+3. Làm việc & Nhiệm vụ: Gõ `{prefix}work` đi làm, hoàn thành `{prefix}task` mỗi ngày.
+4. Khu Sinh Thái (An Toàn): Chơi Nông trại, Đào mỏ, Câu cá, Chặt cây để thu thập nguyên liệu và bán (`{prefix}inv`).
+5. Casino (Rủi ro cao): Đánh cờ bạc (`{prefix}baucua`, `{prefix}tx`, `{prefix}cf`, `{prefix}xoso`...).
+6. Vay Nợ (`{prefix}vayno`): Vay vốn từ ngân hàng nếu cạn kiệt tài chính.
 
 **Q5: Xem thông tin tài khoản sự kiện như thế nào?**
 **A:** Cần phân biệt rõ các lệnh sau:
-- Xem Số dư, Thẻ đồ: Dùng lệnh {prefix}profile (hoặc {prefix}p / {prefix}pro / {prefix}ep).
-- Xem Kho đồ (Inventory): Dùng lệnh {prefix}inv.
-- Xem Thú Cưng, Nhẫn, Hôn nhân: Dùng lệnh {prefix}marry (hoặc {prefix}kethon).
-- Xem Điểm Tích Lũy (Total Earned) và Mốc nhận quà: Dùng lệnh {prefix}qua (hoặc {prefix}milestone / {prefix}reward).
-- Xem Số Dư Hiện Tại và Xếp Hạng: Dùng lệnh {prefix}point (hoặc {prefix}bal / {prefix}vi).
-- Xem Bảng xếp hạng sự kiện: Dùng lệnh {prefix}etop (hoặc {prefix}evtop).
-- Xem thông tin tài khoản Ban Quản Trị (nếu có): Dùng lệnh {prefix}menu.
+- Xem Số dư, Thẻ đồ: Dùng lệnh `{prefix}profile` (hoặc `{prefix}p` / `{prefix}pro` / `{prefix}ep`).
+- Xem Kho đồ (Inventory): Dùng lệnh `{prefix}inv`.
+- Xem Thú Cưng, Nhẫn, Hôn nhân: Dùng lệnh `{prefix}marry` (hoặc `{prefix}kethon`).
+- Xem Điểm Tích Lũy (Total Earned) và Mốc nhận quà: Dùng lệnh `{prefix}qua` (hoặc `{prefix}milestone` / `{prefix}reward`).
+- Xem Số Dư Hiện Tại và Xếp Hạng: Dùng lệnh `{prefix}point` (hoặc `{prefix}bal` / `{prefix}vi`).
+- Xem Bảng xếp hạng sự kiện: Dùng lệnh `{prefix}etop` (hoặc `{prefix}evtop`).
+- Xem thông tin tài khoản Ban Quản Trị (nếu có): Dùng lệnh `{prefix}menu`.
 
 **Q6: Phân biệt Điểm Tích Lũy (Total Earned) và Số Dư Hiện Tại?**
 **A:** - Số dư hiện tại (Points): Là tiền mặt bạn đang có. Nó tăng khi bạn cày cuốc, và giảm khi bạn mua đồ, chơi casino thua, hoặc tặng quà.
-- Điểm tích lũy (Total Earned): Là TỔNG SỐ TIỀN bạn đã kiếm được từ đầu mùa đến giờ. Điểm này CHỈ TĂNG chứ KHÔNG BAO GIỜ GIẢM. Mọi hệ thống Cột mốc (Milestones) hay Đua Top đều tính dựa trên Điểm Tích Lũy nà{prefix} Dù bạn có lỡ tay tiêu hết Số dư về 0 thì Cột mốc vẫn giữ nguyên.
+- Điểm tích lũy (Total Earned): Là TỔNG SỐ TIỀN bạn đã kiếm được từ đầu mùa đến giờ. Điểm này CHỈ TĂNG chứ KHÔNG BAO GIỜ GIẢM. Mọi hệ thống Cột mốc (Milestones) hay Đua Top đều tính dựa trên Điểm Tích Lũy này! Dù bạn có lỡ tay tiêu hết Số dư về 0 thì Cột mốc vẫn giữ nguyên.
 
 
 ### Phần 2: Cột Mốc & Vinh Danh (Mục Tiêu Sự Kiện)
 
 **Q7: Hệ thống Cột Mốc (Milestones) là gì?**
-**A:** Các mốc thưởng dựa trên điểm TÍCH LŨY (kiếm được từ đầu mùa, việc xài tiền KHÔNG làm tụt điểm tích lũy). Dùng {prefix}milestone để kiểm tra và {prefix}nhanqua để lấy thưởng.
+**A:** Các mốc thưởng dựa trên điểm TÍCH LŨY (kiếm được từ đầu mùa, việc xài tiền KHÔNG làm tụt điểm tích lũy). Dùng `{prefix}milestone` để kiểm tra và `{prefix}nhanqua` để lấy thưởng.
 
 **Q8: Các mốc thưởng Sự Kiện (Milestones) gồm những phần quà gì?**
 **A:** Các mốc hiện tại (dựa trên Điểm Tích Lũy):
@@ -60,7 +60,7 @@ __**HƯỚNG DẪN VÀ CÁC CÂU HỎI THƯỜNG ĐƯỢC HỎI VỀ SỰ KIỆN
 - 25,000vnđ / 3.75M OwO Cash: Hệ số x2.00 (+100%) ➜ Trải nghiệm: VVIP (Max Tối Đa).
 
 **Q10: Có những Đặc Quyền nào trong Cửa hàng đổi thưởng sự kiện?**
-**A:** Vào {prefix}shop mục "Sự Kiện", bạn có thể dùng Điểm để đổi các đặc quyền:
+**A:** Vào `{prefix}shop` mục "Sự Kiện", bạn có thể dùng Điểm để đổi các đặc quyền:
 - Role Màu Sự Kiện / Thiết kế riêng.
 - Role Biểu Tượng Vĩnh Viễn (Giới hạn 5 slot cho toàn server).
 - Vật Phẩm Tối Cao (Đặc quyền Nitro / Custom do Admin tự trao).
@@ -69,60 +69,60 @@ __**HƯỚNG DẪN VÀ CÁC CÂU HỎI THƯỜNG ĐƯỢC HỎI VỀ SỰ KIỆN
 ### Phần 3: Hệ Sinh Thái Kinh Tế (Cày Điểm)
 
 **Q11: Làm sao để nhận điểm miễn phí hàng ngày?**
-**A:** Đừng quên dùng lệnh {prefix}daily mỗi ngày để nhận thưởng. Chuỗi ngày liên tiếp (streak) càng dài, thưởng càng cao! Ngoài ra, nếu chăm chỉ thì mỗi tuần bạn có thể nhận quà khủng với lệnh {prefix}weekly.
+**A:** Đừng quên dùng lệnh `{prefix}daily` mỗi ngày để nhận thưởng. Chuỗi ngày liên tiếp (streak) càng dài, thưởng càng cao! Ngoài ra, nếu chăm chỉ thì mỗi tuần bạn có thể nhận quà khủng với lệnh `{prefix}weekly`.
 
 **Q12: Hệ thống Nhiệm Vụ và Làm Việc hoạt động ra sao?**
 **A:** Đây là nguồn thu nhập cơ bản nhất:
-- Lệnh {prefix}work (đi làm): Có thể xài mỗi 5 phút, trả lương ngẫu nhiên. Có lúc sẽ gặp sếp thưởng lớn hoặc bị phạt.
-- Lệnh {prefix}task (nhiệm vụ ngày & tuần): Nhận các nhiệm vụ hàng ngày (ví dụ: câu cá 5 lần). Hệ thống sẽ tự động theo dõi và tự động trao quà khi bạn hoàn thành.
-- Lệnh {prefix}quest (nhiệm vụ tân thủ): Chuỗi nhiệm vụ 1 lần duy nhất cho người mới chơi.
+- Lệnh `{prefix}work` (đi làm): Có thể xài mỗi 5 phút, trả lương ngẫu nhiên. Có lúc sẽ gặp sếp thưởng lớn hoặc bị phạt.
+- Lệnh `{prefix}task` (nhiệm vụ ngày & tuần): Nhận các nhiệm vụ hàng ngày (ví dụ: câu cá 5 lần). Hệ thống sẽ tự động theo dõi và tự động trao quà khi bạn hoàn thành.
+- Lệnh `{prefix}quest` (nhiệm vụ tân thủ): Chuỗi nhiệm vụ 1 lần duy nhất cho người mới chơi.
 
-**Q13: Nông trại ({prefix}farm) và Máy Chế Biến ({prefix}machine) có gì đặc biệt?**
-**A:** Bạn có thể mua hạt giống ({prefix}farmshop) và trồng bằng ({prefix}farm). Có **7 loại cây trồng**:
+**Q13: Nông trại (`{prefix}farm`) và Máy Chế Biến (`{prefix}machine`) có gì đặc biệt?**
+**A:** Bạn có thể mua hạt giống (`{prefix}farmshop`) và trồng bằng (`{prefix}farm`). Có **7 loại cây trồng**:
 - 🌾 Lúa Mì: 30 phút | 🥔 Khoai Tây: 1 tiếng (20% được x2 sản lượng) | 🍅 Cà Chua: 3 tiếng
 - 🍓 Dâu Tây: 6 tiếng | 🎃 Bí Ngô: 8 tiếng | 🌻 Hướng Dương: 12 tiếng | ⭐ Ngôi Sao: 24 tiếng
-Thu hoạch xong, bán ngay trong {prefix}bag hoặc mang vào **Máy Chế Biến ({prefix}machine)** để tăng giá trị giao thông!
+Thu hoạch xong, bán ngay trong `{prefix}bag` hoặc mang vào **Máy Chế Biến (`{prefix}machine`)** để tăng giá trị giao thông!
 
 Máy Chế Biến gồm 3 loại:
 - 🍺 **Thùng Ụ Rượu (Keg)**: Lúa Mì → Bia (x3), Dâu Tây → Rượu Dâu (x3.5), Ngôi Sao → Linh Tửu (x5)
 - 🪫 **Máy Làm Mứt (Jar)**: Cà Chua → Mứt Cà Chua (x2.5), Bí Ngô → Mứt Bí Ngô (x2.5)
 - 🔥 **Lò Rèn (Furnace)**: Quặng + Than → Phôi Kim Loại (x4~x5)
-Mỗi loại máy chỉ chạy 1 recipe một lúc và mất thời gian tương đương trồng cây. Dùng nút bấm trong {prefix}machine hoặc lệnh {prefix}craft để bỏ nguyên liệu vào.
+Mỗi loại máy chỉ chạy 1 recipe một lúc và mất thời gian tương đương trồng cây. Dùng nút bấm trong `{prefix}machine` hoặc lệnh `{prefix}craft` để bỏ nguyên liệu vào.
 
-**Q14: Chặt Cây ({prefix}chop) và Đào Mỏ ({prefix}mine) hoạt động thế nào?**
+**Q14: Chặt Cây (`{prefix}chop`) và Đào Mỏ (`{prefix}mine`) hoạt động thế nào?**
 **A:** Tốn Thể lực (Stamina) cho mỗi lần thực hiện. Thể lực tối đa 100, tự hồi 1 điểm mỗi 18 giây.
-- Chặt cây ({prefix}chop): Thu thập gỗ từ Que Củi → Gỗ Thường → Gỗ Cứng → Nhựa Thông → Nhựa Cây. Riêu cấp cao càng có nhiều cơ hội ra loại hiếm hơn.
-- Đào mỏ ({prefix}mine): Thu thập Đá → Than → Quặng Đồng → Quặng Sắt → Quặng Vàng → Kim Cương. Cuốc cấp cao cho phép ra Kim Cương.
-Cả hai đều có thể nâng cấp nông cụ lên tới Lv4 (Đ Vàng) bằng lệnh {prefix}upgrade!
+- Chặt cây (`{prefix}chop`): Thu thập gỗ từ Que Củi → Gỗ Thường → Gỗ Cứng → Nhựa Thông → Nhựa Cây. Riêu cấp cao càng có nhiều cơ hội ra loại hiếm hơn.
+- Đào mỏ (`{prefix}mine`): Thu thập Đá → Than → Quặng Đồng → Quặng Sắt → Quặng Vàng → Kim Cương. Cuốc cấp cao cho phép ra Kim Cương.
+Cả hai đều có thể nâng cấp nông cụ lên tới Lv4 (Đ Vàng) bằng lệnh `{prefix}upgrade`!
 
-**Q15: Câu cá ({prefix}fish) cần lưu ý điều gì?**
-**A:** Mỗi lần thả cần ({prefix}fish) tốn 3 Thể lực. Khi cá cắn câu, bạn phải ấn nút "🎣 Kéo Cần!" trong vòng 4.5 giâ{prefix}
+**Q15: Câu cá (`{prefix}fish`) cần lưu ý điều gì?**
+**A:** Mỗi lần thả cần (`{prefix}fish`) tốn 3 Thể lực. Khi cá cắn câu, bạn phải ấn nút "🎣 Kéo Cần!" trong vòng 4.5 giây!
 Có **8 loại cá** từ Rác → Cá Chép → Cá Ngừ → Cá Hồi → Cá Nóc → Mực → Bạch Tuộc → Cá Huyền Thoại. Cại cần cấp cao hơn (Lv2~Lv4) tăng tỉ lệ cá hiếm. **Perfect Catch** (phản xạ trong 2 giây) còn kích hoạt bơ x2 tỉ lệ Bch Tuộc và Cá Huyền Thoại!
-Nâng cấp Cần Câu bằng lệnh {prefix}upgrade. Cần Vàng (Lv4) đặc biệt cần Phiôi Vàng + Bạch Tuộc + Cá Huyền Thoại.
+Nâng cấp Cần Câu bằng lệnh `{prefix}upgrade`. Cần Vàng (Lv4) đặc biệt cần Phiôi Vàng + Bạch Tuộc + Cá Huyền Thoại.
 - "Perfect Catch": Nếu bạn phản xạ kéo cần dưới 2 giây, tỉ lệ xuất hiện Mực và Cá Huyền Thoại sẽ được nhân đôi (x2)!
 
 **Q16: Làm sao để Nâng Cấp công cụ và Chế Tạo (Crafting)?**
-**A:** Khi thu thập đủ gỗ, đá, quặng... bạn có thể dùng {prefix}recipe để xem các Công thức chế tạo.
-Sau đó, dùng lệnh {prefix}upgrade để nâng cấp Cuốc, Cần Câu, hoặc mở rộng Nông Trại. Công cụ cấp cao (Đồng, Sắt) sẽ giúp bạn khai thác được nhiều nguyên liệu quý hiếm hơn, đồng thời có tỷ lệ rớt x2 vật phẩm!
+**A:** Khi thu thập đủ gỗ, đá, quặng... bạn có thể dùng `{prefix}recipe` để xem các Công thức chế tạo.
+Sau đó, dùng lệnh `{prefix}upgrade` để nâng cấp Cuốc, Cần Câu, hoặc mở rộng Nông Trại. Công cụ cấp cao (Đồng, Sắt) sẽ giúp bạn khai thác được nhiều nguyên liệu quý hiếm hơn, đồng thời có tỷ lệ rớt x2 vật phẩm!
 
 **Q17: Các mini-game Casino chơi như thế nào?**
 **A:** Dành cho những ai thích rủi ro:
-- Lắc Tài Xỉu ({prefix}tx), Bầu Cua ({prefix}baucua), Đổ xúc xắc ({prefix}dice), Xúc xắc nhóm ({prefix}md).
-- Vòng Quay ({prefix}wheel), Máy xẻng ({prefix}slots), Tàu bay ({prefix}crash).
-- Đua Vịt ({prefix}betvit): Đua mỗi 4h một lần.
-- Xổ Số ({prefix}xoso): Xổ 18h mỗi ngày. Dùng "{prefix}xoso mua" để tậu vé!
-- Lật xu ({prefix}cf), Úp cốc ({prefix}cups), Cò quay sinh tử ({prefix}roulette).
+- Lắc Tài Xỉu (`{prefix}tx`), Bầu Cua (`{prefix}baucua`), Đổ xúc xắc (`{prefix}dice`), Xúc xắc nhóm (`{prefix}md`).
+- Vòng Quay (`{prefix}wheel`), Máy xẻng (`{prefix}slots`), Tàu bay (`{prefix}crash`).
+- Đua Vịt (`{prefix}betvit`): Đua mỗi 4h một lần.
+- Xổ Số (`{prefix}xoso`): Xổ 18h mỗi ngày. Dùng "`{prefix}xoso` mua" để tậu vé!
+- Lật xu (`{prefix}cf`), Úp cốc (`{prefix}cups`), Cò quay sinh tử (`{prefix}roulette`).
 Lưu ý: Nếu nợ quá hạn ngân hàng, bạn sẽ bị cấm vào Casino.
 
-**Q18: Hệ thống Ngân hàng và Vay Nợ ({prefix}vayno) ra sao?**
-**A:** Nếu hết vốn, hãy gõ {prefix}vayno <số_tiền>. Hạn mức vay tối đa bằng 50% tổng điểm tích lũy của bạn. Nợ sẽ tự sinh lãi mỗi ngày. Nếu không trả nợ ({prefix}trano) và để số dư tài khoản về âm liên tục, tài khoản sẽ bị Khóa/Phong Tỏa cho tới khi nộp đủ tiền.
+**Q18: Hệ thống Ngân hàng và Vay Nợ (`{prefix}vayno`) ra sao?**
+**A:** Nếu hết vốn, hãy gõ `{prefix}vayno` <số_tiền>. Hạn mức vay tối đa bằng 50% tổng điểm tích lũy của bạn. Nợ sẽ tự sinh lãi mỗi ngày. Nếu không trả nợ (`{prefix}trano`) và để số dư tài khoản về âm liên tục, tài khoản sẽ bị Khóa/Phong Tỏa cho tới khi nộp đủ tiền.
 
 
 ### Phần 4: Chợ Đêm & Tù Tội (Tương Tác Xã Hội)
 
-**Q19: Chợ Đêm ({prefix}choden) khác gì với Cửa Hàng thường ({prefix}shop)?**
-**A:** {prefix}shop dùng để mua vật phẩm sinh tồn, nhẫn, hạt giống, quà tặng...
-Còn {prefix}choden là nơi bán các Thẻ Bài hắc ám chuyên dùng để "troll" và hãm hại người khác. Hàng ở Chợ Đêm bán giới hạn mỗi ngày. Để mua, dùng lệnh {prefix}ebuy <id>.
+**Q19: Chợ Đêm (`{prefix}choden`) khác gì với Cửa Hàng thường (`{prefix}shop`)?**
+**A:** `{prefix}shop` dùng để mua vật phẩm sinh tồn, nhẫn, hạt giống, quà tặng...
+Còn `{prefix}choden` là nơi bán các Thẻ Bài hắc ám chuyên dùng để "troll" và hãm hại người khác. Hàng ở Chợ Đêm bán giới hạn mỗi ngày. Để mua, dùng lệnh `{prefix}ebuy` <id>.
 
 **Q20: Vật phẩm Chợ Đêm có các tác dụng cụ thể là gì?**
 **A:** Có tổng cộng 10 thẻ bài sát phạt bao gồm:
@@ -139,40 +139,40 @@ Còn {prefix}choden là nơi bán các Thẻ Bài hắc ám chuyên dùng để 
 **Q21: Chuồng Chó (Nhà Tù) hoạt động thế nào? Làm sao để thoát?**
 **A:** Nếu bị ai đó dùng Thẻ Bỏ Tù (chợ đen), bạn sẽ bị tống vào Chuồng Chó (bị Mute, không thể chat). Hệ thống sẽ yêu cầu một số lần "lao động công ích" nhất định.
 Để thoát ra, có các cách sau:
-1. Làm việc khổ sai: Dùng lệnh {prefix}laudon (Lau dọn), {prefix}sua (Toán), {prefix}nhatxuong (Nhặt xương) liên tục trong kênh tù. Mỗi lần thực hiện thành công sẽ giảm đi 1 điểm phạt. Hết điểm phạt bạn sẽ được tự do.
-2. Chơi liều (Minigame Tù): Đánh tài xỉu bằng số điểm phạt ({prefix}lcuoc) hoặc Cố gắng vượt ngục ({prefix}lvuotnguc) với tỉ lệ 5% thành công thoát ngay lập tức, nhưng 95% thất bại sẽ bị nhân 3 án phạt.
-3. Nhờ vả: Người khác có thể dùng {prefix}choccho hoặc {prefix}choan để tương tác với bạn, hoặc dùng lệnh {prefix}baolanh trả tiền chuộc thân cho bạn ngay lập tức (không cần làm việc)!
-Admin cũng có thể dùng Thẻ Đặc Xá ({prefix}thatu) để thả bạn ra vô điều kiện.
+1. Làm việc khổ sai: Dùng lệnh `{prefix}laudon` (Lau dọn), `{prefix}sua` (Toán), `{prefix}nhatxuong` (Nhặt xương) liên tục trong kênh tù. Mỗi lần thực hiện thành công sẽ giảm đi 1 điểm phạt. Hết điểm phạt bạn sẽ được tự do.
+2. Chơi liều (Minigame Tù): Đánh tài xỉu bằng số điểm phạt (`{prefix}lcuoc`) hoặc Cố gắng vượt ngục (`{prefix}lvuotnguc`) với tỉ lệ 5% thành công thoát ngay lập tức, nhưng 95% thất bại sẽ bị nhân 3 án phạt.
+3. Nhờ vả: Người khác có thể dùng `{prefix}choccho` hoặc `{prefix}choan` để tương tác với bạn, hoặc dùng lệnh `{prefix}baolanh` trả tiền chuộc thân cho bạn ngay lập tức (không cần làm việc)!
+Admin cũng có thể dùng Thẻ Đặc Xá (`{prefix}thatu`) để thả bạn ra vô điều kiện.
 
 
 ### Phần 5: Tình Yêu & Gia Đình (Gắn kết)
 
 **Q22: Hệ thống Tình Yêu (Marriage) là gì và làm sao để kết hôn?**
-**A:** Bạn có thể cầu hôn bằng lệnh {prefix}marry @user <id_nhẫn> (Nhẫn mua trong {prefix}shop). Nếu được đồng ý, hai bạn sẽ thành vợ chồng và mở khóa Profile Tình Yêu! Xem profile bằng lệnh {prefix}marry.
+**A:** Bạn có thể cầu hôn bằng lệnh `{prefix}marry` @user <id_nhẫn> (Nhẫn mua trong `{prefix}shop`). Nếu được đồng ý, hai bạn sẽ thành vợ chồng và mở khóa Profile Tình Yêu! Xem profile bằng lệnh `{prefix}marry`.
 
 **Q23: Điểm Thân Mật (DTM) là gì và làm sao để cày DTM?**
 **A:** DTM là chỉ số tình cảm của vợ chồng. Cày bằng cách:
-1. Dùng lệnh hành động ({prefix}hug, {prefix}kiss, {prefix}poke...) với đối phương.
-2. Làm Nhiệm vụ Cặp đôi ({prefix}coupletask) mỗi ngày (+100 DTM).
-3. Tặng đồ ({prefix}gift <id_quà>): DTM tăng theo giá trị món quà bạn mua trong {prefix}shop.
-(Lưu ý: Đừng nhầm lẫn DTM với Pet EXP. DTM là của cặp đôi, Pet EXP là của Thú cưng. Pet EXP sẽ tăng gấp đôi lượng DTM khi bạn tương tác, ngoài ra cày việc {prefix}work và {prefix}task cũng tăng Pet EXP).
+1. Dùng lệnh hành động (`{prefix}hug`, `{prefix}kiss`, `{prefix}poke`...) với đối phương.
+2. Làm Nhiệm vụ Cặp đôi (`{prefix}coupletask`) mỗi ngày (+100 DTM).
+3. Tặng đồ (`{prefix}gift` <id_quà>): DTM tăng theo giá trị món quà bạn mua trong `{prefix}shop`.
+(Lưu ý: Đừng nhầm lẫn DTM với Pet EXP. DTM là của cặp đôi, Pet EXP là của Thú cưng. Pet EXP sẽ tăng gấp đôi lượng DTM khi bạn tương tác, ngoài ra cày việc `{prefix}work` và `{prefix}task` cũng tăng Pet EXP).
 
 **Q24: Nhẫn kết hôn, Thú Cưng hoạt động như thế nào và mỗi loài có kỹ năng gì?**
-**A:** Nhẫn cưới xịn (mua trong {prefix}shop) sẽ tăng % DTM nhận được và giảm Cooldown của các lệnh hành động! Đổi nhẫn cao hơn bằng {prefix}upgradering.
-Khi cày đủ 200 DTM, hai bạn có thể nhận nuôi thú cưng ({prefix}adopt). Thú cưng sẽ có mức Kinh Nghiệm (Pet EXP) riêng biệt, cấp càng cao hiệu quả càng mạnh.
-Cách kiếm EXP: Nhận EXP khi dùng lệnh tương tác (ôm, hôn...), làm nhiệm vụ ({prefix}task) hoặc đi làm chung ({prefix}work).
+**A:** Nhẫn cưới xịn (mua trong `{prefix}shop`) sẽ tăng % DTM nhận được và giảm Cooldown của các lệnh hành động! Đổi nhẫn cao hơn bằng `{prefix}upgradering`.
+Khi cày đủ 200 DTM, hai bạn có thể nhận nuôi thú cưng (`{prefix}adopt`). Thú cưng sẽ có mức Kinh Nghiệm (Pet EXP) riêng biệt, cấp càng cao hiệu quả càng mạnh.
+Cách kiếm EXP: Nhận EXP khi dùng lệnh tương tác (ôm, hôn...), làm nhiệm vụ (`{prefix}task`) hoặc đi làm chung (`{prefix}work`).
 Hệ thống thú cưng bao gồm 8 loài với 8 kỹ năng ĐỘC QUYỀN:
 - 🐶 Chó (Vui Vẻ): Tăng DTM nhận được khi tương tác.
 - 🐱 Mèo (Linh Hoạt): Giảm thời gian chờ (Cooldown) của các lệnh hành động.
 - 🦊 Cáo (Ranh Mãnh): Có tỷ lệ gây Bạo Kích (x2 DTM) mỗi khi tương tác.
-- 🐺 Sói (Kiên Trì): Tăng điểm thưởng khi hoàn thành Nhiệm Vụ Cặp Đôi ({prefix}coupletask).
+- 🐺 Sói (Kiên Trì): Tăng điểm thưởng khi hoàn thành Nhiệm Vụ Cặp Đôi (`{prefix}coupletask`).
 - 🐧 Cánh Cụt (Bình Tĩnh): Giảm tỷ lệ đối phương quạu khi bị chọc ghẹo, và thưởng thêm DTM.
 - 🐰 Thỏ (Nhanh Nhẹn): Có tỷ lệ Hồi chiêu ngay lập tức (Reset CD) sau khi hành động!
-- 🐻 Gấu (Ấm Áp): Tăng DTM nhận được khi tặng quà cho nhau ({prefix}gift).
+- 🐻 Gấu (Ấm Áp): Tăng DTM nhận được khi tặng quà cho nhau (`{prefix}gift`).
 - 🐉 Rồng (Uy Cực): Kỹ năng toàn năng, buff mọi chỉ số ở mức độ trung bình.
-(Lưu ý: Bạn có thể đổi sang Thú cưng khác bằng lệnh {prefix}adopt <thú_mới>, thú cũ sẽ ra đi và EXP thú cưng sẽ bị reset về 0).
+(Lưu ý: Bạn có thể đổi sang Thú cưng khác bằng lệnh `{prefix}adopt` <thú_mới>, thú cũ sẽ ra đi và EXP thú cưng sẽ bị reset về 0).
 
 **Q25: Cài ảnh, Lời hứa & Ly hôn ra sao?**
-**A:** Dùng {prefix}setimage <link_ảnh> để cài hình kỷ niệm ở cuối Profile.
-Dùng {prefix}promise <nội_dung> để khắc lời thề.
-Tình cảm rạn nứt? Bạn có thể đơn phương ly hôn bất cứ lúc nào bằng {prefix}divorce (Lưu ý: Mất sạch DTM và thú cưng!). Hệ thống cũng sẽ tự ly hôn nếu 2 bạn không tương tác trong 3 ngày.
+**A:** Dùng `{prefix}setimage` <link_ảnh> để cài hình kỷ niệm ở cuối Profile.
+Dùng `{prefix}promise` <nội_dung> để khắc lời thề.
+Tình cảm rạn nứt? Bạn có thể đơn phương ly hôn bất cứ lúc nào bằng `{prefix}divorce` (Lưu ý: Mất sạch DTM và thú cưng!). Hệ thống cũng sẽ tự ly hôn nếu 2 bạn không tương tác trong 3 ngày.
