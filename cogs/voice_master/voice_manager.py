@@ -19,7 +19,7 @@ import asyncpg
 import discord
 from discord.ext import commands
 
-from .config import STATIC_VOICE_PERMS
+from .config import STATIC_VOICE_PERMS, VOICE_CATEGORY_ID, JOIN_TO_CREATE_CHANNEL_ID
 
 log = logging.getLogger("VoiceMaster")
 
@@ -119,35 +119,46 @@ class RenameModal(discord.ui.Modal, title="Đổi tên phòng"):
         if not new_name:
             await interaction.response.send_message("❌ Tên phòng không được để trống!", ephemeral=True)
             return
-        await self.channel.edit(name=new_name)
-        await interaction.response.send_message(f"✅ Đã đổi tên phòng thành: **{new_name}**", ephemeral=True)
+            
+        try:
+            await self.channel.edit(name=new_name)
+            await interaction.response.send_message(f"✅ Đã đổi tên phòng thành: **{new_name}**", ephemeral=True)
+        except discord.errors.HTTPException as e:
+            if e.status == 429:
+                await interaction.response.send_message("❌ **Discord Rate Limit:** Bạn đổi tên phòng quá nhanh! Hãy đợi khoảng 10 phút rồi thử lại nhé (Discord chỉ cho phép đổi tên 2 lần/10 phút).", ephemeral=True)
+            else:
+                await interaction.response.send_message(f"❌ Lỗi khi đổi tên: {e}", ephemeral=True)
 
 
 # =============================================================================
 # UI: Select menu chuyển chủ
 # =============================================================================
 
-class TransferSelect(discord.ui.Select):
-    def __init__(self, channel: discord.VoiceChannel, members: list, bot: commands.Bot):
+class TransferUserSelect(discord.ui.UserSelect):
+    def __init__(self, channel: discord.VoiceChannel, bot: commands.Bot):
+        super().__init__(placeholder="Chọn thành viên để chuyển quyền...")
         self.channel = channel
         self.bot = bot
-        options = [
-            discord.SelectOption(label=m.display_name, value=str(m.id), emoji="👑")
-            for m in members[:25]
-        ]
-        super().__init__(placeholder="Chọn thành viên...", options=options)
 
     async def callback(self, interaction: discord.Interaction):
-        new_owner_id = int(self.values[0])
+        new_owner = self.values[0]
+        
+        # Kiểm tra xem người này có đang ở trong kênh không
+        if new_owner not in self.channel.members:
+            await interaction.response.send_message("❌ Người này không có mặt trong phòng của bạn!", ephemeral=True)
+            return
+            
+        if new_owner.id == interaction.user.id:
+            await interaction.response.send_message("❌ Bạn đang là chủ phòng rồi mà!", ephemeral=True)
+            return
+            
         pool = getattr(self.bot, "db_pool", None)
         if pool:
             await pool.execute(
                 "UPDATE active_voice_channels SET owner_id = $1 WHERE channel_id = $2",
-                new_owner_id, self.channel.id
+                new_owner.id, self.channel.id
             )
-        new_owner = self.channel.guild.get_member(new_owner_id)
-        name = new_owner.display_name if new_owner else f"<@{new_owner_id}>"
-        await interaction.response.send_message(f"👑 Đã chuyển quyền chủ phòng cho **{name}**!", ephemeral=True)
+        await interaction.response.send_message(f"👑 Đã chuyển quyền chủ phòng cho **{new_owner.display_name}**!", ephemeral=True)
 
 
 # =============================================================================
@@ -192,57 +203,45 @@ class VoiceControlView(discord.ui.View):
             )
         return has_perm
 
-    @discord.ui.button(label="🔒 Khóa", style=discord.ButtonStyle.danger, custom_id="vm_lock", row=0)
-    async def btn_lock(self, interaction: discord.Interaction, button: discord.ui.Button):
-        if not await self._check_owner(interaction):
-            return
-        if not await self._check_action_perm(interaction, "can_lock"):
-            return
-        if not isinstance(interaction.guild, discord.Guild):
-            return
+    @discord.ui.button(label="🔒 Khóa/Mở", style=discord.ButtonStyle.danger, custom_id="vm_lock", row=0)
+    async def btn_toggle_lock(self, interaction: discord.Interaction, button: discord.ui.Button):
+        if not await self._check_owner(interaction): return
+        if not await self._check_action_perm(interaction, "can_lock"): return
+        if not isinstance(interaction.guild, discord.Guild): return
+        
         overwrite = self.channel.overwrites_for(interaction.guild.default_role)
-        overwrite.connect = False
+        # Nếu đang Khóa (False) thì Mở (None), ngược lại thì Khóa (False)
+        if overwrite.connect is False:
+            overwrite.connect = None
+            msg = "🔓 Phòng đã được **mở khóa**!"
+            button.style = discord.ButtonStyle.danger
+        else:
+            overwrite.connect = False
+            msg = "🔒 Phòng đã bị **khóa**! Không ai vào thêm được nữa."
+            button.style = discord.ButtonStyle.success
+            
         await self.channel.set_permissions(interaction.guild.default_role, overwrite=overwrite)
-        await interaction.response.send_message("🔒 Phòng đã bị **khóa**! Không ai vào thêm được nữa.", ephemeral=True)
+        await interaction.response.edit_message(view=self)
+        await interaction.followup.send(msg, ephemeral=True)
 
-    @discord.ui.button(label="🔓 Mở khóa", style=discord.ButtonStyle.success, custom_id="vm_unlock", row=0)
-    async def btn_unlock(self, interaction: discord.Interaction, button: discord.ui.Button):
-        if not await self._check_owner(interaction):
-            return
-        if not await self._check_action_perm(interaction, "can_lock"):
-            return
-        if not isinstance(interaction.guild, discord.Guild):
-            return
+    @discord.ui.button(label="👻 Ẩn/Hiện", style=discord.ButtonStyle.secondary, custom_id="vm_hide", row=0)
+    async def btn_toggle_hide(self, interaction: discord.Interaction, button: discord.ui.Button):
+        if not await self._check_owner(interaction): return
+        if not await self._check_action_perm(interaction, "can_hide"): return
+        if not isinstance(interaction.guild, discord.Guild): return
+        
         overwrite = self.channel.overwrites_for(interaction.guild.default_role)
-        overwrite.connect = None
+        # Nếu đang Ẩn (False) thì Hiện (None), ngược lại thì Ẩn (False)
+        if overwrite.view_channel is False:
+            overwrite.view_channel = None
+            msg = "👁️ Phòng đã được **hiển thị** lại!"
+        else:
+            overwrite.view_channel = False
+            msg = "👻 Phòng đã bị **ẩn**! Chỉ thành viên bên trong mới thấy."
+            
         await self.channel.set_permissions(interaction.guild.default_role, overwrite=overwrite)
-        await interaction.response.send_message("🔓 Phòng đã được **mở khóa**!", ephemeral=True)
-
-    @discord.ui.button(label="👻 Ẩn", style=discord.ButtonStyle.secondary, custom_id="vm_hide", row=0)
-    async def btn_hide(self, interaction: discord.Interaction, button: discord.ui.Button):
-        if not await self._check_owner(interaction):
-            return
-        if not await self._check_action_perm(interaction, "can_hide"):
-            return
-        if not isinstance(interaction.guild, discord.Guild):
-            return
-        overwrite = self.channel.overwrites_for(interaction.guild.default_role)
-        overwrite.view_channel = False
-        await self.channel.set_permissions(interaction.guild.default_role, overwrite=overwrite)
-        await interaction.response.send_message("👻 Phòng đã bị **ẩn**! Chỉ thành viên bên trong mới thấy.", ephemeral=True)
-
-    @discord.ui.button(label="👁️ Hiện", style=discord.ButtonStyle.secondary, custom_id="vm_show", row=0)
-    async def btn_show(self, interaction: discord.Interaction, button: discord.ui.Button):
-        if not await self._check_owner(interaction):
-            return
-        if not await self._check_action_perm(interaction, "can_hide"):
-            return
-        if not isinstance(interaction.guild, discord.Guild):
-            return
-        overwrite = self.channel.overwrites_for(interaction.guild.default_role)
-        overwrite.view_channel = None
-        await self.channel.set_permissions(interaction.guild.default_role, overwrite=overwrite)
-        await interaction.response.send_message("👁️ Phòng đã được **hiển thị** lại!", ephemeral=True)
+        await interaction.response.edit_message(view=self)
+        await interaction.followup.send(msg, ephemeral=True)
 
     @discord.ui.button(label="👥 Giới hạn", style=discord.ButtonStyle.primary, custom_id="vm_limit", row=1)
     async def btn_limit(self, interaction: discord.Interaction, button: discord.ui.Button):
@@ -266,13 +265,8 @@ class VoiceControlView(discord.ui.View):
             return
         if not await self._check_action_perm(interaction, "can_transfer"):
             return
-        members = [m for m in self.channel.members if m.id != interaction.user.id and not m.bot]
-        if not members:
-            await interaction.response.send_message(
-                "❌ Không có ai khác trong phòng để chuyển quyền chủ!", ephemeral=True
-            )
-            return
-        select = TransferSelect(self.channel, members, self.bot)
+            
+        select = TransferUserSelect(self.channel, self.bot)
         view = discord.ui.View(timeout=30)
         view.add_item(select)
         await interaction.response.send_message("👑 Chọn người nhận quyền chủ phòng:", view=view, ephemeral=True)
@@ -332,10 +326,13 @@ class VoiceManagerCog(commands.Cog):
         # ── XỬ LÝ JOIN ──────────────────────────────────────────────
         if after.channel is not None:
             setup = await _get_setup(self.pool, guild.id)
-            if setup and after.channel.id == setup["join_to_create_channel_id"]:
-                category = None
-                if setup["category_id"]:
-                    category = guild.get_channel(setup["category_id"])
+            
+            # Ưu tiên cấu hình tĩnh trong config.py, nếu là 0 thì dùng cấu hình trong Database
+            jtc_id = JOIN_TO_CREATE_CHANNEL_ID if JOIN_TO_CREATE_CHANNEL_ID != 0 else (setup["join_to_create_channel_id"] if setup else 0)
+            
+            if jtc_id and after.channel.id == jtc_id:
+                cat_id = VOICE_CATEGORY_ID if VOICE_CATEGORY_ID != 0 else (setup["category_id"] if setup else None)
+                category = guild.get_channel(cat_id) if cat_id else None
 
                 channel_name = f"{member.display_name}'s Room"
                 try:
@@ -344,6 +341,11 @@ class VoiceManagerCog(commands.Cog):
                         category=category,
                         reason=f"VoiceMaster: Tạo phòng cho {member}",
                     )
+                    
+                    # Nếu muốn ép nó xuống dưới cùng, có thể edit position:
+                    if category:
+                        # Vị trí bằng tổng số kênh trong category
+                        await new_channel.edit(position=len(category.channels))
                     await member.move_to(new_channel, reason="VoiceMaster: Di chuyển sang phòng mới")
 
                     await self.pool.execute(
