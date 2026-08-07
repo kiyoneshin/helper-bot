@@ -27,7 +27,9 @@ from .lootbox_config import (
     TIER_NAMES, TIER_EMOJIS, TIER_COLORS, TIER_PRICES,
     LB_GODLY,
     parse_tier, roll_lootbox, roll_godly_bonus,
+    PRAY_COOLDOWN_MINUTES,
     LB_BUY_COOLDOWN_HOURS,
+    LUCK_MAX_CAP,
 )
 from .lootbox_ui import (
     build_open_result_embed,
@@ -156,7 +158,7 @@ class LootboxCog(commands.Cog):
     # ─────────────────────────────────────────────────────────────────────
     @commands.hybrid_command(name="pray", aliases=["caunguyen", "prayer"])
     async def pray_cmd(self, ctx: commands.Context):
-        """🙏 Cầu nguyện để tăng Luck (+1 mỗi 30 phút). Luck giúp tăng tỉ lệ drop lootbox."""
+        """🙏 Cầu nguyện để tăng Luck. Luck giúp tăng tỉ lệ drop lootbox."""
         uid = str(ctx.author.id)
         await get_or_create_event_profile(self.bot, uid)
 
@@ -177,8 +179,8 @@ class LootboxCog(commands.Cog):
             if last_pray.tzinfo is None:
                 last_pray = last_pray.replace(tzinfo=timezone.utc)
             elapsed = now - last_pray
-            if elapsed < timedelta(minutes=30):
-                next_pray = last_pray + timedelta(minutes=30)
+            if elapsed < timedelta(minutes=PRAY_COOLDOWN_MINUTES):
+                next_pray = last_pray + timedelta(minutes=PRAY_COOLDOWN_MINUTES)
                 ts = int(next_pray.timestamp())
                 embed = discord.Embed(
                     title="🙏 Cầu Nguyện",
@@ -195,15 +197,17 @@ class LootboxCog(commands.Cog):
             new_luck, now, uid,
         )
 
-        bar_filled = min(new_luck, 500)
-        bar = "🟡" * (bar_filled // 50) + "⚫" * (10 - bar_filled // 50)
+        bar_filled = min(new_luck, LUCK_MAX_CAP)
+        dots = LUCK_MAX_CAP // 10
+        filled_dots = bar_filled // dots
+        bar = "🟡" * filled_dots + "⚫" * (10 - filled_dots)
         embed = discord.Embed(
             title="🙏 Cầu Nguyện Thành Công!",
             description=(
-                f"✨ **+1 Luck** — Tổng: **{new_luck}** / 500\n"
-                f"`{bar}` {new_luck}/500\n\n"
+                f"✨ **+1 Luck** — Tổng: **{new_luck}** / {LUCK_MAX_CAP}\n"
+                f"`{bar}` {new_luck}/{LUCK_MAX_CAP}\n\n"
                 f"*Luck tăng tỉ lệ drop lootbox từ fish/mine/chop và tỉ lệ nhận đồ hiếm khi mở hộp.*\n"
-                f"*Có thể cầu nguyện lại sau **30 phút**.*"
+                f"*Có thể cầu nguyện lại sau **{PRAY_COOLDOWN_MINUTES} phút**.*"
             ),
             color=0xffd700,
         )

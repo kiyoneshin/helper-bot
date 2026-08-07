@@ -175,8 +175,11 @@ ACTIVITY_DROP_CHANCES: dict[str, dict[int, float]] = {
 }
 
 # Luck bonus: mỗi lần action, roll thêm x% trong [a, b] per luck_point
-LUCK_BONUS_RANGE_PER_POINT: tuple[float, float] = (0.01, 0.05)  # 0.01% đến 0.05% per luck
-LUCK_MAX_CAP: int = 500  # tối đa 500 luck
+LUCK_BONUS_RANGE_PER_POINT: tuple[float, float] = (0.003, 0.015)  # giảm buff trên mỗi điểm luck
+LUCK_MAX_CAP: int = 1500  # tối đa 1500 luck
+
+# Cooldown cầu nguyện: 10 phút
+PRAY_COOLDOWN_MINUTES: int = 10
 
 # Cooldown mua lootbox từ shop: 6 giờ / lần
 LB_BUY_COOLDOWN_HOURS: int = 6

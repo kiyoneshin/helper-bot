@@ -379,7 +379,7 @@ class InventorySelect(discord.ui.Select):
                 label="Quà Tặng",
                 value="gift",
                 emoji="🎁",
-                description=f"Quà để tặng người thương ({self.view.bot.custom_prefix}gift)",
+                description="Quà để tặng người thương (lệnh gift)",
                 default=(current == "gift"),
             ),
             discord.SelectOption(

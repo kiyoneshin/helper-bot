@@ -122,7 +122,7 @@ class ShopSelect(discord.ui.Select):
                 label="Quà Tặng",
                 value="gift",
                 emoji="🎁",
-                description=f"Quà để tặng người thương ({self.view.bot.custom_prefix}gift)",
+                description="Quà để tặng người thương (lệnh gift)",
                 default=(current_category == "gift"),
             ),
             discord.SelectOption(
@@ -223,20 +223,20 @@ async def _buy_event_item(
                     cd_data = json.loads(cd_data)
                 cd_data = cd_data or {}
                 
-                lb_id = str(item["id"])
-                last_buy_ts = cd_data.get(lb_id)
+                last_buy_ts = max(cd_data.values()) if cd_data else None
                 now = datetime.now(timezone.utc)
                 if last_buy_ts:
                     last_buy = datetime.fromtimestamp(last_buy_ts, tz=timezone.utc)
                     from cogs.events.lootbox.lootbox_config import LB_BUY_COOLDOWN_HOURS
                     if now < last_buy + timedelta(hours=LB_BUY_COOLDOWN_HOURS):
                         next_time = last_buy + timedelta(hours=LB_BUY_COOLDOWN_HOURS)
-                        await ctx.send(f"❌ Bạn đã mua loại hộp này gần đây rồi. Hãy quay lại vào <t:{int(next_time.timestamp())}:R>!", delete_after=10.0)
+                        await ctx.send(f"❌ Bạn đã mua một hộp quà (bất kỳ) gần đây rồi. Mỗi {LB_BUY_COOLDOWN_HOURS} tiếng chỉ được mua 1 hộp. Hãy quay lại vào <t:{int(next_time.timestamp())}:R>!", delete_after=10.0)
                         return
                 
-                # Cập nhật cooldown
-                cd_data[lb_id] = int(now.timestamp())
-                await execute_db(bot, "UPDATE event_profiles SET lb_buy_cooldown = $1::jsonb WHERE discord_id = $2", json.dumps(cd_data), uid)
+                # Lưu lại biến để cập nhật sau khi trừ điểm thành công
+                new_cd_data = cd_data.copy()
+                # Cập nhật cooldown cho hộp này
+                new_cd_data[str(item["id"])] = int(now.timestamp())
 
         await get_or_create_event_profile(bot, uid)
         ok = await deduct_event_points(bot, uid, total)
@@ -246,6 +246,9 @@ async def _buy_event_item(
                 delete_after=5.0
             )
             return
+
+        if item["category"] == "lootbox" and 'new_cd_data' in locals():
+            await execute_db(bot, "UPDATE event_profiles SET lb_buy_cooldown = $1::jsonb WHERE discord_id = $2", json.dumps(new_cd_data), uid)
 
         # Write to inventory
         row = await fetchrow_db(bot, "SELECT inventory FROM event_profiles WHERE discord_id = $1", uid)
@@ -421,7 +424,7 @@ class ShopCog(commands.Cog):
             return
 
         # Route đến đúng handler theo category
-        if item["category"] in ["event", "ring", "gift"]:
+        if item["category"] in ["event", "ring", "gift", "lootbox"]:
             await _buy_event_item(ctx, self.bot, item, amount)
         elif item["category"] == "farm":
             await _buy_farm_item(ctx, self.bot, item, amount)

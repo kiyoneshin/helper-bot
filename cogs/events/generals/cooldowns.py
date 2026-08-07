@@ -64,7 +64,7 @@ class CooldownsCog(commands.Cog):
         # -------------------------------------------------------------
         row = await fetchrow_db(
             self.bot, 
-            "SELECT last_daily, last_weekly FROM event_profiles WHERE discord_id = $1", 
+            "SELECT last_daily, last_weekly, last_pray, lb_buy_cooldown FROM event_profiles WHERE discord_id = $1", 
             user_id
         )
         
@@ -99,10 +99,40 @@ class CooldownsCog(commands.Cog):
                 work_ready = False
                 work_str = format_timedelta(timedelta(seconds=(10 * 60) - passed))
                 
+        pray_ready = True
+        pray_str = ""
+        lb_buy_ready = True
+        lb_buy_str = ""
+        
+        if row:
+            if row.get("last_pray"):
+                lp = row["last_pray"]
+                if lp.tzinfo is None: lp = lp.replace(tzinfo=timezone.utc)
+                from cogs.events.lootbox.lootbox_config import PRAY_COOLDOWN_MINUTES
+                if now - lp < timedelta(minutes=PRAY_COOLDOWN_MINUTES):
+                    pray_ready = False
+                    pray_str = format_timedelta(timedelta(minutes=PRAY_COOLDOWN_MINUTES) - (now - lp))
+
+            if row.get("lb_buy_cooldown"):
+                import json
+                cd_data = row["lb_buy_cooldown"]
+                if isinstance(cd_data, str):
+                    cd_data = json.loads(cd_data)
+                cd_data = cd_data or {}
+                last_buy_ts = max(cd_data.values()) if cd_data else None
+                if last_buy_ts:
+                    last_buy = datetime.fromtimestamp(last_buy_ts, tz=timezone.utc)
+                    from cogs.events.lootbox.lootbox_config import LB_BUY_COOLDOWN_HOURS
+                    if now < last_buy + timedelta(hours=LB_BUY_COOLDOWN_HOURS):
+                        lb_buy_ready = False
+                        lb_buy_str = format_timedelta(timedelta(hours=LB_BUY_COOLDOWN_HOURS) - (now - last_buy))
+
         rewards_lines = [
             _format_cd(daily_ready, "daily", daily_str),
             _format_cd(weekly_ready, "weekly", weekly_str),
-            _format_cd(work_ready, "work", work_str)
+            _format_cd(work_ready, "work", work_str),
+            _format_cd(pray_ready, "pray", pray_str),
+            _format_cd(lb_buy_ready, "buy lootbox", lb_buy_str)
         ]
         
         embed.add_field(name="🎁 Rewards", value="\n".join(rewards_lines), inline=False)
