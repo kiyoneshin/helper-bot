@@ -256,6 +256,15 @@ async def init_all_tables(bot: Any) -> bool:
                 CREATE INDEX IF NOT EXISTS idx_active_voice_guild
                     ON active_voice_channels (guild_id);
             ''')
+            await conn.execute('''
+                CREATE TABLE IF NOT EXISTS voice_user_settings (
+                    discord_id   BIGINT PRIMARY KEY,
+                    channel_name VARCHAR(100),
+                    user_limit   INT     NOT NULL DEFAULT 0,
+                    is_locked    BOOLEAN NOT NULL DEFAULT FALSE,
+                    is_hidden    BOOLEAN NOT NULL DEFAULT FALSE
+                );
+            ''')
 
         log.info("🌸 Toàn bộ Database (Staff + Event + VoiceMaster) đã được khởi tạo và cấu trúc chuẩn xác!")
         return True
