@@ -19,6 +19,8 @@ import asyncpg
 import discord
 from discord.ext import commands
 
+from .config import STATIC_VOICE_PERMS
+
 log = logging.getLogger("VoiceMaster")
 
 
@@ -38,12 +40,24 @@ async def _get_active_channel(pool: asyncpg.Pool, channel_id: int):
 
 async def _check_perm(pool: asyncpg.Pool, guild_id: int, member: discord.Member, perm: str) -> bool:
     """
-    Kiểm tra xem member có quyền 'perm' không dựa vào bảng voice_role_perms.
-    perm: 'can_lock', 'can_hide', 'can_change_limit', 'can_change_name', 'can_transfer'
+    Kiểm tra xem member có quyền 'perm' không.
+    Ưu tiên 1: Kiểm tra config tĩnh (config.py).
+    Ưu tiên 2: Kiểm tra Database (bảng voice_role_perms).
     """
     role_ids = [r.id for r in member.roles]
     if not role_ids:
         return False
+        
+    # 1. Kiểm tra cấu hình tĩnh từ config.py
+    for group_name, group_data in STATIC_VOICE_PERMS.items():
+        if any(r_id in group_data["roles"] for r_id in role_ids):
+            if group_data["perms"].get(perm, False):
+                return True
+
+    # 2. Kiểm tra Database (fallback)
+    if not pool:
+        return False
+        
     rows = await pool.fetch(
         f"SELECT {perm} FROM voice_role_perms "
         f"WHERE guild_id = $1 AND role_id = ANY($2::bigint[]) "
