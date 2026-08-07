@@ -48,6 +48,7 @@ STATIC_VOICE_PERMS = {
             "can_change_limit": True,
             "can_change_name": True,
             "can_transfer": True,
+            "is_persistent": True
         }
     },
     

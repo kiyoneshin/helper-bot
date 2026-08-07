@@ -7,8 +7,9 @@ import logging
 import re
 from typing import Optional
 import asyncpg
+from datetime import datetime, timezone, timedelta
 import discord
-from discord.ext import commands
+from discord.ext import commands, tasks
 from .config import STATIC_VOICE_PERMS, VOICE_CATEGORY_ID, JOIN_TO_CREATE_CHANNEL_ID
 
 log = logging.getLogger("VoiceMaster")
@@ -419,6 +420,11 @@ def _build_control_embed(channel: discord.VoiceChannel, owner: discord.Member) -
 class VoiceManagerCog(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
+        self.monthly_sweep_loop.start() # type: ignore
+
+    async def cog_unload(self):
+        self.monthly_sweep_loop.cancel() # type: ignore
+
 
     @property
     def pool(self):
@@ -518,6 +524,24 @@ class VoiceManagerCog(commands.Cog):
                         if owner_member:
                             is_persistent = await _check_perm(self.pool, guild.id, owner_member, "is_persistent")
                             
+                        
+                        if is_persistent:
+                            is_booster = False
+                            if owner_member:
+                                booster_roles = STATIC_VOICE_PERMS.get("booster", {}).get("roles", [])
+                                is_booster = any(r.id in booster_roles for r in owner_member.roles)
+                                
+                            now_hcmc = datetime.now(timezone(timedelta(hours=7)))
+                            created_at = row.get("created_at")
+                            is_old_month = False
+                            if created_at:
+                                created_hcmc = created_at.astimezone(timezone(timedelta(hours=7)))
+                                if created_hcmc.year < now_hcmc.year or created_hcmc.month < now_hcmc.month:
+                                    is_old_month = True
+                                    
+                            if is_old_month and not is_booster:
+                                is_persistent = False
+                                
                         if is_persistent:
                             log.info(f"VM: Phòng '{ch.name}' là Kênh Cá Nhân, bỏ qua auto-delete.")
                         else:
