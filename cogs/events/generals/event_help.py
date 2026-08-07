@@ -40,7 +40,7 @@ CMD_DATA: dict[str, dict] = {
         "cooldown": None,
         "usage": "{prefix}use <id_vật_phẩm> [@mục_tiêu]",
         "examples": ["{prefix}use 12", "{prefix}use 41 @user"],
-        "note": "Bạn cần biết ID của vật phẩm (xem trong y!inv).",
+        "note": "Bạn cần biết ID của vật phẩm (xem trong {prefix}inv).",
     },
     "shop": {
         "name": "Cửa Hàng",
@@ -60,7 +60,7 @@ CMD_DATA: dict[str, dict] = {
         "cooldown": None,
         "usage": "{prefix}buy <id_vật_phẩm> [số_lượng]",
         "examples": ["{prefix}buy 1", "{prefix}buy 2 10"],
-        "note": "Bạn cần biết ID của vật phẩm (xem trong y!shop).",
+        "note": "Bạn cần biết ID của vật phẩm (xem trong {prefix}shop).",
     },
     # ── CASINO ────────────────────────────────────────────────────────────────
     "coinflip": {
@@ -121,7 +121,7 @@ CMD_DATA: dict[str, dict] = {
         "cooldown": 0,
         "usage": "{prefix}namepet <tên_thú_cưng>",
         "examples": ["{prefix}namepet Bông Tuyết", "{prefix}namepet Bé Mực"],
-        "note": "Hai bạn cần phải nhận nuôi thú cưng (y!adopt) trước khi đặt tên. Tối đa 30 ký tự.",
+        "note": "Hai bạn cần phải nhận nuôi thú cưng ({prefix}adopt) trước khi đặt tên. Tối đa 30 ký tự.",
     },
     "pet": {
         "name": "Hồ Sơ Thú Cưng",
@@ -131,7 +131,7 @@ CMD_DATA: dict[str, dict] = {
         "cooldown": 0,
         "usage": "{prefix}pet",
         "examples": ["{prefix}pet"],
-        "note": "Mỗi loại thú cưng có kỹ năng ĐỘC QUYỀN khác nhau. Nhận EXP thú cưng bằng cách đi làm (y!work), làm nhiệm vụ (y!task) hoặc dùng lệnh hành động.",
+        "note": "Mỗi loại thú cưng có kỹ năng ĐỘC QUYỀN khác nhau. Nhận EXP thú cưng bằng cách đi làm ({prefix}work), làm nhiệm vụ ({prefix}task) hoặc dùng lệnh hành động.",
     },
     "crash": {
         "name": "Crash (Tàu Bay)",
@@ -191,7 +191,7 @@ CMD_DATA: dict[str, dict] = {
         "cooldown": None,
         "usage": "{prefix}betvit <màu> <tiền>",
         "examples": ["{prefix}betvit do 50k", "{prefix}bv xanh 100k"],
-        "note": "Màu: do, xanh, vang, hong, yon. Xem tỉ lệ: `y!xemvit`. Hủy cược: `y!huybet`.",
+        "note": "Màu: do, xanh, vang, hong, yon. Xem tỉ lệ: `{prefix}xemvit`. Hủy cược: `{prefix}huybet`.",
     },
     "xoso": {
         "name": "Xổ Số",
@@ -201,7 +201,7 @@ CMD_DATA: dict[str, dict] = {
         "cooldown": None,
         "usage": "{prefix}xoso [mua|ban] [số_lượng]",
         "examples": ["{prefix}xoso", "{prefix}xoso mua 5", "{prefix}xoso ban 12"],
-        "note": "Gõ y!xoso để xem thông tin. Kết quả xổ lúc cuối ngày.",
+        "note": "Gõ {prefix}xoso để xem thông tin. Kết quả xổ lúc cuối ngày.",
     },
     "multidice": {
         "name": "Multi Dice (PvP)",
@@ -262,7 +262,7 @@ CMD_DATA: dict[str, dict] = {
         "cooldown": None,
         "usage": "{prefix}milestone",
         "examples": ["{prefix}milestone"],
-        "note": "Đạt mốc rồi dùng `y!claim` hoặc `y!nhanqua` để nhận thưởng.",
+        "note": "Đạt mốc rồi dùng `{prefix}claim` hoặc `{prefix}nhanqua` để nhận thưởng.",
     },
     "shop": {
         "name": "Cửa Hàng",
@@ -272,7 +272,7 @@ CMD_DATA: dict[str, dict] = {
         "cooldown": None,
         "usage": "{prefix}shop",
         "examples": ["{prefix}shop"],
-        "note": "Mua vật phẩm bằng lệnh `y!buy <ID> [số_lượng]`.",
+        "note": "Mua vật phẩm bằng lệnh `{prefix}buy <ID> [số_lượng]`.",
     },
     "black_market": {
         "name": "Chợ Đen",
@@ -292,7 +292,7 @@ CMD_DATA: dict[str, dict] = {
         "cooldown": None,
         "usage": "{prefix}vayno <số_tiền>",
         "examples": ["{prefix}vayno 100k"],
-        "note": "Lãi suất 1%/ngày. Trả nợ bằng `y!trano`. Vỡ nợ sẽ bị khóa tài khoản!",
+        "note": "Lãi suất 1%/ngày. Trả nợ bằng `{prefix}trano`. Vỡ nợ sẽ bị khóa tài khoản!",
     },
     # ── KHU SINH THÁI ─────────────────────────────────────────────────────────
     "farm": {
@@ -303,7 +303,7 @@ CMD_DATA: dict[str, dict] = {
         "cooldown": None,
         "usage": "{prefix}farm",
         "examples": ["{prefix}farm"],
-        "note": "Mua hạt giống bằng `y!shop`. Upgrade ô đất: `y!upgrade`.",
+        "note": "Mua hạt giống bằng `{prefix}shop`. Upgrade ô đất: `{prefix}upgrade`.",
     },
     "mine": {
         "name": "Đào Mỏ",
@@ -313,7 +313,7 @@ CMD_DATA: dict[str, dict] = {
         "cooldown": None,
         "usage": "{prefix}mine",
         "examples": ["{prefix}mine"],
-        "note": "Tốn 4 Thể Lực mỗi lần đào. Bán quặng bằng `y!inv ban`.",
+        "note": "Tốn 4 Thể Lực mỗi lần đào. Bán quặng bằng `{prefix}inv ban`.",
     },
     "fish": {
         "name": "Câu Cá",
@@ -334,7 +334,7 @@ CMD_DATA: dict[str, dict] = {
         "cooldown": None,
         "usage": "{prefix}marry [@user] [ring_id]",
         "examples": ["{prefix}marry @BanGai 31", "{prefix}kethon @Crush 32"],
-        "note": "Nhẫn ID 31-34 mua trong y!shop.",
+        "note": "Nhẫn ID 31-34 mua trong {prefix}shop.",
     },
     "divorce": {
         "name": "Ly Hôn",
@@ -374,7 +374,7 @@ CMD_DATA: dict[str, dict] = {
         "cooldown": 0,
         "usage": "{prefix}gift <@user> <id_quà>",
         "examples": ["{prefix}gift @nguoiyeu 41", "{prefix}gift 123456789 42"],
-        "note": "Quà tặng phải mua trong Cửa Hàng (y!shop mục Quà Tặng) trước khi dùng lệnh này. Mỗi món quà có lượng DTM tăng thêm riêng.",
+        "note": "Quà tặng phải mua trong Cửa Hàng ({prefix}shop mục Quà Tặng) trước khi dùng lệnh này. Mỗi món quà có lượng DTM tăng thêm riêng.",
     },
     "upgradering": {
         "name": "Nâng Cấp Nhẫn",
@@ -384,7 +384,7 @@ CMD_DATA: dict[str, dict] = {
         "cooldown": None,
         "usage": "{prefix}upgradering <ring_id>",
         "examples": ["{prefix}upgradering 33"],
-        "note": "Bạn cần mua sẵn nhẫn mới trong túi đồ (y!inv) trước.",
+        "note": "Bạn cần mua sẵn nhẫn mới trong túi đồ ({prefix}inv) trước.",
     },
     "setimage": {
         "name": "Cài Ảnh",
@@ -416,10 +416,10 @@ CMD_DATA: dict[str, dict] = {
         "examples": ["{prefix}hug @VoYeu", "{prefix}kiss @ChongYeu"],
         "note": (
             "Bao gồm các lệnh sau (có thể dùng tên tiếng Anh hoặc alias tiếng Việt):\n"
-            "- 🤜 **Bạo lực:** `y!slap` (tat), `y!punch` (dam), `y!bite` (can), `y!tickle` (choclet)\n"
-            "- 💖 **Nhẹ nhàng:** `y!poke` (choc), `y!pat` (xoadau), `y!saylove` (noiyeu, iuem, iuanh)\n"
-            "- 🤗 **Ôm ấp:** `y!hug` (om), `y!cuddle` (auyem), `y!snuggle` (nung, nũng)\n"
-            "- 💋 **Thân mật:** `y!kiss` (hon, hun), `y!lick` (liem), `y!nom` (mam), `y!fuck` (seg)\n"
+            "- 🤜 **Bạo lực:** `{prefix}slap` (tat), `{prefix}punch` (dam), `{prefix}bite` (can), `{prefix}tickle` (choclet)\n"
+            "- 💖 **Nhẹ nhàng:** `{prefix}poke` (choc), `{prefix}pat` (xoadau), `{prefix}saylove` (noiyeu, iuem, iuanh)\n"
+            "- 🤗 **Ôm ấp:** `{prefix}hug` (om), `{prefix}cuddle` (auyem), `{prefix}snuggle` (nung, nũng)\n"
+            "- 💋 **Thân mật:** `{prefix}kiss` (hon, hun), `{prefix}lick` (liem), `{prefix}nom` (mam), `{prefix}fuck` (seg)\n"
             "*(Lưu ý: Thời gian hồi chiêu và lượng DTM nhận được tùy thuộc vào độ 'thân mật' của hành động và cấp bậc Nhẫn cưới của bạn)*"
         ),
     },
@@ -441,7 +441,7 @@ CMD_DATA: dict[str, dict] = {
         "cooldown": None,
         "usage": "{prefix}ebuy <id_vật_phẩm> [số_lượng]",
         "examples": ["{prefix}ebuy 1", "{prefix}ebuy 2 5"],
-        "note": "Số lượng kho có hạn, hãy nhanh tay!",
+        "note": "Số lượng kho có hạn, hãy nhanh ta{prefix}",
     },
     "recipe": {
         "name": "Công Thức",
@@ -511,7 +511,7 @@ CMD_DATA: dict[str, dict] = {
         "cooldown": None,
         "usage": "{prefix}craft <id_máy> [số_lượng]",
         "examples": ["{prefix}craft 61 2", "{prefix}craft 63 1"],
-        "note": "Sau khi xây xong, máy sẽ nằm trong 10 slot của y!machine.",
+        "note": "Sau khi xây xong, máy sẽ nằm trong 10 slot của {prefix}machine.",
     },
     "chop": {
         "name": "Chặt Cây",

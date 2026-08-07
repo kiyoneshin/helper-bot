@@ -267,13 +267,16 @@ class EventCoreCog(commands.Cog):
                 return await ctx.send("❌ Không tìm thấy kênh đích (ID: 1533131441398091917)!")
             
         with open(faq_path, "r", encoding="utf-8") as f:
-            content = f.read()
+            content = f.read().replace("{prefix}", ctx.prefix)
             
         parts = re.split(r'(?m)^###\s+Phần', content)
         if len(parts) < 2:
             return await ctx.send("❌ Không tìm thấy các '### Phần' trong EVENT_FAQ.md")
             
-        await ctx.send(f"Đang gửi Cẩm Nang Sự Kiện vào kênh <#{channel.id}>...", ephemeral=True)
+        await ctx.send(f"Đang xóa tin nhắn cũ và gửi Cẩm Nang Sự Kiện vào kênh <#{channel.id}>...", ephemeral=True)
+        
+        if isinstance(channel, discord.TextChannel):
+            await channel.purge(limit=100)
         
         for i, part in enumerate(parts[1:], 1):
             part_content = "Phần" + part
