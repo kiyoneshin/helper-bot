@@ -175,7 +175,7 @@ class EventStatsCog(commands.Cog):
         # Nhiệm vụ
         await update_task_progress(self.bot, uid, "check_bal", 1)
 
-    @commands.hybrid_command(name="etop", aliases=["evtop", "eventtop", "eventop", "top"])
+    @commands.hybrid_command(name="etop", aliases=["evtop", "eventtop", "eventop"])
     async def etop_cmd(self, ctx: commands.Context) -> None:
         """Xem Bảng Xếp Hạng Đua Top Điểm Sự Kiện."""
         try:
