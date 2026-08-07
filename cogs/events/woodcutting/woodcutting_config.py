@@ -52,8 +52,22 @@ def get_woodcutting_display_weights(axe_level: int) -> dict[str, int]:
     weights = _WEIGHTS_BY_LEVEL.get(axe_level, _WEIGHTS_BY_LEVEL[1])
     return dict(zip(_LOOT_KEYS, weights))
 
-def get_woodcutting_loot(axe_level: int) -> tuple[str, int]:
-    weights = _WEIGHTS_BY_LEVEL.get(axe_level, _WEIGHTS_BY_LEVEL[1])
+def get_woodcutting_loot(axe_level: int, food_boosts: dict = None) -> tuple[str, int]:
+    if food_boosts is None: food_boosts = {}
+    
+    weights = list(_WEIGHTS_BY_LEVEL.get(axe_level, _WEIGHTS_BY_LEVEL[1]))
+    
+    # Cộng dồn tỉ lệ rare wood
+    rare_bonus = float(food_boosts.get("rare_wood", {}).get("value", 0))
+    all_bonus = float(food_boosts.get("all_boost", {}).get("value", 0))
+    total_bonus = rare_bonus + all_bonus
+    
+    if total_bonus > 0:
+        # Giả sử _LOOT_KEYS = ["twigs", "wood", "hardwood", "pine_resin", "sap"]
+        # hardwood là rare wood, ta tăng trọng số của nó lên (weights[2])
+        if len(weights) > 2:
+            weights[2] += int(weights[2] * total_bonus)
+            
     chosen = random.choices(_LOOT_KEYS, weights=weights, k=1)[0]
     qty = 1
     # Rìu Sắt Lv3: 20% nhân đôi Twigs/Wood; Rìu Vàng Lv4: 25%

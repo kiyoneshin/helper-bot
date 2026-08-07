@@ -92,12 +92,32 @@ async def get_and_update_stamina(bot: commands.Bot, user_id: str, channel_id: in
     current_stamina: int = int((farm_data or {}).get("stamina", MAX_STAMINA))
     last_update: int    = int((farm_data or {}).get("last_stamina_update", now))
 
+    # KIỂM TRA BOOST NẤU ĂN
+    from cogs.common.db import fetchrow_db
+    import json
+    row = await fetchrow_db(bot, "SELECT active_boosts FROM event_profiles WHERE discord_id = $1", user_id)
+    boosts = {}
+    if row:
+        try:
+            raw = row["active_boosts"]
+            boosts = json.loads(raw) if isinstance(raw, str) else raw
+        except:
+            pass
+            
+    regen_interval = STAMINA_REGEN_INTERVAL_SECONDS
+    # Check stamina_regen boost
+    if "stamina_regen" in boosts and boosts["stamina_regen"].get("expires_at", 0) > now:
+        val = float(boosts["stamina_regen"].get("value", 0))
+        regen_interval = int(regen_interval * (1.0 - val))
+        if regen_interval < 1:
+            regen_interval = 1
+
     # Anti-cheat: clamp elapsed thành tối đa đủ để fill hết thể lực
-    max_seconds_needed = (MAX_STAMINA - current_stamina) * STAMINA_REGEN_INTERVAL_SECONDS
+    max_seconds_needed = (MAX_STAMINA - current_stamina) * regen_interval
     elapsed = min(now - last_update, max_seconds_needed)
     elapsed = max(elapsed, 0)   # không âm
 
-    regen_ticks = elapsed // STAMINA_REGEN_INTERVAL_SECONDS
+    regen_ticks = elapsed // regen_interval
     new_stamina = min(current_stamina + regen_ticks * STAMINA_REGEN_RATE, MAX_STAMINA)
 
     farm_data["stamina"] = new_stamina
@@ -363,6 +383,11 @@ async def harvest_all(bot: commands.Bot, user_id: str) -> Tuple[bool, Dict[str, 
     crops = (farm_data or {}).get("crops", {})
     inventory = farm_data.setdefault("inventory", {})
     
+    # Get boosts
+    from cogs.common.db import get_active_boosts
+    boosts = await get_active_boosts(bot, user_id)
+    farm_yield = int(boosts.get("farm_yield", {}).get("value", 0))
+    
     harvest_report = {}
     withered_count = 0
     slots_to_remove = set()
@@ -398,8 +423,8 @@ async def harvest_all(bot: commands.Bot, user_id: str) -> Tuple[bool, Dict[str, 
                         except:
                             yield_mod = 0
                             
-                        # Rơi ngẫu nhiên 5-8 vật phẩm + modifier
-                        drop_count = max(0, random.randint(5, 8) + yield_mod)
+                        # Rơi ngẫu nhiên 5-8 vật phẩm + modifier + boost
+                        drop_count = max(0, random.randint(5, 8) + yield_mod + farm_yield * 3)
                         
                         for _ in range(drop_count):
                             # Tỉ lệ phẩm chất dựa trên cây thứ 1 (để đơn giản)
@@ -449,9 +474,9 @@ async def harvest_all(bot: commands.Bot, user_id: str) -> Tuple[bool, Dict[str, 
                 try:
                     from .weather import get_current_weather
                     weather = get_current_weather()
-                    yield_amount = max(0, 1 + weather["yield_modifier"])
+                    yield_amount = max(0, 1 + weather["yield_modifier"] + farm_yield)
                 except:
-                    yield_amount = 1
+                    yield_amount = 1 + farm_yield
                 
                 if yield_amount > 0:
                     inventory[item_id] = inventory.get(item_id, 0) + yield_amount

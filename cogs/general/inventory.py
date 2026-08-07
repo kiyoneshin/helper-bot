@@ -604,6 +604,48 @@ class UnifiedInventoryCog(commands.Cog):
             )
             return
 
+        # KIỂM TRA & ÁP DỤNG ĐỒ ĂN (FOOD)
+        if item.get("category") == "food":
+            import time
+            profile_row = await fetchrow_db(self.bot, "SELECT active_boosts FROM event_profiles WHERE discord_id = $1", uid)
+            boosts = profile_row.get("active_boosts", {}) if profile_row else {}
+            if isinstance(boosts, str):
+                try: boosts = json.loads(boosts)
+                except: boosts = {}
+            
+            boost_key = None
+            boost_val = 0
+            duration = 3600
+            if db_key == "food_71": boost_key, boost_val, duration = "stamina_regen", 0.5, 7200
+            elif db_key == "food_72": boost_key, boost_val, duration = "lb_drop_rate", 0.2, 3600
+            elif db_key == "food_73": boost_key, boost_val, duration = "lb_rarity", 0.15, 3600
+            elif db_key == "food_74": boost_key, boost_val, duration = "farm_yield", 1.0, 14400
+            elif db_key == "food_75": boost_key, boost_val, duration = "rare_wood", 0.3, 3600
+            elif db_key == "food_76": boost_key, boost_val, duration = "rare_ore", 0.3, 3600
+            elif db_key == "food_77": boost_key, boost_val, duration = "rare_fish", 0.15, 3600
+            elif db_key == "food_78": boost_key, boost_val, duration = "stamina_discount", 1.0, 3600
+            elif db_key == "food_79": boost_key, boost_val, duration = "all_boost", 0.35, 7200
+            
+            now = time.time()
+            if boost_key:
+                if boost_key in boosts and boosts[boost_key].get("expires_at", 0) > now:
+                    await ctx.send(f"❌ Bạn đang có hiệu ứng của đồ ăn này rồi! Phải đợi hiệu ứng cũ hết hạn mới được ăn tiếp.", delete_after=5.0)
+                    return
+                boosts[boost_key] = {"value": boost_val, "expires_at": now + duration}
+                await execute_db(self.bot, "UPDATE event_profiles SET active_boosts = $2::jsonb WHERE discord_id = $1", uid, json.dumps(boosts))
+            elif db_key == "food_70":
+                from cogs.events.idle_farm.farm_db import get_and_update_stamina, get_farm_data, save_farm_data
+                from cogs.events.mining.mining_config import MAX_STAMINA
+                current = await get_and_update_stamina(self.bot, uid)
+                if current >= MAX_STAMINA:
+                    await ctx.send("❌ Thể lực của bạn đã đầy, không cần ăn Salad Cà Chua!", delete_after=5.0)
+                    return
+                new_stamina = min(current + 30, MAX_STAMINA)
+                farm_data = await get_farm_data(self.bot, uid)
+                farm_data["stamina"] = new_stamina
+                await save_farm_data(self.bot, uid, farm_data)
+
+
         # Trừ vật phẩm
         inv[db_key] -= 1
         if inv[db_key] <= 0:

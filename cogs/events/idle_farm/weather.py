@@ -28,7 +28,7 @@ WEATHER_TYPES = {
     },
     "stormy": {
         "name": "Bão",
-        "emoji": "🌪️",
+        "emoji": "⛈️",
         "desc": "Sản lượng -1, nhưng có tỉ lệ rớt vật phẩm hiếm x1.5.",
         "growth_time_modifier": 1.0,
         "yield_modifier": -1,
@@ -36,7 +36,7 @@ WEATHER_TYPES = {
     },
     "cloudy": {
         "name": "Âm u",
-        "emoji": "☁️",
+        "emoji": "🌥️",
         "desc": "Không có hiệu ứng đặc biệt.",
         "growth_time_modifier": 1.0,
         "yield_modifier": 0,
@@ -52,22 +52,40 @@ WEATHER_TYPES = {
     },
     "heatwave": {
         "name": "Nắng gắt",
-        "emoji": "🔥",
+        "emoji": "🏜️",
         "desc": "Phát triển cực nhanh (giảm 30% tgian) nhưng sản lượng -1.",
         "growth_time_modifier": 0.7,
         "yield_modifier": -1,
         "rare_drop_modifier": 1.0,
+    },
+    "windy": {
+        "name": "Nhiều Gió",
+        "emoji": "🍃",
+        "desc": "Cây trồng phát triển nhanh hơn 10% và sản lượng +1.",
+        "growth_time_modifier": 0.9,
+        "yield_modifier": 1,
+        "rare_drop_modifier": 1.0,
+    },
+    "magic_rain": {
+        "name": "Mưa Phép Thuật",
+        "emoji": "✨",
+        "desc": "Tăng x2 sản lượng và tỉ lệ rớt đồ hiếm x2.0!",
+        "growth_time_modifier": 1.0,
+        "yield_modifier": 2,
+        "rare_drop_modifier": 2.0,
     }
 }
 
 # Tỉ lệ xuất hiện các loại thời tiết (tổng không cần bằng 100)
 WEATHER_WEIGHTS = {
-    "sunny": 35,
-    "cloudy": 25,
+    "sunny": 30,
+    "cloudy": 20,
     "rainy": 20,
     "stormy": 5,
     "snowy": 5,
-    "heatwave": 10,
+    "heatwave": 5,
+    "windy": 10,
+    "magic_rain": 5,
 }
 
 def get_current_weather() -> dict:

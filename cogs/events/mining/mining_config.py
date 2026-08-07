@@ -64,14 +64,27 @@ def get_mining_display_weights(pickaxe_level: int) -> dict[str, int]:
     return dict(zip(_LOOT_KEYS, weights))
 
 
-def get_mining_loot(pickaxe_level: int) -> Tuple[str, int]:
+def get_mining_loot(pickaxe_level: int, food_boosts: dict = None) -> Tuple[str, int]:
     """
     Random loot dựa theo cấp Cuốc.
     Trả về (item_id, số_lượng).
     - Lv3 (Cuốc Sắt): 15% cơ hội nhận x2 quặng.
     - Lv4 (Cuốc Vàng): 20% cơ hội nhận x2 quặng.
     """
-    weights = _WEIGHTS_BY_LEVEL.get(pickaxe_level, _WEIGHTS_BY_LEVEL[1])
+    if food_boosts is None: food_boosts = {}
+    weights = list(_WEIGHTS_BY_LEVEL.get(pickaxe_level, _WEIGHTS_BY_LEVEL[1]))
+    
+    # Cộng dồn tỉ lệ rare ore (từ copper, iron, gold, diamond)
+    rare_bonus = float(food_boosts.get("rare_ore", {}).get("value", 0))
+    all_bonus = float(food_boosts.get("all_boost", {}).get("value", 0))
+    total_bonus = rare_bonus + all_bonus
+    
+    if total_bonus > 0:
+        # _LOOT_KEYS = ["stone", "coal", "copper_ore", "iron_ore", "gold_ore", "diamond"]
+        # Tăng trọng số của ore (từ index 2 trở đi)
+        for i in range(2, len(weights)):
+            weights[i] += int(weights[i] * total_bonus)
+            
     item_id: str = random.choices(_LOOT_KEYS, weights=weights, k=1)[0]
 
     quantity = 1

@@ -77,8 +77,14 @@ class WoodcuttingView(discord.ui.View):
             await interaction.response.send_message("❌ Khu rừng của người khác, cấm chặt trộm!", ephemeral=True)
             return
 
+        from cogs.common.db import get_active_boosts
+        boosts = await get_active_boosts(self.bot, self.user_id)
+        stamina_cost = STAMINA_PER_CHOP
+        if "stamina_discount" in boosts:
+            stamina_cost = max(1, stamina_cost - int(boosts["stamina_discount"]["value"]))
+            
         current_stamina = await get_and_update_stamina(self.bot, self.user_id)
-        if current_stamina < STAMINA_PER_CHOP:
+        if current_stamina < stamina_cost:
             button.disabled = True
             farm_data = await get_farm_data(self.bot, self.user_id)
             await interaction.response.edit_message(embed=build_woodcutting_embed(self.author, current_stamina, farm_data), view=self)
@@ -86,11 +92,11 @@ class WoodcuttingView(discord.ui.View):
             return
 
         farm_data = await get_farm_data(self.bot, self.user_id)
-        new_stamina = current_stamina - STAMINA_PER_CHOP
+        new_stamina = current_stamina - stamina_cost
         farm_data["stamina"] = new_stamina
         axe_level = int(farm_data.get("axe_level", 1))
 
-        loot_id, quantity = get_woodcutting_loot(axe_level)
+        loot_id, quantity = get_woodcutting_loot(axe_level, boosts)
         loot_info = WOODCUTTING_LOOT[loot_id]
 
         inventory = farm_data.setdefault("inventory", {})
@@ -100,7 +106,7 @@ class WoodcuttingView(discord.ui.View):
         from cogs.events.lootbox.lootbox_cmd import _get_luck_and_boost, _add_lootbox_to_inventory
         from cogs.events.lootbox.lootbox_config import get_activity_lootbox_drop, TIER_EMOJIS, TIER_NAMES
         luck, boost_active = await _get_luck_and_boost(self.bot, self.user_id)
-        lb_tier = get_activity_lootbox_drop("chop", luck, boost_active)
+        lb_tier = get_activity_lootbox_drop("chop", luck, boost_active, boosts)
         lb_msg = ""
         if lb_tier:
             await _add_lootbox_to_inventory(self.bot, self.user_id, lb_tier, 1)
@@ -108,7 +114,7 @@ class WoodcuttingView(discord.ui.View):
 
         await save_farm_data(self.bot, self.user_id, farm_data)
 
-        if new_stamina < STAMINA_PER_CHOP:
+        if new_stamina < stamina_cost:
             button.disabled = True
 
         double_str = " **(x2 Rìu Sắt!)**" if quantity == 2 else ""

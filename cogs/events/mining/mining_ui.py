@@ -111,9 +111,14 @@ class MiningView(discord.ui.View):
             )
             return
 
-        # 1. Kiểm tra thể lực
+        from cogs.common.db import get_active_boosts
+        boosts = await get_active_boosts(self.bot, self.user_id)
+        stamina_cost = STAMINA_PER_HIT
+        if "stamina_discount" in boosts:
+            stamina_cost = max(1, stamina_cost - int(boosts["stamina_discount"]["value"]))
+            
         current_stamina = await get_and_update_stamina(self.bot, self.user_id)
-        if current_stamina < STAMINA_PER_HIT:
+        if current_stamina < stamina_cost:
             button.disabled = True
             farm_data = await get_farm_data(self.bot, self.user_id)
             await interaction.response.edit_message(
@@ -128,12 +133,12 @@ class MiningView(discord.ui.View):
 
         # 2. Trừ thể lực
         farm_data = await get_farm_data(self.bot, self.user_id)
-        new_stamina = current_stamina - STAMINA_PER_HIT
+        new_stamina = current_stamina - stamina_cost
         farm_data["stamina"] = new_stamina
         pickaxe_level = int(farm_data.get("pickaxe_level", 1))
 
         # 3. Random quặng theo cấp cuốc
-        loot_id, quantity = get_mining_loot(pickaxe_level)
+        loot_id, quantity = get_mining_loot(pickaxe_level, boosts)
         loot_info = MINING_LOOT[loot_id]
 
         inventory = farm_data.setdefault("inventory", {})
@@ -143,7 +148,7 @@ class MiningView(discord.ui.View):
         from cogs.events.lootbox.lootbox_cmd import _get_luck_and_boost, _add_lootbox_to_inventory
         from cogs.events.lootbox.lootbox_config import get_activity_lootbox_drop, TIER_EMOJIS, TIER_NAMES
         luck, boost_active = await _get_luck_and_boost(self.bot, self.user_id)
-        lb_tier = get_activity_lootbox_drop("mine", luck, boost_active)
+        lb_tier = get_activity_lootbox_drop("mine", luck, boost_active, boosts)
         lb_msg = ""
         if lb_tier:
             await _add_lootbox_to_inventory(self.bot, self.user_id, lb_tier, 1)
@@ -154,7 +159,7 @@ class MiningView(discord.ui.View):
         await update_event_stat(self.bot, self.user_id, "ore_mined", quantity)
 
         # 5. Cập nhật UI
-        if new_stamina < STAMINA_PER_HIT:
+        if new_stamina < stamina_cost:
             button.disabled = True
 
         double_str = " **(x2 Cuốc Sắt!)**" if quantity == 2 else ""

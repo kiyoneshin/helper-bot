@@ -210,25 +210,43 @@ def get_activity_lootbox_drop(
     activity: str,
     luck: int = 0,
     item6_active: bool = False,
+    food_boosts: dict = None
 ) -> Optional[int]:
     """
     Roll xem có drop lootbox từ activity (fish/mine/chop) không.
     Trả về tier_id nếu drop, None nếu không.
     """
+    if food_boosts is None: food_boosts = {}
+    
     chances = ACTIVITY_DROP_CHANCES.get(activity, {})
     if not chances:
         return None
 
     luck_bonus = calc_luck_bonus(luck)  # % thêm vào
     multiplier = 1.5 if item6_active else 1.0
+    
+    # Cộng dồn food boosts
+    all_boost = float(food_boosts.get("all_boost", {}).get("value", 0))
+    lb_drop_rate = float(food_boosts.get("lb_drop_rate", {}).get("value", 0))
+    lb_rarity = float(food_boosts.get("lb_rarity", {}).get("value", 0))
+    
+    total_drop_bonus = all_boost + lb_drop_rate
+    total_rarity_bonus = all_boost + lb_rarity
 
     # Roll từng tier từ hiếm nhất xuống thường nhất
     for tier_id in [LB_LEGENDARY, LB_EPIC, LB_RARE, LB_UNCOMMON, LB_COMMON]:
         base = chances.get(tier_id, 0)
         if base <= 0:
             continue
-        effective = (base + luck_bonus) * multiplier
-        if random.random() * 100 < effective:
+        
+        # Tăng drop rate tổng thể
+        final_chance = base * multiplier + luck_bonus + total_drop_bonus
+        
+        # Nếu là tier hiếm (Epic, Legendary, Rare), cộng thêm rarity bonus
+        if tier_id in [LB_LEGENDARY, LB_EPIC, LB_RARE]:
+            final_chance += total_rarity_bonus
+            
+        if random.random() * 100 < final_chance:
             return tier_id
     return None
 

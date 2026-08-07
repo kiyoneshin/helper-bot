@@ -153,19 +153,22 @@ class FishingView(discord.ui.View):
         )
 
         # BƯỚC 2 — Kiểm tra thể lực
+        from cogs.common.db import get_active_boosts
+        boosts = await get_active_boosts(self.bot, self.user_id)
+        stamina_cost = STAMINA_PER_FISH
+        if "stamina_discount" in boosts:
+            stamina_cost = max(1, stamina_cost - int(boosts["stamina_discount"]["value"]))
+            
         current_stamina = await get_and_update_stamina(self.bot, self.user_id)
-        if current_stamina < STAMINA_PER_FISH:
-            await interaction.edit_original_response(
-                content=(
-                    f"😓 **Bạn đã kiệt sức!**\n"
-                    f"Cần **{STAMINA_PER_FISH}** thể lực, bạn chỉ còn **{current_stamina}**."
-                )
-            )
+        if current_stamina < stamina_cost:
+            button.disabled = True
+            farm_data = await get_farm_data(self.bot, self.user_id)
+            await interaction.response.edit_message(embed=build_fishing_embed(self.author, current_stamina, farm_data), view=self)
+            await interaction.followup.send(f"😓 Bạn đã **kiệt sức**! Hãy đợi thể lực hồi phục.\n*(Hồi đầy sau: {_mins_to_full(current_stamina)})*", ephemeral=True)
             return
 
-        # BƯỚC 3 — Trừ thể lực và lưu DB (không reset timer hồi)
         farm_data = await get_farm_data(self.bot, self.user_id)
-        farm_data["stamina"] = current_stamina - STAMINA_PER_FISH
+        farm_data["stamina"] = current_stamina - stamina_cost
         await save_farm_data(self.bot, self.user_id, farm_data)
 
         # BƯỚC 4 — Chờ cá "cắn câu" (2–5 giây ngẫu nhiên)
@@ -190,15 +193,17 @@ class FishingView(discord.ui.View):
         if catch_view.caught:
             reaction_time = catch_view.reaction_time
 
-            # RNG theo rod_level + reaction_time
-            fish_id, is_perfect = get_fishing_loot(rod_level, reaction_time)
+            # RNG theo rod_level + reaction_time + boosts
+            from cogs.common.db import get_active_boosts
+            boosts = await get_active_boosts(self.bot, self.user_id)
+            fish_id, is_perfect = get_fishing_loot(rod_level, reaction_time, boosts)
             fish_info = FISH_LOOT[fish_id]
 
             # 4. Lưu DB (cập nhật lootbox nếu có)
             from cogs.events.lootbox.lootbox_cmd import _get_luck_and_boost, _add_lootbox_to_inventory
             from cogs.events.lootbox.lootbox_config import get_activity_lootbox_drop, TIER_EMOJIS, TIER_NAMES
             luck, boost_active = await _get_luck_and_boost(self.bot, self.user_id)
-            lb_tier = get_activity_lootbox_drop("fish", luck, boost_active)
+            lb_tier = get_activity_lootbox_drop("fish", luck, boost_active, boosts)
             lb_msg = ""
             if lb_tier:
                 await _add_lootbox_to_inventory(self.bot, self.user_id, lb_tier, 1)
@@ -220,7 +225,7 @@ class FishingView(discord.ui.View):
                 f"*(Phản xạ: **{reaction_time}s**)*"
             )
 
-            self.cast_btn.disabled = (new_stamina < STAMINA_PER_FISH)
+            self.cast_btn.disabled = (new_stamina < stamina_cost)
             new_embed = build_fishing_embed(self.author, new_stamina, farm_data)
             await interaction.delete_original_response()
             await interaction.followup.send(

@@ -87,12 +87,24 @@ def _get_weights(rod_level: int, is_perfect: bool) -> list[int]:
     return w
 
 
-def get_fishing_loot(rod_level: int, reaction_time: float) -> Tuple[str, bool]:
+def get_fishing_loot(rod_level: int, reaction_time: float, food_boosts: dict = None) -> Tuple[str, bool]:
     """
     Random cá dựa theo cấp Cần và tốc độ phản xạ.
     Trả về (fish_id, is_perfect_catch).
     """
+    if food_boosts is None: food_boosts = {}
     is_perfect = reaction_time < PERFECT_CATCH_THRESHOLD
-    weights = _get_weights(rod_level, is_perfect)
+    weights = list(_get_weights(rod_level, is_perfect))
+    
+    # Cộng dồn tỉ lệ rare fish (legendary)
+    rare_bonus = float(food_boosts.get("rare_fish", {}).get("value", 0))
+    all_bonus = float(food_boosts.get("all_boost", {}).get("value", 0))
+    total_bonus = rare_bonus + all_bonus
+    
+    if total_bonus > 0:
+        # legendary_fish is the last in _FISH_KEYS
+        idx = len(_FISH_KEYS) - 1
+        weights[idx] += int(weights[idx] * total_bonus)
+        
     fish_id: str = random.choices(_FISH_KEYS, weights=weights, k=1)[0]
     return fish_id, is_perfect

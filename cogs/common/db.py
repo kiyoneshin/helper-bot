@@ -64,6 +64,24 @@ async def execute_db(bot: Any, sql: str, *args) -> Optional[str]:
         return None
 
 
+async def get_active_boosts(bot: Any, discord_id: str) -> dict:
+    """Lấy danh sách các hiệu ứng đang kích hoạt, tự động lọc những cái hết hạn."""
+    row = await fetchrow_db(bot, "SELECT active_boosts FROM event_profiles WHERE discord_id = $1", str(discord_id))
+    if not row: return {}
+    
+    import json
+    import time
+    try:
+        raw = row["active_boosts"]
+        boosts = json.loads(raw) if isinstance(raw, str) else raw
+    except:
+        return {}
+        
+    now = time.time()
+    valid_boosts = {k: v for k, v in boosts.items() if v.get("expires_at", 0) > now}
+    return valid_boosts
+
+
 # =====================================================================
 # 2. HÀM BÓC TÁCH ID ĐA NĂNG
 # =====================================================================
@@ -146,6 +164,7 @@ async def init_all_tables(bot: Any) -> bool:
                     -- Kho đồ (Thẻ bỏ tù, bảo hiểm...) & Ngày reset
                     inventory JSONB DEFAULT '{}'::jsonb,
                     farm_data JSONB DEFAULT '{"slots": 3, "crops": {}, "inventory": {}}'::jsonb,
+                    active_boosts JSONB DEFAULT '{}'::jsonb,
                     last_reset_date DATE DEFAULT (CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Ho_Chi_Minh')::date,
                     
                     -- Phục vụ hệ thống Ngân Hàng (Vay nợ)
