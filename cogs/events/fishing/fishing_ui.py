@@ -208,6 +208,9 @@ class FishingView(discord.ui.View):
             inventory[fish_id] = inventory.get(fish_id, 0) + 1
             await save_farm_data(self.bot, self.user_id, farm_data)
             await update_event_stat(self.bot, self.user_id, "fishes", 1)
+            await update_event_stat(self.bot, self.user_id, "fish_caught", 1)
+            if fish_info.get("rare_rank", 0) >= 3:
+                await update_event_stat(self.bot, self.user_id, "legendary_fish", 1)
 
             # Tạo thông báo kết quả
             prefix = "⚡ **Perfect Catch!** " if is_perfect else "🎉 **Tuyệt vời!** "

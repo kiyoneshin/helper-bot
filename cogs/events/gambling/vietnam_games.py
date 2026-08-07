@@ -523,6 +523,13 @@ class VietnamGames(commands.Cog):
                 # Nhiệm vụ
                 await update_task_progress(self.bot, player_id, "baucua", 1)
                 await update_task_progress(self.bot, player_id, "gamble_any", 1)
+                
+                # Achievements
+                from cogs.common.db import update_event_stat
+                await update_event_stat(self.bot, player_id, "casino_played", 1)
+                if net_gain > 0:
+                    await update_event_stat(self.bot, player_id, "casino_wins", 1)
+                    await update_event_stat(self.bot, player_id, "baucua_wins", 1)
             except discord.HTTPException:
                 pass
 

@@ -139,9 +139,16 @@ def build_farm_embed(author: discord.Member | discord.User, farm_data: Dict[str,
     Render giao diện text hiển thị trực quan các ô đất.
     Thay đổi icon cây trồng dựa theo tiến trình sinh trưởng.
     """
+    try:
+        from .weather import get_current_weather
+        weather = get_current_weather()
+        weather_str = f"**Thời tiết hiện tại:** {weather['emoji']} **{weather['name']}**\n*{weather['desc']}*\n"
+    except Exception:
+        weather_str = ""
+
     embed = discord.Embed(
         title=f"🌻 Nông Trại Của {author.display_name}",
-        description="Chào mừng bạn đến với khu vườn nhàn rỗi! Hãy chăm chỉ trồng trọt để kiếm thêm thu nhập nhé.",
+        description=f"Chào mừng bạn đến với khu vườn nhàn rỗi!\n\n{weather_str}",
         color=0x2ecc71
     )
     

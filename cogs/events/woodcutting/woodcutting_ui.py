@@ -116,5 +116,8 @@ class WoodcuttingView(discord.ui.View):
         await interaction.response.edit_message(embed=new_embed, view=self)
         
         await update_event_stat(self.bot, self.user_id, "works", 1)
+        await update_event_stat(self.bot, self.user_id, "wood_chopped", quantity)
+        if loot_info.get("name") in ["Gỗ Sồi (Hiếm)", "Gỗ Gụ (Cực Hiếm)", "Gỗ Thần Trầm Hương (Huyền Thoại)"] or "rare" in loot_id or "epic" in loot_id or "legendary" in loot_id:
+            await update_event_stat(self.bot, self.user_id, "rare_wood_chopped", quantity)
         
         await interaction.followup.send(f"🪓 Bạn vung rìu và nhận được: {loot_info['icon']} **{quantity}x {loot_info['name']}**{double_str}!{lb_msg}", ephemeral=True)

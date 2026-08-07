@@ -151,6 +151,9 @@ class BetModal(discord.ui.Modal, title="💰 Đặt Cược - Quả Bóng Tham L
             return
 
         self.players_bets[user_id] = bet
+        
+        from cogs.common.db import update_event_stat
+        await update_event_stat(self.bot, uid, "casino_played", 1)
         log.info(
             "Crash lobby: %s dat cuoc %d",
             interaction.user.display_name, bet,
@@ -276,6 +279,13 @@ class CrashActiveView(discord.ui.View):
 
             self.cashed_out[user_id] = payout
             profit = payout - bet
+            
+            # Achievements
+            from cogs.common.db import update_event_stat
+            if profit > 0:
+                await update_event_stat(self.bot, uid, "casino_wins", 1)
+            if snapshot_mult >= 10.0:
+                await update_event_stat(self.bot, uid, "crash_x10", 1)
 
             log.info(
                 "Crash cashout: user=%d mult=%.2f bet=%d payout=%d",

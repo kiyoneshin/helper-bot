@@ -151,6 +151,7 @@ class MiningView(discord.ui.View):
 
         await save_farm_data(self.bot, self.user_id, farm_data)
         await update_event_stat(self.bot, self.user_id, "mines", quantity)
+        await update_event_stat(self.bot, self.user_id, "ore_mined", quantity)
 
         # 5. Cập nhật UI
         if new_stamina < STAMINA_PER_HIT:

@@ -163,6 +163,15 @@ def calculate_crop_status(crop_data: Dict[str, Any], slot_id: str | None = None,
         if watered:
             required_time -= int(required_time * config.WATER_BONUS)
             
+        # Áp dụng thời tiết
+        try:
+            from .weather import get_current_weather
+            weather = get_current_weather()
+            required_time = int(required_time * weather["growth_time_modifier"])
+        except Exception as e:
+            pass
+            
+            
         # Adjacency Bonus: Nếu gần cây Ngôi Sao (star), giảm thêm 20% thời gian
         if slot_id and crops and slot_id in ADJACENCY_MAP:
             has_star_neighbor = False
@@ -379,9 +388,18 @@ async def harvest_all(bot: commands.Bot, user_id: str) -> Tuple[bool, Dict[str, 
                 if st1 == config.STATUS_READY and st2 == config.STATUS_READY and st3 == config.STATUS_READY:
                     seed_id = c1.get("seed")
                     seed_config = config.SEEDS.get(seed_id)
+                    await update_event_stat(bot, user_id, "giant_crops", 1)
                     if seed_config:
-                        # Rơi ngẫu nhiên 5-8 vật phẩm
-                        drop_count = random.randint(5, 8)
+                        # Áp dụng thời tiết
+                        try:
+                            from .weather import get_current_weather
+                            weather = get_current_weather()
+                            yield_mod = weather["yield_modifier"] * 3
+                        except:
+                            yield_mod = 0
+                            
+                        # Rơi ngẫu nhiên 5-8 vật phẩm + modifier
+                        drop_count = max(0, random.randint(5, 8) + yield_mod)
                         
                         for _ in range(drop_count):
                             # Tỉ lệ phẩm chất dựa trên cây thứ 1 (để đơn giản)
@@ -426,11 +444,20 @@ async def harvest_all(bot: commands.Bot, user_id: str) -> Tuple[bool, Dict[str, 
                     if roll < 0.70: quality = "normal"
                     else: quality = "silver"
                     
+                # Áp dụng thời tiết
                 item_id = f"{seed_id}_{quality}"
-                inventory[item_id] = inventory.get(item_id, 0) + 1
+                try:
+                    from .weather import get_current_weather
+                    weather = get_current_weather()
+                    yield_amount = max(0, 1 + weather["yield_modifier"])
+                except:
+                    yield_amount = 1
                 
-                # Cập nhật báo cáo
-                harvest_report[item_id] = harvest_report.get(item_id, 0) + 1
+                if yield_amount > 0:
+                    inventory[item_id] = inventory.get(item_id, 0) + yield_amount
+                    
+                    # Cập nhật báo cáo
+                    harvest_report[item_id] = harvest_report.get(item_id, 0) + yield_amount
                 
             slots_to_remove.add(slot_id)
             
