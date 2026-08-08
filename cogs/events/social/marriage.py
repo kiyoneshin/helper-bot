@@ -1,4 +1,4 @@
-﻿import discord
+import discord
 from discord.ext import commands, tasks
 import time
 import random
@@ -135,17 +135,16 @@ API_MAPPING = {
 }
 
 DUTDIT_GIFS = [
-    "https://media.tenor.com/FwIe16w4OToAAAAC/yaoi.gif",
-    "https://media.tenor.com/bKjK3m3wT2oAAAAd/anime-gay.gif",
-    "https://media.tenor.com/p5k0K3P32UAAAAAd/yaoi-kiss.gif",
-    "https://media.tenor.com/5l3-r4G1K2EAAAAC/kiss-anime.gif",
-    "https://media.tenor.com/qL-9Y4zL9E4AAAAC/yaoi.gif"
+    "https://i.pinimg.com/originals/93/6c/fb/936cfb5e6fb4cc0d1a49ab31f4a9b5f5.gif", # Given
+    "https://i.pinimg.com/originals/5c/4a/12/5c4a123eb4be630ee77f6b0f44e8bcda.gif", # Yuri on Ice
+    "https://i.pinimg.com/originals/34/00/ce/3400ceb0e51da24a87754d922bc9643d.gif", # Sasaki to Miyano
+    "https://i.pinimg.com/originals/af/f5/63/aff563c6c9f6d49ba9b09ef2d26f2efc.gif", # No. 6
+    "https://i.pinimg.com/originals/d4/0b/df/d40bdf48386de21da0182ce079be8d71.gif"  # Mo Dao Zu Shi
 ]
 
 async def fetch_anime_gif(action: str) -> Optional[str]:
     if action == "dutdit":
         return random.choice(DUTDIT_GIFS)
-        
     cat = API_MAPPING.get(action, "hug")
     url = f"https://api.otakugifs.xyz/gif?reaction={cat}"
         
