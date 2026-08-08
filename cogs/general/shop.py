@@ -314,7 +314,7 @@ async def _buy_farm_item(
     item: ItemEntry,
     amount: int,
 ) -> None:
-    """Xử lý mua hạt giống Farm (ID 10–19) — gọi buy_seed trong farm_db."""
+    """Xử lý mua hạt giống Farm (ID 51-60) - gọi buy_seed trong farm_db."""
     # db_key của farm item là "seed_wheat", "seed_sunflower", v.v.
     seed_key = item["db_key"]  # "seed_wheat"
     seed_id = seed_key.removeprefix("seed_")  # "wheat"

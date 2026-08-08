@@ -29,10 +29,10 @@ PICKAXE_UPGRADE_COST: dict = {
 }
 
 PICKAXE_NAMES: dict = {
-    1: "Cuốc Đá 🪨",
-    2: "Cuốc Đồng 🟠",
-    3: "Cuốc Sắt ⚙️",
-    4: "Cuốc Vàng 🌟",
+    1: "Cuốc Đá <:mine_06_stone_pickaxe:1535654573312839731>",
+    2: "Cuốc Đồng <:mine_07_bronze_pickaxe:1535654575258869841>",
+    3: "Cuốc Sắt <:mine_08_iron_pickaxe:1535654577733373972>",
+    4: "Cuốc Vàng <:mine_09_gold_pickaxe:1535654579965009960>",
 }
 
 # ---------------------------------------------------------------------------
@@ -40,12 +40,12 @@ PICKAXE_NAMES: dict = {
 # ---------------------------------------------------------------------------
 
 MINING_LOOT: dict = {
-    "stone":      {"name": "Đá",           "icon": "🪨", "weight": 55, "category": "ore",  "price": 50},
-    "coal":       {"name": "Than Đá",      "icon": "⬛", "weight": 22, "category": "ore",  "price": 150},
-    "copper_ore": {"name": "Quặng Đồng",   "icon": "🟠", "weight": 14, "category": "ore",  "price": 500},
-    "iron_ore":   {"name": "Quặng Sắt",    "icon": "⚙️", "weight": 7,  "category": "ore",  "price": 1500},
-    "gold_ore":   {"name": "Quặng Vàng",   "icon": "🌕", "weight": 2,  "category": "ore",  "price": 5000},
-    "diamond":    {"name": "Kim Cương",    "icon": "💎", "weight": 0,  "category": "ore",  "price": 20000},
+    "stone":      {"name": "Đá",           "icon": "<:mine_00_stone:1535654559412781067>", "weight": 55, "category": "ore",  "price": 50},
+    "coal":       {"name": "Than Đá",      "icon": "<:mine_01_coal:1535654561480708106>", "weight": 22, "category": "ore",  "price": 150},
+    "copper_ore": {"name": "Quặng Đồng",   "icon": "<:mine_02_copper_ore:1535654564504670449>", "weight": 14, "category": "ore",  "price": 500},
+    "iron_ore":   {"name": "Quặng Sắt",    "icon": "<:mine_03_iron_ore:1535654566853615717>", "weight": 7,  "category": "ore",  "price": 1500},
+    "gold_ore":   {"name": "Quặng Vàng",   "icon": "<:mine_04_gold_ore:1535654569143566396>", "weight": 2,  "category": "ore",  "price": 5000},
+    "diamond":    {"name": "Kim Cương",    "icon": "<:mine_05_diamond:1535654571039260774>", "weight": 0,  "category": "ore",  "price": 20000},
     # diamond weight=0 trong bảng cơ bản, chỉ xuất hiện ở Lv3+
 }
 

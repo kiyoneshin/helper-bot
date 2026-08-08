@@ -527,7 +527,7 @@ ITEM_REGISTRY: dict[int, ItemEntry] = {
     71: {
         "id":          71,
         "name":        "Salad Cà Chua",
-        "icon":        "🥗",
+        "icon":        "<:food_00_salad:1535658901222203512>",
         "price":       None,
         "description": "+ 30 Thể Lực ngay lập tức.",
         "db_key":      "food_70",
@@ -537,7 +537,7 @@ ITEM_REGISTRY: dict[int, ItemEntry] = {
     72: {
         "id":          72,
         "name":        "Súp Bí Ngô",
-        "icon":        "🎃",
+        "icon":        "<:food_01_pumpkin_soup:1535658903386202235>",
         "price":       None,
         "description": "+ 100% Tốc độ hồi thể lực trong 2h.",
         "db_key":      "food_71",
@@ -547,7 +547,7 @@ ITEM_REGISTRY: dict[int, ItemEntry] = {
     73: {
         "id":          73,
         "name":        "Cơm Cuộn Cá",
-        "icon":        "🍱",
+        "icon":        "<:food_02_fishrolls:1535658905433280614>",
         "price":       None,
         "description": "+ 20% Tỉ lệ rơi Lootbox trong 1h.",
         "db_key":      "food_72",
@@ -557,7 +557,7 @@ ITEM_REGISTRY: dict[int, ItemEntry] = {
     74: {
         "id":          74,
         "name":        "Sinh Tố Dâu",
-        "icon":        "🍹",
+        "icon":        "<:food_03_strawberry_smoothie:1535658907425316985>",
         "price":       None,
         "description": "+ 15% Tỉ lệ rơi Lootbox hiếm (Rare/Epic) trong 1h.",
         "db_key":      "food_73",
@@ -567,7 +567,7 @@ ITEM_REGISTRY: dict[int, ItemEntry] = {
     75: {
         "id":          75,
         "name":        "Khoai Tây Nghiền",
-        "icon":        "🥔",
+        "icon":        "<:food_04_mass_potato:1535658909543702668>",
         "price":       None,
         "description": "+ 1 Sản lượng thu hoạch nông trại trong 4h.",
         "db_key":      "food_74",
@@ -577,7 +577,7 @@ ITEM_REGISTRY: dict[int, ItemEntry] = {
     76: {
         "id":          76,
         "name":        "Cá Nướng Gỗ Thơm",
-        "icon":        "🍢",
+        "icon":        "<:food_05_cooked_carp:1535658912580116510>",
         "price":       None,
         "description": "+ 30% Tỉ lệ rơi Gỗ hiếm trong 1h.",
         "db_key":      "food_75",
@@ -587,7 +587,7 @@ ITEM_REGISTRY: dict[int, ItemEntry] = {
     77: {
         "id":          77,
         "name":        "Bánh Mì Thợ Mỏ",
-        "icon":        "🥪",
+        "icon":        "<:food_06_banh_mi:1535658914396377238>",
         "price":       None,
         "description": "+ 30% Tỷ lệ rơi Quặng hiếm trong 1h.",
         "db_key":      "food_76",
@@ -597,7 +597,7 @@ ITEM_REGISTRY: dict[int, ItemEntry] = {
     78: {
         "id":          78,
         "name":        "Bánh Bí Ngô Hấp",
-        "icon":        "🥧",
+        "icon":        "<:food_07_pumpkin_pie:1535658916434681986>",
         "price":       None,
         "description": "+ 15% Tỉ lệ rơi Cá hiếm trong 1h.",
         "db_key":      "food_77",
@@ -607,7 +607,7 @@ ITEM_REGISTRY: dict[int, ItemEntry] = {
     79: {
         "id":          79,
         "name":        "Trà Hướng Dương",
-        "icon":        "🍵",
+        "icon":        "<:food_08_sun_tea:1535658918603395092>",
         "price":       None,
         "description": "- 1 Thể lực tiêu hao cho MỌI hành động trong 1h.",
         "db_key":      "food_78",
@@ -617,7 +617,7 @@ ITEM_REGISTRY: dict[int, ItemEntry] = {
     80: {
         "id":          80,
         "name":        "Lẩu Thập Cẩm",
-        "icon":        "🍲",
+        "icon":        "<:food_09_trout_soup:1535658920591368232>",
         "price":       None,
         "description": "+ 35% Tỉ lệ rơi Đồ hiếm (Tất cả hoạt động) trong 2h.",
         "db_key":      "food_79",

@@ -35,16 +35,16 @@ class MachineConfig(TypedDict):
 
 ARTISAN_GOODS: Dict[str, dict] = {
     # Từ Keg
-    "beer":         {"name": "Bia",           "icon": "🍺", "price": 450,   "category": "artisan"},
-    "wine_strawb":  {"name": "Rượu Dâu",      "icon": "🍷", "price": 7000,  "category": "artisan"},
-    "spirit_star":  {"name": "Linh Tửu",      "icon": "✨", "price": 50000, "category": "artisan"},
+    "beer":         {"name": "Bia",           "icon": "<:machine_00_beer:1535647162590040164>", "price": 450,   "category": "artisan"},
+    "wine_strawb":  {"name": "Rượu Dâu",      "icon": "<:machine_01_wine:1535647164514963487>", "price": 7000,  "category": "artisan"},
+    "spirit_star":  {"name": "Linh Tửu",      "icon": "<:machine_02_spririt_star:1535647166297546823>", "price": 50000, "category": "artisan"},
     # Từ Preserves Jar
-    "tomato_jam":   {"name": "Mứt Cà Chua",   "icon": "🧴", "price": 2250,  "category": "artisan"},
-    "pumpkin_jam":  {"name": "Mứt Bí Ngô",    "icon": "🎃", "price": 8750,  "category": "artisan"},
+    "tomato_jam":   {"name": "Mứt Cà Chua",   "icon": "<:machine_03_tomato_jam:1535647168252088390>", "price": 2250,  "category": "artisan"},
+    "pumpkin_jam":  {"name": "Mứt Bí Ngô",    "icon": "<:machine_04_pumpkin_juice:1535647170328535081>", "price": 8750,  "category": "artisan"},
     # Từ Furnace
-    "copper_bar":   {"name": "Phôi Đồng",     "icon": "🔶", "price": 2500,  "category": "artisan"},
-    "iron_bar":     {"name": "Phôi Sắt",      "icon": "⬜", "price": 7500,  "category": "artisan"},
-    "gold_bar":     {"name": "Phôi Vàng",     "icon": "🌟", "price": 25000, "category": "artisan"},
+    "copper_bar":   {"name": "Phôi Đồng",     "icon": "<:machine_05_bronze_bar:1535647172840919143>", "price": 2500,  "category": "artisan"},
+    "iron_bar":     {"name": "Phôi Sắt",      "icon": "<:machine_06_iron_bar:1535647174925352980>", "price": 7500,  "category": "artisan"},
+    "gold_bar":     {"name": "Phôi Vàng",     "icon": "<:machine_07_gold_bar:1535647177186086984>", "price": 25000, "category": "artisan"},
 }
 
 # ---------------------------------------------------------------------------
@@ -55,7 +55,7 @@ RECIPES: Dict[str, RecipeConfig] = {
     # --- KEG ---
     "keg_beer": {
         "name": "Ủ Bia",
-        "icon": "🍺",
+        "icon": "<:machine_00_beer:1535647162590040164>",
         "ingredients": {"wheat_normal": 5},
         "output_id": "beer",
         "output_qty": 1,
@@ -65,7 +65,7 @@ RECIPES: Dict[str, RecipeConfig] = {
     },
     "keg_wine_strawb": {
         "name": "Ủ Rượu Dâu",
-        "icon": "🍷",
+        "icon": "<:machine_01_wine:1535647164514963487>",
         "ingredients": {"strawberry_normal": 3},
         "output_id": "wine_strawb",
         "output_qty": 1,
@@ -75,7 +75,7 @@ RECIPES: Dict[str, RecipeConfig] = {
     },
     "keg_spirit_star": {
         "name": "Ủ Linh Tửu",
-        "icon": "✨",
+        "icon": "<:machine_02_spririt_star:1535647166297546823>",
         "ingredients": {"star_iridium": 1},
         "output_id": "spirit_star",
         "output_qty": 1,
@@ -87,7 +87,7 @@ RECIPES: Dict[str, RecipeConfig] = {
     # --- PRESERVES JAR ---
     "jar_tomato_jam": {
         "name": "Làm Mứt Cà Chua",
-        "icon": "🧴",
+        "icon": "<:machine_03_tomato_jam:1535647168252088390>",
         "ingredients": {"tomato_normal": 4},
         "output_id": "tomato_jam",
         "output_qty": 1,
@@ -97,7 +97,7 @@ RECIPES: Dict[str, RecipeConfig] = {
     },
     "jar_pumpkin_jam": {
         "name": "Làm Mứt Bí Ngô",
-        "icon": "🎃",
+        "icon": "<:machine_04_pumpkin_juice:1535647170328535081>",
         "ingredients": {"pumpkin_normal": 3},
         "output_id": "pumpkin_jam",
         "output_qty": 1,
@@ -109,7 +109,7 @@ RECIPES: Dict[str, RecipeConfig] = {
     # --- FURNACE ---
     "furnace_copper": {
         "name": "Đúc Phôi Đồng",
-        "icon": "🔶",
+        "icon": "<:machine_05_bronze_bar:1535647172840919143>",
         "ingredients": {"copper_ore": 5, "coal": 2},
         "output_id": "copper_bar",
         "output_qty": 1,
@@ -119,7 +119,7 @@ RECIPES: Dict[str, RecipeConfig] = {
     },
     "furnace_iron": {
         "name": "Đúc Phôi Sắt",
-        "icon": "⬜",
+        "icon": "<:machine_06_iron_bar:1535647174925352980>",
         "ingredients": {"iron_ore": 5, "coal": 4},
         "output_id": "iron_bar",
         "output_qty": 1,
@@ -129,7 +129,7 @@ RECIPES: Dict[str, RecipeConfig] = {
     },
     "furnace_gold": {
         "name": "Đúc Phôi Vàng",
-        "icon": "🌟",
+        "icon": "<:machine_07_gold_bar:1535647177186086984>",
         "ingredients": {"gold_ore": 5, "coal": 6},
         "output_id": "gold_bar",
         "output_qty": 1,
@@ -147,7 +147,7 @@ MACHINES: Dict[str, MachineConfig] = {
     "keg": {
         "id": 101,
         "name": "Thùng Ủ Rượu",
-        "icon": "🍺",
+        "icon": "<:machine_08_keg:1535657702020354098>",
         "description": "Biến nông sản thành đồ uống giá trị cao.",
         "db_key": "keg",
         "recipes": ["keg_beer", "keg_wine_strawb", "keg_spirit_star"],
@@ -156,7 +156,7 @@ MACHINES: Dict[str, MachineConfig] = {
     "jar": {
         "id": 102,
         "name": "Máy Làm Mứt",
-        "icon": "🫙",
+        "icon": "<:machine_09_jar:1535657704021037156>",
         "description": "Chế biến rau củ thành mứt thơm ngon.",
         "db_key": "jar",
         "recipes": ["jar_tomato_jam", "jar_pumpkin_jam"],
@@ -165,7 +165,7 @@ MACHINES: Dict[str, MachineConfig] = {
     "furnace": {
         "id": 103,
         "name": "Lò Rèn",
-        "icon": "🔥",
+        "icon": "<:machine_10_furnace:1535657705958674452>",
         "description": "Luyện quặng thành phôi kim loại cứng.",
         "db_key": "furnace",
         "recipes": ["furnace_copper", "furnace_iron", "furnace_gold"],

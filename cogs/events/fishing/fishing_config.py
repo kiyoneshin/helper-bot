@@ -30,10 +30,10 @@ ROD_UPGRADE_COST: dict = {
 }
 
 ROD_NAMES: dict = {
-    1: "Cần Tre 🎋",
-    2: "Cần Đồng 🟠",
-    3: "Cần Sắt ⚙️",
-    4: "Cần Vàng 🌟",
+    1: "Cần Tre <:fish_08_wooden_fishing_pole:1535649348577140736>",
+    2: "Cần Đồng <:fish_09_copper_fishing_rod:1535649350745718784>",
+    3: "Cần Sắt <:fish_10_iron_fishing_rod:1535649352654266418>",
+    4: "Cần Vàng <:fish_11_gold_fishing_rod:1535649354851811478>",
 }
 
 # ---------------------------------------------------------------------------
@@ -41,14 +41,14 @@ ROD_NAMES: dict = {
 # ---------------------------------------------------------------------------
 
 FISH_LOOT: dict = {
-    "trash":          {"name": "Rác",             "icon": "🥫", "weight": 35, "category": "fish", "rare_rank": 0, "price": 10},
-    "carp":           {"name": "Cá Chép",         "icon": "🐟", "weight": 28, "category": "fish", "rare_rank": 1, "price": 200},
-    "lobster":        {"name": "Tôm Hùm",         "icon": "🦞", "weight": 18, "category": "fish", "rare_rank": 2, "price": 600},
-    "salmon":         {"name": "Cá Hồi",          "icon": "🍣", "weight": 10, "category": "fish", "rare_rank": 2, "price": 900},
-    "jellyfish":      {"name": "Sứa",             "icon": "🪼", "weight": 5,  "category": "fish", "rare_rank": 3, "price": 2000},
-    "squid":          {"name": "Mực",             "icon": "🦑", "weight": 3,  "category": "fish", "rare_rank": 3, "price": 2500},
-    "stingray":       {"name": "Cá Đuối",         "icon": "🦈", "weight": 1,  "category": "fish", "rare_rank": 4, "price": 6000},
-    "legendary_fish": {"name": "Cá Huyền Thoại", "icon": "🐉", "weight": 0,  "category": "fish", "rare_rank": 5, "price": 15000},
+    "trash":          {"name": "Rác",             "icon": "<:fish_00_trash:1535649328562053230>", "weight": 35, "category": "fish", "rare_rank": 0, "price": 10},
+    "carp":           {"name": "Cá Chép",         "icon": "<:fish_01_carp:1535649330881634354>", "weight": 28, "category": "fish", "rare_rank": 1, "price": 200},
+    "lobster":        {"name": "Tôm Hùm",         "icon": "<:fish_02_lobster:1535649333762985994>", "weight": 18, "category": "fish", "rare_rank": 2, "price": 600},
+    "salmon":         {"name": "Cá Hồi",          "icon": "<:fish_03_salmon:1535649337458163763>", "weight": 10, "category": "fish", "rare_rank": 2, "price": 900},
+    "jellyfish":      {"name": "Sứa",             "icon": "<:fish_04_jelly_fish:1535649339454652426>", "weight": 5,  "category": "fish", "rare_rank": 3, "price": 2000},
+    "squid":          {"name": "Mực",             "icon": "<:fish_05_squid:1535649341254017024>", "weight": 3,  "category": "fish", "rare_rank": 3, "price": 2500},
+    "stingray":       {"name": "Cá Đuối",         "icon": "<:fish_06_stingray:1535649344156467260>", "weight": 1,  "category": "fish", "rare_rank": 4, "price": 6000},
+    "legendary_fish": {"name": "Cá Huyền Thoại", "icon": "<:fish_07_legendary:1535649346421395526>", "weight": 0,  "category": "fish", "rare_rank": 5, "price": 15000},
     # legendary_fish weight=0, chỉ xuất hiện khi Perfect Catch ở Lv3+
 }
 
