@@ -135,11 +135,11 @@ API_MAPPING = {
 }
 
 DUTDIT_GIFS = [
-    "https://i.pinimg.com/originals/93/6c/fb/936cfb5e6fb4cc0d1a49ab31f4a9b5f5.gif", # Given
-    "https://i.pinimg.com/originals/5c/4a/12/5c4a123eb4be630ee77f6b0f44e8bcda.gif", # Yuri on Ice
-    "https://i.pinimg.com/originals/34/00/ce/3400ceb0e51da24a87754d922bc9643d.gif", # Sasaki to Miyano
-    "https://i.pinimg.com/originals/af/f5/63/aff563c6c9f6d49ba9b09ef2d26f2efc.gif", # No. 6
-    "https://i.pinimg.com/originals/d4/0b/df/d40bdf48386de21da0182ce079be8d71.gif"  # Mo Dao Zu Shi
+    "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExb243eDg0OW4xejQ5anVremQ5bnVmZmZlbG9lNTZ5cmlvMWxmMWV1dCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/3dYlfWAbegESakXuZw/giphy.gif"
+    "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExb243eDg0OW4xejQ5anVremQ5bnVmZmZlbG9lNTZ5cmlvMWxmMWV1dCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/D9tPZc3tB6f28/giphy.gif",
+    "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3MmY0aHpqemZhNjh6MHEydXY1cnEzZW5sZDF6bGd4ZHg3bmQxY3hhayZlcD12MV9naWZzX3NlYXJjaCZjdD1n/JM1EwM5TM9Mu2Fn3Q5/giphy.gif",
+    "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExb243eDg0OW4xejQ5anVremQ5bnVmZmZlbG9lNTZ5cmlvMWxmMWV1dCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/aIoQynMLx3uF2/giphy.gif",
+    "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3ODk0dWtpM2ZhNm1rYnJtMTNxenJxN280Z3I2eXA2YWUwZWEzamhrdyZlcD12MV9naWZzX3NlYXJjaCZjdD1n/Ta8nU0hjzCB6o/giphy.gif"
 ]
 
 async def fetch_anime_gif(action: str) -> Optional[str]:
