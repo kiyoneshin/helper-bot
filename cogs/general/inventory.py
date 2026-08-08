@@ -550,7 +550,7 @@ class UnifiedInventoryCog(commands.Cog):
             "lb": "lootbox", "lootbox": "lootbox",
             "food": "food", "cook": "food", "doan": "food",
         }
-        default_tab = "blackmarket"
+        default_tab = "event"
         if category and category.lower() in cat_map:
             default_tab = cat_map[category.lower()]
 

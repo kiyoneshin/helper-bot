@@ -634,3 +634,10 @@ def get_item_by_db_key(db_key: str):
         if item["db_key"] == db_key:
             return item
     return None
+
+def get_items_by_category(category: str):
+    return sorted([item for item in ITEM_REGISTRY.values() if item['category'] == category], key=lambda x: x['id'])
+
+def get_buyable_items(category: str):
+    return [item for item in get_items_by_category(category) if item['price'] is not None]
+
