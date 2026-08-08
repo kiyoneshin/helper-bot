@@ -2,9 +2,9 @@ import discord
 from discord.ext import commands
 
 from cogs.common.db import check_not_locked
-from cogs.events.mining.mining_config import PICKAXE_UPGRADE_COST, MINING_LOOT, MAX_PICKAXE_LEVEL
-from cogs.events.fishing.fishing_config import ROD_UPGRADE_COST, FISH_LOOT, MAX_ROD_LEVEL
-from cogs.events.woodcutting.woodcutting_config import AXE_UPGRADE_COST, WOODCUTTING_LOOT, MAX_AXE_LEVEL
+from cogs.events.mining.mining_config import PICKAXE_UPGRADE_COST, MINING_LOOT, MAX_PICKAXE_LEVEL, PICKAXE_NAMES
+from cogs.events.fishing.fishing_config import ROD_UPGRADE_COST, FISH_LOOT, MAX_ROD_LEVEL, ROD_NAMES
+from cogs.events.woodcutting.woodcutting_config import AXE_UPGRADE_COST, WOODCUTTING_LOOT, MAX_AXE_LEVEL, AXE_NAMES
 from cogs.events.idle_farm.machine_config import RECIPES, MACHINES, ARTISAN_GOODS
 from cogs.events.idle_farm.config import SEEDS, QUALITY_EMOJIS
 from cogs.common.item_config import ITEM_REGISTRY
@@ -63,7 +63,8 @@ def _build_recipe_embed(ctx, category: str) -> discord.Embed:
             cost_pts, cost_items = PICKAXE_UPGRADE_COST[level]
             cost_str = _format_cost(cost_pts, cost_items)
             desc = pickaxe_desc.get(level+1, "")
-            pickaxe_lines.append(f"🔹 **Lên Cuốc Lv{level+1}:** {cost_str}\n  └ 💬 *{desc}*")
+            icon = PICKAXE_NAMES.get(level+1, "").split()[-1] if PICKAXE_NAMES.get(level+1) else ""
+            pickaxe_lines.append(f"**Lên Cuốc Lv{level+1} {icon}:** {cost_str}\n  └ *{desc}*")
         embed.add_field(name="⛏️ Nâng Cấp Cuốc Chim", value="\n".join(pickaxe_lines), inline=False)
 
         rod_desc = {
@@ -76,7 +77,8 @@ def _build_recipe_embed(ctx, category: str) -> discord.Embed:
             cost_pts, cost_items = ROD_UPGRADE_COST[level]
             cost_str = _format_cost(cost_pts, cost_items)
             desc = rod_desc.get(level+1, "")
-            rod_lines.append(f"🔹 **Lên Cần Câu Lv{level+1}:** {cost_str}\n  └ 💬 *{desc}*")
+            icon = ROD_NAMES.get(level+1, "").split()[-1] if ROD_NAMES.get(level+1) else ""
+            rod_lines.append(f"**Lên Cần Câu Lv{level+1} {icon}:** {cost_str}\n  └ *{desc}*")
         embed.add_field(name="🎣 Nâng Cấp Cần Câu", value="\n".join(rod_lines), inline=False)
 
         axe_desc = {
@@ -89,16 +91,17 @@ def _build_recipe_embed(ctx, category: str) -> discord.Embed:
             cost_pts, cost_items = AXE_UPGRADE_COST[level]
             cost_str = _format_cost(cost_pts, cost_items)
             desc = axe_desc.get(level+1, "")
-            axe_lines.append(f"🔹 **Lên Rìu Lv{level+1}:** {cost_str}\n  └ 💬 *{desc}*")
+            icon = AXE_NAMES.get(level+1, "").split()[-1] if AXE_NAMES.get(level+1) else ""
+            axe_lines.append(f"**Lên Rìu Lv{level+1} {icon}:** {cost_str}\n  └ *{desc}*")
         embed.add_field(name="🪓 Nâng Cấp Rìu", value="\n".join(axe_lines), inline=False)
 
     elif category == "craft":
         embed.description = f"Công thức xây máy và chế biến.\nSử dụng lệnh `{ctx.prefix}craft` để xây máy."
         
         build_machine_lines = [
-            f"🔹 **[ID: 101] 🍺 Thùng Ủ Rượu (Keg):** **30** {_get_item_name('wood')} + **1** {_get_item_name('copper_bar')} + **1** {_get_item_name('iron_bar')}",
-            f"🔹 **[ID: 102] 🫙 Máy Làm Mứt (Jar):** **30** {_get_item_name('wood')} + **20** {_get_item_name('stone')} + **2** {_get_item_name('coal')}",
-            f"🔹 **[ID: 103] 🔥 Lò Rèn (Furnace):** **20** {_get_item_name('stone')} + **5** {_get_item_name('copper_ore')}",
+            f"**[ID: 101] <a:keg:1535657702020354098> Thùng Ủ Rượu (Keg):** **30** {_get_item_name('wood')} + **1** {_get_item_name('copper_bar')} + **1** {_get_item_name('iron_bar')}",
+            f"**[ID: 102] <a:jar:1535657704021037156> Máy Làm Mứt (Jar):** **30** {_get_item_name('wood')} + **20** {_get_item_name('stone')} + **2** {_get_item_name('coal')}",
+            f"**[ID: 103] <a:furnace:1535657705958674452> Lò Rèn (Furnace):** **20** {_get_item_name('stone')} + **5** {_get_item_name('copper_ore')}",
             f"*(Dùng lệnh `{ctx.prefix}craft <id>` để xây máy vào 10 slot của bạn)*"
         ]
         embed.add_field(name="🏗️ Công Thức Xây Máy", value="\n".join(build_machine_lines), inline=False)
@@ -111,7 +114,7 @@ def _build_recipe_embed(ctx, category: str) -> discord.Embed:
                 ing_str = " + ".join(f"**{v}** {_get_item_name(k)}" for k, v in r["ingredients"].items())
                 out_name = _get_item_name(r["output_id"])
                 time_str = _format_duration(r["duration_seconds"])
-                machine_lines.append(f"  └ 🔹 **{r['name']}**: {ing_str} ➡️ **{r['output_qty']}** {out_name} ({time_str})")
+                machine_lines.append(f"  └ **{r['name']}**: {ing_str} ➡️ **{r['output_qty']}** {out_name} ({time_str})")
         
         embed.add_field(name="🏭 Công Thức Chế Biến", value="\n".join(machine_lines), inline=False)
 
@@ -132,7 +135,7 @@ def _build_recipe_embed(ctx, category: str) -> discord.Embed:
             
             ing_str = " + ".join(ing_strs)
             desc = food_item.get('description', '')
-            cooking_lines.append(f"🔹 **[ID: {food_id}] {food_name}:** {ing_str}\n  └ 💬 *{desc}*")
+            cooking_lines.append(f"**[ID: {food_id}] {food_name}:** {ing_str}\n  └ *{desc}*")
         if cooking_lines:
             cooking_lines.append(f"*(Dùng lệnh `{ctx.prefix}cook <id> [số lượng]` để nấu ăn)*")
             # Split to avoid 1024 char limit
