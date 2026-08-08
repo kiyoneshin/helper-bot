@@ -32,7 +32,7 @@ _ALL_UPGRADE_ITEMS: Dict[str, dict] = {
     "iron_bar":      {"name": "Phôi Sắt",     "icon": "⬜"},
     "gold_bar":      {"name": "Phôi Vàng",    "icon": "🌟"},
     "pine_resin":    {"name": "Nhựa Thông",   "icon": "🫙"},
-    "octopus":       {"name": "Bạch Tuộc",    "icon": "🐙"},
+    "stingray":      {"name": "Cá Đuối",      "icon": "🦈"},
     "legendary_fish":{"name": "Cá Huyền Thoại","icon": "🐉"},
 }
 

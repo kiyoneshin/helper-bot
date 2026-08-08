@@ -122,21 +122,21 @@ RANK_POOL: dict[int, list[tuple[str, str, str]]] = {
         ("wood",    "Gỗ Thường", "🌲"),
     ],
     2: [
-        ("tuna",       "Cá Ngừ",     "🐡"),
+        ("lobster",    "Tôm Hùm",    "🦞"),
         ("salmon",     "Cá Hồi",     "🍣"),
         ("copper_ore", "Quặng Đồng", "🟠"),
         ("iron_ore",   "Quặng Sắt",  "⚙️"),
         ("hardwood",   "Gỗ Cứng",   "🌳"),
     ],
     3: [
-        ("pufferfish", "Cá Nóc",     "🐠"),
+        ("jellyfish",  "Sứa",        "🪼"),
         ("squid",      "Mực",        "🦑"),
         ("gold_ore",   "Quặng Vàng", "🌕"),
         ("pine_resin", "Nhựa Thông", "🫙"),
         ("sap",        "Nhựa Cây",   "💧"),
     ],
     4: [
-        ("octopus",  "Bạch Tuộc",  "🐙"),
+        ("stingray", "Cá Đuối",  "🦈"),
         ("diamond",  "Kim Cương",  "💎"),
     ],
     5: [

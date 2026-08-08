@@ -12,18 +12,18 @@ from cogs.common.item_config import ITEM_REGISTRY
 
 log = logging.getLogger("Cooking")
 
-# ID 70-79: Nấu Ăn
+# ID 71-80: Nấu Ăn
 RECIPES = {
-    70: [{"type": "tomato", "amount": 2}], # Salad Cà Chua (Instant Stamina)
-    71: [{"type": "pumpkin", "amount": 2}], # Súp Bí Ngô (Stamina Regen)
-    72: [{"type": "carp", "amount": 1}, {"type": "wheat", "amount": 1}], # Cơm Cuộn Cá (LB Drop Rate)
-    73: [{"type": "strawberry", "amount": 2}], # Sinh Tố Dâu (LB Rarity)
-    74: [{"type": "potato", "amount": 3}], # Khoai Tây Nghiền (Farm Yield)
-    75: [{"type": "carp", "amount": 1}, {"type": "hardwood", "amount": 1}], # Cá Nướng Gỗ Thơm (Rare Wood)
-    76: [{"type": "wheat", "amount": 1}, {"type": "coal", "amount": 2}], # Lúa Mì Xào Nấm (Rare Ore)
-    77: [{"type": "pumpkin", "amount": 1}, {"type": "wheat", "amount": 1}], # Bánh Bí Ngô Hấp (Rare Fish)
-    78: [{"type": "sap", "amount": 2}, {"type": "wood", "amount": 1}], # Trà Hướng Dương (Stamina Discount)
-    79: [{"type": "tuna", "amount": 1}, {"type": "salmon", "amount": 1}, {"type": "potato", "amount": 1}, {"type": "tomato", "amount": 1}] # Lẩu Thập Cẩm (All)
+    71: [{"type": "tomato", "amount": 2}], # Salad Cà Chua (Instant Stamina)
+    72: [{"type": "pumpkin", "amount": 2}], # Súp Bí Ngô (Stamina Regen)
+    73: [{"type": "carp", "amount": 1}, {"type": "wheat", "amount": 1}], # Cơm Cuộn Cá (LB Drop Rate)
+    74: [{"type": "strawberry", "amount": 2}], # Sinh Tố Dâu (LB Rarity)
+    75: [{"type": "potato", "amount": 3}], # Khoai Tây Nghiền (Farm Yield)
+    76: [{"type": "carp", "amount": 1}, {"type": "hardwood", "amount": 1}], # Cá Nướng Gỗ Thơm (Rare Wood)
+    77: [{"type": "wheat", "amount": 1}, {"type": "coal", "amount": 2}], # Bánh Mì Thợ Mỏ (Rare Ore)
+    78: [{"type": "pumpkin", "amount": 1}, {"type": "wheat", "amount": 1}], # Bánh Bí Ngô Hấp (Rare Fish)
+    79: [{"type": "sunflower", "amount": 1}, {"type": "sap", "amount": 1}], # Trà Hướng Dương (Stamina Discount)
+    80: [{"type": "lobster", "amount": 1}, {"type": "salmon", "amount": 1}, {"type": "potato", "amount": 1}, {"type": "tomato", "amount": 1}] # Lẩu Thập Cẩm (All)
 }
 
 CROP_TYPES = ["wheat", "sunflower", "star", "potato", "tomato", "strawberry", "pumpkin"]
@@ -79,7 +79,7 @@ class CookingCog(commands.Cog):
             return
 
         if food_id not in RECIPES:
-            await ctx.send("❌ ID món ăn không hợp lệ! Hãy xem `krecipe` để biết ID món ăn (70-79).")
+            await ctx.send("❌ ID món ăn không hợp lệ! Hãy xem `krecipe` để biết ID món ăn (71-80).")
             return
 
         recipe = RECIPES[food_id]

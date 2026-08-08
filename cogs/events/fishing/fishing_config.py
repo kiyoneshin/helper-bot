@@ -26,7 +26,7 @@ ROD_UPGRADE_COST: dict = {
     # level_hiện_tại -> (điểm_cần, {item_id: số_lượng})
     1: (8_000,  {"wood": 10, "copper_ore": 5}),                       # Lên Lv2: Cần Đồng
     2: (20_000, {"hardwood": 5, "iron_ore": 5}),                       # Lên Lv3: Cần Sắt
-    3: (70_000, {"gold_bar": 3, "octopus": 2, "legendary_fish": 1}),  # Lên Lv4: Cần Vàng
+    3: (70_000, {"gold_bar": 3, "stingray": 2, "legendary_fish": 1}),  # Lên Lv4: Cần Vàng
 }
 
 ROD_NAMES: dict = {
@@ -43,11 +43,11 @@ ROD_NAMES: dict = {
 FISH_LOOT: dict = {
     "trash":          {"name": "Rác",             "icon": "🥫", "weight": 35, "category": "fish", "rare_rank": 0, "price": 10},
     "carp":           {"name": "Cá Chép",         "icon": "🐟", "weight": 28, "category": "fish", "rare_rank": 1, "price": 200},
-    "tuna":           {"name": "Cá Ngừ",          "icon": "🐡", "weight": 18, "category": "fish", "rare_rank": 2, "price": 600},
+    "lobster":        {"name": "Tôm Hùm",         "icon": "🦞", "weight": 18, "category": "fish", "rare_rank": 2, "price": 600},
     "salmon":         {"name": "Cá Hồi",          "icon": "🍣", "weight": 10, "category": "fish", "rare_rank": 2, "price": 900},
-    "pufferfish":     {"name": "Cá Nóc",          "icon": "🐠", "weight": 5,  "category": "fish", "rare_rank": 3, "price": 2000},
+    "jellyfish":      {"name": "Sứa",             "icon": "🪼", "weight": 5,  "category": "fish", "rare_rank": 3, "price": 2000},
     "squid":          {"name": "Mực",             "icon": "🦑", "weight": 3,  "category": "fish", "rare_rank": 3, "price": 2500},
-    "octopus":        {"name": "Bạch Tuộc",       "icon": "🐙", "weight": 1,  "category": "fish", "rare_rank": 4, "price": 6000},
+    "stingray":       {"name": "Cá Đuối",         "icon": "🦈", "weight": 1,  "category": "fish", "rare_rank": 4, "price": 6000},
     "legendary_fish": {"name": "Cá Huyền Thoại", "icon": "🐉", "weight": 0,  "category": "fish", "rare_rank": 5, "price": 15000},
     # legendary_fish weight=0, chỉ xuất hiện khi Perfect Catch ở Lv3+
 }
@@ -66,7 +66,7 @@ def _get_weights(rod_level: int, is_perfect: bool) -> list[int]:
     Mỗi cấp giảm Rác và tăng cá hiếm.
     legendary_fish (weight=0) chỉ xuất hiện khi Perfect + Lv3+.
     
-    Layout: [trash, carp, tuna, salmon, pufferfish, squid, octopus, legendary]
+    Layout: [trash, carp, lobster, salmon, jellyfish, squid, stingray, legendary]
     """
     base = {
         1: [42, 30, 16, 8,  3, 1,  0, 0],
@@ -76,10 +76,10 @@ def _get_weights(rod_level: int, is_perfect: bool) -> list[int]:
     }
     w = list(base.get(rod_level, base[1]))
 
-    # Perfect Catch: x2 tỉ lệ Mực, Bạch Tuộc, và kích hoạt Cá Huyền Thoại ở Lv3+
+    # Perfect Catch: x2 tỉ lệ Mực, Cá Đuối, và kích hoạt Cá Huyền Thoại ở Lv3+
     if is_perfect:
         w[5] = w[5] * 2  # squid
-        w[6] = w[6] * 2  # octopus
+        w[6] = w[6] * 2  # stingray
         if rod_level >= 3:
             w[7] = max(w[7], 1)  # legendary mức 1 khi Perfect + Lv3
         if rod_level >= 4:

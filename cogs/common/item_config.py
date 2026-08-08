@@ -586,10 +586,10 @@ ITEM_REGISTRY: dict[int, ItemEntry] = {
     },
     77: {
         "id":          77,
-        "name":        "Lúa Mì Xào Nấm",
-        "icon":        "🍝",
+        "name":        "Bánh Mì Thợ Mỏ",
+        "icon":        "🥪",
         "price":       None,
-        "description": "+ 30% Tỉ lệ rơi Quặng hiếm trong 1h.",
+        "description": "+ 30% Tỷ lệ rơi Quặng hiếm trong 1h.",
         "db_key":      "food_76",
         "category":    "food",
         "usable":      True,
