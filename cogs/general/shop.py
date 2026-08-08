@@ -63,11 +63,27 @@ def build_shop_embed(category: str, author: discord.Member | discord.User, prefi
 
     items = get_buyable_items(category)
     if items:
-        lines = [
-            f"`[{item['id']}]` {item['icon']} **{item['name']}** | "
-            f"Giá: **{_format_price(item['price'])}** | {item['description']}"
-            for item in items
-        ]
+        lines = []
+        for item in items:
+            desc = item['description']
+            if category == "ring":
+                try:
+                    from cogs.events.social.marriage import RING_BUFFS
+                    buffs = RING_BUFFS.get(item["id"])
+                    if buffs:
+                        buff_texts = []
+                        if buffs["dtm_bonus"] > 0: buff_texts.append(f"+{int(buffs['dtm_bonus']*100)}% DTM")
+                        if buffs["cd_reduction"] > 0: buff_texts.append(f"-{int(buffs['cd_reduction']*100)}% Cooldown")
+                        if buffs["work_bonus"] > 1.0: buff_texts.append(f"x{buffs['work_bonus']} Lương")
+                        if buff_texts:
+                            desc = f"Buff: {', '.join(buff_texts)}"
+                except ImportError:
+                    pass
+            
+            lines.append(
+                f"`[{item['id']}]` {item['icon']} **{item['name']}** | "
+                f"Giá: **{_format_price(item['price'])}** | {desc}"
+            )
         embed.description = "\n".join(lines)
     else:
         embed.description = "*Không có vật phẩm nào để mua ở mục này.*"

@@ -197,7 +197,7 @@ ITEM_REGISTRY: dict[int, ItemEntry] = {
     31: {
         "id":          31,
         "name":        "Nhẫn Cỏ",
-        "icon":        "<:ring_01_grass:1535552595135832137>",
+        "icon":        "<:ring_01_grass:1535564483848572959>",
         "price":       1000,
         "description": "Dùng để cầu hôn bằng lệnh marry @user 31. (Xem chỉ số bằng lệnh marry)",
         "db_key":      "ring_31",
@@ -207,7 +207,7 @@ ITEM_REGISTRY: dict[int, ItemEntry] = {
     32: {
         "id":          32,
         "name":        "Nhẫn Gỗ",
-        "icon":        "<:ring_02_wood:1535552597031919616>",
+        "icon":        "<:ring_02_wood:1535564485530620005>",
         "price":       5000,
         "description": "Dùng để cầu hôn bằng lệnh marry @user 32. (Xem chỉ số bằng lệnh marry)",
         "db_key":      "ring_32",
@@ -217,7 +217,7 @@ ITEM_REGISTRY: dict[int, ItemEntry] = {
     33: {
         "id":          33,
         "name":        "Nhẫn Đá",
-        "icon":        "<:ring_03_stone:1535552599066021949>",
+        "icon":        "<:ring_03_stone:1535564487749533727>",
         "price":       15000,
         "description": "Dùng để cầu hôn bằng lệnh marry @user 33. (Xem chỉ số bằng lệnh marry)",
         "db_key":      "ring_33",
@@ -247,7 +247,7 @@ ITEM_REGISTRY: dict[int, ItemEntry] = {
     36: {
         "id":          36,
         "name":        "Nhẫn Bạc",
-        "icon":        "<:ring_06_silver:1535554192910065754>",
+        "icon":        "<:ring_06_silver:1535564489498427402>",
         "price":       100000,
         "description": "Dùng để cầu hôn bằng lệnh marry @user 36. (Xem chỉ số bằng lệnh marry)",
         "db_key":      "ring_36",
@@ -257,7 +257,7 @@ ITEM_REGISTRY: dict[int, ItemEntry] = {
     37: {
         "id":          37,
         "name":        "Nhẫn Vàng",
-        "icon":        "<:ring_07_gold:1535552605168603177>",
+        "icon":        "<:ring_07_gold:1535564491461369917>",
         "price":       150000,
         "description": "Dùng để cầu hôn bằng lệnh marry @user 37. (Xem chỉ số bằng lệnh marry)",
         "db_key":      "ring_37",
@@ -267,7 +267,7 @@ ITEM_REGISTRY: dict[int, ItemEntry] = {
     38: {
         "id":          38,
         "name":        "Nhẫn Hồng Ngọc",
-        "icon":        "<:ring_08_ruby:1535552607483859055>",
+        "icon":        "<:ring_08_ruby:1535564493755523112>",
         "price":       250000,
         "description": "Dùng để cầu hôn bằng lệnh marry @user 38. (Xem chỉ số bằng lệnh marry)",
         "db_key":      "ring_38",
@@ -287,7 +287,7 @@ ITEM_REGISTRY: dict[int, ItemEntry] = {
     40: {
         "id":          40,
         "name":        "Nhẫn Kim Cương",
-        "icon":        "<:ring_10_diamond:1535552611439345714>",
+        "icon":        "<:ring_10_diamond:1535564495861055488>",
         "price":       800000,
         "description": "Dùng để cầu hôn bằng lệnh marry @user 40. (Xem chỉ số bằng lệnh marry)",
         "db_key":      "ring_40",
