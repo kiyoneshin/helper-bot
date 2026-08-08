@@ -53,25 +53,43 @@ def _build_recipe_embed(ctx, category: str) -> discord.Embed:
     if category == "upgrade":
         embed.description = f"Công thức nâng cấp công cụ.\nSử dụng lệnh `{ctx.prefix}upgrade` để nâng cấp."
         
+        pickaxe_desc = {
+            2: "Mở khóa tỷ lệ rớt Quặng Vàng (2%)",
+            3: "Mở khóa tỷ lệ rớt Kim Cương (1%)",
+            4: "Tăng mạnh tỷ lệ rớt Vàng và Kim Cương (4%)"
+        }
         pickaxe_lines = []
         for level in range(1, MAX_PICKAXE_LEVEL):
             cost_pts, cost_items = PICKAXE_UPGRADE_COST[level]
             cost_str = _format_cost(cost_pts, cost_items)
-            pickaxe_lines.append(f"🔹 **Lên Cuốc Lv{level+1}:** {cost_str}")
+            desc = pickaxe_desc.get(level+1, "")
+            pickaxe_lines.append(f"🔹 **Lên Cuốc Lv{level+1}:** {cost_str}\n  └ 💬 *{desc}*")
         embed.add_field(name="⛏️ Nâng Cấp Cuốc Chim", value="\n".join(pickaxe_lines), inline=False)
 
+        rod_desc = {
+            2: "Mở khóa tỷ lệ rớt Bạch Tuộc (2%)",
+            3: "Mở khóa rớt Cá Huyền Thoại khi Perfect Catch",
+            4: "Tăng mạnh tỷ lệ rớt Cá Huyền Thoại (2% - 5%)"
+        }
         rod_lines = []
         for level in range(1, MAX_ROD_LEVEL):
             cost_pts, cost_items = ROD_UPGRADE_COST[level]
             cost_str = _format_cost(cost_pts, cost_items)
-            rod_lines.append(f"🔹 **Lên Cần Câu Lv{level+1}:** {cost_str}")
+            desc = rod_desc.get(level+1, "")
+            rod_lines.append(f"🔹 **Lên Cần Câu Lv{level+1}:** {cost_str}\n  └ 💬 *{desc}*")
         embed.add_field(name="🎣 Nâng Cấp Cần Câu", value="\n".join(rod_lines), inline=False)
 
+        axe_desc = {
+            2: "Mở khóa tỷ lệ rớt Nhựa Cây (1%)",
+            3: "Tăng mạnh rớt Gỗ Cứng (18%) và Nhựa Cây (3%)",
+            4: "Tăng mạnh rớt Nhựa Cây (6%) và Nhựa Thông (10%)"
+        }
         axe_lines = []
         for level in range(1, MAX_AXE_LEVEL):
             cost_pts, cost_items = AXE_UPGRADE_COST[level]
             cost_str = _format_cost(cost_pts, cost_items)
-            axe_lines.append(f"🔹 **Lên Rìu Lv{level+1}:** {cost_str}")
+            desc = axe_desc.get(level+1, "")
+            axe_lines.append(f"🔹 **Lên Rìu Lv{level+1}:** {cost_str}\n  └ 💬 *{desc}*")
         embed.add_field(name="🪓 Nâng Cấp Rìu", value="\n".join(axe_lines), inline=False)
 
     elif category == "craft":
