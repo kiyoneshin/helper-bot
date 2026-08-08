@@ -160,9 +160,15 @@ async def fetch_anime_gif(action: str) -> Optional[str]:
 
 RING_BUFFS = {
     31: {"dtm_bonus": 0.0, "cd_reduction": 0.0, "work_bonus": 1.0},
-    32: {"dtm_bonus": 0.1, "cd_reduction": 0.0, "work_bonus": 1.0},
-    33: {"dtm_bonus": 0.2, "cd_reduction": 0.1, "work_bonus": 1.0},
-    34: {"dtm_bonus": 0.5, "cd_reduction": 0.25, "work_bonus": 1.5},
+    32: {"dtm_bonus": 0.05, "cd_reduction": 0.0, "work_bonus": 1.0},
+    33: {"dtm_bonus": 0.1, "cd_reduction": 0.05, "work_bonus": 1.0},
+    34: {"dtm_bonus": 0.15, "cd_reduction": 0.1, "work_bonus": 1.1},
+    35: {"dtm_bonus": 0.2, "cd_reduction": 0.15, "work_bonus": 1.1},
+    36: {"dtm_bonus": 0.25, "cd_reduction": 0.2, "work_bonus": 1.2},
+    37: {"dtm_bonus": 0.3, "cd_reduction": 0.25, "work_bonus": 1.2},
+    38: {"dtm_bonus": 0.35, "cd_reduction": 0.3, "work_bonus": 1.3},
+    39: {"dtm_bonus": 0.4, "cd_reduction": 0.35, "work_bonus": 1.4},
+    40: {"dtm_bonus": 0.5, "cd_reduction": 0.4, "work_bonus": 1.5},
 }
 
 class MarryConfirmView(discord.ui.View):
@@ -491,7 +497,7 @@ class MarriageCog(commands.Cog):
             return await ctx.send("❌ Một trong hai người đã có gia đình! Cấm ngoại tình!")
             
         if ring_id not in RING_BUFFS:
-            return await ctx.send("❌ Nhẫn không hợp lệ! Vui lòng chọn nhẫn ID từ 31 đến 34.")
+            return await ctx.send("❌ Nhẫn không hợp lệ! Vui lòng chọn nhẫn ID từ 31 đến 40.")
             
         # Kiểm tra inventory
         await get_or_create_event_profile(self.bot, uid)
@@ -630,7 +636,7 @@ class MarriageCog(commands.Cog):
             
         current_ring = mar.get("ring_id", 31)
         if ring_id not in RING_BUFFS:
-            return await ctx.send("❌ ID Nhẫn không hợp lệ! Vui lòng chọn nhẫn ID từ 32 đến 34.")
+            return await ctx.send("❌ ID Nhẫn không hợp lệ! Vui lòng chọn nhẫn ID từ 32 đến 40.")
             
         if ring_id <= current_ring:
             return await ctx.send(f"❌ Bạn chỉ có thể đổi sang nhẫn xịn hơn (ID > {current_ring})!")

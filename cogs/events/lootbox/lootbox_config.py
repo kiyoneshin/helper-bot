@@ -10,12 +10,12 @@ from typing import NamedTuple, Optional
 # ---------------------------------------------------------------------------
 # ID LOOTBOX (khớp với item_config.py ID 60-65)
 # ---------------------------------------------------------------------------
-LB_COMMON    = 60
-LB_UNCOMMON  = 61
-LB_RARE      = 62
-LB_EPIC      = 63
-LB_LEGENDARY = 64
-LB_GODLY     = 65
+LB_COMMON    = 61
+LB_UNCOMMON  = 62
+LB_RARE      = 63
+LB_EPIC      = 64
+LB_LEGENDARY = 65
+LB_GODLY     = 66
 
 # Chữ viết tắt tier → ID
 TIER_ALIASES: dict[str, int] = {
@@ -37,12 +37,12 @@ TIER_NAMES: dict[int, str] = {
 }
 
 TIER_EMOJIS: dict[int, str] = {
-    LB_COMMON:    "📦",
-    LB_UNCOMMON:  "🟢",
-    LB_RARE:      "🔵",
-    LB_EPIC:      "🟣",
-    LB_LEGENDARY: "🟠",
-    LB_GODLY:     "🌟",
+    LB_COMMON:    "<:lb_01_common:1535552629092913172>",
+    LB_UNCOMMON:  "<:lb_02_uncommon:1535552631257174138>",
+    LB_RARE:      "<:lb_03_rare:1535552633660776509>",
+    LB_EPIC:      "<:lb_04_epic:1535552635778760774>",
+    LB_LEGENDARY: "<:lb_05_legendary:1535552637850624011>",
+    LB_GODLY:     "<:lb_06_godly:1535552639834783764>",
 }
 
 TIER_COLORS: dict[int, int] = {

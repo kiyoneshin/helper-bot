@@ -1,22 +1,14 @@
 """
 item_config.py — Bảng cấu hình trung tâm cho toàn bộ vật phẩm của bot.
-======================================================================
-Là nguồn sự thật duy nhất (single source of truth) cho tất cả items.
-
 Quy ước ID:
-  0  –  9 : Sự kiện / Event   (lottery, event items)
-  10 – 19 : Nông trại / Farm  (hạt giống)
-  20 – 29 : Chợ đen / Black Market
-
-Cấu trúc mỗi item:
-  id          (int)          : ID số duy nhất.
-  name        (str)          : Tên hiển thị.
-  icon        (str)          : Emoji đại diện.
-  price       (int | None)   : Giá mua (None = không thể mua).
-  description (str)          : Mô tả vật phẩm.
-  db_key      (str)          : Key lưu trong Database.
-  category    (str)          : "event" | "farm" | "blackmarket"
-  usable      (bool)         : Có dùng bằng lệnh use không.
+  0: Vé số
+  11-20: Sự kiện (Event)
+  21-30: Chợ đen (BM)
+  31-40: Nhẫn (Ring)
+  41-50: Quà (Gift)
+  51-60: Nông trại (Farm)
+  61-70: Lootbox
+  71-80: Đồ ăn (Food)
 """
 
 from typing import TypedDict
@@ -31,26 +23,19 @@ class ItemEntry(TypedDict):
     category: str
     usable: bool
 
-# ============================================================
-# REGISTRY CHÍNH — Dict[int, ItemEntry]
-# ============================================================
 ITEM_REGISTRY: dict[int, ItemEntry] = {
-
-    # ──────────────────────────────────────────────────────────
-    # ID 0–9 : SỰ KIỆN (EVENT)
-    # ──────────────────────────────────────────────────────────
     0: {
         "id":          0,
         "name":        "Vé Xổ Số",
         "icon":        "🎟️",
         "price":       50,
         "description": "Vé tham gia xổ số hàng ngày. Tối đa 200 vé/người.",
-        "db_key":      "lottery_ticket",   # xử lý đặc biệt qua bảng lottery_tickets
+        "db_key":      "lottery_ticket",
         "category":    "event",
         "usable":      False,
     },
-    1: {
-        "id":          1,
+    11: {
+        "id":          11,
         "name":        "Hộp Quà Bí Ẩn (Gacha)",
         "icon":        "🎁",
         "price":       2500,
@@ -59,8 +44,8 @@ ITEM_REGISTRY: dict[int, ItemEntry] = {
         "category":    "event",
         "usable":      True,
     },
-    2: {
-        "id":          2,
+    12: {
+        "id":          12,
         "name":        "Role Màu Sự Kiện",
         "icon":        "🎭",
         "price":       10000,
@@ -69,8 +54,8 @@ ITEM_REGISTRY: dict[int, ItemEntry] = {
         "category":    "event",
         "usable":      False,
     },
-    3: {
-        "id":          3,
+    13: {
+        "id":          13,
         "name":        "Role Màu Thiết Kế Riêng",
         "icon":        "🎨",
         "price":       30000,
@@ -79,8 +64,8 @@ ITEM_REGISTRY: dict[int, ItemEntry] = {
         "category":    "event",
         "usable":      False,
     },
-    4: {
-        "id":          4,
+    14: {
+        "id":          14,
         "name":        "Role Biểu Tượng Vĩnh Viễn",
         "icon":        "👑",
         "price":       70000,
@@ -89,8 +74,8 @@ ITEM_REGISTRY: dict[int, ItemEntry] = {
         "category":    "event",
         "usable":      False,
     },
-    5: {
-        "id":          5,
+    15: {
+        "id":          15,
         "name":        "Vật Phẩm Tối Cao",
         "icon":        "🏆",
         "price":       110000,
@@ -99,243 +84,216 @@ ITEM_REGISTRY: dict[int, ItemEntry] = {
         "category":    "event",
         "usable":      False,
     },
-    6: {
-        "id":          6,
+    16: {
+        "id":          16,
         "name":        "Thẻ Tăng Vận",
         "icon":        "✨",
-        "price":       None,              # Không bán trong shop — chỉ nhận qua sự kiện
+        "price":       None,
         "description": "Tăng 50% tỉ lệ drop lootbox từ fish/mine/chop và tăng tỉ lệ rank cao khi mở hộp trong 30 phút.",
         "db_key":      "boost_card",
         "category":    "event",
         "usable":      True,
     },
-
-    # ──────────────────────────────────────────────────────────
-    # ID 10–19 : NÔNG TRẠI (FARM — Hạt giống)
-    # ──────────────────────────────────────────────────────────
-    10: {
-        "id":          10,
-        "name":        "Hạt Giống Lúa Mì",
-        "icon":        "🌾",
-        "price":       100,
-        "description": "Cây cơ bản, thu hoạch sau 30 phút.",
-        "db_key":      "seed_wheat",       # key trong farm_data.inventory
-        "category":    "farm",
-        "usable":      False,              # Dùng qua lệnh farm, không lệnh use
-    },
-    11: {
-        "id":          11,
-        "name":        "Hạt Giống Hướng Dương",
-        "icon":        "🌻",
-        "price":       500,
-        "description": "Lợi nhuận cao, thu hoạch sau 12 tiếng.",
-        "db_key":      "seed_sunflower",
-        "category":    "farm",
-        "usable":      False,
-    },
-    12: {
-        "id":          12,
-        "name":        "Hạt Giống Ngôi Sao",
-        "icon":        "⭐",
-        "price":       2000,
-        "description": "Cây hiếm với phần thưởng ngẫu nhiên, thu hoạch sau 24 tiếng.",
-        "db_key":      "seed_star",
-        "category":    "farm",
-        "usable":      False,
-    },
-    13: {
-        "id":          13,
-        "name":        "Hạt Giống Khoai Tây",
-        "icon":        "🥔",
-        "price":       200,
-        "description": "Thu hoạch sau 1 tiếng. 20% cơ hội nhân đôi sản lượng!",
-        "db_key":      "seed_potato",
-        "category":    "farm",
-        "usable":      False,
-    },
-    14: {
-        "id":          14,
-        "name":        "Hạt Giống Cà Chua",
-        "icon":        "🍅",
-        "price":       400,
-        "description": "Thu hoạch sau 3 tiếng. Nguyên liệu Mứt Cà Chua.",
-        "db_key":      "seed_tomato",
-        "category":    "farm",
-        "usable":      False,
-    },
-    15: {
-        "id":          15,
-        "name":        "Hạt Giống Dâu Tây",
-        "icon":        "🍓",
-        "price":       800,
-        "description": "Thu hoạch sau 6 tiếng. Nguyên liệu Rượu Dâu cao cấp.",
-        "db_key":      "seed_strawberry",
-        "category":    "farm",
-        "usable":      False,
-    },
-    16: {
-        "id":          16,
-        "name":        "Hạt Giống Bí Ngô",
-        "icon":        "🎃",
-        "price":       1200,
-        "description": "Thu hoạch sau 8 tiếng. Nguyên liệu Mứt Bí Ngô thơm ngon.",
-        "db_key":      "seed_pumpkin",
-        "category":    "farm",
-        "usable":      False,
-    },
-
-
-    # ──────────────────────────────────────────────────────────
-    # ID 20–29 : CHỢ ĐEN (BLACK MARKET)
-    # ──────────────────────────────────────────────────────────
-    20: {
-        "id":          20,
+    21: {
+        "id":          21,
         "name":        "Bom Ảo Giác",
         "icon":        "💣",
-        "price":       1500,               # Tier 1 — Gây khó chịu nhẹ, không mất gì thực sự
+        "price":       1500,
         "description": "Bot tag mục tiêu 3 lần liên tiếp rồi xóa ngay lập tức (Ghost Ping).",
         "db_key":      "ghost_ping_card",
         "category":    "blackmarket",
         "usable":      True,
     },
-    21: {
-        "id":          21,
+    22: {
+        "id":          22,
         "name":        "Búa Gõ 1 Phút",
         "icon":        "🔨",
-        "price":       3000,               # Tier 2 — Phiền toái ngắn hạn
+        "price":       3000,
         "description": "Timeout mục tiêu 1 phút (cấm chat/voice).",
         "db_key":      "timeout_1m",
         "category":    "blackmarket",
         "usable":      True,
     },
-    22: {
-        "id":          22,
+    23: {
+        "id":          23,
         "name":        "Thẻ Đổi Tên",
         "icon":        "🤡",
-        "price":       5000,               # Tier 2 — Xấu hổ nhẹ, đổi nick tấu hài
+        "price":       5000,
         "description": "Buộc mục tiêu đổi biệt danh thành tên tấu hài tùy ý người dùng.",
         "db_key":      "nickname_change",
         "category":    "blackmarket",
         "usable":      True,
     },
-    23: {
-        "id":          23,
+    24: {
+        "id":          24,
         "name":        "Bao Tay Đạo Chích",
         "icon":        "🧤",
-        "price":       7000,               # Tier 3 — Mất điểm thực, ảnh hưởng kinh tế
+        "price":       7000,
         "description": "Trộm ngẫu nhiên 50–500 điểm sự kiện của mục tiêu.",
         "db_key":      "thief_card",
         "category":    "blackmarket",
         "usable":      True,
     },
-    24: {
-        "id":          24,
+    25: {
+        "id":          25,
         "name":        "Thẻ Rút Phích Cắm",
         "icon":        "🔌",
-        "price":       8000,               # Tier 3 — Cướp trải nghiệm voice ngay lập tức
+        "price":       8000,
         "description": "Đá văng mục tiêu khỏi Voice Channel ngay lập tức.",
         "db_key":      "disconnect_card",
         "category":    "blackmarket",
         "usable":      True,
     },
-    25: {
-        "id":          25,
+    26: {
+        "id":          26,
         "name":        "Búa Gõ 5 Phút",
         "icon":        "🔨",
-        "price":       10000,              # Tier 4 — Phiền toái dài hơn, ngăn chat/voice 5p
+        "price":       10000,
         "description": "Timeout mục tiêu 5 phút (cấm chat/voice).",
         "db_key":      "timeout_5m",
         "category":    "blackmarket",
         "usable":      True,
     },
-    26: {
-        "id":          26,
+    27: {
+        "id":          27,
         "name":        "Thẻ Miễn Nhiễm",
         "icon":        "🛡️",
-        "price":       12000,              # Tier 4 — Phòng thủ cao cấp
+        "price":       12000,
         "description": "Tự động chặn 1 lần bị người khác dùng thẻ xấu lên mình.",
         "db_key":      "shield_card",
         "category":    "blackmarket",
         "usable":      True,
     },
-    27: {
-        "id":          27,
+    28: {
+        "id":          28,
         "name":        "Thẻ Đặc Xá",
         "icon":        "🕊️",
-        "price":       15000,              # Tier 5 — Phá vỡ hình phạt tống giam của người khác
+        "price":       15000,
         "description": "Cứu người khác khỏi tù hoặc tự cứu mình.",
         "db_key":      "free_card",
         "category":    "blackmarket",
         "usable":      True,
     },
-    28: {
-        "id":          28,
+    29: {
+        "id":          29,
         "name":        "Thẻ Tống Giam",
         "icon":        "🚔",
-        "price":       25000,              # Tier 5 — Mạnh nhất, cướp toàn bộ quyền hạn người khác
+        "price":       25000,
         "description": "Gửi 1 người vào chuồng chó (50 lần lau dọn).",
         "db_key":      "jail_card",
         "category":    "blackmarket",
         "usable":      True,
     },
-    29: {
-        "id":          29,
+    30: {
+        "id":          30,
         "name":        "Trát Hầu Tòa",
         "icon":        "📜",
-        "price":       20000,              # Tier 5 — Gây hoảng loạn tâm lý tạm thời
+        "price":       20000,
         "description": "Gửi một Embed dọa ban vĩnh viễn cực kỳ nghiêm trọng rồi chốt là đùa.",
         "db_key":      "fake_ban_card",
         "category":    "blackmarket",
         "usable":      True,
     },
-    
-    # ──────────────────────────────────────────────────────────
-    # ID 30–39 : NHẪN CƯỚI & TRANG SỨC (MARRIAGE)
-    # ──────────────────────────────────────────────────────────
     31: {
         "id":          31,
         "name":        "Nhẫn Cỏ",
-        "icon":        "🌿",
+        "icon":        "<:ring_01_grass:1535552595135832137>",
         "price":       1000,
-        "description": "Biểu tượng tình yêu giản dị. (Không có buff). Dùng: lệnh marry @user 31",
+        "description": "Dùng để cầu hôn bằng lệnh marry @user 31. (Xem chỉ số bằng lệnh marry)",
         "db_key":      "ring_31",
         "category":    "ring",
         "usable":      False,
     },
     32: {
         "id":          32,
-        "name":        "Nhẫn Bạc",
-        "icon":        "💍",
-        "price":       10000,
-        "description": "Tăng 10% Điểm Thân Mật (DTM) khi tương tác. Mở khóa kadopt.",
+        "name":        "Nhẫn Gỗ",
+        "icon":        "<:ring_02_wood:1535552597031919616>",
+        "price":       5000,
+        "description": "Dùng để cầu hôn bằng lệnh marry @user 32. (Xem chỉ số bằng lệnh marry)",
         "db_key":      "ring_32",
         "category":    "ring",
         "usable":      False,
     },
     33: {
         "id":          33,
-        "name":        "Nhẫn Vàng",
-        "icon":        "🌟",
-        "price":       50000,
-        "description": "Tăng 20% DTM. Giảm 10% Cooldown lệnh hành động.",
+        "name":        "Nhẫn Đá",
+        "icon":        "<:ring_03_stone:1535552599066021949>",
+        "price":       15000,
+        "description": "Dùng để cầu hôn bằng lệnh marry @user 33. (Xem chỉ số bằng lệnh marry)",
         "db_key":      "ring_33",
         "category":    "ring",
         "usable":      False,
     },
     34: {
         "id":          34,
-        "name":        "Nhẫn Kim Cương",
-        "icon":        "💎",
-        "price":       200000,
-        "description": "Tăng 50% DTM. Giảm 25% Cooldown. Nhân 1.5 phần thưởng khi kwork chung.",
+        "name":        "Nhẫn Đồng",
+        "icon":        "<:ring_04_copper:1535552601272098897>",
+        "price":       30000,
+        "description": "Dùng để cầu hôn bằng lệnh marry @user 34. (Xem chỉ số bằng lệnh marry)",
         "db_key":      "ring_34",
         "category":    "ring",
         "usable":      False,
     },
-    
-    # ──────────────────────────────────────────────────────────
-    # ID 41-50: QUÀ TẶNG (GIFT)
-    # ──────────────────────────────────────────────────────────
+    35: {
+        "id":          35,
+        "name":        "Nhẫn Sắt",
+        "icon":        "<:ring_05_iron:1535552603038023710>",
+        "price":       60000,
+        "description": "Dùng để cầu hôn bằng lệnh marry @user 35. (Xem chỉ số bằng lệnh marry)",
+        "db_key":      "ring_35",
+        "category":    "ring",
+        "usable":      False,
+    },
+    36: {
+        "id":          36,
+        "name":        "Nhẫn Bạc",
+        "icon":        "<:ring_06_silver:1535554192910065754>",
+        "price":       100000,
+        "description": "Dùng để cầu hôn bằng lệnh marry @user 36. (Xem chỉ số bằng lệnh marry)",
+        "db_key":      "ring_36",
+        "category":    "ring",
+        "usable":      False,
+    },
+    37: {
+        "id":          37,
+        "name":        "Nhẫn Vàng",
+        "icon":        "<:ring_07_gold:1535552605168603177>",
+        "price":       150000,
+        "description": "Dùng để cầu hôn bằng lệnh marry @user 37. (Xem chỉ số bằng lệnh marry)",
+        "db_key":      "ring_37",
+        "category":    "ring",
+        "usable":      False,
+    },
+    38: {
+        "id":          38,
+        "name":        "Nhẫn Hồng Ngọc",
+        "icon":        "<:ring_08_ruby:1535552607483859055>",
+        "price":       250000,
+        "description": "Dùng để cầu hôn bằng lệnh marry @user 38. (Xem chỉ số bằng lệnh marry)",
+        "db_key":      "ring_38",
+        "category":    "ring",
+        "usable":      False,
+    },
+    39: {
+        "id":          39,
+        "name":        "Nhẫn Ngọc Lục Bảo",
+        "icon":        "<:ring_09_emerald:1535552609669353492>",
+        "price":       400000,
+        "description": "Dùng để cầu hôn bằng lệnh marry @user 39. (Xem chỉ số bằng lệnh marry)",
+        "db_key":      "ring_39",
+        "category":    "ring",
+        "usable":      False,
+    },
+    40: {
+        "id":          40,
+        "name":        "Nhẫn Kim Cương",
+        "icon":        "<:ring_10_diamond:1535552611439345714>",
+        "price":       800000,
+        "description": "Dùng để cầu hôn bằng lệnh marry @user 40. (Xem chỉ số bằng lệnh marry)",
+        "db_key":      "ring_40",
+        "category":    "ring",
+        "usable":      False,
+    },
     41: {
         "id":          41,
         "name":        "Hoa Hồng",
@@ -436,76 +394,138 @@ ITEM_REGISTRY: dict[int, ItemEntry] = {
         "category":    "gift",
         "usable":      False,
     },
-
-    # ──────────────────────────────────────────────────────────
-    # ID 60–65 : LOOTBOX
-    # ──────────────────────────────────────────────────────────
-    60: {
-        "id":          60,
+    51: {
+        "id":          51,
+        "name":        "Hạt Giống Lúa Mì",
+        "icon":        "🌾",
+        "price":       100,
+        "description": "Cây cơ bản, thu hoạch sau 30 phút.",
+        "db_key":      "seed_wheat",
+        "category":    "farm",
+        "usable":      False,
+    },
+    52: {
+        "id":          52,
+        "name":        "Hạt Giống Hướng Dương",
+        "icon":        "🌻",
+        "price":       500,
+        "description": "Lợi nhuận cao, thu hoạch sau 12 tiếng.",
+        "db_key":      "seed_sunflower",
+        "category":    "farm",
+        "usable":      False,
+    },
+    53: {
+        "id":          53,
+        "name":        "Hạt Giống Ngôi Sao",
+        "icon":        "⭐",
+        "price":       2000,
+        "description": "Cây hiếm với phần thưởng ngẫu nhiên, thu hoạch sau 24 tiếng.",
+        "db_key":      "seed_star",
+        "category":    "farm",
+        "usable":      False,
+    },
+    54: {
+        "id":          54,
+        "name":        "Hạt Giống Khoai Tây",
+        "icon":        "🥔",
+        "price":       200,
+        "description": "Thu hoạch sau 1 tiếng. 20% cơ hội nhân đôi sản lượng!",
+        "db_key":      "seed_potato",
+        "category":    "farm",
+        "usable":      False,
+    },
+    55: {
+        "id":          55,
+        "name":        "Hạt Giống Cà Chua",
+        "icon":        "🍅",
+        "price":       400,
+        "description": "Thu hoạch sau 3 tiếng. Nguyên liệu Mứt Cà Chua.",
+        "db_key":      "seed_tomato",
+        "category":    "farm",
+        "usable":      False,
+    },
+    56: {
+        "id":          56,
+        "name":        "Hạt Giống Dâu Tây",
+        "icon":        "🍓",
+        "price":       800,
+        "description": "Thu hoạch sau 6 tiếng. Nguyên liệu Rượu Dâu cao cấp.",
+        "db_key":      "seed_strawberry",
+        "category":    "farm",
+        "usable":      False,
+    },
+    57: {
+        "id":          57,
+        "name":        "Hạt Giống Bí Ngô",
+        "icon":        "🎃",
+        "price":       1200,
+        "description": "Thu hoạch sau 8 tiếng. Nguyên liệu Mứt Bí Ngô thơm ngon.",
+        "db_key":      "seed_pumpkin",
+        "category":    "farm",
+        "usable":      False,
+    },
+    61: {
+        "id":          61,
         "name":        "Lootbox Common",
-        "icon":        "📦",
+        "icon":        "<:lb_01_common:1535552629092913172>",
         "price":       500,
         "description": "Hộp may mắn phổ thông. Drop vật phẩm rank 0-1 từ fish/mine/chop.",
         "db_key":      "lb_60",
         "category":    "lootbox",
         "usable":      True,
     },
-    61: {
-        "id":          61,
+    62: {
+        "id":          62,
         "name":        "Lootbox Uncommon",
-        "icon":        "🟢",
-        "price":       1_500,
+        "icon":        "<:lb_02_uncommon:1535552631257174138>",
+        "price":       1500,
         "description": "Hộp may mắn không phổ biến. Drop vật phẩm rank 0-2.",
         "db_key":      "lb_61",
         "category":    "lootbox",
         "usable":      True,
     },
-    62: {
-        "id":          62,
+    63: {
+        "id":          63,
         "name":        "Lootbox Rare",
-        "icon":        "🔵",
-        "price":       4_000,
+        "icon":        "<:lb_03_rare:1535552633660776509>",
+        "price":       4000,
         "description": "Hộp may mắn hiếm. Drop vật phẩm rank 0-3, có thể ra Mực hoặc Quặng Vàng.",
         "db_key":      "lb_62",
         "category":    "lootbox",
         "usable":      True,
     },
-    63: {
-        "id":          63,
+    64: {
+        "id":          64,
         "name":        "Lootbox Epic",
-        "icon":        "🟣",
-        "price":       12_000,
+        "icon":        "<:lb_04_epic:1535552635778760774>",
+        "price":       12000,
         "description": "Hộp may mắn sử thi. Drop vật phẩm rank 0-4, có thể ra Bạch Tuộc hay Kim Cương!",
         "db_key":      "lb_63",
         "category":    "lootbox",
         "usable":      True,
     },
-    64: {
-        "id":          64,
+    65: {
+        "id":          65,
         "name":        "Lootbox Legendary",
-        "icon":        "🟠",
-        "price":       None,              # Không bán — chỉ earn qua fish/mine/chop
+        "icon":        "<:lb_05_legendary:1535552637850624011>",
+        "price":       None,
         "description": "Hộp huyền thoại. Drop rank 0-5 với cơ hội ra Cá Huyền Thoại!",
         "db_key":      "lb_64",
         "category":    "lootbox",
         "usable":      True,
     },
-    65: {
-        "id":          65,
+    66: {
+        "id":          66,
         "name":        "Lootbox Godly",
-        "icon":        "🌟",
-        "price":       None,              # Không bán — cực hiếm, chỉ drop ngẫu nhiên
+        "icon":        "<:lb_06_godly:1535552639834783764>",
+        "price":       None,
         "description": "Hộp thần thánh siêu hiếm. Drop rank cao nhất + Bonus điểm/thẻ BM!",
         "db_key":      "lb_65",
         "category":    "lootbox",
         "usable":      True,
     },
-    
-    # ──────────────────────────────────────────────────────────
-    # ID 70–79 : NẤU ĂN (COOKING - FOODS)
-    # ──────────────────────────────────────────────────────────
-    70: {
-        "id":          70,
+    71: {
+        "id":          71,
         "name":        "Salad Cà Chua",
         "icon":        "🥗",
         "price":       None,
@@ -514,8 +534,8 @@ ITEM_REGISTRY: dict[int, ItemEntry] = {
         "category":    "food",
         "usable":      True,
     },
-    71: {
-        "id":          71,
+    72: {
+        "id":          72,
         "name":        "Súp Bí Ngô",
         "icon":        "🎃",
         "price":       None,
@@ -524,8 +544,8 @@ ITEM_REGISTRY: dict[int, ItemEntry] = {
         "category":    "food",
         "usable":      True,
     },
-    72: {
-        "id":          72,
+    73: {
+        "id":          73,
         "name":        "Cơm Cuộn Cá",
         "icon":        "🍱",
         "price":       None,
@@ -534,8 +554,8 @@ ITEM_REGISTRY: dict[int, ItemEntry] = {
         "category":    "food",
         "usable":      True,
     },
-    73: {
-        "id":          73,
+    74: {
+        "id":          74,
         "name":        "Sinh Tố Dâu",
         "icon":        "🍹",
         "price":       None,
@@ -544,8 +564,8 @@ ITEM_REGISTRY: dict[int, ItemEntry] = {
         "category":    "food",
         "usable":      True,
     },
-    74: {
-        "id":          74,
+    75: {
+        "id":          75,
         "name":        "Khoai Tây Nghiền",
         "icon":        "🥔",
         "price":       None,
@@ -554,8 +574,8 @@ ITEM_REGISTRY: dict[int, ItemEntry] = {
         "category":    "food",
         "usable":      True,
     },
-    75: {
-        "id":          75,
+    76: {
+        "id":          76,
         "name":        "Cá Nướng Gỗ Thơm",
         "icon":        "🍢",
         "price":       None,
@@ -564,8 +584,8 @@ ITEM_REGISTRY: dict[int, ItemEntry] = {
         "category":    "food",
         "usable":      True,
     },
-    76: {
-        "id":          76,
+    77: {
+        "id":          77,
         "name":        "Lúa Mì Xào Nấm",
         "icon":        "🍝",
         "price":       None,
@@ -574,8 +594,8 @@ ITEM_REGISTRY: dict[int, ItemEntry] = {
         "category":    "food",
         "usable":      True,
     },
-    77: {
-        "id":          77,
+    78: {
+        "id":          78,
         "name":        "Bánh Bí Ngô Hấp",
         "icon":        "🥧",
         "price":       None,
@@ -584,8 +604,8 @@ ITEM_REGISTRY: dict[int, ItemEntry] = {
         "category":    "food",
         "usable":      True,
     },
-    78: {
-        "id":          78,
+    79: {
+        "id":          79,
         "name":        "Trà Hướng Dương",
         "icon":        "🍵",
         "price":       None,
@@ -594,8 +614,8 @@ ITEM_REGISTRY: dict[int, ItemEntry] = {
         "category":    "food",
         "usable":      True,
     },
-    79: {
-        "id":          79,
+    80: {
+        "id":          80,
         "name":        "Lẩu Thập Cẩm",
         "icon":        "🍲",
         "price":       None,
@@ -603,34 +623,14 @@ ITEM_REGISTRY: dict[int, ItemEntry] = {
         "db_key":      "food_79",
         "category":    "food",
         "usable":      True,
-    }
+    },
 }
 
-# ============================================================
-# LOOKUP HELPERS — Tiện ích tra cứu ngược
-# ============================================================
-
-def get_item_by_id(item_id: int) -> ItemEntry | None:
-    """Tra cứu item theo ID số."""
+def get_item_by_id(item_id: int):
     return ITEM_REGISTRY.get(item_id)
 
-def get_item_by_db_key(db_key: str) -> ItemEntry | None:
-    """Tra cứu item theo db_key (tên cột/key trong DB)."""
+def get_item_by_db_key(db_key: str):
     for item in ITEM_REGISTRY.values():
         if item["db_key"] == db_key:
             return item
     return None
-
-def get_items_by_category(category: str) -> list[ItemEntry]:
-    """Lấy danh sách items theo category, sắp xếp theo ID."""
-    return sorted(
-        [item for item in ITEM_REGISTRY.values() if item["category"] == category],
-        key=lambda x: x["id"],
-    )
-
-def get_buyable_items(category: str) -> list[ItemEntry]:
-    """Lấy danh sách items CÓ THỂ MUA (price != None) theo category."""
-    return [
-        item for item in get_items_by_category(category)
-        if item["price"] is not None
-    ]
