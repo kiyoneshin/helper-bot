@@ -145,7 +145,7 @@ RECIPES: Dict[str, RecipeConfig] = {
 
 MACHINES: Dict[str, MachineConfig] = {
     "keg": {
-        "id": 61,
+        "id": 101,
         "name": "Thùng Ủ Rượu",
         "icon": "🍺",
         "description": "Biến nông sản thành đồ uống giá trị cao.",
@@ -154,7 +154,7 @@ MACHINES: Dict[str, MachineConfig] = {
         "ingredients": {"wood_normal": 30, "copper_bar": 1, "iron_bar": 1}
     },
     "jar": {
-        "id": 62,
+        "id": 102,
         "name": "Máy Làm Mứt",
         "icon": "🫙",
         "description": "Chế biến rau củ thành mứt thơm ngon.",
@@ -163,7 +163,7 @@ MACHINES: Dict[str, MachineConfig] = {
         "ingredients": {"wood_normal": 30, "stone": 20, "coal": 2}
     },
     "furnace": {
-        "id": 63,
+        "id": 103,
         "name": "Lò Rèn",
         "icon": "🔥",
         "description": "Luyện quặng thành phôi kim loại cứng.",

@@ -86,9 +86,9 @@ class RecipesCog(commands.Cog, name="Recipes"):
 
         # 4. Chế Tạo Máy Móc (Sắp tới)
         build_machine_lines = [
-            f"🔹 **[ID: 61] 🍺 Thùng Ủ Rượu (Keg):** **30** {_get_item_name('wood')} + **1** {_get_item_name('copper_bar')} + **1** {_get_item_name('iron_bar')}",
-            f"🔹 **[ID: 62] 🫙 Máy Làm Mứt (Jar):** **30** {_get_item_name('wood')} + **20** {_get_item_name('stone')} + **2** {_get_item_name('coal')}",
-            f"🔹 **[ID: 63] 🔥 Lò Rèn (Furnace):** **20** {_get_item_name('stone')} + **5** {_get_item_name('copper_ore')}",
+            f"🔹 **[ID: 101] 🍺 Thùng Ủ Rượu (Keg):** **30** {_get_item_name('wood')} + **1** {_get_item_name('copper_bar')} + **1** {_get_item_name('iron_bar')}",
+            f"🔹 **[ID: 102] 🫙 Máy Làm Mứt (Jar):** **30** {_get_item_name('wood')} + **20** {_get_item_name('stone')} + **2** {_get_item_name('coal')}",
+            f"🔹 **[ID: 103] 🔥 Lò Rèn (Furnace):** **20** {_get_item_name('stone')} + **5** {_get_item_name('copper_ore')}",
             "*(Dùng lệnh `kcraft <id>` để xây máy vào 10 slot của bạn)*"
         ]
         embed.add_field(name="🏗️ Công Thức Xây Máy", value="\n".join(build_machine_lines), inline=False)
@@ -120,8 +120,8 @@ class RecipesCog(commands.Cog, name="Recipes"):
                 ing_strs.append(f"**{amount}** {_get_item_name(req_type)}")
             
             ing_str = " + ".join(ing_strs)
-            cooking_lines.append(f"🔹 **[ID: {food_id}] {food_name}:** {ing_str}")
-            
+            desc = food_item.get('description', '')
+            cooking_lines.append(f"🔹 **[ID: {food_id}] {food_name}:** {ing_str}\n  └ 💬 *{desc}*")
         if cooking_lines:
             cooking_lines.append("*(Dùng lệnh `kcook <id> [số lượng]` để nấu ăn)*")
             embed.add_field(name="👩‍🍳 Công Thức Nấu Ăn", value="\n".join(cooking_lines), inline=False)
