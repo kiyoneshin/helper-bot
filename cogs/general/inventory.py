@@ -348,13 +348,6 @@ class InventorySelect(discord.ui.Select):
         self.author = author
         options = [
             discord.SelectOption(
-                label="Vật phẩm Chợ đen",
-                value="blackmarket",
-                emoji="🌙",
-                description="Xem đồ mua từ chợ đen",
-                default=(current == "blackmarket"),
-            ),
-            discord.SelectOption(
                 label="Vật phẩm Sự kiện",
                 value="event",
                 emoji="🎪",
@@ -369,6 +362,13 @@ class InventorySelect(discord.ui.Select):
                 default=(current == "farm"),
             ),
             discord.SelectOption(
+                label="Vật phẩm Chợ đen",
+                value="blackmarket",
+                emoji="🌙",
+                description="Xem đồ mua từ chợ đen",
+                default=(current == "blackmarket"),
+            ),
+            discord.SelectOption(
                 label="Nhẫn Cưới & Trang sức",
                 value="ring",
                 emoji="💍",
@@ -379,7 +379,7 @@ class InventorySelect(discord.ui.Select):
                 label="Quà Tặng",
                 value="gift",
                 emoji="🎁",
-                description="Quà để tặng người thương (lệnh gift)",
+                description="Quà để tặng người thương",
                 default=(current == "gift"),
             ),
             discord.SelectOption(
@@ -388,6 +388,13 @@ class InventorySelect(discord.ui.Select):
                 emoji="📦",
                 description="Xem hộp quà may mắn",
                 default=(current == "lootbox"),
+            ),
+            discord.SelectOption(
+                label="Thức Ăn",
+                value="food",
+                emoji="🍲",
+                description="Xem món ăn và buff",
+                default=(current == "food"),
             ),
         ]
         super().__init__(
@@ -529,11 +536,24 @@ class UnifiedInventoryCog(commands.Cog):
         aliases=["bag", "tuido", "khodo", "inventory"],
         description="🎒 Xem toàn bộ túi đồ (Chợ đen, Sự kiện, Nông trại...)",
     )
-    async def inventory_cmd(self, ctx: commands.Context) -> None:
+    async def inventory_cmd(self, ctx: commands.Context, category: str = None) -> None:
         """Lệnh hợp nhất Túi đồ bằng Dropdown UI."""
         uid = str(ctx.author.id)
 
-        # Mặc định mở tab Chợ đen (vì thường dùng nhất)
+        # Xử lý category viết tắt
+        cat_map = {
+            "farm": "farm", "nongtrai": "farm", "eco": "farm",
+            "bm": "blackmarket", "choden": "blackmarket", "blackmarket": "blackmarket",
+            "ev": "event", "event": "event", "sukien": "event",
+            "ring": "ring", "nhan": "ring",
+            "gift": "gift", "qua": "gift",
+            "lb": "lootbox", "lootbox": "lootbox",
+            "food": "food", "cook": "food", "doan": "food",
+        }
+        default_tab = "blackmarket"
+        if category and category.lower() in cat_map:
+            default_tab = cat_map[category.lower()]
+
         row = await fetchrow_db(
             self.bot,
             "SELECT inventory FROM event_profiles WHERE discord_id = $1",
@@ -548,8 +568,8 @@ class UnifiedInventoryCog(commands.Cog):
                 pass
         inv = {k: v for k, v in inv.items() if v > 0}
 
-        embed = _build_regular_embed(ctx.author, inv, "blackmarket")
-        view = InventoryView(self.bot, ctx.author, default_tab="blackmarket")
+        embed = _build_regular_embed(ctx.author, inv, default_tab)
+        view = InventoryView(self.bot, ctx.author, default_tab=default_tab)
         view.message = await ctx.send(embed=embed, view=view)
 
     @commands.hybrid_command(

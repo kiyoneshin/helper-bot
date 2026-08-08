@@ -37,63 +37,54 @@ def _format_duration(seconds: int) -> str:
         m = (seconds % 3600) // 60
         return f"{h}h {m}p" if m else f"{h}h"
 
-class RecipesCog(commands.Cog, name="Recipes"):
-    """🛠️ Cog Bách khoa toàn thư Công Thức (Recipes)."""
+def _format_cost(cost_pts: int, cost_items: dict) -> str:
+    items_str = ", ".join(
+        f"**{v}** {_get_item_name(k)}"
+        for k, v in cost_items.items()
+    )
+    return f"**{cost_pts:,.0f} Điểm** + {items_str}"
 
-    def __init__(self, bot: commands.Bot):
-        self.bot = bot
-
-    def _format_cost(self, cost_pts: int, cost_items: dict) -> str:
-        items_str = ", ".join(
-            f"**{v}** {_get_item_name(k)}"
-            for k, v in cost_items.items()
-        )
-        return f"**{cost_pts:,.0f} Điểm** + {items_str}"
-
-    @commands.hybrid_command(name="recipe", aliases=["recipes"])
-    @check_not_locked()
-    async def recipe_cmd(self, ctx: commands.Context) -> None:
-        """🛠️ Xem bách khoa toàn thư công thức nâng cấp & chế tạo."""
-        embed = discord.Embed(
-            title="📜 Bách Khoa Toàn Thư Công Thức",
-            description=f"Tổng hợp tất cả các công thức nâng cấp công cụ và chế tạo trong nông trại.\nSử dụng lệnh `{ctx.prefix}upgrade` để nâng cấp công cụ, `{ctx.prefix}craft` để dùng máy.",
-            color=0xf39c12,
-        )
-
-        # 1. Cuốc Chim
+def _build_recipe_embed(ctx, category: str) -> discord.Embed:
+    embed = discord.Embed(
+        title="📜 Bách Khoa Toàn Thư Công Thức",
+        color=0xf39c12,
+    )
+    
+    if category == "upgrade":
+        embed.description = f"Công thức nâng cấp công cụ.\nSử dụng lệnh `{ctx.prefix}upgrade` để nâng cấp."
+        
         pickaxe_lines = []
         for level in range(1, MAX_PICKAXE_LEVEL):
             cost_pts, cost_items = PICKAXE_UPGRADE_COST[level]
-            cost_str = self._format_cost(cost_pts, cost_items)
+            cost_str = _format_cost(cost_pts, cost_items)
             pickaxe_lines.append(f"🔹 **Lên Cuốc Lv{level+1}:** {cost_str}")
         embed.add_field(name="⛏️ Nâng Cấp Cuốc Chim", value="\n".join(pickaxe_lines), inline=False)
 
-        # 2. Cần Câu
         rod_lines = []
         for level in range(1, MAX_ROD_LEVEL):
             cost_pts, cost_items = ROD_UPGRADE_COST[level]
-            cost_str = self._format_cost(cost_pts, cost_items)
+            cost_str = _format_cost(cost_pts, cost_items)
             rod_lines.append(f"🔹 **Lên Cần Câu Lv{level+1}:** {cost_str}")
         embed.add_field(name="🎣 Nâng Cấp Cần Câu", value="\n".join(rod_lines), inline=False)
 
-        # 3. Rìu
         axe_lines = []
         for level in range(1, MAX_AXE_LEVEL):
             cost_pts, cost_items = AXE_UPGRADE_COST[level]
-            cost_str = self._format_cost(cost_pts, cost_items)
+            cost_str = _format_cost(cost_pts, cost_items)
             axe_lines.append(f"🔹 **Lên Rìu Lv{level+1}:** {cost_str}")
         embed.add_field(name="🪓 Nâng Cấp Rìu", value="\n".join(axe_lines), inline=False)
 
-        # 4. Chế Tạo Máy Móc (Sắp tới)
+    elif category == "craft":
+        embed.description = f"Công thức xây máy và chế biến.\nSử dụng lệnh `{ctx.prefix}craft` để xây máy."
+        
         build_machine_lines = [
             f"🔹 **[ID: 101] 🍺 Thùng Ủ Rượu (Keg):** **30** {_get_item_name('wood')} + **1** {_get_item_name('copper_bar')} + **1** {_get_item_name('iron_bar')}",
             f"🔹 **[ID: 102] 🫙 Máy Làm Mứt (Jar):** **30** {_get_item_name('wood')} + **20** {_get_item_name('stone')} + **2** {_get_item_name('coal')}",
             f"🔹 **[ID: 103] 🔥 Lò Rèn (Furnace):** **20** {_get_item_name('stone')} + **5** {_get_item_name('copper_ore')}",
-            "*(Dùng lệnh `kcraft <id>` để xây máy vào 10 slot của bạn)*"
+            f"*(Dùng lệnh `{ctx.prefix}craft <id>` để xây máy vào 10 slot của bạn)*"
         ]
         embed.add_field(name="🏗️ Công Thức Xây Máy", value="\n".join(build_machine_lines), inline=False)
 
-        # 5. Công Thức Chế Biến Nông Sản
         machine_lines = []
         for machine_id, machine in MACHINES.items():
             machine_lines.append(f"**{machine['icon']} {machine['name']}**:")
@@ -106,7 +97,9 @@ class RecipesCog(commands.Cog, name="Recipes"):
         
         embed.add_field(name="🏭 Công Thức Chế Biến", value="\n".join(machine_lines), inline=False)
 
-        # 6. Công Thức Nấu Ăn (Cooking)
+    elif category == "cook":
+        embed.description = f"Công thức nấu ăn.\nSử dụng lệnh `{ctx.prefix}kcook <id> [số lượng]` để nấu."
+        
         cooking_lines = []
         for food_id, ingredients in COOKING_RECIPES.items():
             food_item = ITEM_REGISTRY.get(food_id)
@@ -123,14 +116,115 @@ class RecipesCog(commands.Cog, name="Recipes"):
             desc = food_item.get('description', '')
             cooking_lines.append(f"🔹 **[ID: {food_id}] {food_name}:** {ing_str}\n  └ 💬 *{desc}*")
         if cooking_lines:
-            cooking_lines.append("*(Dùng lệnh `kcook <id> [số lượng]` để nấu ăn)*")
-            embed.add_field(name="👩‍🍳 Công Thức Nấu Ăn", value="\n".join(cooking_lines), inline=False)
+            cooking_lines.append(f"*(Dùng lệnh `{ctx.prefix}cook <id> [số lượng]` để nấu ăn)*")
+            # Split to avoid 1024 char limit
+            current_chunk = []
+            current_len = 0
+            part = 1
+            for line in cooking_lines:
+                if current_len + len(line) + 1 > 1000:
+                    embed.add_field(name=f"👩‍🍳 Công Thức Nấu Ăn (Phần {part})", value="\n".join(current_chunk), inline=False)
+                    current_chunk = [line]
+                    current_len = len(line)
+                    part += 1
+                else:
+                    current_chunk.append(line)
+                    current_len += len(line) + 1
+            
+            if current_chunk:
+                embed.add_field(name=f"👩‍🍳 Công Thức Nấu Ăn (Phần {part})", value="\n".join(current_chunk), inline=False)
 
-        embed.set_thumbnail(url=ctx.author.display_avatar.url)
-        embed.set_footer(text="Angelic Casino • Bách Khoa Toàn Thư 🌸")
+    embed.set_thumbnail(url=ctx.author.display_avatar.url)
+    embed.set_footer(text="Angelic Casino • Bách Khoa Toàn Thư 🌸")
+    return embed
+
+class RecipeSelect(discord.ui.Select):
+    def __init__(self, author: discord.Member | discord.User, ctx, current: str = "upgrade"):
+        self.author = author
+        self.ctx = ctx
+        options = [
+            discord.SelectOption(
+                label="Nâng Cấp Công Cụ",
+                value="upgrade",
+                emoji="⛏️",
+                description="Cuốc chim, Cần câu, Rìu",
+                default=(current == "upgrade"),
+            ),
+            discord.SelectOption(
+                label="Chế Tạo & Chế Biến",
+                value="craft",
+                emoji="🏗️",
+                description="Xây máy móc và nấu mứt, ủ rượu",
+                default=(current == "craft"),
+            ),
+            discord.SelectOption(
+                label="Nấu Ăn",
+                value="cook",
+                emoji="👩‍🍳",
+                description="Các món ăn gia tăng chỉ số",
+                default=(current == "cook"),
+            ),
+        ]
+        super().__init__(
+            placeholder="Chọn danh mục công thức...",
+            min_values=1,
+            max_values=1,
+            options=options,
+            row=0,
+        )
+
+    async def callback(self, interaction: discord.Interaction):
+        if interaction.user.id != self.author.id:
+            return await interaction.response.send_message("❌ Bạn không có quyền thao tác menu này!", ephemeral=True)
+            
+        selected = self.values[0]
+        for opt in self.options:
+            opt.default = (opt.value == selected)
+
+        embed = _build_recipe_embed(self.ctx, selected)
+        await interaction.response.edit_message(embed=embed, view=self.view)
+
+class RecipeView(discord.ui.View):
+    def __init__(self, author: discord.Member | discord.User, ctx, default_tab: str = "upgrade"):
+        super().__init__(timeout=120.0)
+        self.author = author
+        self.ctx = ctx
+        self.select_menu = RecipeSelect(author, ctx, default_tab)
+        self.add_item(self.select_menu)
+        self.message: discord.Message | None = None
+
+    async def on_timeout(self) -> None:
+        self.select_menu.disabled = True
+        if self.message:
+            try:
+                await self.message.edit(view=self)
+            except discord.HTTPException:
+                pass
+
+class RecipesCog(commands.Cog, name="Recipes"):
+    """🛠️ Cog Bách khoa toàn thư Công Thức (Recipes)."""
+
+    def __init__(self, bot: commands.Bot):
+        self.bot = bot
+
+    @commands.hybrid_command(name="recipe", aliases=["recipes"])
+    @check_not_locked()
+    async def recipe_cmd(self, ctx: commands.Context, category: str = None) -> None:
+        """🛠️ Xem bách khoa toàn thư công thức nâng cấp & chế tạo."""
         
-        await ctx.send(embed=embed)
+        cat_map = {
+            "upgrade": "upgrade", "nangcap": "upgrade",
+            "craft": "craft", "chetao": "craft", "machine": "craft",
+            "cook": "cook", "nauan": "cook", "food": "cook",
+        }
+        
+        default_tab = "upgrade"
+        if category and category.lower() in cat_map:
+            default_tab = cat_map[category.lower()]
+            
+        embed = _build_recipe_embed(ctx, default_tab)
+        view = RecipeView(ctx.author, ctx, default_tab=default_tab)
+        view.message = await ctx.send(embed=embed, view=view)
 
 async def setup(bot: commands.Bot) -> None:
     await bot.add_cog(RecipesCog(bot))
-
