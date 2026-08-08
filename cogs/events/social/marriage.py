@@ -481,7 +481,18 @@ class MarriageCog(commands.Cog):
             if mar.get("custom_image"):
                 emb.set_image(url=mar["custom_image"])
                 
-            emb.set_thumbnail(url=ctx.author.display_avatar.url)
+            ring_item = get_item_by_id(mar.get("ring_id"))
+            if ring_item and ring_item.get("icon"):
+                import re
+                match = re.search(r"<a?:[^:]+:(\d+)>", ring_item["icon"])
+                if match:
+                    emoji_id = match.group(1)
+                    ext = "gif" if ring_item["icon"].startswith("<a:") else "png"
+                    emb.set_thumbnail(url=f"https://cdn.discordapp.com/emojis/{emoji_id}.{ext}")
+                else:
+                    emb.set_thumbnail(url=ctx.author.display_avatar.url)
+            else:
+                emb.set_thumbnail(url=ctx.author.display_avatar.url)
             
             now_str = (discord.utils.utcnow() + datetime.timedelta(hours=7)).strftime("%H:%M")
             emb.set_footer(text=f"💖 Happily ever after~ 💖 - Today at {now_str}")
