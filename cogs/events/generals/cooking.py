@@ -165,31 +165,31 @@ class CookingCog(commands.Cog):
                 
                 if b_key == "stamina_regen":
                     name = "🎃 Súp Bí Ngô (Stamina Regen)"
-                    desc = f"Giảm {int(b_val*100)}% thời gian hồi thể lực. Hết hạn: {time_left}"
+                    desc = f"+ {int(b_val*100)}% Tốc độ hồi thể lực. Hết hạn: {time_left}"
                 elif b_key == "lb_drop_rate":
                     name = "🍱 Cơm Cuộn Cá (LB Drop Rate)"
-                    desc = f"Tăng {int(b_val*100)}% tỉ lệ rơi Lootbox. Hết hạn: {time_left}"
+                    desc = f"+ {int(b_val*100)}% Tỉ lệ rơi Lootbox. Hết hạn: {time_left}"
                 elif b_key == "lb_rarity":
                     name = "🍹 Sinh Tố Dâu (LB Rarity)"
-                    desc = f"Tăng {int(b_val*100)}% tỉ lệ Lootbox hiếm. Hết hạn: {time_left}"
+                    desc = f"+ {int(b_val*100)}% Tỉ lệ Lootbox hiếm. Hết hạn: {time_left}"
                 elif b_key == "farm_yield":
                     name = "🥔 Khoai Tây Nghiền (Farm Yield)"
-                    desc = f"Tăng {b_val} sản lượng thu hoạch. Hết hạn: {time_left}"
+                    desc = f"+ {b_val} Sản lượng thu hoạch. Hết hạn: {time_left}"
                 elif b_key == "rare_wood":
                     name = "🍢 Cá Nướng Gỗ Thơm (Rare Wood)"
-                    desc = f"Tăng {int(b_val*100)}% tỉ lệ Gỗ hiếm. Hết hạn: {time_left}"
+                    desc = f"+ {int(b_val*100)}% Tỉ lệ Gỗ hiếm. Hết hạn: {time_left}"
                 elif b_key == "rare_ore":
                     name = "🍝 Lúa Mì Xào Nấm (Rare Ore)"
-                    desc = f"Tăng {int(b_val*100)}% tỉ lệ Quặng hiếm. Hết hạn: {time_left}"
+                    desc = f"+ {int(b_val*100)}% Tỉ lệ Quặng hiếm. Hết hạn: {time_left}"
                 elif b_key == "rare_fish":
                     name = "🥧 Bánh Bí Ngô Hấp (Rare Fish)"
-                    desc = f"Tăng {int(b_val*100)}% tỉ lệ Cá hiếm. Hết hạn: {time_left}"
+                    desc = f"+ {int(b_val*100)}% Tỉ lệ Cá hiếm. Hết hạn: {time_left}"
                 elif b_key == "stamina_discount":
                     name = "🍵 Trà Hướng Dương (Stamina Cost)"
-                    desc = f"Giảm {b_val} thể lực mỗi hành động. Hết hạn: {time_left}"
+                    desc = f"- {b_val} Thể lực tiêu hao. Hết hạn: {time_left}"
                 elif b_key == "all_boost":
                     name = "🍲 Lẩu Thập Cẩm (All Boost)"
-                    desc = f"Tăng {int(b_val*100)}% MỌI TỈ LỆ RƠI đồ hiếm. Hết hạn: {time_left}"
+                    desc = f"+ {int(b_val*100)}% Tỉ lệ Đồ hiếm (Mọi H.động). Hết hạn: {time_left}"
                 else:
                     name = f"🔧 Hiệu ứng chưa rõ ({b_key})"
                     desc = f"Giá trị: {b_val}. Hết hạn: {time_left}"
