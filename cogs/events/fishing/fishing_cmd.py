@@ -25,10 +25,13 @@ class FishingCog(commands.Cog, name="Fishing"):
         # 1. Cập nhật & tính thể lực, đồng thời lấy farm_data (có rod_level)
         stamina = await get_and_update_stamina(self.bot, user_id, ctx.channel.id)
         farm_data = await get_farm_data(self.bot, user_id)
+        
+        from cogs.events.idle_farm.farm_db import get_true_stamina_regen
+        regen_interval = await get_true_stamina_regen(self.bot, user_id)
 
         # 2. Tạo giao diện và gửi
-        embed = build_fishing_embed(ctx.author, stamina, farm_data)
-        view  = FishingView(self.bot, user_id, ctx.author, stamina, farm_data)
+        embed = build_fishing_embed(ctx.author, stamina, farm_data, regen_interval)
+        view  = FishingView(self.bot, user_id, ctx.author, stamina, farm_data, regen_interval)
 
         await ctx.send(embed=embed, view=view)
 

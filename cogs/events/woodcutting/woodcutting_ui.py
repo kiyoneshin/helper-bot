@@ -15,7 +15,7 @@ def _stamina_bar(stamina: int, bar_len: int = 10) -> str:
     filled = round(stamina / MAX_STAMINA * bar_len)
     return "🟩" * filled + "⬛" * (bar_len - filled)
 
-def build_woodcutting_embed(author: discord.Member | discord.User, stamina: int, farm_data: Dict[str, Any]) -> discord.Embed:
+def build_woodcutting_embed(author: discord.Member | discord.User, stamina: int, farm_data: Dict[str, Any], regen_interval: int = 18) -> discord.Embed:
     axe_level = int(farm_data.get("axe_level", 1))
     axe_name = AXE_NAMES.get(axe_level, f"Lv{axe_level}")
 
@@ -29,7 +29,7 @@ def build_woodcutting_embed(author: discord.Member | discord.User, stamina: int,
     )
 
     bar = _stamina_bar(stamina)
-    regen_info = f"(Hồi đầy sau: {_mins_to_full(stamina)})" if stamina < MAX_STAMINA else "✅ Đã đầy"
+    regen_info = f"(Hồi đầy sau: {_mins_to_full(stamina, regen_interval)})" if stamina < MAX_STAMINA else "✅ Đã đầy"
     
     embed.add_field(
         name="💪 Thể Lực",
@@ -60,15 +60,16 @@ def build_woodcutting_embed(author: discord.Member | discord.User, stamina: int,
         embed.add_field(name="🎒 Kho Gỗ Của Bạn", value="\n".join(inv_lines), inline=False)
 
     embed.set_thumbnail(url=author.display_avatar.url)
-    embed.set_footer(text="Dùng kbag để bán vật phẩm. Thể lực hồi 1 điểm mỗi 18 giây.")
+    embed.set_footer(text=f"Dùng kbag để bán vật phẩm. Thể lực hồi 1 điểm mỗi {regen_interval} giây.")
     return embed
 
 class WoodcuttingView(discord.ui.View):
-    def __init__(self, bot: commands.Bot, user_id: str, author: discord.Member | discord.User, stamina: int):
+    def __init__(self, bot: commands.Bot, user_id: str, author: discord.Member | discord.User, stamina: int, farm_data: Dict[str, Any] = None, regen_interval: int = 18):
         super().__init__(timeout=300)
         self.bot = bot
         self.user_id = user_id
         self.author = author
+        self.regen_interval = regen_interval
         self.chop_btn.disabled = (stamina < STAMINA_PER_CHOP)
 
     @discord.ui.button(label="Chặt Cây", emoji="🪓", style=discord.ButtonStyle.success)
@@ -87,8 +88,8 @@ class WoodcuttingView(discord.ui.View):
         if current_stamina < stamina_cost:
             button.disabled = True
             farm_data = await get_farm_data(self.bot, self.user_id)
-            await interaction.response.edit_message(embed=build_woodcutting_embed(self.author, current_stamina, farm_data), view=self)
-            await interaction.followup.send(f"😓 Bạn đã **kiệt sức**! Hãy đợi thể lực hồi phục.\n*(Hồi đầy sau: {_mins_to_full(current_stamina)})*", ephemeral=True)
+            await interaction.response.edit_message(embed=build_woodcutting_embed(self.author, current_stamina, farm_data, self.regen_interval), view=self)
+            await interaction.followup.send(f"❌ Bạn đã **kiệt sức**! Hãy đợi thể lực hồi phục.\n*(Hồi đầy sau: {_mins_to_full(current_stamina, self.regen_interval)})*", ephemeral=True)
             return
 
         farm_data = await get_farm_data(self.bot, self.user_id)
@@ -114,11 +115,9 @@ class WoodcuttingView(discord.ui.View):
 
         await save_farm_data(self.bot, self.user_id, farm_data)
 
-        if new_stamina < stamina_cost:
-            button.disabled = True
-
+        self.chop_btn.disabled = (new_stamina < stamina_cost)
         double_str = " **(x2 Rìu Sắt!)**" if quantity == 2 else ""
-        new_embed = build_woodcutting_embed(self.author, new_stamina, farm_data)
+        new_embed = build_woodcutting_embed(self.author, new_stamina, farm_data, self.regen_interval)
         await interaction.response.edit_message(embed=new_embed, view=self)
         
         await update_event_stat(self.bot, self.user_id, "works", 1)

@@ -25,11 +25,10 @@ def _stamina_bar(stamina: int, max_stamina: int = MAX_STAMINA, bar_len: int = 10
     filled = round(stamina / max_stamina * bar_len)
     return "🟩" * filled + "⬛" * (bar_len - filled)
 
-def _mins_to_full(stamina: int) -> str:
-    missing = MAX_STAMINA - stamina
-    if missing <= 0:
-        return "Đầy"
-    total_seconds = missing * STAMINA_REGEN_INTERVAL_SECONDS
+def _mins_to_full(current: int, regen_interval: int = 18) -> str:
+    from cogs.events.mining.mining_config import MAX_STAMINA
+    if current >= MAX_STAMINA: return "0p"
+    total_seconds = (MAX_STAMINA - current) * regen_interval
     hours, rem = divmod(total_seconds, 3600)
     minutes = rem // 60
     if hours:
@@ -41,7 +40,7 @@ def _mins_to_full(stamina: int) -> str:
 # EMBED
 # ---------------------------------------------------------------------------
 
-def build_mining_embed(author: discord.Member | discord.User, stamina: int, farm_data: Dict[str, Any]) -> discord.Embed:
+def build_mining_embed(author: discord.Member | discord.User, stamina: int, farm_data: Dict[str, Any], regen_interval: int = 18) -> discord.Embed:
     """Render giao diện Hang Động với thanh thể lực và thông tin cuốc hiện tại."""
     pickaxe_level = int(farm_data.get("pickaxe_level", 1))
     pickaxe_name  = PICKAXE_NAMES.get(pickaxe_level, f"Lv{pickaxe_level}")
@@ -56,7 +55,7 @@ def build_mining_embed(author: discord.Member | discord.User, stamina: int, farm
     )
 
     bar = _stamina_bar(stamina)
-    regen_info = f"(Hồi đầy sau: {_mins_to_full(stamina)})" if stamina < MAX_STAMINA else "✅ Đã đầy"
+    regen_info = f"(Hồi đầy sau: {_mins_to_full(stamina, regen_interval)})" if stamina < MAX_STAMINA else "✅ Đã đầy"
     embed.add_field(
         name="💪 Thể Lực",
         value=f"{bar} **{stamina}/{MAX_STAMINA}** {regen_info}",
@@ -85,7 +84,7 @@ def build_mining_embed(author: discord.Member | discord.User, stamina: int, farm
         embed.add_field(name="🎒 Kho Quặng Của Bạn", value="\n".join(ore_lines), inline=False)
 
     embed.set_thumbnail(url=author.display_avatar.url)
-    embed.set_footer(text="Dùng kbag để bán quặng. Thể lực hồi 1 điểm mỗi 18 giây.")
+    embed.set_footer(text=f"Dùng kbag để bán quặng. Thể lực hồi 1 điểm mỗi {regen_interval} giây.")
     return embed
 
 

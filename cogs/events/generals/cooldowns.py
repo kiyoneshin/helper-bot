@@ -141,14 +141,16 @@ class CooldownsCog(commands.Cog):
         # 2. PROGRESS (✨ Tiến độ)
         # -------------------------------------------------------------
         farm_data = await get_farm_data(self.bot, user_id)
-        from cogs.events.mining.mining_config import MAX_STAMINA, STAMINA_REGEN_INTERVAL_SECONDS
+        from cogs.events.mining.mining_config import MAX_STAMINA
+        from cogs.events.idle_farm.farm_db import get_true_stamina_regen
         stamina = await get_and_update_stamina(self.bot, user_id, ctx.channel.id) 
+        regen_interval = await get_true_stamina_regen(self.bot, user_id)
         
         stamina_ready = (stamina >= MAX_STAMINA)
         stamina_str = f"{stamina}/{MAX_STAMINA}"
         if not stamina_ready:
             missing = MAX_STAMINA - stamina
-            seconds_to_full = missing * STAMINA_REGEN_INTERVAL_SECONDS
+            seconds_to_full = missing * regen_interval
             stamina_str += f" ({format_timedelta(timedelta(seconds=seconds_to_full))})"
             
         machine_queue = _get_queue_list(farm_data)
@@ -226,6 +228,29 @@ class CooldownsCog(commands.Cog):
         marriage_cog = self.bot.get_cog("MarriageCog")
         actions_lines = []
         if marriage_cog:
+            # Lấy buff giảm cooldown
+            from cogs.common.db import get_marriage
+            from cogs.events.social.marriage import RING_BUFFS
+            mar = await get_marriage(self.bot, user_id)
+            cd_reduction = 0.0
+            pet_cd_reduction = 0.0
+            
+            if mar:
+                ring_id = mar.get("ring_id")
+                pet_id = mar.get("pet_id")
+                pet_level = mar.get("pet_level", 0)
+                
+                buffs = RING_BUFFS.get(ring_id, {"cd_reduction": 0.0})
+                cd_reduction = buffs.get("cd_reduction", 0.0)
+                
+                if pet_level > 0:
+                    if pet_id == 45:
+                        pet_cd_reduction = min(pet_level * 0.0075, 0.45)
+                    elif pet_id == 46:
+                        pet_cd_reduction = pet_level * 0.005
+                    elif pet_id == 47:
+                        pet_cd_reduction = pet_level * 0.0035
+
             user_cd_dict = getattr(marriage_cog, 'action_cooldowns', {}).get(user_id, {})
             # Group actions by tier
             for tier in [1, 2, 3, 4]:
@@ -236,10 +261,11 @@ class CooldownsCog(commands.Cog):
                 for action in tier_actions:
                     last_time = user_cd_dict.get(action, 0)
                     cd_seconds = ACTION_TIERS[tier]["cd"]
+                    actual_cd = cd_seconds * (1.0 - cd_reduction) * (1.0 - pet_cd_reduction)
                     passed = now_ts - last_time
                     
-                    if passed < cd_seconds:
-                        rem = cd_seconds - passed
+                    if passed < actual_cd:
+                        rem = actual_cd - passed
                         tier_parts.append(f"{action} {format_timedelta(timedelta(seconds=rem))}")
                     else:
                         tier_parts.append(f"{action} ✅")

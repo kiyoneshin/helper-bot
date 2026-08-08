@@ -134,11 +134,8 @@ class CookingCog(commands.Cog):
         user_id = str(ctx.author.id)
         
         records = await query_db(self.bot, "SELECT active_boosts, p2w_multiplier FROM event_profiles WHERE discord_id = $1", user_id)
-        if not records:
-            await ctx.send("📭 Bạn chưa có hiệu ứng nào.")
-            return
-            
-        row = records[0]
+        
+        row = records[0] if records else {}
         boosts = row.get("active_boosts", {})
         if isinstance(boosts, str):
             try: boosts = json.loads(boosts)
@@ -151,11 +148,8 @@ class CookingCog(commands.Cog):
         embed = discord.Embed(title="✨ Danh sách Hiệu Ứng (Boosts)", color=0xFFD700)
         
         # P2W
-        if p2w > 1.0:
-            embed.add_field(name="👑 Đặc Quyền P2W", value=f"Hệ số nhân: **x{p2w}** điểm.", inline=False)
-            
-        # Nấu ăn
-        active_count = 0
+        embed.add_field(name="👑 Đặc Quyền P2W", value=f"Hệ số nhân: **x{p2w}** điểm.", inline=False)
+        active_count = 1
         for b_key, b_data in boosts.items():
             expires_at = b_data.get("expires_at", 0)
             if expires_at > now:
@@ -195,8 +189,39 @@ class CookingCog(commands.Cog):
                     desc = f"Giá trị: {b_val}. Hết hạn: {time_left}"
                     
                 embed.add_field(name=name, value=desc, inline=False)
+
+        # Hôn Nhân
+        from cogs.common.db import get_marriage
+        from cogs.events.social.marriage import RING_BUFFS
+        mar = await get_marriage(self.bot, user_id)
+        if mar:
+            ring_id = mar.get("ring_id")
+            pet_id = mar.get("pet_id")
+            pet_level = mar.get("pet_level", 0)
+            
+            buffs = RING_BUFFS.get(ring_id, {"dtm_bonus": 0.0, "cd_reduction": 0.0, "work_bonus": 1.0})
+            if buffs["cd_reduction"] > 0 or buffs["dtm_bonus"] > 0:
+                embed.add_field(name="💍 Nhẫn Cưới", value=f"- Giảm Cooldown: **{int(buffs['cd_reduction']*100)}%**\n- Tăng DTM: **{int(buffs['dtm_bonus']*100)}%**", inline=False)
+                active_count += 1
                 
-        if active_count == 0 and p2w <= 1.0:
+            pet_cd = 0.0
+            pet_dtm = 0.0
+            if pet_level > 0:
+                if pet_id == 45:
+                    pet_dtm = min(pet_level * 0.015, 0.90)
+                    pet_cd = min(pet_level * 0.0075, 0.45)
+                elif pet_id == 46:
+                    pet_dtm = pet_level * 0.01
+                    pet_cd = pet_level * 0.005
+                elif pet_id == 47:
+                    pet_dtm = pet_level * 0.007
+                    pet_cd = pet_level * 0.0035
+            
+            if pet_cd > 0 or pet_dtm > 0:
+                embed.add_field(name="🐾 Thú Cưng", value=f"- Giảm Cooldown: **{pet_cd*100:.1f}%**\n- Tăng DTM: **{pet_dtm*100:.1f}%**", inline=False)
+                active_count += 1
+                
+        if active_count == 0:
             embed.description = "Bạn hiện không có hiệu ứng nào đang hoạt động."
             
         await ctx.send(embed=embed)

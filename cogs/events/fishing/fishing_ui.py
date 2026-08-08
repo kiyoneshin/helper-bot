@@ -42,7 +42,7 @@ from cogs.events.mining.mining_ui import _mins_to_full
 # EMBED
 # ---------------------------------------------------------------------------
 
-def build_fishing_embed(author: discord.Member | discord.User, stamina: int, farm_data: Dict[str, Any] | None = None) -> discord.Embed:
+def build_fishing_embed(author: discord.Member | discord.User, stamina: int, farm_data: Dict[str, Any] | None = None, regen_interval: int = 18) -> discord.Embed:
     """Giao diện Hồ Câu Cá, hiển thị thể lực, cấp cần câu, và các loại cá."""
     rod_level = (farm_data or {}).get("rod_level", 1)
 
@@ -62,7 +62,7 @@ def build_fishing_embed(author: discord.Member | discord.User, stamina: int, far
     )
 
     bar = _stamina_bar(stamina)
-    regen_info = f"(Hồi đầy sau: {_mins_to_full(stamina)})" if stamina < MAX_STAMINA else "✅ Đã đầy"
+    regen_info = f"(Hồi đầy sau: {_mins_to_full(stamina, regen_interval)})" if stamina < MAX_STAMINA else "✅ Đã đầy"
     embed.add_field(
         name="💪 Thể Lực",
         value=f"{bar} **{stamina}/{MAX_STAMINA}** {regen_info}",
@@ -91,7 +91,7 @@ def build_fishing_embed(author: discord.Member | discord.User, stamina: int, far
         embed.add_field(name="🎒 Giỏ Cá Của Bạn", value="\n".join(inv_lines), inline=False)
 
     embed.set_thumbnail(url=author.display_avatar.url)
-    embed.set_footer(text="Dùng kbag để bán cá. Thể lực hồi 1 điểm mỗi 18 giây.")
+    embed.set_footer(text=f"Dùng kbag để bán cá. Thể lực hồi 1 điểm mỗi {regen_interval} giây.")
     return embed
 
 
@@ -127,13 +127,14 @@ class FishCatchView(discord.ui.View):
 # ---------------------------------------------------------------------------
 
 class FishingView(discord.ui.View):
-    """View chính chứa nút "Quăng Cần"."""
+    """View chứa nút Câu Cá."""
 
-    def __init__(self, bot: commands.Bot, user_id: str, author: discord.Member | discord.User, stamina: int, farm_data: Dict[str, Any]):
+    def __init__(self, bot: commands.Bot, user_id: str, author: discord.Member | discord.User, stamina: int, farm_data: Dict[str, Any], regen_interval: int = 18):
         super().__init__(timeout=300)
         self.bot = bot
         self.user_id = user_id
         self.author = author
+        self.regen_interval = regen_interval
         self.farm_data = farm_data
         self.cast_btn.disabled = (stamina < STAMINA_PER_FISH)
 
@@ -163,8 +164,8 @@ class FishingView(discord.ui.View):
         if current_stamina < stamina_cost:
             button.disabled = True
             farm_data = await get_farm_data(self.bot, self.user_id)
-            await interaction.response.edit_message(embed=build_fishing_embed(self.author, current_stamina, farm_data), view=self)
-            await interaction.followup.send(f"😓 Bạn đã **kiệt sức**! Hãy đợi thể lực hồi phục.\n*(Hồi đầy sau: {_mins_to_full(current_stamina)})*", ephemeral=True)
+            await interaction.response.edit_message(embed=build_fishing_embed(self.author, current_stamina, farm_data, self.regen_interval), view=self)
+            await interaction.followup.send(f"❌ Bạn đã **kiệt sức**! Hãy đợi thể lực hồi phục.\n*(Hồi đầy sau: {_mins_to_full(current_stamina, self.regen_interval)})*", ephemeral=True)
             return
 
         farm_data = await get_farm_data(self.bot, self.user_id)
@@ -226,7 +227,7 @@ class FishingView(discord.ui.View):
             )
 
             self.cast_btn.disabled = (new_stamina < stamina_cost)
-            new_embed = build_fishing_embed(self.author, new_stamina, farm_data)
+            new_embed = build_fishing_embed(self.author, new_stamina, farm_data, self.regen_interval)
             await interaction.delete_original_response()
             await interaction.followup.send(
                 content=result_msg,
@@ -237,7 +238,7 @@ class FishingView(discord.ui.View):
         else:
             # Hết giờ — cá chạy mất
             self.cast_btn.disabled = (new_stamina < STAMINA_PER_FISH)
-            new_embed = build_fishing_embed(self.author, new_stamina, farm_data)
+            new_embed = build_fishing_embed(self.author, new_stamina, farm_data, self.regen_interval)
             await interaction.delete_original_response()
             await interaction.followup.send(
                 content="💦 **Trượt rồi!** Cá đã chạy mất. Hãy thả mồi lại!",

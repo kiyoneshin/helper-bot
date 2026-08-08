@@ -28,9 +28,12 @@ class MiningCog(commands.Cog, name="Mining"):
 
         # 2. Lấy farm_data để hiển thị kho quặng
         farm_data = await get_farm_data(self.bot, user_id)
+        
+        from cogs.events.idle_farm.farm_db import get_true_stamina_regen
+        regen_interval = await get_true_stamina_regen(self.bot, user_id)
 
         # 3. Render giao diện và gửi
-        embed = build_mining_embed(ctx.author, stamina, farm_data)
+        embed = build_mining_embed(ctx.author, stamina, farm_data, regen_interval)
         view = MiningView(self.bot, user_id, ctx.author, stamina)
 
         await ctx.send(embed=embed, view=view)

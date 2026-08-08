@@ -134,6 +134,29 @@ async def get_and_update_stamina(bot: commands.Bot, user_id: str, channel_id: in
     await save_farm_data(bot, user_id, farm_data)
 
     return new_stamina
+
+async def get_true_stamina_regen(bot: commands.Bot, user_id: str) -> int:
+    from cogs.events.mining.mining_config import STAMINA_REGEN_INTERVAL_SECONDS
+    from cogs.common.db import fetchrow_db
+    import json, time
+    now = time.time()
+    row = await fetchrow_db(bot, "SELECT active_boosts FROM event_profiles WHERE discord_id = $1", user_id)
+    boosts = {}
+    if row:
+        try:
+            raw = row["active_boosts"]
+            boosts = json.loads(raw) if isinstance(raw, str) else raw
+        except:
+            pass
+            
+    regen_interval = STAMINA_REGEN_INTERVAL_SECONDS
+    if "stamina_regen" in boosts and boosts["stamina_regen"].get("expires_at", 0) > now:
+        val = float(boosts["stamina_regen"].get("value", 0))
+        regen_interval = int(regen_interval * (1.0 - val))
+        if regen_interval < 1:
+            regen_interval = 1
+    return regen_interval
+
 async def save_farm_data(bot: commands.Bot, user_id: str, farm_data: Dict[str, Any]) -> None:
     """
     Lưu dữ liệu farm ngược lại CSDL.
