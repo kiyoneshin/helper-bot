@@ -57,20 +57,34 @@ class IdleFarmCog(commands.Cog):
 
         # Parse seed type: có thể là tên tiếng anh hoặc ID item_config
         seed_key = seed_type.lower()
+        
+        if seed_key.isdigit():
+            from cogs.common.item_config import get_item_by_id
+            item = get_item_by_id(int(seed_key))
+            if item and item.get("category") == "farm" and item["db_key"].startswith("seed_"):
+                seed_key = item["db_key"].replace("seed_", "")
+
         if seed_key not in SEEDS:
             # Thử tìm theo tên tiếng Việt
             found = next((k for k, v in SEEDS.items() if v["name"].lower() == seed_key), None)
             if found:
                 seed_key = found
             else:
+                from cogs.common.item_config import ITEM_REGISTRY
+                seed_id_map = {}
+                for i_id, i_data in ITEM_REGISTRY.items():
+                    if i_data.get("category") == "farm" and i_data.get("db_key", "").startswith("seed_"):
+                        s_key = i_data["db_key"].replace("seed_", "")
+                        seed_id_map[s_key] = i_id
+                        
                 seed_list = "\n".join(
-                    f"• `{k}` — {v['icon']} {v['name']} ({v['grow_time_seconds']//60} phút, giá {v['cost']:,} điểm)"
+                    f"• `{seed_id_map.get(k, '?')}/{k}` — {v['icon']} {v['name']} ({v['grow_time_seconds']//60} phút, giá {v['cost']:,} điểm)"
                     for k, v in SEEDS.items()
                 )
                 return await ctx.send(
                     f"❌ Không tìm thấy hạt giống `{seed_type}`!\n"
                     f"**Danh sách hạt giống hợp lệ:**\n{seed_list}\n\n"
-                    f"*Cú pháp: `{prefix}plant <loại_hạt> <ô 1> <ô 2> ...`*"
+                    f"*Cú pháp: `{prefix}plant <loại_hạt/id_hạt> <ô 1> <ô 2> ...`*"
                 )
 
         # Parse danh sách ô đất (tách bằng khoảng trắng hoặc dấu phẩy)
@@ -79,8 +93,8 @@ class IdleFarmCog(commands.Cog):
         if not raw_numbers:
             return await ctx.send(
                 f"❌ Bạn chưa nhập số ô đất nào!\n"
-                f"*Cú pháp: `{prefix}plant <loại_hạt> <ô 1> <ô 2> ...`\n"
-                f"Ví dụ: `{prefix}plant wheat 1 2 3` hoặc `{prefix}plant wheat 1, 2, 3`*"
+                f"*Cú pháp: `{prefix}plant <loại_hạt/id_hạt> <ô 1> <ô 2> ...`\n"
+                f"Ví dụ: `{prefix}plant wheat 1 2 3` hoặc `{prefix}plant 51 1 2 3`*"
             )
 
         slot_ids = [int(n) for n in raw_numbers]
