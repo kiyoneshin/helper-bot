@@ -455,7 +455,7 @@ class MarriageCog(commands.Cog):
                 
                 pet_name_db = mar.get("pet_name")
                 display_name = f"{pet_name_db}" if pet_name_db else f"{base_type}"
-                desc += f"🐾 **Thú Cưng Chung**: {display_name} {icon} *(Lv.{pet_level} - {stage})*\n\n"
+                desc += f"🐾 **Thú Cưng Chung**: {display_name} {icon} (Lv.{pet_level} - {stage})\n\n"
                 
                 if base_type == "Chó": pet_buff_str = f"+{min(pet_level * 1, 50)}% DTM nhận được"
                 elif base_type == "Mèo": pet_buff_str = f"-{min(pet_level * 0.75, 45):.2f}% thời gian hồi chiêu"

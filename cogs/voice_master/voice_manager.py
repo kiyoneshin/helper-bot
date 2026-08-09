@@ -431,11 +431,7 @@ class VoiceManagerCog(commands.Cog):
 
     @commands.Cog.listener()
     async def on_voice_state_update(self, member: discord.Member, before: discord.VoiceState, after: discord.VoiceState):
-        with open("voice_debug_2.txt", "a", encoding="utf-8") as f:
-            f.write(f"VOICE UPDATE: {member} joined {after.channel}\n")
         if not self.pool:
-            with open("voice_debug_2.txt", "a", encoding="utf-8") as f:
-                f.write("No DB Pool!\n")
             return
         guild = member.guild
 
@@ -443,8 +439,6 @@ class VoiceManagerCog(commands.Cog):
         if after.channel is not None:
             setup  = await _get_setup(self.pool, guild.id)
             jtc_id = JOIN_TO_CREATE_CHANNEL_ID if JOIN_TO_CREATE_CHANNEL_ID != 0 else (setup["join_to_create_channel_id"] if setup else 0)
-            with open("voice_debug_2.txt", "a", encoding="utf-8") as f:
-                f.write(f"JTC_ID: {jtc_id}, After Channel ID: {after.channel.id}\n")
             
             if jtc_id and after.channel.id == jtc_id:
                 # KIỂM TRA: User đã có kênh cá nhân hay chưa (Chống spam)

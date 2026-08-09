@@ -44,12 +44,12 @@ def _build_regular_embed(
     Định dạng: [ID] Icon Tên vật phẩm (xQTY) — Mô tả
     """
     CATEGORY_META = {
-        "event":       ("🎪 Vật phẩm Sự kiện",       0x9b59b6, f"💡 Sử dụng: `{{prefix}}use <id>`"),
-        "blackmarket": ("🌙 Vật phẩm Chợ đen",        0x2b2d31, f"💡 Sử dụng: `{{prefix}}use <id>`"),
-        "ring":        ("💍 Nhẫn Cưới & Trang sức",  0xff69b4, f"💡 Dùng `{prefix}marry` hoặc `{prefix}upgrade_ring`"),
+        "event":       ("<:icon_08_shop:1536025530728587384> Vật phẩm Sự kiện",       0x9b59b6, f"💡 Sử dụng: `{{prefix}}use <id>`"),
+        "blackmarket": ("<:icon_05_bm:1536017187243032736> Vật phẩm Chợ đen",        0x2b2d31, f"💡 Sử dụng: `{{prefix}}use <id>`"),
+        "ring":        ("<:icon_02_ring:1536017180951318528> Nhẫn Cưới & Trang sức",  0xff69b4, f"💡 Dùng `{prefix}marry` hoặc `{prefix}upgrade_ring`"),
         "gift":        ("<:gift_00_symbol:1536003307011842099> Quà Tặng",                0xf1c40f, f"💡 Dùng `{prefix}gift` để tặng"),
         "lootbox":     ("<:lootbox:1535664857276489749> Hộp Quà Lootbox",         0x3498db, f"💡 Dùng `{prefix}lb open <tier>` để mở"),
-        "farm":        ("🌱 Hạt giống",               0x2ecc71, f"💡 Mua thêm hạt giống tại `{prefix}shop`"),
+        "farm":        ("<:icon_04_seed:1536017185057546242> Hạt giống",               0x2ecc71, f"💡 Mua thêm hạt giống tại `{prefix}shop`"),
     }
     title, color, footer = CATEGORY_META.get(category, ("🎒 Túi đồ", 0x7289da, ""))
 

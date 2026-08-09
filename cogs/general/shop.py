@@ -49,7 +49,7 @@ def _format_price(price: int | None) -> str:
 def build_shop_embed(category: str, author: discord.Member | discord.User, prefix: str = 'k') -> discord.Embed:
     """Tạo Embed danh sách cửa hàng theo category."""
     CATEGORY_META = {
-        "event":       ("🎪 Cửa Hàng Sự Kiện",       0x9b59b6),
+        "event":       ("<:icon_08_shop:1536025530728587384> Cửa Hàng Sự Kiện",       0x9b59b6),
         "farm":        ("<:icon_03_farm_field:1536017183216369815> Cửa Hàng Nông Trại",      0xe67e22),
         "blackmarket": ("<:icon_05_bm:1536017187243032736> Cửa Hàng Chợ Đen",        0x2b2d31),
         "ring":        ("<:icon_02_ring:1536017180951318528> Tiệm Kim Hoàn",           0xffb6c1),
@@ -109,28 +109,28 @@ class ShopSelect(discord.ui.Select):
             discord.SelectOption(
                 label="Sự kiện",
                 value="event",
-                emoji="🎪",
+                emoji="<:icon_08_shop:1536025530728587384>",
                 description="Vé xổ số và vật phẩm sự kiện",
                 default=(current_category == "event"),
             ),
             discord.SelectOption(
                 label="Nông trại",
                 value="farm",
-                emoji="🌾",
+                emoji="<:icon_03_farm_field:1536017183216369815>",
                 description="Hạt giống cây trồng",
                 default=(current_category == "farm"),
             ),
             discord.SelectOption(
                 label="Chợ đen",
                 value="blackmarket",
-                emoji="🌙",
+                emoji="<:icon_05_bm:1536017187243032736>",
                 description="Vật phẩm đặc biệt — phá phách đối thủ",
                 default=(current_category == "blackmarket"),
             ),
             discord.SelectOption(
                 label="Nhẫn Cưới & Trang sức",
                 value="ring",
-                emoji="💍",
+                emoji="<:icon_02_ring:1536017180951318528>",
                 description="Nhẫn cưới",
                 default=(current_category == "ring"),
             ),
@@ -144,7 +144,7 @@ class ShopSelect(discord.ui.Select):
             discord.SelectOption(
                 label="Lootbox",
                 value="lootbox",
-                emoji="📦",
+                emoji="<:lootbox:1535664857276489749>",
                 description="Hộp quà may mắn (có giới hạn mua)",
                 default=(current_category == "lootbox"),
             ),

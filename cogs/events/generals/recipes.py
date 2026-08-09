@@ -96,9 +96,9 @@ def _build_recipe_embed(ctx, category: str) -> discord.Embed:
             axe_lines.append(f"**Lên Rìu Lv{level+1} {icon}:** {cost_str}\n  └ *{desc}*")
         embed.add_field(name="🪓 Nâng Cấp Rìu", value="\n".join(axe_lines), inline=False)
 
-    elif category == "craft":
+    elif category == "machine":
         embed.set_thumbnail(url="https://cdn.discordapp.com/emojis/1535660945752326154.gif")
-        embed.description = f"Công thức xây máy và chế biến.\nSử dụng lệnh `{ctx.prefix}craft` để xây máy."
+        embed.description = f"Công thức xây máy.\nSử dụng lệnh `{ctx.prefix}craft` để xây máy."
         
         build_machine_lines = [
             f"**[ID: 101] <a:keg:1535657702020354098> Thùng Ủ Rượu (Keg):** **30** {_get_item_name('wood')} + **1** {_get_item_name('copper_bar')} + **1** {_get_item_name('iron_bar')}",
@@ -108,6 +108,10 @@ def _build_recipe_embed(ctx, category: str) -> discord.Embed:
         ]
         embed.add_field(name="🏗️ Công Thức Xây Máy", value="\n".join(build_machine_lines), inline=False)
 
+    elif category == "artisan":
+        embed.set_thumbnail(url="https://cdn.discordapp.com/emojis/1535660945752326154.gif")
+        embed.description = f"Công thức chế biến nông sản."
+        
         machine_lines = []
         for machine_id, machine in MACHINES.items():
             machine_lines.append(f"**{machine['icon']} {machine['name']}**:")
@@ -118,7 +122,20 @@ def _build_recipe_embed(ctx, category: str) -> discord.Embed:
                 time_str = _format_duration(r["duration_seconds"])
                 machine_lines.append(f"  └ **{r['name']}**: {ing_str} ➡️ **{r['output_qty']}** {out_name} ({time_str})")
         
-        embed.add_field(name="🏭 Công Thức Chế Biến", value="\n".join(machine_lines), inline=False)
+        current_chunk = []
+        current_len = 0
+        part = 1
+        for line in machine_lines:
+            if current_len + len(line) + 1 > 1000:
+                embed.add_field(name=f"🏭 Công Thức Chế Biến (Phần {part})", value="\n".join(current_chunk), inline=False)
+                current_chunk = []
+                current_len = 0
+                part += 1
+            current_chunk.append(line)
+            current_len += len(line) + 1
+        
+        if current_chunk:
+            embed.add_field(name=f"🏭 Công Thức Chế Biến (Phần {part})" if part > 1 else "🏭 Công Thức Chế Biến", value="\n".join(current_chunk), inline=False)
 
     elif category == "cook":
         embed.set_thumbnail(url="https://cdn.discordapp.com/emojis/1535660942875041822.gif")
@@ -174,11 +191,18 @@ class RecipeSelect(discord.ui.Select):
                 default=(current == "upgrade"),
             ),
             discord.SelectOption(
-                label="Chế Tạo & Chế Biến",
-                value="craft",
+                label="Xây Máy",
+                value="machine",
                 emoji="🏗️",
-                description="Xây máy móc và nấu mứt, ủ rượu",
-                default=(current == "craft"),
+                description="Công thức xây máy",
+                default=(current == "machine"),
+            ),
+            discord.SelectOption(
+                label="Chế Biến",
+                value="artisan",
+                emoji="🏭",
+                description="Công thức mứt, ủ rượu, nung quặng",
+                default=(current == "artisan"),
             ),
             discord.SelectOption(
                 label="Nấu Ăn",
@@ -237,7 +261,8 @@ class RecipesCog(commands.Cog, name="Recipes"):
         
         cat_map = {
             "upgrade": "upgrade", "nangcap": "upgrade",
-            "craft": "craft", "chetao": "craft", "machine": "craft",
+            "craft": "machine", "chetao": "machine", "machine": "machine", "maymoc": "machine",
+            "artisan": "artisan", "chebien": "artisan",
             "cook": "cook", "nauan": "cook", "food": "cook",
         }
         
