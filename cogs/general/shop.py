@@ -54,7 +54,7 @@ def build_shop_embed(category: str, author: discord.Member | discord.User, prefi
         "blackmarket": ("🌙 Cửa Hàng Chợ Đen",        0x2b2d31),
         "ring":        ("💍 Tiệm Kim Hoàn",           0xffb6c1),
         "gift":        ("🎁 Quà Tặng",                0xff69b4),
-        "lootbox":     ("🎁 Cửa Hàng Lootbox",        0x3498db),
+        "lootbox":     ("<:lootbox:1535664857276489749> Cửa Hàng Lootbox",        0x3498db),
     }
     title, color = CATEGORY_META.get(category, ("🛒 Cửa Hàng", 0x7289da))
 

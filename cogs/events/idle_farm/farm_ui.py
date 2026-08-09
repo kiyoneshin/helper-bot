@@ -151,6 +151,7 @@ def build_farm_embed(author: discord.Member | discord.User, farm_data: Dict[str,
         description=f"Chào mừng bạn đến với khu vườn nhàn rỗi!\n\n{weather_str}",
         color=0x2ecc71
     )
+    embed.set_thumbnail(url="https://cdn.discordapp.com/emojis/1535660951791997071.gif")
     
     slots = farm_data.get("slots", 3)
     crops = farm_data.get("crops", {})
@@ -251,7 +252,7 @@ def build_farm_embed(author: discord.Member | discord.User, farm_data: Dict[str,
     if crop_details:
         embed.add_field(name="Chi tiết sinh trưởng", value="\n".join(crop_details), inline=False)
         
-    embed.set_thumbnail(url=author.display_avatar.url)
+    embed.set_thumbnail(url="https://cdn.discordapp.com/emojis/1535660951791997071.gif")
     embed.set_footer(text="Dùng menu bên dưới để mua hạt giống hoặc tương tác với cây trồng.")
     
     return embed

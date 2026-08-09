@@ -51,6 +51,7 @@ def _build_recipe_embed(ctx, category: str) -> discord.Embed:
     )
     
     if category == "upgrade":
+        embed.set_thumbnail(url="https://cdn.discordapp.com/emojis/1535660962781331497.gif")
         embed.description = f"Công thức nâng cấp công cụ.\nSử dụng lệnh `{ctx.prefix}upgrade` để nâng cấp."
         
         pickaxe_desc = {
@@ -96,6 +97,7 @@ def _build_recipe_embed(ctx, category: str) -> discord.Embed:
         embed.add_field(name="🪓 Nâng Cấp Rìu", value="\n".join(axe_lines), inline=False)
 
     elif category == "craft":
+        embed.set_thumbnail(url="https://cdn.discordapp.com/emojis/1535660945752326154.gif")
         embed.description = f"Công thức xây máy và chế biến.\nSử dụng lệnh `{ctx.prefix}craft` để xây máy."
         
         build_machine_lines = [
@@ -119,6 +121,7 @@ def _build_recipe_embed(ctx, category: str) -> discord.Embed:
         embed.add_field(name="🏭 Công Thức Chế Biến", value="\n".join(machine_lines), inline=False)
 
     elif category == "cook":
+        embed.set_thumbnail(url="https://cdn.discordapp.com/emojis/1535660942875041822.gif")
         embed.description = f"Công thức nấu ăn.\nSử dụng lệnh `{ctx.prefix}kcook <id> [số lượng]` để nấu."
         
         cooking_lines = []
@@ -155,7 +158,6 @@ def _build_recipe_embed(ctx, category: str) -> discord.Embed:
             if current_chunk:
                 embed.add_field(name=f"👩‍🍳 Công Thức Nấu Ăn (Phần {part})", value="\n".join(current_chunk), inline=False)
 
-    embed.set_thumbnail(url=ctx.author.display_avatar.url)
     embed.set_footer(text="Angelic Casino • Bách Khoa Toàn Thư 🌸")
     return embed
 

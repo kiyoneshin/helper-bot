@@ -117,6 +117,7 @@ def build_machine_embed(
         title="🏭 Khu Chế Biến Nông Sản",
         color=0xe67e22,
     )
+    embed.set_thumbnail(url="https://cdn.discordapp.com/emojis/1535660945752326154.gif")
 
     header = (
         f"👤 **{author.display_name}** | "
@@ -169,7 +170,7 @@ def build_machine_embed(
         inline=False,
     )
 
-    embed.set_thumbnail(url=author.display_avatar.url)
+    embed.set_thumbnail(url="https://cdn.discordapp.com/emojis/1535660945752326154.gif")
     embed.set_footer(
         text="Dùng kbag để bán thành phẩm  |  kcraft <id_máy> để xây máy mới"
     )

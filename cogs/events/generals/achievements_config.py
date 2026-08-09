@@ -6,10 +6,10 @@
 
 # Danh sách danh mục để hiển thị trên UI
 ACH_CATEGORIES = {
-    "eco": "🌱 Hệ Sinh Thái",
-    "casino": "🎲 Casino & Cờ Bạc",
-    "love": "💖 Tình Yêu",
-    "general": "🌟 Chung"
+    "eco": "<:ach_ecosystem:1535664845309878363> Hệ Sinh Thái",
+    "casino": "<:ach_gambling:1535664851223978024> Casino & Cờ Bạc",
+    "love": "<:ach_marriage:1535664860485128253> Tình Yêu",
+    "general": "<:ach_general:1535664853308670042> Chung"
 }
 
 ACHIEVEMENTS = {

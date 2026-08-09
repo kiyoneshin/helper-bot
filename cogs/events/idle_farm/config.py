@@ -42,7 +42,7 @@ QUALITY_EMOJIS = {"normal": "", "silver": "🥈", "gold": "🥇", "iridium": "�
 SEEDS: Dict[str, SeedConfig] = {
     "wheat": {
         "name": "Lúa Mì",
-        "icon": "🌾",
+        "icon": "<:farm_00_wheat:1535940025080881152>",
         "grow_time_seconds": 30 * 60,  # 30 phút
         "cost": 100,
         "reward_min": 150,
@@ -51,7 +51,7 @@ SEEDS: Dict[str, SeedConfig] = {
     },
     "potato": {
         "name": "Khoai Tây",
-        "icon": "🥔",
+        "icon": "<:farm_01_potato:1535940026935017492>",
         "grow_time_seconds": 1 * 60 * 60,  # 1 tiếng
         "cost": 200,
         "reward_min": 250,
@@ -61,7 +61,7 @@ SEEDS: Dict[str, SeedConfig] = {
     },
     "tomato": {
         "name": "Cà Chua",
-        "icon": "🍅",
+        "icon": "<:farm_02_tomato:1535940028943966238>",
         "grow_time_seconds": 3 * 60 * 60,  # 3 tiếng
         "cost": 400,
         "reward_min": 600,
@@ -70,7 +70,7 @@ SEEDS: Dict[str, SeedConfig] = {
     },
     "strawberry": {
         "name": "Dâu Tây",
-        "icon": "🍓",
+        "icon": "<:farm_03_strawberry:1535940030722351204>",
         "grow_time_seconds": 6 * 60 * 60,  # 6 tiếng
         "cost": 800,
         "reward_min": 1500,
@@ -79,7 +79,7 @@ SEEDS: Dict[str, SeedConfig] = {
     },
     "pumpkin": {
         "name": "Bí Ngô",
-        "icon": "🎃",
+        "icon": "<:farm_04_pumpkin:1535940032731287552>",
         "grow_time_seconds": 8 * 60 * 60,  # 8 tiếng
         "cost": 1200,
         "reward_min": 2500,
@@ -88,7 +88,7 @@ SEEDS: Dict[str, SeedConfig] = {
     },
     "sunflower": {
         "name": "Hướng Dương",
-        "icon": "🌻",
+        "icon": "<:farm_05_sunflower:1535940035927474217>",
         "grow_time_seconds": 12 * 60 * 60,  # 12 tiếng
         "cost": 500,
         "reward_min": 1000,
@@ -97,7 +97,7 @@ SEEDS: Dict[str, SeedConfig] = {
     },
     "star": {
         "name": "Ngôi Sao",
-        "icon": "⭐",
+        "icon": "<:farm_06_star:1535940037487894559>",
         "grow_time_seconds": 24 * 60 * 60,  # 24 tiếng
         "cost": 2000,
         "reward_min": 5000,

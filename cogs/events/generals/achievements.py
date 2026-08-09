@@ -174,7 +174,7 @@ async def build_ach_embed(bot, user, category: str, stats: dict, claimed: list) 
 
     cat_name = ACH_CATEGORIES.get(category, "Thành Tựu")
     embed = discord.Embed(
-        title=f"🏆 Bảng Thành Tựu | {cat_name}",
+        title=f"<:achievements:1535664842977976400> Bảng Thành Tựu | {cat_name}",
         description="Hoàn thành các cột mốc để nhận phần thưởng Danh Hiệu và Lootbox.\n\n",
         color=0xffd700
     )

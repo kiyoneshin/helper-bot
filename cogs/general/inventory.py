@@ -48,7 +48,7 @@ def _build_regular_embed(
         "blackmarket": ("🌙 Vật phẩm Chợ đen",        0x2b2d31, f"💡 Sử dụng: `{{prefix}}use <id>`"),
         "ring":        ("💍 Nhẫn Cưới & Trang sức",  0xff69b4, f"💡 Dùng `{prefix}marry` hoặc `{prefix}upgrade_ring`"),
         "gift":        ("🎁 Quà Tặng",                0xf1c40f, f"💡 Dùng `{prefix}gift` để tặng"),
-        "lootbox":     ("📦 Hộp Quà Lootbox",         0x3498db, f"💡 Dùng `{prefix}lb open <tier>` để mở"),
+        "lootbox":     ("<:lootbox:1535664857276489749> Hộp Quà Lootbox",         0x3498db, f"💡 Dùng `{prefix}lb open <tier>` để mở"),
     }
     title, color, footer = CATEGORY_META.get(category, ("🎒 Túi đồ", 0x7289da, ""))
 

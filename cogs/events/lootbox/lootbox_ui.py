@@ -83,7 +83,7 @@ def build_bulk_result_embed(
     count = len(all_drops)
 
     embed = discord.Embed(
-        title=f"{tier_emoji} Mở {count}x {tier_name} Lootbox",
+        title=f"{tier_emoji} <a:chest_opening:1535664849017774080> Mở {count}x {tier_name} Lootbox",
         color=color,
     )
     embed.set_author(name=author.display_name, icon_url=author.display_avatar.url)

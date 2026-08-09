@@ -297,7 +297,7 @@ CMD_DATA: dict[str, dict] = {
     # ── KHU SINH THÁI ─────────────────────────────────────────────────────────
     "farm": {
         "name": "Nông Trại",
-        "emoji": "🌻",
+        "emoji": "<a:skill_farming:1535660951791997071>",
         "short": "Mở giao diện Nông Trại. Xem cây trồng, thu hoạch và chăm sóc mùa vụ.",
         "aliases": ["nongtrai"],
         "cooldown": None,
@@ -321,7 +321,7 @@ CMD_DATA: dict[str, dict] = {
     },
     "mine": {
         "name": "Đào Mỏ",
-        "emoji": "⛏️",
+        "emoji": "<a:skill_mining:1535660962781331497>",
         "short": "Tiến vào hang động đào quặng. Càng vào sâu càng nhiều quặng quý.",
         "aliases": ["dao", "khoamo", "mining"],
         "cooldown": None,
@@ -331,7 +331,7 @@ CMD_DATA: dict[str, dict] = {
     },
     "fish": {
         "name": "Câu Cá",
-        "emoji": "🎣",
+        "emoji": "<a:skill_fishing:1535660959224565902>",
         "short": "Thả cần đợi cá cắn. Cá hiếm bán được nhiều điểm hơn.",
         "aliases": ["cauca", "fishing", "caca"],
         "cooldown": None,
@@ -469,7 +469,7 @@ CMD_DATA: dict[str, dict] = {
     },
     "cook": {
         "name": "Nấu Ăn",
-        "emoji": "👩‍🍳",
+        "emoji": "<a:skill_cooking:1535660942875041822>",
         "short": "Nấu món ăn đặc biệt từ nguyên liệu nông trại.",
         "aliases": ["nauan"],
         "cooldown": None,
@@ -539,7 +539,7 @@ CMD_DATA: dict[str, dict] = {
     },
     "craft": {
         "name": "Xây Máy Chế Biến",
-        "emoji": "🏗️",
+        "emoji": "<a:skill_crafting:1535660945752326154>",
         "short": "Dùng nguyên liệu gỗ/đá/phôi để chế tạo máy (Keg, Jar, Furnace).",
         "aliases": ["chebien2", "bophuong"],
         "cooldown": None,
@@ -549,7 +549,7 @@ CMD_DATA: dict[str, dict] = {
     },
     "chop": {
         "name": "Chặt Cây",
-        "emoji": "🪓",
+        "emoji": "<a:skill_woodcutting:1535660965637652510>",
         "short": "Tiến vào rừng sâu chặt gỗ. Có rủi ro bị sói cắn.",
         "aliases": ["chatcay", "woodcut"],
         "cooldown": None,
