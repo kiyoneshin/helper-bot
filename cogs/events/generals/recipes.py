@@ -101,9 +101,9 @@ def _build_recipe_embed(ctx, category: str) -> discord.Embed:
         embed.description = f"Công thức xây máy.\nSử dụng lệnh `{ctx.prefix}craft` để xây máy."
         
         build_machine_lines = [
-            f"**[ID: 101] <a:keg:1535657702020354098> Thùng Ủ Rượu (Keg):** **30** {_get_item_name('wood')} + **1** {_get_item_name('copper_bar')} + **1** {_get_item_name('iron_bar')}",
-            f"**[ID: 102] <a:jar:1535657704021037156> Máy Làm Mứt (Jar):** **30** {_get_item_name('wood')} + **20** {_get_item_name('stone')} + **2** {_get_item_name('coal')}",
-            f"**[ID: 103] <a:furnace:1535657705958674452> Lò Rèn (Furnace):** **20** {_get_item_name('stone')} + **5** {_get_item_name('copper_ore')}",
+            f"**[ID: 101] <:machine_08_keg:1535657702020354098> Thùng Ủ Rượu (Keg):** **30** {_get_item_name('wood')} + **1** {_get_item_name('copper_bar')} + **1** {_get_item_name('iron_bar')}",
+            f"**[ID: 102] <:machine_09_jar:1535657704021037156> Máy Làm Mứt (Jar):** **30** {_get_item_name('wood')} + **20** {_get_item_name('stone')} + **2** {_get_item_name('coal')}",
+            f"**[ID: 103] <:machine_10_furnace:1535657705958674452> Lò Rèn (Furnace):** **20** {_get_item_name('stone')} + **5** {_get_item_name('copper_ore')}",
             f"*(Dùng lệnh `{ctx.prefix}craft <id>` để xây máy vào 10 slot của bạn)*"
         ]
         embed.add_field(name="🏗️ Công Thức Xây Máy", value="\n".join(build_machine_lines), inline=False)
