@@ -47,7 +47,7 @@ def _build_regular_embed(
         "event":       ("🎪 Vật phẩm Sự kiện",       0x9b59b6, f"💡 Sử dụng: `{{prefix}}use <id>`"),
         "blackmarket": ("🌙 Vật phẩm Chợ đen",        0x2b2d31, f"💡 Sử dụng: `{{prefix}}use <id>`"),
         "ring":        ("💍 Nhẫn Cưới & Trang sức",  0xff69b4, f"💡 Dùng `{prefix}marry` hoặc `{prefix}upgrade_ring`"),
-        "gift":        ("🎁 Quà Tặng",                0xf1c40f, f"💡 Dùng `{prefix}gift` để tặng"),
+        "gift":        ("<:gift_00_symbol:1536003307011842099> Quà Tặng",                0xf1c40f, f"💡 Dùng `{prefix}gift` để tặng"),
         "lootbox":     ("<:lootbox:1535664857276489749> Hộp Quà Lootbox",         0x3498db, f"💡 Dùng `{prefix}lb open <tier>` để mở"),
         "farm":        ("🌱 Hạt giống",               0x2ecc71, f"💡 Mua thêm hạt giống tại `{prefix}shop`"),
     }
@@ -406,7 +406,7 @@ class InventorySelect(discord.ui.Select):
             discord.SelectOption(
                 label="Quà Tặng",
                 value="gift",
-                emoji="🎁",
+                emoji="<:gift_00_symbol:1536003307011842099>",
                 description="Quà để tặng người thương",
                 default=(current == "gift"),
             ),

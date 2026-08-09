@@ -625,7 +625,7 @@ class MarriageCog(commands.Cog):
                 return await ctx.send(f"❌ Bạn đang nuôi loài **{base_name}** rồi, không thể nhận nuôi lại!")
             
             view = PetAdoptConfirmView(self.bot, ctx.author, mar["id"], base_name)
-            await ctx.send(f"⚠️ Hai bạn đang nuôi một bé **{mar['pet_type']}**. Nếu bạn nhận nuôi **{base_name}**, thú cưng cũ sẽ ra đi và **Kinh nghiệm thú cưng (Pet EXP) sẽ bị reset về 0** (Level 1). Bạn có chắc chắn muốn đổi không?", view=view)
+            await ctx.send(f"⚠️ Hai bạn đang nuôi một bé **{mar['pet_type']}**. Nếu bạn nhận nuôi **{base_name}**, thú cưng cũ sẽ ra đi và **Kinh nghiệm thú cưng (Pet <:xp:1535664865308577884>) sẽ bị reset về 0** (Level 1). Bạn có chắc chắn muốn đổi không?", view=view)
         else:
             from cogs.common.db import execute_db
             await execute_db(self.bot, "UPDATE marriages SET pet_type = $1, pet_exp = 0.0 WHERE id = $2", base_name, mar["id"])
@@ -767,10 +767,10 @@ class MarriageCog(commands.Cog):
             f"**Tên:** {display_name} {icon}\n"
             f"**Loài:** {base_type}\n"
             f"**Trạng Thái:** {stage}\n"
-            f"**Cấp Độ:** Lv.{pet_level}  *(EXP: {current_exp_in_level:.1f}/200)*\n\n"
+            f"**Cấp Độ:** Lv.{pet_level}  *(<:xp:1535664865308577884>: {current_exp_in_level:.1f}/200)*\n\n"
             f"🌟 **Kỹ Năng Độc Quyền:** `{skill_name}`\n"
             f"-> {skill_desc}\n\n"
-            f"*(Nhận EXP thú cưng bằng cách tương tác, làm nhiệm vụ hoặc đi làm `{ctx.prefix}work`)*"
+            f"*(Nhận <:xp:1535664865308577884> thú cưng bằng cách tương tác, làm nhiệm vụ hoặc đi làm `{ctx.prefix}work`)*"
         )
         
         emb = discord.Embed(title="🐾 Hồ Sơ Thú Cưng", description=desc, color=discord.Color.gold())
@@ -800,7 +800,7 @@ class MarriageCog(commands.Cog):
 
     @commands.hybrid_command(name="gift", aliases=["tangqua"])
     async def gift_cmd(self, ctx: commands.Context, target: discord.Member, item_id: int):
-        """🎁 Tặng quà mua từ Cửa Hàng (Quà Tặng) cho vợ/chồng."""
+        """<:gift_00_symbol:1536003307011842099> Tặng quà mua từ Cửa Hàng (Quà Tặng) cho vợ/chồng."""
         uid = str(ctx.author.id)
         mar = await get_marriage(self.bot, uid)
         if not mar:
@@ -848,16 +848,16 @@ class MarriageCog(commands.Cog):
         dtm_gain = dtm_gain * (1.0 + pet_gift_bonus)
         await update_intimacy(self.bot, str(ctx.author.id), int(dtm_gain))
         
-        # Thưởng EXP thú cưng bằng DTM_gain x 2
+        # Thưởng <:xp:1535664865308577884> thú cưng bằng DTM_gain x 2
         exp_gain = dtm_gain * 2
         if pet_type:
             await execute_db(self.bot, "UPDATE marriages SET pet_exp = pet_exp + $1 WHERE id = $2", exp_gain, mar["id"])
-            exp_msg = f"\n✨ *Thú cưng nhận {exp_gain:.1f} EXP*"
+            exp_msg = f"\n✨ *Thú cưng nhận {exp_gain:.1f} <:xp:1535664865308577884>*"
         else:
             exp_msg = ""
             
         emb = discord.Embed(
-            title="🎁 Tặng Quà Thành Công!",
+            title="<:gift_00_symbol:1536003307011842099> Tặng Quà Thành Công!",
             description=f"**{ctx.author.display_name}** vừa tặng **{item['icon']} {item['name']}** cho **{target.display_name}**!\nTình cảm của hai bạn tăng thêm `{dtm_gain:.1f} DTM` 💖\n\n_{item['description']}_{exp_msg}",
             color=discord.Color.brand_red()
         )
@@ -1049,11 +1049,11 @@ class MarriageCog(commands.Cog):
                         msg += f"\n🎉 **Nhiệm Vụ Cặp Đôi Hoàn Thành!** (+{task_reward:.1f} DTM)"
                     await execute_db(self.bot, "UPDATE marriages SET couple_task = $1::jsonb WHERE id = $2", json.dumps(task_data), mar["id"])
             
-            # Pet EXP gain
+            # Pet <:xp:1535664865308577884> gain
             if pet_type:
                 gained_exp = base_dtm * 2
                 await execute_db(self.bot, "UPDATE marriages SET pet_exp = pet_exp + $1 WHERE id = $2", gained_exp, mar["id"])
-                msg += f"\n✨ *Thú cưng nhận {gained_exp:.1f} EXP*"
+                msg += f"\n✨ *Thú cưng nhận {gained_exp:.1f} <:xp:1535664865308577884>*"
             
         msg += reset_msg + crit_msg
         

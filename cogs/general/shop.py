@@ -53,7 +53,7 @@ def build_shop_embed(category: str, author: discord.Member | discord.User, prefi
         "farm":        ("🌾 Cửa Hàng Nông Trại",      0xe67e22),
         "blackmarket": ("🌙 Cửa Hàng Chợ Đen",        0x2b2d31),
         "ring":        ("💍 Tiệm Kim Hoàn",           0xffb6c1),
-        "gift":        ("🎁 Quà Tặng",                0xff69b4),
+        "gift":        ("<:gift_00_symbol:1536003307011842099> Quà Tặng",                0xff69b4),
         "lootbox":     ("<:lootbox:1535664857276489749> Cửa Hàng Lootbox",        0x3498db),
     }
     title, color = CATEGORY_META.get(category, ("🛒 Cửa Hàng", 0x7289da))
@@ -137,7 +137,7 @@ class ShopSelect(discord.ui.Select):
             discord.SelectOption(
                 label="Quà Tặng",
                 value="gift",
-                emoji="🎁",
+                emoji="<:gift_00_symbol:1536003307011842099>",
                 description="Quà để tặng người thương (lệnh gift)",
                 default=(current_category == "gift"),
             ),

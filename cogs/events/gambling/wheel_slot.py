@@ -170,7 +170,7 @@ def _render_wheel(stop_idx: int) -> str:
 # THUẬT TOÁN MÁY XẺNG (SLOTS)
 # ─────────────────────────────────────────────────────────────────────────────
 
-SLOT_SYMBOLS = ["💎", "💯", "🍀", "🎁", "✨"]
+SLOT_SYMBOLS = ["💎", "💯", "🍀", "<:gift_00_symbol:1536003307011842099>", "✨"]
 
 def _generate_slots() -> list[str]:
     """Sinh mảng 5 emoji cho trò chơi Slots dựa trên tỉ lệ Hạng Giải."""
@@ -204,15 +204,15 @@ def _evaluate_slots(slots_list: list[str]) -> tuple[float, str]:
     max_count = counts[max_sym]
     
     if max_count == 5:
-        payouts = {"💎": 25.0, "💯": 20.0, "🍀": 18.0, "🎁": 16.0, "✨": 15.0}
+        payouts = {"💎": 25.0, "💯": 20.0, "🍀": 18.0, "<:gift_00_symbol:1536003307011842099>": 16.0, "✨": 15.0}
         mult = payouts[max_sym]
         return mult, f"x{mult:.1f} - JACKPOT 5 {max_sym}! Đổi đời rồiiii!"
     elif max_count == 4:
-        payouts = {"💎": 5.0, "💯": 4.5, "🍀": 4.0, "🎁": 3.5, "✨": 3.0}
+        payouts = {"💎": 5.0, "💯": 4.5, "🍀": 4.0, "<:gift_00_symbol:1536003307011842099>": 3.5, "✨": 3.0}
         mult = payouts[max_sym]
         return mult, f"x{mult:.1f} - Lụm 4 {max_sym}!"
     elif max_count == 3:
-        payouts = {"💎": 1.8, "💯": 1.6, "🍀": 1.5, "🎁": 1.3, "✨": 1.2}
+        payouts = {"💎": 1.8, "💯": 1.6, "🍀": 1.5, "<:gift_00_symbol:1536003307011842099>": 1.3, "✨": 1.2}
         mult = payouts[max_sym]
         return mult, f"x{mult:.1f} - Vớt vát 3 {max_sym}!"
     else:

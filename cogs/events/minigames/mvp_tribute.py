@@ -62,7 +62,7 @@ async def start_mvp_tribute_game(bot, channel: discord.abc.Messageable, core_cog
             f"⏳ **Thử thách chớp nhoáng (30 giây):**\n"
             f"Tất cả thành viên đang online hãy nhanh tay gõ chính xác cú pháp dưới đây lên kênh chat:\n"
             f"👉 `tui iu {mvp_user.mention}` (Nhớ tag đúng tài khoản của MVP nhé!)\n\n"
-            f"🎁 **Phần thưởng:**\n"
+            f"<:gift_00_symbol:1536003307011842099> **Phần thưởng:**\n"
             f"• Ai gõ đúng và nhanh sẽ được cộng ngay **+50 điểm** sự kiện!\n"
             f"• 👑 **Đặc quyền MVP:** Không cần gõ, ngồi mát ăn bát vàng! Nhận ngay 10% hoa hồng (+5 điểm) từ mỗi câu chúc của mọi người! 🌸"
         ),

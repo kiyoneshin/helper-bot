@@ -60,7 +60,7 @@ class CooldownsCog(commands.Cog):
         )
         
         # -------------------------------------------------------------
-        # 1. REWARDS (🎁 Phần thưởng)
+        # 1. REWARDS (<:gift_00_symbol:1536003307011842099> Phần thưởng)
         # -------------------------------------------------------------
         row = await fetchrow_db(
             self.bot, 
@@ -135,7 +135,7 @@ class CooldownsCog(commands.Cog):
             _format_cd(lb_buy_ready, "buy lootbox", lb_buy_str)
         ]
         
-        embed.add_field(name="🎁 Rewards", value="\n".join(rewards_lines), inline=False)
+        embed.add_field(name="<:gift_00_symbol:1536003307011842099> Rewards", value="\n".join(rewards_lines), inline=False)
         
         # -------------------------------------------------------------
         # 2. PROGRESS (✨ Tiến độ)

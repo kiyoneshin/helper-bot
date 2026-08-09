@@ -45,7 +45,7 @@ WEATHER_TYPES = {
     "snowy": {
         "name": "Băng giá",
         "emoji": "❄️",
-        "desc": "Phát triển chậm 50%, nhưng nhận x2 EXP nông trại.",
+        "desc": "Phát triển chậm 50%, nhưng nhận x2 <:xp:1535664865308577884> nông trại.",
         "growth_time_modifier": 1.5,
         "yield_modifier": 0,
         "rare_drop_modifier": 1.0,

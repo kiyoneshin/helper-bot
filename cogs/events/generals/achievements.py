@@ -208,7 +208,7 @@ async def build_ach_embed(bot, user, category: str, stats: dict, claimed: list) 
             else:
                 stat_val = stats.get(ach["stat_key"], 0)
                 if stat_val >= ach["target"]:
-                    status_emoji = "🎁" # Ready to claim
+                    status_emoji = "<:gift_00_symbol:1536003307011842099>" # Ready to claim
                     progress_str = f"Sẵn sàng nhận thưởng! ({stat_val}/{ach['target']})"
                 else:
                     status_emoji = "⏳"

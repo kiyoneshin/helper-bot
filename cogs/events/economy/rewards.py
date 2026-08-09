@@ -38,7 +38,7 @@ async def _init_reward_tables(bot: commands.Bot) -> None:
 
 
 class Rewards(commands.Cog):
-    """🎁 Hệ Thống Nhận Thưởng Hàng Ngày & Hàng Tuần"""
+    """<:gift_00_symbol:1536003307011842099> Hệ Thống Nhận Thưởng Hàng Ngày & Hàng Tuần"""
 
     def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
@@ -51,7 +51,7 @@ class Rewards(commands.Cog):
     # ─────────────────────────────────────────────────────────────────────────
     @commands.hybrid_command(name="daily", aliases=["diemdanh"])
     async def daily_cmd(self, ctx: commands.Context) -> None:
-        """🎁 Nhận thưởng 500 điểm mỗi ngày (tăng dần theo chuỗi)."""
+        """<:gift_00_symbol:1536003307011842099> Nhận thưởng 500 điểm mỗi ngày (tăng dần theo chuỗi)."""
         uid = str(ctx.author.id)
         now = datetime.now(timezone.utc)
         
@@ -135,11 +135,11 @@ class Rewards(commands.Cog):
         if lb_tier:
             from cogs.events.lootbox.lootbox_cmd import _add_lootbox_to_inventory
             await _add_lootbox_to_inventory(self.bot, uid, lb_tier, 1)
-            lb_text = f"\n🎁 **Thưởng Thêm:** 1x {lb_emoji} {lb_name}"
+            lb_text = f"\n<:gift_00_symbol:1536003307011842099> **Thưởng Thêm:** 1x {lb_emoji} {lb_name}"
 
         # Trả về thông báo
         embed = discord.Embed(
-            title="🎁 Điểm Danh Hàng Ngày",
+            title="<:gift_00_symbol:1536003307011842099> Điểm Danh Hàng Ngày",
             description=(
                 f"✅ Nhận thành công **{total_reward:,}** điểm!\n"
                 f"*(Cơ bản: {base_reward:,} + Thưởng chuỗi: {streak_bonus:,})*{lb_text}\n\n"
@@ -219,7 +219,7 @@ class Rewards(commands.Cog):
             title="💎 Lương Tuần Đã Về!",
             description=(
                 f"🎉 Chúc mừng bạn đã nhận **{total_reward:,}** điểm lương tuần!\n"
-                f"🎁 **Thưởng Thêm:** 2x 📦 Lootbox Common\n"
+                f"<:gift_00_symbol:1536003307011842099> **Thưởng Thêm:** 2x 📦 Lootbox Common\n"
                 f"Hãy dùng số điểm này thật khôn ngoan tại `{ctx.prefix}shop` hoặc các sòng bài Casino nhé!"
             ),
             color=0xFFD700  # Màu vàng

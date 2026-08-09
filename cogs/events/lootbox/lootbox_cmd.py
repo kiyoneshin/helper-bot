@@ -148,7 +148,7 @@ async def _apply_drops_to_farm(bot, uid: str, drops, bonus: Optional[dict] = Non
 # ---------------------------------------------------------------------------
 
 class LootboxCog(commands.Cog):
-    """🎁 Hệ Thống Lootbox & Pray"""
+    """<:gift_00_symbol:1536003307011842099> Hệ Thống Lootbox & Pray"""
 
     def __init__(self, bot: commands.Bot):
         self.bot = bot
@@ -219,10 +219,10 @@ class LootboxCog(commands.Cog):
     # ─────────────────────────────────────────────────────────────────────
     @commands.group(name="lootbox", aliases=["lb"], invoke_without_command=True)
     async def lootbox_group(self, ctx: commands.Context):
-        """🎁 Hệ Thống Lootbox. Dùng {prefix}lb open/info/history."""
+        """<:gift_00_symbol:1536003307011842099> Hệ Thống Lootbox. Dùng {prefix}lb open/info/history."""
         prefix = ctx.prefix or ctx.bot.custom_prefix
         embed = discord.Embed(
-            title="🎁 Hệ Thống Lootbox",
+            title="<:gift_00_symbol:1536003307011842099> Hệ Thống Lootbox",
             description=(
                 f"**Lệnh có sẵn:**\n"
                 f"• `{prefix}lb open <tier> [số_lượng]` — Mở lootbox\n"
@@ -240,7 +240,7 @@ class LootboxCog(commands.Cog):
     # ─────────────────────────────────────────────────────────────────────
     @lootbox_group.command(name="open", aliases=["mo"])
     async def open_cmd(self, ctx: commands.Context, tier_raw: str, qty: int = 1):
-        """🎁 Mở lootbox. VD: {prefix}lb open epic 3 | {prefix}lb open e 1"""
+        """<:gift_00_symbol:1536003307011842099> Mở lootbox. VD: {prefix}lb open epic 3 | {prefix}lb open e 1"""
         tier_id = parse_tier(tier_raw)
         if tier_id is None:
             await ctx.send(

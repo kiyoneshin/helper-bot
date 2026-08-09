@@ -208,7 +208,7 @@ class FishingView(discord.ui.View):
             lb_msg = ""
             if lb_tier:
                 await _add_lootbox_to_inventory(self.bot, self.user_id, lb_tier, 1)
-                lb_msg = f"\n🎁 **Rớt thêm:** 1x {TIER_EMOJIS[lb_tier]} {TIER_NAMES[lb_tier]}"
+                lb_msg = f"\n<:gift_00_symbol:1536003307011842099> **Rớt thêm:** 1x {TIER_EMOJIS[lb_tier]} {TIER_NAMES[lb_tier]}"
 
             inventory = farm_data.setdefault("inventory", {})
             inventory[fish_id] = inventory.get(fish_id, 0) + 1

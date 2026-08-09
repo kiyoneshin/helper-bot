@@ -34,7 +34,7 @@ CMD_DATA: dict[str, dict] = {
     },
     "use": {
         "name": "Sử Dụng Vật Phẩm",
-        "emoji": "🎁",
+        "emoji": "<:gift_00_symbol:1536003307011842099>",
         "short": "Sử dụng một vật phẩm trong túi đồ.",
         "aliases": ["dung", "xai"],
         "cooldown": None,
@@ -111,7 +111,7 @@ CMD_DATA: dict[str, dict] = {
         "cooldown": 0,
         "usage": "{prefix}adopt <tên_thú_cưng>",
         "examples": ["{prefix}adopt dog", "{prefix}adopt cat"],
-        "note": "Yêu cầu 200 DTM để nhận nuôi. Nếu đã có thú cưng, bạn có thể nhận bé mới nhưng EXP thú cưng sẽ quay về 0.",
+        "note": "Yêu cầu 200 DTM để nhận nuôi. Nếu đã có thú cưng, bạn có thể nhận bé mới nhưng <:xp:1535664865308577884> thú cưng sẽ quay về 0.",
     },
     "namepet": {
         "name": "Đặt Tên Thú",
@@ -131,7 +131,7 @@ CMD_DATA: dict[str, dict] = {
         "cooldown": 0,
         "usage": "{prefix}pet",
         "examples": ["{prefix}pet"],
-        "note": "Mỗi loại thú cưng có kỹ năng ĐỘC QUYỀN khác nhau. Nhận EXP thú cưng bằng cách đi làm ({prefix}work), làm nhiệm vụ ({prefix}task) hoặc dùng lệnh hành động.",
+        "note": "Mỗi loại thú cưng có kỹ năng ĐỘC QUYỀN khác nhau. Nhận <:xp:1535664865308577884> thú cưng bằng cách đi làm ({prefix}work), làm nhiệm vụ ({prefix}task) hoặc dùng lệnh hành động.",
     },
     "crash": {
         "name": "Crash (Tàu Bay)",
@@ -216,7 +216,7 @@ CMD_DATA: dict[str, dict] = {
     # ── KINH TẾ ───────────────────────────────────────────────────────────────
     "daily": {
         "name": "Điểm Danh",
-        "emoji": "🎁",
+        "emoji": "<:gift_00_symbol:1536003307011842099>",
         "short": "Nhận thưởng 500 điểm mỗi ngày. Chuỗi càng dài, thưởng càng lớn.",
         "aliases": ["diemdanh"],
         "cooldown": "24h",
@@ -382,7 +382,7 @@ CMD_DATA: dict[str, dict] = {
     },
     "gift": {
         "name": "Tặng Quà",
-        "emoji": "🎁",
+        "emoji": "<:gift_00_symbol:1536003307011842099>",
         "short": "Tặng quà mua từ Cửa Hàng (Quà Tặng) cho vợ/chồng. Tăng DTM.",
         "aliases": ["tangqua"],
         "cooldown": 0,

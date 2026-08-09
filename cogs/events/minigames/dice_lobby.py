@@ -63,7 +63,7 @@ async def start_dice_lobby_game(bot, channel: discord.abc.Messageable, core_cog)
         description=(
             "Một sảnh cờ bạc siêu tốc vừa được mở ra! Hãy nhanh tay đăng ký để thử vận may!\n\n"
             "⏳ **Thời gian gom phòng:** 60 giây (hoặc khi đủ 10 người)\n"
-            "🎁 **Luật chơi:** Winner Takes All — Người đổ ra tổng điểm cao nhất ăn trọn **100 điểm thưởng**!\n"
+            "<:gift_00_symbol:1536003307011842099> **Luật chơi:** Winner Takes All — Người đổ ra tổng điểm cao nhất ăn trọn **100 điểm thưởng**!\n"
             "🌟 **Đặc biệt:** Ai đổ ra bộ đôi hoàn hảo (1-1 hoặc 6-6) sẽ được thưởng nóng thêm **+50 điểm Nhân Phẩm Vô Cực**!"
         ),
         color=0xf1c40f

@@ -37,7 +37,7 @@ ITEM_REGISTRY: dict[int, ItemEntry] = {
     11: {
         "id":          11,
         "name":        "Hộp Quà Bí Ẩn (Gacha)",
-        "icon":        "🎁",
+        "icon":        "<:gift_00_symbol:1536003307011842099>",
         "price":       2500,
         "description": "Mở ra phần thưởng ngẫu nhiên.",
         "db_key":      "item_1",
@@ -297,7 +297,7 @@ ITEM_REGISTRY: dict[int, ItemEntry] = {
     41: {
         "id":          41,
         "name":        "Hoa Hồng",
-        "icon":        "🌸",
+        "icon":        "<:gift_41_rose:1536003308911857694>",
         "price":       500,
         "description": "+5 DTM. Một bông hoa nhỏ bé nhưng chứa đựng tình cảm chân thành.",
         "db_key":      "gift_41",
@@ -307,7 +307,7 @@ ITEM_REGISTRY: dict[int, ItemEntry] = {
     42: {
         "id":          42,
         "name":        "Gấu Bông",
-        "icon":        "🧸",
+        "icon":        "<:gift_42_teddybear:1536003310857756742>",
         "price":       1500,
         "description": "+17.5 DTM. Gấu bông êm ái cho những cái ôm ấm áp.",
         "db_key":      "gift_42",
@@ -317,7 +317,7 @@ ITEM_REGISTRY: dict[int, ItemEntry] = {
     43: {
         "id":          43,
         "name":        "Hộp Socola",
-        "icon":        "🍫",
+        "icon":        "<:gift_43_chocolate:1536003312628006922>",
         "price":       3000,
         "description": "+40.0 DTM. Ngọt ngào và quyến rũ như tình yêu thuở ban đầu.",
         "db_key":      "gift_43",
@@ -327,7 +327,7 @@ ITEM_REGISTRY: dict[int, ItemEntry] = {
     44: {
         "id":          44,
         "name":        "Son Môi",
-        "icon":        "💄",
+        "icon":        "<:gift_44_lipstick:1536003315182342144>",
         "price":       5000,
         "description": "+75.0 DTM. Thỏi son hàng hiệu quyến rũ.",
         "db_key":      "gift_44",
@@ -337,7 +337,7 @@ ITEM_REGISTRY: dict[int, ItemEntry] = {
     45: {
         "id":          45,
         "name":        "Rượu Vang",
-        "icon":        "🍷",
+        "icon":        "<:gift_45_wine:1536003317153403000>",
         "price":       10000,
         "description": "+160.0 DTM. Đêm lãng mạn không thể thiếu chút men say.",
         "db_key":      "gift_45",
@@ -347,7 +347,7 @@ ITEM_REGISTRY: dict[int, ItemEntry] = {
     46: {
         "id":          46,
         "name":        "Áo Đôi",
-        "icon":        "👗",
+        "icon":        "<:gift_46_couple:1536003319179251744>",
         "price":       15000,
         "description": "+260.0 DTM. Khẳng định chủ quyền với cả thế giới.",
         "db_key":      "gift_46",
@@ -357,7 +357,7 @@ ITEM_REGISTRY: dict[int, ItemEntry] = {
     47: {
         "id":          47,
         "name":        "Đồng Hồ",
-        "icon":        "⌚",
+        "icon":        "<:gift_47_watch:1536003321364746250>",
         "price":       25000,
         "description": "+475.0 DTM. Thời gian trôi qua, tình cảm vẫn đong đầy.",
         "db_key":      "gift_47",
@@ -367,7 +367,7 @@ ITEM_REGISTRY: dict[int, ItemEntry] = {
     48: {
         "id":          48,
         "name":        "Dây Chuyền",
-        "icon":        "💍",
+        "icon":        "<:gift_48_necklace:1536003323503579167>",
         "price":       50000,
         "description": "+1000.0 DTM. Kỷ vật lấp lánh sang trọng.",
         "db_key":      "gift_48",
@@ -377,7 +377,7 @@ ITEM_REGISTRY: dict[int, ItemEntry] = {
     49: {
         "id":          49,
         "name":        "Siêu Xe",
-        "icon":        "🏎️",
+        "icon":        "<:gift_49_supercar:1536003326502506506>",
         "price":       100000,
         "description": "+2200.0 DTM. Món quà dành cho giới siêu giàu.",
         "db_key":      "gift_49",
@@ -387,7 +387,7 @@ ITEM_REGISTRY: dict[int, ItemEntry] = {
     50: {
         "id":          50,
         "name":        "Biệt Thự",
-        "icon":        "🏰",
+        "icon":        "<:gift_50_villa:1536003329002315786>",
         "price":       250000,
         "description": "+6000.0 DTM. Xây dựng tổ ấm hoàng gia.",
         "db_key":      "gift_50",

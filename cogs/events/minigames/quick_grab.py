@@ -61,7 +61,7 @@ class QuickGrabView(discord.ui.View):
         # Cập nhật Embed công bố
         if self.message:
             embed = self.message.embeds[0] if self.message.embeds else discord.Embed(color=0xfee75c)
-            embed.title = "🎁 Túi quà khổng lồ đã được nhặt hết!"
+            embed.title = "<:gift_00_symbol:1536003307011842099> Túi quà khổng lồ đã được nhặt hết!"
             
             if self.winners:
                 desc = "**Danh sách 3 chiến thần nhanh tay nhất:**\n\n"

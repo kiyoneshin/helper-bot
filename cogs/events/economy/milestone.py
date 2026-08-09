@@ -58,7 +58,7 @@ async def _init_milestone_tables(bot: commands.Bot) -> None:
 
 
 class MilestoneCog(commands.Cog):
-    """🎁 Cog quản lý Hệ Thống Cột Mốc Sự Kiện (Event Battle Pass)."""
+    """<:gift_00_symbol:1536003307011842099> Cog quản lý Hệ Thống Cột Mốc Sự Kiện (Event Battle Pass)."""
 
     def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
@@ -69,7 +69,7 @@ class MilestoneCog(commands.Cog):
 
     @commands.hybrid_command(name="qua", aliases=["reward", "milestone"])
     async def milestone_cmd(self, ctx: commands.Context) -> None:
-        """🎁 Xem tiến trình Cột Mốc Sự Kiện (Event Battle Pass)"""
+        """<:gift_00_symbol:1536003307011842099> Xem tiến trình Cột Mốc Sự Kiện (Event Battle Pass)"""
         uid = str(ctx.author.id)
         row = await fetchrow_db(
             self.bot,
@@ -89,7 +89,7 @@ class MilestoneCog(commands.Cog):
             claimed_milestones = []
             
         embed = discord.Embed(
-            title="🎁 TIẾN TRÌNH CỘT MỐC SỰ KIỆN 🎁",
+            title="<:gift_00_symbol:1536003307011842099> TIẾN TRÌNH CỘT MỐC SỰ KIỆN <:gift_00_symbol:1536003307011842099>",
             description=f"Tổng điểm đã cày: **{total_earned:,.2f}** điểm\n*(Tiến trình được tính dựa trên tổng điểm cày cuốc, không bị giảm khi tiêu xài)*\n",
             color=0xffb6c1
         )
@@ -107,7 +107,7 @@ class MilestoneCog(commands.Cog):
             if claimed:
                 status = "✅ Đã nhận"
             elif total_earned >= moc_diem:
-                status = "🎁 Có thể nhận (Gõ knhanqua)"
+                status = "<:gift_00_symbol:1536003307011842099> Có thể nhận (Gõ knhanqua)"
             else:
                 status = "🔒 Chưa đạt"
                 
@@ -142,7 +142,7 @@ class MilestoneCog(commands.Cog):
 
     @commands.hybrid_command(name="nhanqua", aliases=["claim"])
     async def claim_cmd(self, ctx: commands.Context) -> None:
-        """🎁 Nhận tất cả phần thưởng từ các cột mốc đã đạt được."""
+        """<:gift_00_symbol:1536003307011842099> Nhận tất cả phần thưởng từ các cột mốc đã đạt được."""
         uid = str(ctx.author.id)
         
         # Đảm bảo profile có tồn tại trong db

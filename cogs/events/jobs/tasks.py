@@ -146,7 +146,7 @@ class TaskCog(commands.Cog):
                 pet_msg = ""
                 if mar and mar["pet_type"]:
                     await execute_db(self.bot, "UPDATE marriages SET pet_exp = pet_exp + 100 WHERE id = $1", mar["id"])
-                    pet_msg = " và Thú cưng +100 EXP"
+                    pet_msg = " và Thú cưng +100 <:xp:1535664865308577884>"
 
                 lb_msg = ""
                 lb_tier = conf.get("lb_reward_tier")
@@ -155,7 +155,7 @@ class TaskCog(commands.Cog):
                     from cogs.events.lootbox.lootbox_cmd import _add_lootbox_to_inventory
                     from cogs.events.lootbox.lootbox_config import TIER_EMOJIS, TIER_NAMES
                     await _add_lootbox_to_inventory(self.bot, str(uid), lb_tier, 1)
-                    lb_msg = f" 🎁 {TIER_EMOJIS[lb_tier]} {TIER_NAMES[lb_tier]}"
+                    lb_msg = f" <:gift_00_symbol:1536003307011842099> {TIER_EMOJIS[lb_tier]} {TIER_NAMES[lb_tier]}"
                     
                 claimed_messages.append(f"✅ Đã nhận thưởng nhiệm vụ ngày #{idx} (+{tdata['reward']:,} điểm{pet_msg}{lb_msg})")
                 db_changed = True
@@ -164,7 +164,7 @@ class TaskCog(commands.Cog):
             bar = _get_progress_bar(tdata["progress"], tdata["target"])
             strike = "~~" if tdata["claimed"] else ""
             
-            daily_text += f"**{idx}. {conf['name']}** | 🎁 {tdata['reward']}\n"
+            daily_text += f"**{idx}. {conf['name']}** | <:gift_00_symbol:1536003307011842099> {tdata['reward']}\n"
             daily_text += f"{strike}Mục tiêu: {conf['desc']}{strike}\n"
             daily_text += f"`{bar}` **{status}**\n\n"
             idx += 1
@@ -187,7 +187,7 @@ class TaskCog(commands.Cog):
                 pet_msg = ""
                 if mar and mar["pet_type"]:
                     await execute_db(self.bot, "UPDATE marriages SET pet_exp = pet_exp + 300 WHERE id = $1", mar["id"])
-                    pet_msg = " và Thú cưng +300 EXP"
+                    pet_msg = " và Thú cưng +300 <:xp:1535664865308577884>"
 
                 lb_msg = ""
                 lb_tier = conf.get("lb_reward_tier")
@@ -196,7 +196,7 @@ class TaskCog(commands.Cog):
                     from cogs.events.lootbox.lootbox_cmd import _add_lootbox_to_inventory
                     from cogs.events.lootbox.lootbox_config import TIER_EMOJIS, TIER_NAMES
                     await _add_lootbox_to_inventory(self.bot, str(uid), lb_tier, 1)
-                    lb_msg = f" 🎁 {TIER_EMOJIS[lb_tier]} {TIER_NAMES[lb_tier]}"
+                    lb_msg = f" <:gift_00_symbol:1536003307011842099> {TIER_EMOJIS[lb_tier]} {TIER_NAMES[lb_tier]}"
                     
                 claimed_messages.append(f"🌟 Đã nhận thưởng nhiệm vụ tuần #{idx} (+{tdata['reward']:,} điểm{pet_msg}{lb_msg})")
                 db_changed = True
@@ -205,7 +205,7 @@ class TaskCog(commands.Cog):
             bar = _get_progress_bar(tdata["progress"], tdata["target"])
             strike = "~~" if tdata["claimed"] else ""
             
-            weekly_text += f"**{idx}. {conf['name']}** | 🎁 {tdata['reward']}\n"
+            weekly_text += f"**{idx}. {conf['name']}** | <:gift_00_symbol:1536003307011842099> {tdata['reward']}\n"
             weekly_text += f"{strike}Mục tiêu: {conf['desc']}{strike}\n"
             weekly_text += f"`{bar}` **{status}**\n\n"
             idx += 1
@@ -262,7 +262,7 @@ class TaskCog(commands.Cog):
                     from cogs.events.lootbox.lootbox_cmd import _add_lootbox_to_inventory
                     from cogs.events.lootbox.lootbox_config import TIER_EMOJIS, TIER_NAMES
                     await _add_lootbox_to_inventory(self.bot, str(uid), lb_tier, 1)
-                    lb_msg = f" 🎁 {TIER_EMOJIS[lb_tier]} {TIER_NAMES[lb_tier]}"
+                    lb_msg = f" <:gift_00_symbol:1536003307011842099> {TIER_EMOJIS[lb_tier]} {TIER_NAMES[lb_tier]}"
 
                 claimed_messages.append(f"🏆 Đã hoàn thành siêu nhiệm vụ: **{conf['name']}** (+{tdata['reward']:,} điểm{lb_msg})")
                 db_changed = True
@@ -271,7 +271,7 @@ class TaskCog(commands.Cog):
             bar = _get_progress_bar(tdata["progress"], tdata["target"], length=15)
             strike = "~~" if tdata["claimed"] else ""
             
-            quest_text += f"**{conf['name']}** | 🎁 {tdata['reward']}\n"
+            quest_text += f"**{conf['name']}** | <:gift_00_symbol:1536003307011842099> {tdata['reward']}\n"
             quest_text += f"{strike}Mục tiêu: {conf['desc']}{strike}\n"
             quest_text += f"`{bar}` **{status}**\n\n"
 
