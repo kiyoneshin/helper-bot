@@ -283,8 +283,14 @@ class LootboxCog(commands.Cog):
 
         # Animation reveal
         emoji = TIER_EMOJIS[tier_id]
-        msg = await ctx.send(f"{emoji} **Đang mở {qty}x {TIER_NAMES[tier_id]}...** ✨")
-        await asyncio.sleep(1.2)
+        embed_opening = discord.Embed(
+            title=f"Đang mở {qty}x {TIER_NAMES[tier_id]}...",
+            description=f"{emoji} **Rương đang được mở... Hãy chờ chút nhé!** ✨",
+            color=TIER_COLORS[tier_id]
+        )
+        embed_opening.set_image(url="https://cdn.discordapp.com/emojis/1535664849017774080.gif")
+        msg = await ctx.send(embed=embed_opening)
+        await asyncio.sleep(2.5)
 
         luck, item6_active = await _get_luck_and_boost(self.bot, uid)
 
