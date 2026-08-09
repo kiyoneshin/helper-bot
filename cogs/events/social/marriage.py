@@ -803,7 +803,11 @@ class MarriageCog(commands.Cog):
         """🎁 Tặng quà mua từ Cửa Hàng (Quà Tặng) cho vợ/chồng."""
         uid = str(ctx.author.id)
         mar = await get_marriage(self.bot, uid)
-        if not mar or (mar["user1_id"] != str(target.id) and mar["user2_id"] != str(target.id)):
+        if not mar:
+            return await ctx.send("❌ Bạn chưa kết hôn thì lấy ai mà tặng quà?")
+            
+        partner_id = mar["user2_id"] if mar["user1_id"] == uid else mar["user1_id"]
+        if str(target.id) != partner_id:
             return await ctx.send("❌ Quà tặng này chứa chan tình cảm, chỉ dành riêng cho vợ/chồng của bạn thôi!")
             
         from cogs.common.item_config import get_item_by_id
