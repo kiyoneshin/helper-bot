@@ -173,12 +173,25 @@ async def build_ach_embed(bot, user, category: str, stats: dict, claimed: list) 
             stats["ring_level"] = max(1, (row_love["ring_id"] or 31) - 30)
 
     cat_name = ACH_CATEGORIES.get(category, "Thành Tựu")
+    parts = cat_name.split(" ", 1)
+    if len(parts) == 2:
+        emoji_str, cat_label = parts[0], parts[1]
+    else:
+        emoji_str, cat_label = "", cat_name
+
     embed = discord.Embed(
-        title=f"<:achievements:1535664842977976400> Bảng Thành Tựu | {cat_name}",
+        title=f"Bảng Thành Tựu | {cat_label}",
         description="Hoàn thành các cột mốc để nhận phần thưởng Danh Hiệu và Lootbox.\n\n",
         color=0xffd700
     )
     embed.set_author(name=user.display_name, icon_url=user.display_avatar.url)
+    
+    import re
+    match = re.search(r"<a?:[^:]+:(\d+)>", emoji_str)
+    if match:
+        emoji_id = match.group(1)
+        ext = "gif" if emoji_str.startswith("<a:") else "png"
+        embed.set_thumbnail(url=f"https://cdn.discordapp.com/emojis/{emoji_id}.{ext}")
     
     total_in_cat = 0
     claimed_in_cat = 0
