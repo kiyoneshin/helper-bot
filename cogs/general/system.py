@@ -33,14 +33,24 @@ class SystemCog(commands.Cog, name="System"):
     async def reload_cmd(self, ctx: commands.Context, extension: str) -> None:
         """🔄 [Admin] Nạp lại một file code (cog) mà không cần tắt bot."""
         try:
-            # Nếu người dùng nhập vd: "events.generals.cooldowns" thì thêm "cogs."
             if not extension.startswith("cogs."):
                 extension = f"cogs.{extension}"
-            
             await self.bot.reload_extension(extension)
             await ctx.send(f"✅ Đã tải lại thành công: `{extension}`")
         except Exception as e:
             await ctx.send(f"❌ Lỗi khi tải lại `{extension}`:\n```py\n{e}\n```")
+
+    @commands.command(name="load")
+    @commands.is_owner()
+    async def load_cmd(self, ctx: commands.Context, extension: str) -> None:
+        """🔄 [Admin] Nạp một file code (cog) mới."""
+        try:
+            if not extension.startswith("cogs."):
+                extension = f"cogs.{extension}"
+            await self.bot.load_extension(extension)
+            await ctx.send(f"✅ Đã tải thành công: `{extension}`")
+        except Exception as e:
+            await ctx.send(f"❌ Lỗi khi tải `{extension}`:\n```py\n{e}\n```")
 
     @commands.hybrid_command(name="prefix")
     @commands.has_permissions(administrator=True)

@@ -420,10 +420,9 @@ def _build_control_embed(channel: discord.VoiceChannel, owner: discord.Member) -
 class VoiceManagerCog(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-        self.monthly_sweep_loop.start() # type: ignore
 
     async def cog_unload(self):
-        self.monthly_sweep_loop.cancel() # type: ignore
+        pass
 
 
     @property
