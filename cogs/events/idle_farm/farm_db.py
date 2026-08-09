@@ -533,6 +533,8 @@ async def sell_inventory(bot: commands.Bot, user_id: str, category: str) -> int:
     """
     from cogs.events.mining.mining_config import MINING_LOOT
     from cogs.events.fishing.fishing_config import FISH_LOOT
+    from cogs.events.idle_farm.machine_config import ARTISAN_GOODS
+    from cogs.events.woodcutting.woodcutting_config import WOODCUTTING_LOOT
     
     farm_data = await get_farm_data(bot, user_id)
     inventory = (farm_data or {}).get("inventory", {})
@@ -551,12 +553,14 @@ async def sell_inventory(bot: commands.Bot, user_id: str, category: str) -> int:
             
         is_ore = item_id in MINING_LOOT
         is_fish = item_id in FISH_LOOT
-        is_crop = not (is_ore or is_fish)
+        is_artisan = item_id in ARTISAN_GOODS
+        is_wood = item_id in WOODCUTTING_LOOT
+        is_crop = not (is_ore or is_fish or is_artisan or is_wood)
         
         should_sell = False
-        if category == "crops" and is_crop:
+        if category == "crops" and (is_crop or is_artisan):
             should_sell = True
-        elif category == "ores" and is_ore:
+        elif category == "ores" and (is_ore or is_wood):
             should_sell = True
         elif category == "fish" and is_fish:
             should_sell = True
@@ -570,6 +574,10 @@ async def sell_inventory(bot: commands.Bot, user_id: str, category: str) -> int:
             profit_per_item = MINING_LOOT[item_id].get("price", 0)
         elif is_fish:
             profit_per_item = FISH_LOOT[item_id].get("price", 0)
+        elif is_artisan:
+            profit_per_item = ARTISAN_GOODS[item_id].get("price", 0)
+        elif is_wood:
+            profit_per_item = WOODCUTTING_LOOT[item_id].get("price", 0)
         else:
             # Là crop
             parts = item_id.split("_")
@@ -662,6 +670,8 @@ async def sell_items_partial(
     """
     from cogs.events.mining.mining_config import MINING_LOOT
     from cogs.events.fishing.fishing_config import FISH_LOOT
+    from cogs.events.idle_farm.machine_config import ARTISAN_GOODS
+    from cogs.events.woodcutting.woodcutting_config import WOODCUTTING_LOOT
 
     farm_data = await get_farm_data(bot, user_id)
     inventory = (farm_data or {}).get("inventory", {})
@@ -680,6 +690,10 @@ async def sell_items_partial(
         profit_per = MINING_LOOT[item_id].get("price", 0)
     elif item_id in FISH_LOOT:
         profit_per = FISH_LOOT[item_id].get("price", 0)
+    elif item_id in ARTISAN_GOODS:
+        profit_per = ARTISAN_GOODS[item_id].get("price", 0)
+    elif item_id in WOODCUTTING_LOOT:
+        profit_per = WOODCUTTING_LOOT[item_id].get("price", 0)
     elif item_id.startswith("seed_"):
         return False, 0, "Hạt giống không thể bán — hãy dùng để trồng cây!"
     else:
