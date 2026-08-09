@@ -30,7 +30,7 @@ class FarmTasksCog(commands.Cog):
                 self.bot,
                 """SELECT discord_id, farm_data FROM event_profiles 
                    WHERE (farm_data->>'stamina_notified')::boolean IS NOT TRUE
-                   AND farm_data->>'last_channel_id' IS NOT NULL"""
+          AND farm_data->>'last_channel_id' IS NOT NULL"""
             )
             
             from cogs.events.mining.mining_config import MAX_STAMINA
@@ -59,7 +59,7 @@ class FarmTasksCog(commands.Cog):
                                     self.bot,
                                     """UPDATE event_profiles 
                                        SET farm_data = farm_data || '{"stamina_notified": true}'::jsonb 
-                                       WHERE discord_id = $1""",
+                    WHERE discord_id = $1""",
                                     user_id
                                 )
                             except discord.Forbidden:

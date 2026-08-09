@@ -107,7 +107,7 @@ class BlackMarketCog(commands.Cog):
     # ------------------------------------------------------------------
     @commands.hybrid_command(name="choden", aliases=["chodem", "blackmarket", "bm"])
     async def black_market_cmd(self, ctx: commands.Context) -> None:
-        """🌙 Xem Chợ Đêm hôm nay — 3 vật phẩm bí ẩn, số lượng có hạn!"""
+        """Xem Chợ Đêm hôm nay — 3 vật phẩm bí ẩn, số lượng có hạn!"""
         now_vn = datetime.now(UTC7)
         
         # Kiểm tra thời gian mở cửa (00:00 -> 01:59)
@@ -172,7 +172,7 @@ class BlackMarketCog(commands.Cog):
     # ------------------------------------------------------------------
     @commands.hybrid_command(name="ebuy", aliases=["muadem", "bmbuy"])
     async def event_buy_cmd(self, ctx: commands.Context, slot_id: str, quantity: int = 1) -> None:
-        """🛒 Mua vật phẩm từ Chợ Đêm theo mã số ID vật phẩm"""
+        """Mua vật phẩm từ Chợ Đêm theo mã số ID vật phẩm"""
         now_vn = datetime.now(UTC7)
         if not (0 <= now_vn.hour < 2):
             await ctx.send(f"❌ Chợ Đêm hiện đang đóng cửa! Gõ `{ctx.prefix}choden` để xem thời gian mở lại.", delete_after=5.0)

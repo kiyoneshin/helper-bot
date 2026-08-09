@@ -38,7 +38,7 @@ async def _init_reward_tables(bot: commands.Bot) -> None:
 
 
 class Rewards(commands.Cog):
-    """<:gift_00_symbol:1536003307011842099> Hệ Thống Nhận Thưởng Hàng Ngày & Hàng Tuần"""
+    """Hệ Thống Nhận Thưởng Hàng Ngày & Hàng Tuần"""
 
     def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
@@ -51,7 +51,7 @@ class Rewards(commands.Cog):
     # ─────────────────────────────────────────────────────────────────────────
     @commands.hybrid_command(name="daily", aliases=["diemdanh"])
     async def daily_cmd(self, ctx: commands.Context) -> None:
-        """<:gift_00_symbol:1536003307011842099> Nhận thưởng 500 điểm mỗi ngày (tăng dần theo chuỗi)."""
+        """Nhận thưởng 500 điểm mỗi ngày (tăng dần theo chuỗi)."""
         uid = str(ctx.author.id)
         now = datetime.now(timezone.utc)
         
@@ -156,7 +156,7 @@ class Rewards(commands.Cog):
     # ─────────────────────────────────────────────────────────────────────────
     @commands.hybrid_command(name="weekly", aliases=["luongtuan"])
     async def weekly_cmd(self, ctx: commands.Context) -> None:
-        """💎 Nhận lương 5000 điểm mỗi tuần."""
+        """Nhận lương 5000 điểm mỗi tuần."""
         uid = str(ctx.author.id)
         now = datetime.now(timezone.utc)
         

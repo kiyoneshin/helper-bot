@@ -58,7 +58,7 @@ async def _init_milestone_tables(bot: commands.Bot) -> None:
 
 
 class MilestoneCog(commands.Cog):
-    """<:gift_00_symbol:1536003307011842099> Cog quản lý Hệ Thống Cột Mốc Sự Kiện (Event Battle Pass)."""
+    """Cog quản lý Hệ Thống Cột Mốc Sự Kiện (Event Battle Pass)."""
 
     def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
@@ -69,7 +69,7 @@ class MilestoneCog(commands.Cog):
 
     @commands.hybrid_command(name="qua", aliases=["reward", "milestone"])
     async def milestone_cmd(self, ctx: commands.Context) -> None:
-        """<:gift_00_symbol:1536003307011842099> Xem tiến trình Cột Mốc Sự Kiện (Event Battle Pass)"""
+        """Xem tiến trình Cột Mốc Sự Kiện (Event Battle Pass)"""
         uid = str(ctx.author.id)
         row = await fetchrow_db(
             self.bot,
@@ -142,7 +142,7 @@ class MilestoneCog(commands.Cog):
 
     @commands.hybrid_command(name="nhanqua", aliases=["claim"])
     async def claim_cmd(self, ctx: commands.Context) -> None:
-        """<:gift_00_symbol:1536003307011842099> Nhận tất cả phần thưởng từ các cột mốc đã đạt được."""
+        """Nhận tất cả phần thưởng từ các cột mốc đã đạt được."""
         uid = str(ctx.author.id)
         
         # Đảm bảo profile có tồn tại trong db

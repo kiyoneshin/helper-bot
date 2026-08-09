@@ -5,7 +5,7 @@ Tương tác cộng đồng với tù nhân:
   {ctx.prefix}choccho @user — Tăng 1 án phạt (cooldown 5 phút/người)
   kchoan @user   — Giảm 1 án phạt (cooldown 60 giây/người)
   {ctx.prefix}baolanh @user — Trả tiền chuộc để thả tù
-"""
+  """
 from __future__ import annotations
 
 import logging
@@ -58,7 +58,7 @@ class BailConfirmView(discord.ui.View):
 
 
 class JailInteraction(commands.Cog):
-    """🤝 Hệ Thống Chuồng Chó — Tương Tác Cộng Đồng"""
+    """Hệ Thống Chuồng Chó — Tương Tác Cộng Đồng"""
 
     def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
@@ -69,7 +69,7 @@ class JailInteraction(commands.Cog):
     @commands.command(name="choccho", aliases=["kickdog", "ccho"])
     @commands.cooldown(1, 300, commands.BucketType.user)
     async def choccho_cmd(self, ctx: commands.Context, member: discord.Member) -> None:
-        """🦴 Chọc chó — thêm 1 án phạt cho tù nhân. Cooldown 5 phút."""
+        """Chọc chó — thêm 1 án phạt cho tù nhân. Cooldown 5 phút."""
         if ctx.guild is None:
             return
         if member.bot:
@@ -118,7 +118,7 @@ class JailInteraction(commands.Cog):
     @commands.command(name="choan", aliases=["feeddog", "coan"])
     @commands.cooldown(1, 60, commands.BucketType.user)
     async def choan_cmd(self, ctx: commands.Context, member: discord.Member) -> None:
-        """🍖 Cho ăn — giảm 1 án phạt cho tù nhân. Cooldown 60 giây."""
+        """Cho ăn — giảm 1 án phạt cho tù nhân. Cooldown 60 giây."""
         if ctx.guild is None:
             return
         if member.bot:
@@ -180,7 +180,7 @@ class JailInteraction(commands.Cog):
     @commands.command(name="baolanh", aliases=["bail", "bl"])
     @commands.cooldown(1, 60, commands.BucketType.user)
     async def baolanh_cmd(self, ctx: commands.Context, member: discord.Member) -> None:
-        """💸 Bảo lãnh — trả điểm sự kiện để thả tù nhân. Giá = max(30k, clean_count×500)."""
+        """Bảo lãnh — trả điểm sự kiện để thả tù nhân. Giá = max(30k, clean_count×500)."""
         if ctx.guild is None:
             return
         if member.bot:

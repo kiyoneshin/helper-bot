@@ -54,7 +54,7 @@ def build_log_add(
     contact: Optional[str],
     tags: list,
 ) -> discord.Embed:
-    """🟢 Thêm Mới Hồ Sơ (kadd)"""
+    """Thêm Mới Hồ Sơ (kadd)"""
     embed = discord.Embed(
         title="📋 Nhật Ký: Đăng Ký Hồ Sơ Mới",
         color=COLOR_ADD,
@@ -87,7 +87,7 @@ def build_log_edit_info(
     old_contact: str,
     new_contact: str,
 ) -> discord.Embed:
-    """🟡 Chỉnh Sửa Thông Tin Hồ Sơ (kset → Sửa Thông Tin)"""
+    """Chỉnh Sửa Thông Tin Hồ Sơ (kset → Sửa Thông Tin)"""
     embed = discord.Embed(
         title="✏️ Nhật Ký: Cập Nhật Thông Tin Hồ Sơ",
         color=COLOR_EDIT,
@@ -120,7 +120,7 @@ def build_log_edit_tags(
     old_tags: list,
     new_tags: list,
 ) -> discord.Embed:
-    """🟡 Chỉnh Sửa Tags (kset → Sửa Tags)"""
+    """Chỉnh Sửa Tags (kset → Sửa Tags)"""
     embed = discord.Embed(
         title="🏷️ Nhật Ký: Cập Nhật Tags",
         color=COLOR_EDIT,
@@ -147,7 +147,7 @@ def build_log_edit_photos(
     count: int,
     total_after: int,
 ) -> discord.Embed:
-    """🟡 Thêm / Xóa Ảnh (kset → Cập nhật Ảnh)"""
+    """Thêm / Xóa Ảnh (kset → Cập nhật Ảnh)"""
     action_str = f"Thêm {count} ảnh mới" if action == "add" else f"Xóa 1 ảnh"
     embed = discord.Embed(
         title="Nhật Ký: Cập Nhật Ảnh Profile",
@@ -169,7 +169,7 @@ def build_log_vote(
     is_update: bool,
     old_score: Optional[str] = None,
 ) -> discord.Embed:
-    """🟡 Gửi Mới / Cập Nhật Đánh Giá (Vote)"""
+    """Gửi Mới / Cập Nhật Đánh Giá (Vote)"""
     action_str = "Chỉnh sửa đánh giá cũ" if is_update else "Gửi đánh giá mới"
     embed = discord.Embed(
         title="⭐ Nhật Ký: Đánh Giá Staff",
@@ -195,7 +195,7 @@ def build_log_nickname_sync(
     old_name: str,
     new_name: str,
 ) -> discord.Embed:
-    """🔵 Đồng Bộ Biệt Danh Tự Động (on_member_update)"""
+    """Đồng Bộ Biệt Danh Tự Động (on_member_update)"""
     embed = discord.Embed(
         title="Nhật Ký: Đồng Bộ Biệt Danh",
         color=COLOR_SYNC,
@@ -214,7 +214,7 @@ def build_log_delete(
     display_name: str,
     reason: str = "Đã rời server",
 ) -> discord.Embed:
-    """🔴 Xóa / Vô hiệu hóa Hồ Sơ"""
+    """Xóa / Vô hiệu hóa Hồ Sơ"""
     embed = discord.Embed(
         title="Nhật Ký: Hồ Sơ Bị Xóa / Vô Hiệu Hóa",
         color=COLOR_DELETE,

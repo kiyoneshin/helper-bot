@@ -4,7 +4,7 @@ jail/minigames.py — JailGames Cog
 Minigame sinh tử cho tù nhân:
   {ctx.prefix}lcuoc     — Tung đồng xu: Thắng −5 án | Thua +10 án
   {ctx.prefix}lvuotnguc — 5% tự do | 95% nhân 3 án + tag Admin
-"""
+  """
 from __future__ import annotations
 
 import random
@@ -29,7 +29,7 @@ from .core import (
 
 
 class JailGames(commands.Cog):
-    """🎲 Hệ Thống Chuồng Chó — Minigame (klcuoc, klvuotnguc)"""
+    """Hệ Thống Chuồng Chó — Minigame (klcuoc, klvuotnguc)"""
 
     def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
@@ -41,7 +41,7 @@ class JailGames(commands.Cog):
     @commands.cooldown(1, 20, commands.BucketType.user)
     @is_jailed_check()
     async def lcuoc_cmd(self, ctx: commands.Context) -> None:
-        """🪙 Tung đồng xu sinh tử: Thắng −5 án / Thua +10 án. Cooldown 20 giây."""
+        """Tung đồng xu sinh tử: Thắng −5 án / Thua +10 án. Cooldown 20 giây."""
         if ctx.guild is None:
             return
 
@@ -136,7 +136,7 @@ class JailGames(commands.Cog):
     @commands.cooldown(1, 300, commands.BucketType.user)
     @is_jailed_check()
     async def lvuotnguc_cmd(self, ctx: commands.Context) -> None:
-        """🏃 Vượt ngục: 5% thoát thành công | 95% bị bắt lại (×3 án + tag Admin). Cooldown 5 phút."""
+        """Vượt ngục: 5% thoát thành công | 95% bị bắt lại (×3 án + tag Admin). Cooldown 5 phút."""
         if ctx.guild is None:
             return
 

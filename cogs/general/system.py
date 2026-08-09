@@ -8,13 +8,13 @@ import discord
 from discord.ext import commands
 
 class SystemCog(commands.Cog, name="System"):
-    """⚙️ Lệnh Hệ Thống (Ping, Reload)"""
+    """⚙ Lệnh Hệ Thống (Ping, Reload)"""
     def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
 
     @commands.hybrid_command(name="ping")
     async def ping_cmd(self, ctx: commands.Context) -> None:
-        """🏓 Kiểm tra độ trễ của Bot."""
+        """Kiểm tra độ trễ của Bot."""
         start_time = time.perf_counter()
         message = await ctx.send("🏓 Đang kiểm tra Ping...")
         end_time = time.perf_counter()
@@ -31,7 +31,7 @@ class SystemCog(commands.Cog, name="System"):
     @commands.command(name="reload")
     @commands.is_owner()
     async def reload_cmd(self, ctx: commands.Context, extension: str) -> None:
-        """🔄 [Admin] Nạp lại một file code (cog) mà không cần tắt bot."""
+        """[Admin] Nạp lại một file code (cog) mà không cần tắt bot."""
         try:
             if not extension.startswith("cogs."):
                 extension = f"cogs.{extension}"
@@ -43,7 +43,7 @@ class SystemCog(commands.Cog, name="System"):
     @commands.command(name="load")
     @commands.is_owner()
     async def load_cmd(self, ctx: commands.Context, extension: str) -> None:
-        """🔄 [Admin] Nạp một file code (cog) mới."""
+        """[Admin] Nạp một file code (cog) mới."""
         try:
             if not extension.startswith("cogs."):
                 extension = f"cogs.{extension}"
@@ -55,7 +55,7 @@ class SystemCog(commands.Cog, name="System"):
     @commands.hybrid_command(name="prefix")
     @commands.has_permissions(administrator=True)
     async def prefix_cmd(self, ctx: commands.Context, new_prefix: str) -> None:
-        """🔧 [Admin] Đổi tiền tố (prefix) của bot trên toàn server."""
+        """[Admin] Đổi tiền tố (prefix) của bot trên toàn server."""
         if len(new_prefix) > 10:
             await ctx.send("❌ Prefix không được dài quá 10 ký tự!")
             return

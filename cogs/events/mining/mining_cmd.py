@@ -12,7 +12,7 @@ from cogs.common.db import check_not_locked
 
 
 class MiningCog(commands.Cog, name="Mining"):
-    """⛏️ Cog Khu Mỏ — Đào quặng để tích lũy tài nguyên."""
+    """Cog Khu Mỏ — Đào quặng để tích lũy tài nguyên."""
 
     def __init__(self, bot: commands.Bot):
         self.bot = bot
@@ -20,7 +20,7 @@ class MiningCog(commands.Cog, name="Mining"):
     @commands.hybrid_command(name="mine", aliases=["dao", "khoamo", "mining"])
     @check_not_locked()
     async def mine_cmd(self, ctx: commands.Context) -> None:
-        """⛏️ Vào Khu Mỏ để đào quặng."""
+        """Vào Khu Mỏ để đào quặng."""
         user_id = str(ctx.author.id)
 
         # 1. Tính thể lực hiện tại (bao gồm hồi phục theo thời gian)

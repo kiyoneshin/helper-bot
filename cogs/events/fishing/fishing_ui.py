@@ -8,7 +8,7 @@ fishing_ui.py — Giao diện và Minigame Câu Cá
     chúng ta phải RESPOND NGAY trong 3 giây đầu (bước 1),
     rồi dùng edit_original_response() — webhook API không bị giới hạn 3s —
     để cập nhật tin nhắn trong các bước tiếp theo.
-"""
+    """
 
 import asyncio
 import random

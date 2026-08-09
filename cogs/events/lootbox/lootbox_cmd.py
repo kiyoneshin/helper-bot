@@ -148,7 +148,7 @@ async def _apply_drops_to_farm(bot, uid: str, drops, bonus: Optional[dict] = Non
 # ---------------------------------------------------------------------------
 
 class LootboxCog(commands.Cog):
-    """<:gift_00_symbol:1536003307011842099> Hệ Thống Lootbox & Pray"""
+    """Hệ Thống Lootbox & Pray"""
 
     def __init__(self, bot: commands.Bot):
         self.bot = bot
@@ -158,7 +158,7 @@ class LootboxCog(commands.Cog):
     # ─────────────────────────────────────────────────────────────────────
     @commands.hybrid_command(name="pray", aliases=["caunguyen", "prayer"])
     async def pray_cmd(self, ctx: commands.Context):
-        """🙏 Cầu nguyện để tăng Luck. Luck giúp tăng tỉ lệ drop lootbox."""
+        """Cầu nguyện để tăng Luck. Luck giúp tăng tỉ lệ drop lootbox."""
         uid = str(ctx.author.id)
         await get_or_create_event_profile(self.bot, uid)
 
@@ -219,7 +219,7 @@ class LootboxCog(commands.Cog):
     # ─────────────────────────────────────────────────────────────────────
     @commands.group(name="lootbox", aliases=["lb"], invoke_without_command=True)
     async def lootbox_group(self, ctx: commands.Context):
-        """<:gift_00_symbol:1536003307011842099> Hệ Thống Lootbox. Dùng {prefix}lb open/info/history."""
+        """Hệ Thống Lootbox. Dùng {prefix}lb open/info/history."""
         prefix = ctx.prefix or ctx.bot.custom_prefix
         embed = discord.Embed(
             title="<:gift_00_symbol:1536003307011842099> Hệ Thống Lootbox",
@@ -240,7 +240,7 @@ class LootboxCog(commands.Cog):
     # ─────────────────────────────────────────────────────────────────────
     @lootbox_group.command(name="open", aliases=["mo"])
     async def open_cmd(self, ctx: commands.Context, tier_raw: str, qty: int = 1):
-        """<:gift_00_symbol:1536003307011842099> Mở lootbox. VD: {prefix}lb open epic 3 | {prefix}lb open e 1"""
+        """Mở lootbox. VD: {prefix}lb open epic 3 | {prefix}lb open e 1"""
         tier_id = parse_tier(tier_raw)
         if tier_id is None:
             await ctx.send(
@@ -333,7 +333,7 @@ class LootboxCog(commands.Cog):
     # ─────────────────────────────────────────────────────────────────────
     @lootbox_group.command(name="info", aliases=["tyle", "xem"])
     async def info_cmd(self, ctx: commands.Context, tier_raw: Optional[str] = None):
-        """📊 Xem bảng tỉ lệ drop. VD: {prefix}lb info epic | {prefix}lb info"""
+        """Xem bảng tỉ lệ drop. VD: {prefix}lb info epic | {prefix}lb info"""
         if tier_raw:
             tier_id = parse_tier(tier_raw)
             if tier_id is None:
@@ -355,7 +355,7 @@ class LootboxCog(commands.Cog):
     # ─────────────────────────────────────────────────────────────────────
     @lootbox_group.command(name="history", aliases=["lichsu", "hs"])
     async def history_cmd(self, ctx: commands.Context, tier_raw: Optional[str] = None):
-        """📋 Xem lịch sử 20 lần mở gần nhất + thống kê."""
+        """Xem lịch sử 20 lần mở gần nhất + thống kê."""
         uid = str(ctx.author.id)
 
         if tier_raw:

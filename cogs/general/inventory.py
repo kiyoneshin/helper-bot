@@ -555,7 +555,7 @@ class InventoryView(discord.ui.View):
 # ============================================================
 
 class UnifiedInventoryCog(commands.Cog):
-    """🎒 Cog Túi Đồ Hợp Nhất."""
+    """Cog Túi Đồ Hợp Nhất."""
 
     def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot

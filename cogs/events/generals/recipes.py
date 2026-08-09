@@ -225,7 +225,7 @@ class RecipeView(discord.ui.View):
                 pass
 
 class RecipesCog(commands.Cog, name="Recipes"):
-    """🛠️ Cog Bách khoa toàn thư Công Thức (Recipes)."""
+    """Cog Bách khoa toàn thư Công Thức (Recipes)."""
 
     def __init__(self, bot: commands.Bot):
         self.bot = bot
@@ -233,7 +233,7 @@ class RecipesCog(commands.Cog, name="Recipes"):
     @commands.hybrid_command(name="recipe", aliases=["recipes"])
     @check_not_locked()
     async def recipe_cmd(self, ctx: commands.Context, category: str = None) -> None:
-        """🛠️ Xem bách khoa toàn thư công thức nâng cấp & chế tạo."""
+        """Xem bách khoa toàn thư công thức nâng cấp & chế tạo."""
         
         cat_map = {
             "upgrade": "upgrade", "nangcap": "upgrade",

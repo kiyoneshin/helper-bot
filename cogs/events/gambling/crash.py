@@ -9,7 +9,7 @@ Cơ chế:
     Chỉ update Discord mỗi ~1.5s để chống rate-limit.
   - Nổ: Crash point được tính ngay từ đầu (House Edge 5%).
     Ai chưa chốt lời -> mất trắng (tiền đã trừ từ Lobby).
-"""
+    """
 
 from __future__ import annotations
 
@@ -448,7 +448,7 @@ def _build_crash_embed(
 
 
 class CrashGame(commands.Cog):
-    """🎈 Cog Minigame Crash/Aviator — Quả Bóng Tham Lam."""
+    """Cog Minigame Crash/Aviator — Quả Bóng Tham Lam."""
 
     def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot

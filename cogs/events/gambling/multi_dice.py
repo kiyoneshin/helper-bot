@@ -12,7 +12,7 @@ Lệnh: kmultidice <tiền_cược> [@user1] [@user2]...
 Cơ cấu thuế:
   - Vào sảnh: Trừ bet, nhưng chỉ bet*0.95 vào pot.
   - Chia thưởng: Pot*0.95 = DP (distributable pot).
-"""
+  """
 
 from __future__ import annotations
 
@@ -684,7 +684,7 @@ class SpectatorBetView(discord.ui.View):
 # ─────────────────────────────────────────────────────────────────────────────
 
 class MultiDice(commands.Cog):
-    """🎲 Cog Xúc Xắc Quần Hùng — PvP Multi Dice."""
+    """Cog Xúc Xắc Quần Hùng — PvP Multi Dice."""
 
     def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot

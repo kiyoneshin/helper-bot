@@ -719,7 +719,7 @@ class StaffLeaderboardCog(commands.Cog):
 
     @commands.hybrid_command(name="top", aliases=["bxh", "leaderboard"], description="Xem bảng xếp hạng nhân sự")
     async def leaderboard_cmd(self, ctx: commands.Context):
-        """Bảng Xếp Hạng Nhân Sự. Mặc định: Tuần hiện tại. Nhấn 📅 để đổi khoảng ngày."""
+        """Bảng Xếp Hạng Nhân Sự. Mặc định: Tuần hiện tại. Nhấn để đổi khoảng ngày."""
         dt_start, dt_end = _get_current_week_range()
         data = await _fetch_leaderboard_data(self.bot, dt_start, dt_end, "rating", "all")
 

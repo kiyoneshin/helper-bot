@@ -103,7 +103,7 @@ class TopLeaderboardView(discord.ui.View):
 
 
 class EventStatsCog(commands.Cog):
-    """📊 Cog Quản lý điểm số và Bảng xếp hạng Sự Kiện."""
+    """Cog Quản lý điểm số và Bảng xếp hạng Sự Kiện."""
 
     def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot

@@ -16,7 +16,7 @@ from .machine_config import MACHINES, RECIPES, ARTISAN_GOODS
 
 
 class IdleFarmCog(commands.Cog):
-    """🌻 Cog Mini-game Idle Farm (Nông Trại Nhàn Rỗi)."""
+    """Cog Mini-game Idle Farm (Nông Trại Nhàn Rỗi)."""
 
     def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
@@ -28,7 +28,7 @@ class IdleFarmCog(commands.Cog):
     )
     @check_not_locked()
     async def farm_cmd(self, ctx: commands.Context) -> None:
-        """🚜 Mở giao diện Nông Trại của bạn."""
+        """Mở giao diện Nông Trại của bạn."""
         user_id = str(ctx.author.id)
         
         # 1. Fetch dữ liệu Nông Trại
@@ -50,7 +50,7 @@ class IdleFarmCog(commands.Cog):
     )
     @check_not_locked()
     async def plant_cmd(self, ctx: commands.Context, seed_type: str, *, slots_str: str) -> None:
-        """🌱 Gieo hạt giống vào các ô đất chỉ định."""
+        """Gieo hạt giống vào các ô đất chỉ định."""
         from cogs.events.idle_farm.config import SEEDS
         user_id = str(ctx.author.id)
         prefix = ctx.prefix or ctx.bot.custom_prefix
@@ -104,7 +104,7 @@ class IdleFarmCog(commands.Cog):
 
     @commands.hybrid_command(name="upgrade", aliases=["nangcap", "morong"])
     async def upgrade_cmd(self, ctx: commands.Context) -> None:
-        """🚜 Mở rộng thêm ô đất cho Nông trại."""
+        """Mở rộng thêm ô đất cho Nông trại."""
         user_id = str(ctx.author.id)
         
         farm_data = await get_farm_data(self.bot, user_id)
@@ -119,7 +119,7 @@ class IdleFarmCog(commands.Cog):
     @commands.hybrid_command(name="machine", aliases=["chebien", "maymoc"])
     @check_not_locked()
     async def machine_cmd(self, ctx: commands.Context) -> None:
-        """🏭 Khu vực Chế biến Nông sản (Keg, Jar, Furnace)."""
+        """Khu vực Chế biến Nông sản (Keg, Jar, Furnace)."""
         user_id = str(ctx.author.id)
         farm_data = await get_farm_data(self.bot, user_id)
         embed = build_machine_embed(ctx.author, farm_data)
@@ -129,7 +129,7 @@ class IdleFarmCog(commands.Cog):
     @commands.hybrid_command(name="craft", aliases=["chebien2", "bophuong"])
     @check_not_locked()
     async def craft_cmd(self, ctx: commands.Context, machine_id_str: str, quantity: int = 1) -> discord.Message | None:
-        """⚙️ Chế tạo máy mới. VD: kcraft 61 2 (61 = Keg)"""
+        """⚙ Chế tạo máy mới. VD: kcraft 61 2 (61 = Keg)"""
         from .farm_db import get_farm_data, save_farm_data
         from .machine_config import MACHINE_BY_ID, MACHINES
         from .machine_ui import _get_queue_list, MAX_QUEUE_SLOTS, _get_item_display_name

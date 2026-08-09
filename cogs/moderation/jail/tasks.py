@@ -4,7 +4,7 @@ jail/tasks.py — JailTasks Cog
 Cơ chế "Cày chay" cho tù nhân:
   {ctx.prefix}sua       — Giải toán (cộng/trừ/nhân/chia có dấu ngoặc) để giảm 2 án
   {ctx.prefix}nhatxuong — RNG 70% giảm 5 án, 30% tăng 1 án
-"""
+  """
 from __future__ import annotations
 
 import asyncio
@@ -52,7 +52,7 @@ def _generate_math_problem() -> tuple[str, int]:
 
 
 class JailTasks(commands.Cog):
-    """🧠 Hệ Thống Chuồng Chó — Cày Chay (ksua, knhatxuong)"""
+    """Hệ Thống Chuồng Chó — Cày Chay (ksua, knhatxuong)"""
 
     def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
@@ -64,7 +64,7 @@ class JailTasks(commands.Cog):
     @commands.cooldown(1, 15, commands.BucketType.user)
     @is_jailed_check()
     async def sua_cmd(self, ctx: commands.Context) -> None:
-        """🧮 Giải toán để giảm 2 lần án phạt. Cooldown 15 giây."""
+        """Giải toán để giảm 2 lần án phạt. Cooldown 15 giây."""
         if ctx.guild is None:
             return
 
@@ -159,7 +159,7 @@ class JailTasks(commands.Cog):
     @commands.cooldown(1, 30, commands.BucketType.user)
     @is_jailed_check()
     async def nhatxuong_cmd(self, ctx: commands.Context) -> None:
-        """🦴 Nhặt xương — 70% thành công (−5 án), 30% chó cắn ngược (+1 án). Cooldown 30 giây."""
+        """Nhặt xương — 70% thành công (−5 án), 30% chó cắn ngược (+1 án). Cooldown 30 giây."""
         if ctx.guild is None:
             return
 

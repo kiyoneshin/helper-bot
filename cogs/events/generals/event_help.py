@@ -906,7 +906,7 @@ class _HomeButton2(discord.ui.Button):
 # =============================================================================
 
 class EventHelpCog(commands.Cog):
-    """🌸 Cẩm nang hướng dẫn sự kiện với UI 3 tầng."""
+    """Cẩm nang hướng dẫn sự kiện với UI 3 tầng."""
 
     def __init__(self, bot: commands.Bot):
         self.bot = bot
@@ -916,7 +916,7 @@ class EventHelpCog(commands.Cog):
         description="Xem danh sách toàn bộ các lệnh sự kiện (UI 3 tầng).",
     )
     async def ehelp_cmd(self, ctx: commands.Context, *, cmd_name: Optional[str] = None):
-        """🌸 Cẩm nang sự kiện với UI tương tác 3 tầng."""
+        """Cẩm nang sự kiện với UI tương tác 3 tầng."""
         if cmd_name:
             cmd_key = None
             for k, v in CMD_DATA.items():

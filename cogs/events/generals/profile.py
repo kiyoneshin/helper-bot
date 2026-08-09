@@ -76,7 +76,7 @@ async def fetch_user_profile_data(bot: commands.Bot, user_id: str) -> dict:
     }
 
 class ProfileCog(commands.Cog, name="Profile"):
-    """👤 Căn Cước Công Dân RPG."""
+    """Căn Cước Công Dân RPG."""
 
     def __init__(self, bot: commands.Bot):
         self.bot = bot

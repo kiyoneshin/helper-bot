@@ -56,7 +56,7 @@ async def force_divorce(bot: commands.Bot, discord_id: str):
     pass
 
 class BankingCog(commands.Cog):
-    """🏦 Hệ thống Ngân Hàng & Vay Nợ"""
+    """Hệ thống Ngân Hàng & Vay Nợ"""
 
     def __init__(self, bot: commands.Bot):
         self.bot = bot

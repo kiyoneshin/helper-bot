@@ -586,7 +586,7 @@ class _HomeButton2(discord.ui.Button):
 # =============================================================================
 
 class HelpCog(commands.Cog):
-    """🛡️ Trợ giúp lệnh hệ thống với UI 3 tầng."""
+    """Trợ giúp lệnh hệ thống với UI 3 tầng."""
 
     def __init__(self, bot: commands.Bot):
         self.bot = bot
@@ -597,7 +597,7 @@ class HelpCog(commands.Cog):
         description="Xem danh sách toàn bộ lệnh hệ thống (UI 3 tầng).",
     )
     async def help_cmd(self, ctx: commands.Context, *, cmd_name: Optional[str] = None):
-        """🛡️ Trợ giúp lệnh hệ thống với UI tương tác 3 tầng."""
+        """Trợ giúp lệnh hệ thống với UI tương tác 3 tầng."""
         if cmd_name:
             cmd_key = None
             for k, v in CMD_DATA.items():

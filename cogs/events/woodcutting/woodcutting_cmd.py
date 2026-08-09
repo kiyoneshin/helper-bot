@@ -6,7 +6,7 @@ from cogs.common.db import check_not_locked
 from .woodcutting_ui import WoodcuttingView, build_woodcutting_embed
 
 class WoodcuttingCog(commands.Cog, name="Woodcutting"):
-    """🌲 Cog Lâm Nghiệp — Chặt gỗ."""
+    """Cog Lâm Nghiệp — Chặt gỗ."""
 
     def __init__(self, bot: commands.Bot):
         self.bot = bot
@@ -14,7 +14,7 @@ class WoodcuttingCog(commands.Cog, name="Woodcutting"):
     @commands.hybrid_command(name="chop", aliases=["chatcay", "woodcut"])
     @check_not_locked()
     async def chop_cmd(self, ctx: commands.Context) -> None:
-        """🪓 Vào Rừng đốn củi."""
+        """Vào Rừng đốn củi."""
         user_id = str(ctx.author.id)
 
         # 1. Tính thể lực và lấy farm_data

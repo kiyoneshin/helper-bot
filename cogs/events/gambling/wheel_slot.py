@@ -11,7 +11,7 @@ Vòng quay gồm 16 ô theo tỷ lệ:
   🟧 Cam      (4 ô, 25.00%) → -50%
   🟫 Nâu      (4 ô, 25.00%) → -75%
   🟦 Xanh dương (4 ô, 25.00%) → -90%
-"""
+  """
 
 import random
 import logging
@@ -224,7 +224,7 @@ def _evaluate_slots(slots_list: list[str]) -> tuple[float, str]:
 # =============================================================================
 
 class WheelSlots(commands.Cog):
-    """🎡 Cog Vòng Quay May Mắn của Angelic Casino."""
+    """Cog Vòng Quay May Mắn của Angelic Casino."""
 
     def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot

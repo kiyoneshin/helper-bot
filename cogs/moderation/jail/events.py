@@ -4,7 +4,7 @@ jail/events.py — JailEvents Cog
 Event listeners liên quan đến hệ thống chuồng chó:
   on_message   — Tù nhân chat sai format (không kết thúc gâu/ẳng) → xóa + cảnh cáo
   on_member_join — Nếu member vẫn còn trong DB jail sau khi rejoin → đổi lại nick chó
-"""
+  """
 from __future__ import annotations
 
 import logging
@@ -34,7 +34,7 @@ def _ends_with_valid(text: str) -> bool:
 
 
 class JailEvents(commands.Cog):
-    """👂 Hệ Thống Chuồng Chó — Event Listeners"""
+    """Hệ Thống Chuồng Chó — Event Listeners"""
 
     def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot

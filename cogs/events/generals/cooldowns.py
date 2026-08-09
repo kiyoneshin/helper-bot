@@ -42,14 +42,14 @@ def _format_cd(is_ready: bool, label: str, duration_str: str = "") -> str:
     return f"🕒 — **{label}**"
 
 class CooldownsCog(commands.Cog):
-    """⏱️ Bảng hiển thị thời gian hồi chiêu của các lệnh."""
+    """⏱ Bảng hiển thị thời gian hồi chiêu của các lệnh."""
     
     def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
 
     @commands.hybrid_command(name="cooldowns", aliases=["cd", "rd"])
     async def cooldowns_cmd(self, ctx: commands.Context) -> None:
-        """⏱️ Xem thời gian hồi của tất cả các lệnh."""
+        """⏱ Xem thời gian hồi của tất cả các lệnh."""
         user_id = str(ctx.author.id)
         now = datetime.now(timezone.utc)
         now_ts = time.time()

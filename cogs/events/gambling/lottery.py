@@ -118,7 +118,7 @@ async def _init_lottery_tables(bot: commands.Bot) -> None:
 
 
 class Lottery(commands.Cog):
-    """🎟️ Cog Xổ Số Sự Kiện — Quay thưởng lúc 18:00 hàng ngày."""
+    """Cog Xổ Số Sự Kiện — Quay thưởng lúc 18:00 hàng ngày."""
 
     def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
@@ -231,7 +231,7 @@ class Lottery(commands.Cog):
 
     @commands.hybrid_group(name="xoso", aliases=["lottery", "xs"], fallback="info")
     async def xoso_cmd(self, ctx: commands.Context) -> None:
-        """🎟️ Xem thông tin Xổ Số Sự Kiện."""
+        """Xem thông tin Xổ Số Sự Kiện."""
         uid = str(ctx.author.id)
 
         # 1. Tính tổng hũ

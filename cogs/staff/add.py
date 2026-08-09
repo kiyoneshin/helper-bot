@@ -87,7 +87,7 @@ class StaffRegisterModal(discord.ui.Modal, title="Đăng Ký Hồ Sơ Staff"):
                     (discord_id, display_name, role, description, contact, tags, photos, votes, rating)
                 VALUES
                     ($1, $2, $3, $4, $5, $6::text::jsonb, '[]'::jsonb, '{}'::jsonb, 0.0)
-                """,
+                    """,
                 discord_id,
                 display_name,
                 self.role_name,
@@ -302,7 +302,7 @@ class AddPhotoAfterRegisterView(discord.ui.View):
 # =====================================================================
 class _OpenRegisterModalView(discord.ui.View):
     """View tạm thời chứa 1 nút để kích hoạt StaffRegisterModal.
-    Cần thiết vì prefix command không thể gọi send_modal trực tiếp."""
+  Cần thiết vì prefix command không thể gọi send_modal trực tiếp."""
 
     def __init__(self, role_name: str, author_id: int):
         super().__init__(timeout=120)

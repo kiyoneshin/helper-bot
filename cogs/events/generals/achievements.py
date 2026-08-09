@@ -228,14 +228,14 @@ async def build_ach_embed(bot, user, category: str, stats: dict, claimed: list) 
 
 
 class AchievementCog(commands.Cog):
-    """🏆 Hệ thống Thành Tựu và Danh Hiệu."""
+    """Hệ thống Thành Tựu và Danh Hiệu."""
     
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         
     @commands.hybrid_command(name="achievements", aliases=["ach", "thanhtuu"])
     async def ach_cmd(self, ctx: commands.Context):
-        """🏆 Xem Bảng Thành Tựu (Achievements)."""
+        """Xem Bảng Thành Tựu (Achievements)."""
         uid = str(ctx.author.id)
         await get_or_create_event_profile(self.bot, uid)
         
@@ -254,7 +254,7 @@ class AchievementCog(commands.Cog):
         
     @commands.hybrid_command(name="title", aliases=["danhhieu"])
     async def title_cmd(self, ctx: commands.Context, action: str = None, *, arg: str = None):
-        """👑 Quản lý Danh Hiệu. Cú pháp: ktitle | ktitle use <tên>"""
+        """Quản lý Danh Hiệu. Cú pháp: ktitle | ktitle use <tên>"""
         uid = str(ctx.author.id)
         await get_or_create_event_profile(self.bot, uid)
         

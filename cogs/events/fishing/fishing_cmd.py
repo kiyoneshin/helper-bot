@@ -11,7 +11,7 @@ from cogs.common.db import check_not_locked
 
 
 class FishingCog(commands.Cog, name="Fishing"):
-    """🎣 Cog Câu Cá — Minigame phản xạ để kiếm cá và tài nguyên."""
+    """Cog Câu Cá — Minigame phản xạ để kiếm cá và tài nguyên."""
 
     def __init__(self, bot: commands.Bot):
         self.bot = bot
@@ -19,7 +19,7 @@ class FishingCog(commands.Cog, name="Fishing"):
     @commands.hybrid_command(name="fish", aliases=["cauca", "fishing", "caca"])
     @check_not_locked()
     async def fish_cmd(self, ctx: commands.Context) -> None:
-        """🎣 Đến Hồ Câu Cá để thử vận may!"""
+        """Đến Hồ Câu Cá để thử vận may!"""
         user_id = str(ctx.author.id)
 
         # 1. Cập nhật & tính thể lực, đồng thời lấy farm_data (có rod_level)

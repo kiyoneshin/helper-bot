@@ -6,7 +6,7 @@ Bao gồm 4 trò chơi:
   - Cups      : kcups <tien_cuoc>        (Interactive Button UI)
   - Dice 7    : kdice <tien_cuoc>
   - Roulette  : kshot / kroulette <tien_cuoc> (Interactive Russian Roulette)
-"""
+  """
 
 import random
 import logging

@@ -101,7 +101,7 @@ class AntiSpamCog(commands.Cog):
                     pool = getattr(self.bot, "db_pool", None)
                     if pool:
                         await pool.execute(
-                            """
+                        """
                             INSERT INTO media_mutes (discord_id, expire_at)
                             VALUES ($1, $2)
                             ON CONFLICT (discord_id) DO UPDATE SET expire_at = EXCLUDED.expire_at

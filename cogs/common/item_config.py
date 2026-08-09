@@ -9,7 +9,7 @@ Quy ước ID:
   51-60: Nông trại (Farm)
   61-70: Lootbox
   71-80: Đồ ăn (Food)
-"""
+  """
 
 from typing import TypedDict
 

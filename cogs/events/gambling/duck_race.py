@@ -166,7 +166,7 @@ def _build_race_track(positions: dict[str, int], finished: Optional[list[str]] =
 
 
 class DuckRace(commands.Cog):
-    """🦆 Cog Đua Vịt Sự Kiện — Chạy tự động mỗi 4 tiếng."""
+    """Cog Đua Vịt Sự Kiện — Chạy tự động mỗi 4 tiếng."""
 
     def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot

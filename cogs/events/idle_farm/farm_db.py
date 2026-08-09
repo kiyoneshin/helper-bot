@@ -667,7 +667,7 @@ async def sell_items_partial(
 
     Returns:
         (success, total_profit, message)
-    """
+        """
     from cogs.events.mining.mining_config import MINING_LOOT
     from cogs.events.fishing.fishing_config import FISH_LOOT
     from cogs.events.idle_farm.machine_config import ARTISAN_GOODS

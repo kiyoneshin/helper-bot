@@ -50,9 +50,9 @@ def build_shop_embed(category: str, author: discord.Member | discord.User, prefi
     """Tạo Embed danh sách cửa hàng theo category."""
     CATEGORY_META = {
         "event":       ("🎪 Cửa Hàng Sự Kiện",       0x9b59b6),
-        "farm":        ("🌾 Cửa Hàng Nông Trại",      0xe67e22),
-        "blackmarket": ("🌙 Cửa Hàng Chợ Đen",        0x2b2d31),
-        "ring":        ("💍 Tiệm Kim Hoàn",           0xffb6c1),
+        "farm":        ("<:icon_03_farm_field:1536017183216369815> Cửa Hàng Nông Trại",      0xe67e22),
+        "blackmarket": ("<:icon_05_bm:1536017187243032736> Cửa Hàng Chợ Đen",        0x2b2d31),
+        "ring":        ("<:icon_02_ring:1536017180951318528> Tiệm Kim Hoàn",           0xffb6c1),
         "gift":        ("<:gift_00_symbol:1536003307011842099> Quà Tặng",                0xff69b4),
         "lootbox":     ("<:lootbox:1535664857276489749> Cửa Hàng Lootbox",        0x3498db),
     }
@@ -379,7 +379,7 @@ async def _buy_blackmarket_item(
 # ============================================================
 
 class ShopCog(commands.Cog):
-    """🛒 Cog Cửa Hàng Hợp Nhất."""
+    """Cog Cửa Hàng Hợp Nhất."""
 
     def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot

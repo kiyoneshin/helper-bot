@@ -376,7 +376,7 @@ class MarriageCog(commands.Cog):
 
     @commands.hybrid_command(name="marry", aliases=["kethon"])
     async def marry_cmd(self, ctx: commands.Context, target: Optional[discord.Member] = None, ring_id: int = 31):
-        """💍 Cầu hôn ai đó hoặc xem Profile Tình Yêu (nếu không tag ai)."""
+        """Cầu hôn ai đó hoặc xem Profile Tình Yêu (nếu không tag ai)."""
         uid = str(ctx.author.id)
         
         # 1. Nếu không tag ai -> Hiển thị Profile Tình Yêu
@@ -540,7 +540,7 @@ class MarriageCog(commands.Cog):
 
     @commands.hybrid_command(name="divorce", aliases=["lydi", "lyhon", "lidi"])
     async def divorce_cmd(self, ctx: commands.Context, target: discord.Member):
-        """💔 Ly hôn với người hiện tại (Sẽ xóa toàn bộ DTM)."""
+        """Ly hôn với người hiện tại (Sẽ xóa toàn bộ DTM)."""
         uid = str(ctx.author.id)
         mar = await get_marriage(self.bot, uid)
         if not mar:
@@ -568,7 +568,7 @@ class MarriageCog(commands.Cog):
 
     @commands.hybrid_command(name="promise", aliases=["hua"])
     async def promise_cmd(self, ctx: commands.Context, *, text: str):
-        """💌 Khắc ghi lời thề non hẹn biển (Chỉ hiện trong lệnh marry)."""
+        """Khắc ghi lời thề non hẹn biển (Chỉ hiện trong lệnh marry)."""
         uid = str(ctx.author.id)
         mar = await get_marriage(self.bot, uid)
         if not mar:
@@ -596,7 +596,7 @@ class MarriageCog(commands.Cog):
 
     @commands.hybrid_command(name="adopt")
     async def adopt_cmd(self, ctx: commands.Context, pet_type: str):
-        """<a:pet_dog:1535998186450194432> Nhận nuôi thú cưng (dog/cat/fox/wolf/penguin/rabbit/bear/dragon). Yêu cầu > 200 DTM."""
+        """Nhận nuôi thú cưng (dog/cat/fox/wolf/penguin/rabbit/bear/dragon). Yêu cầu > 200 DTM."""
         uid = str(ctx.author.id)
         mar = await get_marriage(self.bot, uid)
         
@@ -639,7 +639,7 @@ class MarriageCog(commands.Cog):
 
     @commands.hybrid_command(name="upgradering", aliases=["nangcapnhan"])
     async def upgradering_cmd(self, ctx: commands.Context, ring_id: int):
-        """💍 Đổi nhẫn cưới hiện tại sang nhẫn xịn hơn (yêu cầu có nhẫn trong túi đồ)."""
+        """Đổi nhẫn cưới hiện tại sang nhẫn xịn hơn (yêu cầu có nhẫn trong túi đồ)."""
         uid = str(ctx.author.id)
         mar = await get_marriage(self.bot, uid)
         if not mar:
@@ -677,7 +677,7 @@ class MarriageCog(commands.Cog):
 
     @commands.hybrid_command(name="setimage", aliases=["setanh"])
     async def setimage_cmd(self, ctx: commands.Context, url: str):
-        """🖼️ Thiết lập ảnh kỉ niệm cho profile lệnh marry của 2 bạn."""
+        """Thiết lập ảnh kỉ niệm cho profile lệnh marry của 2 bạn."""
         uid = str(ctx.author.id)
         mar = await get_marriage(self.bot, uid)
         if not mar:
@@ -691,7 +691,7 @@ class MarriageCog(commands.Cog):
 
     @commands.hybrid_command(name="pet", aliases=["thucung"])
     async def pet_cmd(self, ctx: commands.Context):
-        """<a:pet_dog:1535998186450194432> Xem thông tin thú cưng của cặp đôi."""
+        """Xem thông tin thú cưng của cặp đôi."""
         uid = str(ctx.author.id)
         mar = await get_marriage(self.bot, uid)
         if not mar:
@@ -778,7 +778,7 @@ class MarriageCog(commands.Cog):
 
     @commands.hybrid_command(name="namepet")
     async def namepet_cmd(self, ctx: commands.Context, *, pet_name: str):
-        """🏷️ Đặt tên riêng cho thú cưng của bạn!"""
+        """Đặt tên riêng cho thú cưng của bạn!"""
         uid = str(ctx.author.id)
         mar = await get_marriage(self.bot, uid)
         if not mar:
@@ -800,7 +800,7 @@ class MarriageCog(commands.Cog):
 
     @commands.hybrid_command(name="gift", aliases=["tangqua"])
     async def gift_cmd(self, ctx: commands.Context, target: discord.Member, item_id: int):
-        """<:gift_00_symbol:1536003307011842099> Tặng quà mua từ Cửa Hàng (Quà Tặng) cho vợ/chồng."""
+        """Tặng quà mua từ Cửa Hàng (Quà Tặng) cho vợ/chồng."""
         uid = str(ctx.author.id)
         mar = await get_marriage(self.bot, uid)
         if not mar:
@@ -871,7 +871,7 @@ class MarriageCog(commands.Cog):
 
     @commands.hybrid_command(name="coupletask")
     async def coupletask_cmd(self, ctx: commands.Context):
-        """📋 Xem nhiệm vụ cặp đôi hàng ngày."""
+        """Xem nhiệm vụ cặp đôi hàng ngày."""
         uid = str(ctx.author.id)
         mar = await get_marriage(self.bot, uid)
         if not mar:
@@ -1079,7 +1079,7 @@ class MarriageCog(commands.Cog):
 
     @commands.hybrid_command(name="actions", aliases=["hd", "hanhdong"])
     async def actions_cmd(self, ctx: commands.Context):
-        """💞 Xem danh sách các hành động tương tác cặp đôi."""
+        """Xem danh sách các hành động tương tác cặp đôi."""
         embed = discord.Embed(
             title="💞 Hành Động Cặp Đôi",
             description=f"Các lệnh tương tác đặc biệt dành cho vợ/chồng. Thời gian hồi chiêu và DTM nhận được tùy thuộc vào độ thân mật và Nhẫn cưới.\nCú pháp: `{ctx.prefix}<hành_động> <@user>`",

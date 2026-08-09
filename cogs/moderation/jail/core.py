@@ -212,7 +212,7 @@ async def notify_cooldown(ctx: commands.Context, delay: float, cmd_name: str) ->
 # COG CHÍNH
 # ─────────────────────────────────────────────────────────────────────
 class JailCore(commands.Cog):
-    """🔒 Hệ Thống Chuồng Chó — Core (Tống Giam / Thả / Lau Dọn)"""
+    """Hệ Thống Chuồng Chó — Core (Tống Giam / Thả / Lau Dọn)"""
 
     def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
@@ -233,7 +233,7 @@ class JailCore(commands.Cog):
         *,
         reason: Optional[str] = "Không rõ lý do",
     ) -> None:
-        """🔒 Tống giam một thành viên vào chuồng chó."""
+        """Tống giam một thành viên vào chuồng chó."""
         if ctx.guild is None:
             return
         if member.bot:
@@ -360,7 +360,7 @@ class JailCore(commands.Cog):
     @commands.hybrid_command(name="thatu", aliases=["unjail", "free"])
     @commands.has_any_role(OWNER_ROLE_ID, ADMIN_ROLE_ID)
     async def thatu_cmd(self, ctx: commands.Context, member: discord.Member) -> None:
-        """🔓 Ân xá phạm nhân trước thời hạn."""
+        """Ân xá phạm nhân trước thời hạn."""
         if not await is_jailed(self.bot, str(member.id)):
             await ctx.send(f"⚠️ {member.mention} không phải phạm nhân.")
             return
@@ -387,7 +387,7 @@ class JailCore(commands.Cog):
     @commands.cooldown(1, 5, commands.BucketType.user)
     @is_jailed_check()
     async def laudon_cmd(self, ctx: commands.Context) -> None:
-        """🧹 Lau dọn chuồng chó để giảm 1 án."""
+        """Lau dọn chuồng chó để giảm 1 án."""
         uid = str(ctx.author.id)
         row = await fetchrow_db(
             self.bot,

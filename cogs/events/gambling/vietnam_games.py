@@ -3,7 +3,7 @@ vietnam_games.py — Cog Trò Chơi Dân Gian Việt Nam
 ==================================================
 Lệnh: ktaixiu / ktx <tai/xiu> <tien_cuoc>
        kbaucua / kbc (Theo dõi bằng chat thời gian thực)
-"""
+       """
 
 import asyncio
 import random
@@ -109,7 +109,7 @@ def _unlock_user(bot: commands.Bot, user_id: int) -> None:
 # ─────────────────────────────────────────────────────────────────────────────
 
 class VietnamGames(commands.Cog):
-    """🎲 Cog chứa các trò chơi dân gian (Tài Xỉu...)."""
+    """Cog chứa các trò chơi dân gian (Tài Xỉu...)."""
 
     def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
