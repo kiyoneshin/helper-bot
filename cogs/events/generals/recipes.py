@@ -51,7 +51,7 @@ def _build_recipe_embed(ctx, category: str) -> discord.Embed:
     )
     
     if category == "upgrade":
-        embed.set_thumbnail(url="https://cdn.discordapp.com/emojis/1535660962781331497.gif")
+        embed.set_thumbnail(url="https://cdn.discordapp.com/emojis/1536036455367970916.gif")
         embed.description = f"Công thức nâng cấp công cụ.\nSử dụng lệnh `{ctx.prefix}upgrade` để nâng cấp."
         
         pickaxe_desc = {
