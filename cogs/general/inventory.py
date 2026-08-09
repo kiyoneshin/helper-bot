@@ -217,8 +217,6 @@ def _build_farm_embed(
         if artisan_lines:
             desc_parts.append("**🏭 Thủ Công Phẩm:**\n" + "\n".join(artisan_lines))
     else:
-        if seed_lines:
-            desc_parts.append("**🌱 Hạt giống (Không thể bán):**\n" + "\n".join(seed_lines))
         if ore_lines:
             desc_parts.append("**⛏️ Khoáng sản & Gỗ:**\n" + "\n".join(ore_lines))
         if fish_lines:

@@ -96,7 +96,7 @@ ACTIONS = {
         "{author} hôn nhẹ lên trán {partner} đầy trân trọng 💖"
     ]},
     "lick":   {"tier": 3, "msg": [
-        "{author} liếm láp {partner} như một chú cún con 🐶",
+        "{author} liếm láp {partner} như một chú cún con <a:pet_dog:1535998186450194432>",
         "{author} liếm nhẹ lên má {partner} chụt chụt 😋",
         "{author} liếm môi {partner} gợi tình~"
     ]},
@@ -446,8 +446,8 @@ class MarriageCog(commands.Cog):
                     stage = "Thần Thú 🌟"
                     
                 icon_map = {
-                    "Chó": "🐶", "Mèo": "🐱", "Cáo": "🦊", "Sói": "🐺", 
-                    "Cánh Cụt": "🐧", "Thỏ": "🐰", "Gấu": "🐻", "Rồng": "🐉"
+                    "Chó": "<a:pet_dog:1535998186450194432>", "Mèo": "<a:pet_cat:1535998182029398046>", "Cáo": "<a:pet_fox:1535998196747210872>", "Sói": "<a:pet_wolf:1536004924708749404>", 
+                    "Cánh Cụt": "<a:pet_penguin:1535998208587595966>", "Thỏ": "<a:pet_bunny:1535998178115977347>", "Gấu": "<a:pet_panda:1535998202900123729>", "Rồng": "<a:pet_dragon:1535998194163523615>"
                 }
                 base_type = mar["pet_type"]
                 icon = icon_map.get(base_type, "🐾")
@@ -596,7 +596,7 @@ class MarriageCog(commands.Cog):
 
     @commands.hybrid_command(name="adopt")
     async def adopt_cmd(self, ctx: commands.Context, pet_type: str):
-        """🐶 Nhận nuôi thú cưng (dog/cat/fox/wolf/penguin/rabbit/bear/dragon). Yêu cầu > 200 DTM."""
+        """<a:pet_dog:1535998186450194432> Nhận nuôi thú cưng (dog/cat/fox/wolf/penguin/rabbit/bear/dragon). Yêu cầu > 200 DTM."""
         uid = str(ctx.author.id)
         mar = await get_marriage(self.bot, uid)
         
@@ -691,7 +691,7 @@ class MarriageCog(commands.Cog):
 
     @commands.hybrid_command(name="pet", aliases=["thucung"])
     async def pet_cmd(self, ctx: commands.Context):
-        """🐶 Xem thông tin thú cưng của cặp đôi."""
+        """<a:pet_dog:1535998186450194432> Xem thông tin thú cưng của cặp đôi."""
         uid = str(ctx.author.id)
         mar = await get_marriage(self.bot, uid)
         if not mar:
@@ -714,8 +714,8 @@ class MarriageCog(commands.Cog):
             stage = "Thần Thú 🌟"
             
         icon_map = {
-            "Chó": "🐶", "Mèo": "🐱", "Cáo": "🦊", "Sói": "🐺", 
-            "Cánh Cụt": "🐧", "Thỏ": "🐰", "Gấu": "🐻", "Rồng": "🐉"
+            "Chó": "<a:pet_dog:1535998186450194432>", "Mèo": "<a:pet_cat:1535998182029398046>", "Cáo": "<a:pet_fox:1535998196747210872>", "Sói": "<a:pet_wolf:1536004924708749404>", 
+            "Cánh Cụt": "<a:pet_penguin:1535998208587595966>", "Thỏ": "<a:pet_bunny:1535998178115977347>", "Gấu": "<a:pet_panda:1535998202900123729>", "Rồng": "<a:pet_dragon:1535998194163523615>"
         }
         icon = icon_map.get(base_type, "🐾")
         
@@ -1013,7 +1013,7 @@ class MarriageCog(commands.Cog):
         reset_msg = ""
         if pet_reset_chance > 0 and random.random() < pet_reset_chance:
             self.action_cooldowns[uid1][action] = 0
-            reset_msg = "\n🐰 *Thỏ Nhanh Nhẹn đã giúp bạn hồi chiêu ngay lập tức!*"
+            reset_msg = "\n<a:pet_bunny:1535998178115977347> *Thỏ Nhanh Nhẹn đã giúp bạn hồi chiêu ngay lập tức!*"
         else:
             self.action_cooldowns[uid1][action] = now
         
@@ -1023,7 +1023,7 @@ class MarriageCog(commands.Cog):
         crit_msg = ""
         if pet_crit_chance > 0 and random.random() < pet_crit_chance:
             actual_dtm *= 2.0
-            crit_msg = "\n🦊 *Cáo Ranh Mãnh giúp hành động này Bạo Kích (x2 DTM)!*"
+            crit_msg = "\n<a:pet_fox:1535998196747210872> *Cáo Ranh Mãnh giúp hành động này Bạo Kích (x2 DTM)!*"
             
         # Random fail for tier 1 (Chọc ghẹo)
         fail_chance = 0.2 - pet_fail_reduction
