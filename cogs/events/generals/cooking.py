@@ -147,6 +147,21 @@ class CookingCog(commands.Cog):
         
         embed = discord.Embed(title="✨ Danh sách Hiệu Ứng (Boosts)", color=0xFFD700)
         
+        from cogs.common.item_config import ITEM_REGISTRY
+
+        # Mapping từ boost_key sang ID trong ITEM_REGISTRY
+        boost_to_item = {
+            "stamina_regen": 71,
+            "lb_drop_rate": 72,
+            "lb_rarity": 73,
+            "farm_yield": 74,
+            "rare_wood": 75,
+            "rare_ore": 76,
+            "rare_fish": 77,
+            "stamina_discount": 78,
+            "all_boost": 79
+        }
+        
         # P2W
         embed.add_field(name="👑 Đặc Quyền P2W", value=f"Hệ số nhân: **x{p2w}** điểm.", inline=False)
         active_count = 1
@@ -157,35 +172,33 @@ class CookingCog(commands.Cog):
                 b_val = b_data.get("value", 0)
                 time_left = f"<t:{int(expires_at)}:R>"
                 
-                if b_key == "stamina_regen":
-                    name = "🎃 Súp Bí Ngô (Stamina Regen)"
-                    desc = f"+ {int(b_val*100)}% Tốc độ hồi thể lực. Hết hạn: {time_left}"
-                elif b_key == "lb_drop_rate":
-                    name = "🍱 Cơm Cuộn Cá (LB Drop Rate)"
-                    desc = f"+ {int(b_val*100)}% Tỉ lệ rơi Lootbox. Hết hạn: {time_left}"
-                elif b_key == "lb_rarity":
-                    name = "🍹 Sinh Tố Dâu (LB Rarity)"
-                    desc = f"+ {int(b_val*100)}% Tỉ lệ Lootbox hiếm. Hết hạn: {time_left}"
-                elif b_key == "farm_yield":
-                    name = "🥔 Khoai Tây Nghiền (Farm Yield)"
-                    desc = f"+ {b_val} Sản lượng thu hoạch. Hết hạn: {time_left}"
-                elif b_key == "rare_wood":
-                    name = "🍢 Cá Nướng Gỗ Thơm (Rare Wood)"
-                    desc = f"+ {int(b_val*100)}% Tỉ lệ Gỗ hiếm. Hết hạn: {time_left}"
-                elif b_key == "rare_ore":
-                    name = "🍝 Lúa Mì Xào Nấm (Rare Ore)"
-                    desc = f"+ {int(b_val*100)}% Tỉ lệ Quặng hiếm. Hết hạn: {time_left}"
-                elif b_key == "rare_fish":
-                    name = "🥧 Bánh Bí Ngô Hấp (Rare Fish)"
-                    desc = f"+ {int(b_val*100)}% Tỉ lệ Cá hiếm. Hết hạn: {time_left}"
-                elif b_key == "stamina_discount":
-                    name = "🍵 Trà Hướng Dương (Stamina Cost)"
-                    desc = f"- {b_val} Thể lực tiêu hao. Hết hạn: {time_left}"
-                elif b_key == "all_boost":
-                    name = "🍲 Lẩu Thập Cẩm (All Boost)"
-                    desc = f"+ {int(b_val*100)}% Tỉ lệ Đồ hiếm (Mọi H.động). Hết hạn: {time_left}"
+                # Fetch actual name and emoji from ITEM_REGISTRY
+                item_id = boost_to_item.get(b_key)
+                if item_id and item_id in ITEM_REGISTRY:
+                    meta = ITEM_REGISTRY[item_id]
+                    name = f"{meta['icon']} {meta['name']} ({b_key})"
                 else:
                     name = f"🔧 Hiệu ứng chưa rõ ({b_key})"
+                
+                if b_key == "stamina_regen":
+                    desc = f"+ {int(b_val*100)}% Tốc độ hồi thể lực. Hết hạn: {time_left}"
+                elif b_key == "lb_drop_rate":
+                    desc = f"+ {int(b_val*100)}% Tỉ lệ rơi Lootbox. Hết hạn: {time_left}"
+                elif b_key == "lb_rarity":
+                    desc = f"+ {int(b_val*100)}% Tỉ lệ Lootbox hiếm. Hết hạn: {time_left}"
+                elif b_key == "farm_yield":
+                    desc = f"+ {b_val} Sản lượng thu hoạch. Hết hạn: {time_left}"
+                elif b_key == "rare_wood":
+                    desc = f"+ {int(b_val*100)}% Tỉ lệ Gỗ hiếm. Hết hạn: {time_left}"
+                elif b_key == "rare_ore":
+                    desc = f"+ {int(b_val*100)}% Tỉ lệ Quặng hiếm. Hết hạn: {time_left}"
+                elif b_key == "rare_fish":
+                    desc = f"+ {int(b_val*100)}% Tỉ lệ Cá hiếm. Hết hạn: {time_left}"
+                elif b_key == "stamina_discount":
+                    desc = f"- {b_val} Thể lực tiêu hao. Hết hạn: {time_left}"
+                elif b_key == "all_boost":
+                    desc = f"+ {int(b_val*100)}% Tỉ lệ Đồ hiếm (Mọi H.động). Hết hạn: {time_left}"
+                else:
                     desc = f"Giá trị: {b_val}. Hết hạn: {time_left}"
                     
                 embed.add_field(name=name, value=desc, inline=False)
@@ -201,7 +214,13 @@ class CookingCog(commands.Cog):
             
             buffs = RING_BUFFS.get(ring_id, {"dtm_bonus": 0.0, "cd_reduction": 0.0, "work_bonus": 1.0})
             if buffs["cd_reduction"] > 0 or buffs["dtm_bonus"] > 0:
-                embed.add_field(name="💍 Nhẫn Cưới", value=f"- Giảm Cooldown: **{int(buffs['cd_reduction']*100)}%**\n- Tăng DTM: **{int(buffs['dtm_bonus']*100)}%**", inline=False)
+                ring_icon, ring_name = "💍", "Nhẫn Cưới"
+                if ring_id and ring_id in ITEM_REGISTRY:
+                    ring_meta = ITEM_REGISTRY[ring_id]
+                    ring_icon = ring_meta["icon"]
+                    ring_name = ring_meta["name"]
+                    
+                embed.add_field(name=f"{ring_icon} {ring_name}", value=f"- Giảm Cooldown: **{int(buffs['cd_reduction']*100)}%**\n- Tăng DTM: **{int(buffs['dtm_bonus']*100)}%**", inline=False)
                 active_count += 1
                 
             pet_cd = 0.0

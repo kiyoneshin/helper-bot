@@ -106,7 +106,19 @@ class ProfileCog(commands.Cog, name="Profile"):
         embed.set_thumbnail(url=target_member.display_avatar.url)
         
         # 1. THÔNG TIN CHUNG
-        marry_status = f"💍 Đã kết hôn với <@{data['marry_to']}>" if data.get("marry_to") else "💔 Độc thân vui tính"
+        from cogs.common.item_config import ITEM_REGISTRY
+        from cogs.common.db import get_marriage
+        
+        marry_status = "💔 Độc thân vui tính"
+        if data.get("marry_to"):
+            mar = await get_marriage(self.bot, str(target_member.id))
+            ring_icon = "💍"
+            if mar:
+                ring_id = mar.get("ring_id")
+                if ring_id and ring_id in ITEM_REGISTRY:
+                    ring_icon = ITEM_REGISTRY[ring_id]["icon"]
+            marry_status = f"{ring_icon} Đã kết hôn với <@{data['marry_to']}>"
+            
         title_str = data.get("title", "Chưa có danh hiệu")
         
         embed.add_field(

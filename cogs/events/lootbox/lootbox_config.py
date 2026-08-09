@@ -108,41 +108,51 @@ class DropItem(NamedTuple):
     qty:     int    # số lượng nhận được
     rank:    int    # 0-5
 
+from cogs.events.mining.mining_config import MINING_LOOT
+from cogs.events.fishing.fishing_config import FISH_LOOT
+from cogs.events.woodcutting.woodcutting_config import WOODCUTTING_LOOT
+
+def _get_icon(item_id: str, default: str) -> str:
+    if item_id in MINING_LOOT: return MINING_LOOT[item_id].get("icon", default)
+    if item_id in FISH_LOOT: return FISH_LOOT[item_id].get("icon", default)
+    if item_id in WOODCUTTING_LOOT: return WOODCUTTING_LOOT[item_id].get("icon", default)
+    return default
+
 # Pool theo rank — gộp từ các hệ thống hiện có
 RANK_POOL: dict[int, list[tuple[str, str, str]]] = {
     # (item_id, name, icon) — qty sẽ random 1-2
     0: [
-        ("trash",  "Rác",       "🥫"),
-        ("stone",  "Đá",        "🪨"),
-        ("twigs",  "Que Củi",   "🪵"),
+        ("trash",  "Rác",       _get_icon("trash", "🥫")),
+        ("stone",  "Đá",        _get_icon("stone", "🪨")),
+        ("twigs",  "Que Củi",   _get_icon("twigs", "🪵")),
     ],
     1: [
-        ("carp",    "Cá Chép",   "🐟"),
-        ("coal",    "Than Đá",   "⬛"),
-        ("wood",    "Gỗ Thường", "🌲"),
+        ("carp",    "Cá Chép",   _get_icon("carp", "🐟")),
+        ("coal",    "Than Đá",   _get_icon("coal", "⬛")),
+        ("wood",    "Gỗ Thường", _get_icon("wood", "🌲")),
     ],
     2: [
-        ("lobster",    "Tôm Hùm",    "🦞"),
-        ("salmon",     "Cá Hồi",     "🍣"),
-        ("copper_ore", "Quặng Đồng", "🟠"),
-        ("iron_ore",   "Quặng Sắt",  "⚙️"),
-        ("hardwood",   "Gỗ Cứng",   "🌳"),
+        ("lobster",    "Tôm Hùm",    _get_icon("lobster", "🦞")),
+        ("salmon",     "Cá Hồi",     _get_icon("salmon", "🍣")),
+        ("copper_ore", "Quặng Đồng", _get_icon("copper_ore", "🟠")),
+        ("iron_ore",   "Quặng Sắt",  _get_icon("iron_ore", "⚙️")),
+        ("hardwood",   "Gỗ Cứng",    _get_icon("hardwood", "🌳")),
     ],
     3: [
-        ("jellyfish",  "Sứa",        "🪼"),
-        ("squid",      "Mực",        "🦑"),
-        ("gold_ore",   "Quặng Vàng", "🌕"),
-        ("pine_resin", "Nhựa Thông", "🫙"),
-        ("sap",        "Nhựa Cây",   "💧"),
+        ("jellyfish",  "Sứa",        _get_icon("jellyfish", "🪼")),
+        ("squid",      "Mực",        _get_icon("squid", "🦑")),
+        ("gold_ore",   "Quặng Vàng", _get_icon("gold_ore", "🌕")),
+        ("pine_resin", "Nhựa Thông", _get_icon("pine_resin", "🫙")),
+        ("sap",        "Nhựa Cây",   _get_icon("sap", "💧")),
     ],
     4: [
-        ("stingray", "Cá Đuối",  "🦈"),
-        ("diamond",  "Kim Cương",  "💎"),
+        ("stingray", "Cá Đuối",  _get_icon("stingray", "🦈")),
+        ("diamond",  "Kim Cương",  _get_icon("diamond", "💎")),
     ],
     5: [
-        ("legendary_fish", "Cá Huyền Thoại", "🐉"),
-        ("diamond",        "Kim Cương x2",   "💎"),
-        ("sap",            "Nhựa Cây x2",    "💧"),
+        ("legendary_fish", "Cá Huyền Thoại", _get_icon("legendary_fish", "🐉")),
+        ("diamond",        "Kim Cương x2",   _get_icon("diamond", "💎")),
+        ("sap",            "Nhựa Cây x2",    _get_icon("sap", "💧")),
     ],
 }
 
