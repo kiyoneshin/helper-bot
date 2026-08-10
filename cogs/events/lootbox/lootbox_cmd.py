@@ -285,7 +285,7 @@ class LootboxCog(commands.Cog):
         emoji = TIER_EMOJIS[tier_id]
         embed_opening = discord.Embed(
             title=f"Đang mở {qty}x {TIER_NAMES[tier_id]}...",
-            description=f"{emoji} **Rương đang được mở...✨",
+            description=f"{emoji} **Rương đang được mở...**✨",
             color=TIER_COLORS[tier_id]
         )
         embed_opening.set_image(url="https://cdn.discordapp.com/emojis/1535664849017774080.gif")
