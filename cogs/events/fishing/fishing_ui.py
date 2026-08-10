@@ -33,7 +33,7 @@ from cogs.common.db import update_event_stat
 
 def _stamina_bar(stamina: int, bar_len: int = 10) -> str:
     filled = round(stamina / MAX_STAMINA * bar_len)
-    return "🟦" * filled + "⬛" * (bar_len - filled)
+    return "🟩" * filled + "⬛" * (bar_len - filled)
 
 from cogs.events.mining.mining_ui import _mins_to_full
 
@@ -138,7 +138,7 @@ class FishingView(discord.ui.View):
         self.farm_data = farm_data
         self.cast_btn.disabled = (stamina < STAMINA_PER_FISH)
 
-    @discord.ui.button(label="Quăng Cần", emoji="<:symbol_00_fishing:1536007692437422171>", style=discord.ButtonStyle.primary)
+    @discord.ui.button(label="Quăng Cần", emoji="<:button_fishing:1536007667649347624>", style=discord.ButtonStyle.primary)
     async def cast_btn(self, interaction: discord.Interaction, button: discord.ui.Button):
         if str(interaction.user.id) != self.user_id:
             await interaction.response.send_message(

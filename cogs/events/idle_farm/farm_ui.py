@@ -37,7 +37,7 @@ class FarmView(discord.ui.View):
         await interaction.response.edit_message(embed=new_embed, view=new_view)
         await interaction.followup.send(f"💦 Đã tưới nước cho **{count}** cây! (Thời gian sinh trưởng giảm {int(WATER_BONUS * 100)}%)", ephemeral=True)
         
-    @discord.ui.button(label="Thu Hoạch", emoji="<:symbol_00_farming:1536007689979691008>", style=discord.ButtonStyle.success, row=1)
+    @discord.ui.button(label="Thu Hoạch", emoji="<:button_harvesting:1536007671445061763>", style=discord.ButtonStyle.success, row=1)
     async def harvest_btn(self, interaction: discord.Interaction, button: discord.ui.Button):
         if str(interaction.user.id) != self.user_id:
             await interaction.response.send_message("<:symbol_wrong:1536289315867598849> Bạn không thể tương tác với nông trại của người khác!", ephemeral=True)

@@ -102,7 +102,7 @@ class MiningView(discord.ui.View):
         self.author = author
         self.mine_btn.disabled = (stamina < STAMINA_PER_HIT)
 
-    @discord.ui.button(label="Đập Đá", emoji="<:symbol_00_mining:1536007694920585356>", style=discord.ButtonStyle.primary)
+    @discord.ui.button(label="Đập Đá", emoji="<:button_mining:1536007673139568701>", style=discord.ButtonStyle.primary)
     async def mine_btn(self, interaction: discord.Interaction, button: discord.ui.Button):
         if str(interaction.user.id) != self.user_id:
             await interaction.response.send_message(

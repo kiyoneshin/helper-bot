@@ -72,7 +72,7 @@ class WoodcuttingView(discord.ui.View):
         self.regen_interval = regen_interval
         self.chop_btn.disabled = (stamina < STAMINA_PER_CHOP)
 
-    @discord.ui.button(label="Chặt Cây", emoji="<:symbol_00_woodcutting:1536007697491558491>", style=discord.ButtonStyle.success)
+    @discord.ui.button(label="Chặt Cây", emoji="<:button_woodcutting:1536007674674806915>", style=discord.ButtonStyle.success)
     async def chop_btn(self, interaction: discord.Interaction, button: discord.ui.Button):
         if str(interaction.user.id) != self.user_id:
             await interaction.response.send_message("<:symbol_wrong:1536289315867598849> Khu rừng của người khác, cấm chặt trộm!", ephemeral=True)
