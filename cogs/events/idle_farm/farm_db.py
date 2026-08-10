@@ -289,10 +289,10 @@ async def plant_seeds_batch(bot: commands.Bot, user_id: str, seed_type: str, slo
     Kiểm tra đầy đủ: hạt giống hợp lệ, ô hợp lệ, ô trống, đủ số lượng hạt giống.
     """
     if seed_type not in config.SEEDS:
-        return False, f"❌ Không tìm thấy hạt giống loại `{seed_type}`!"
+        return False, f"<:symbol_wrong:1536289315867598849> Không tìm thấy hạt giống loại `{seed_type}`!"
 
     if not slot_ids_raw:
-        return False, "❌ Bạn chưa nhập số ô đất nào!"
+        return False, "<:symbol_wrong:1536289315867598849> Bạn chưa nhập số ô đất nào!"
 
     farm_data = await get_farm_data(bot, user_id)
     inventory = (farm_data or {}).get("inventory", {})
@@ -309,16 +309,16 @@ async def plant_seeds_batch(bot: commands.Bot, user_id: str, seed_type: str, slo
     # Kiểm tra từng ô
     invalid_slots = [s for s in slot_ids if s < 1 or s > max_slots]
     if invalid_slots:
-        return False, f"❌ Ô đất **{', '.join(str(s) for s in invalid_slots)}** chưa được mở khóa! (Bạn đang có **{max_slots} ô**)."
+        return False, f"<:symbol_wrong:1536289315867598849> Ô đất **{', '.join(str(s) for s in invalid_slots)}** chưa được mở khóa! (Bạn đang có **{max_slots} ô**)."
 
     occupied_slots = [s for s in slot_ids if str(s) in crops]
     if occupied_slots:
-        return False, f"❌ Ô đất **{', '.join(str(s) for s in occupied_slots)}** đã có cây trồng rồi!"
+        return False, f"<:symbol_wrong:1536289315867598849> Ô đất **{', '.join(str(s) for s in occupied_slots)}** đã có cây trồng rồi!"
 
     needed = len(slot_ids)
     if seed_count < needed:
         return False, (
-            f"❌ Không đủ hạt giống **{seed_info['icon']} {seed_info['name']}**!\n"
+            f"<:symbol_wrong:1536289315867598849> Không đủ hạt giống **{seed_info['icon']} {seed_info['name']}**!\n"
             f"Cần **{needed}** hạt nhưng bạn chỉ có **{seed_count}** hạt."
         )
 
@@ -341,7 +341,7 @@ async def plant_seeds_batch(bot: commands.Bot, user_id: str, seed_type: str, slo
     await save_farm_data(bot, user_id, farm_data)
 
     slot_str = ", ".join(f"**Ô {s}**" for s in slot_ids)
-    return True, f"✅ Đã gieo **{needed}x {seed_info['icon']} {seed_info['name']}** vào {slot_str}!"
+    return True, f"<:symbol_right:1536289313959186472> Đã gieo **{needed}x {seed_info['icon']} {seed_info['name']}** vào {slot_str}!"
 
 async def buy_seed(bot: commands.Bot, user_id: str, seed_type: str, amount: int = 1) -> Tuple[bool, str]:
     """

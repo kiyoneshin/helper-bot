@@ -58,7 +58,7 @@ class TopLeaderboardView(discord.ui.View):
                 ORDER BY points DESC 
                 LIMIT 10;
             """
-            title = "🎰 Bảng Xếp Hạng Thần Bài (Số Dư) ໒꒱"
+            title = "<a:gambling_slot_machine_pixel:1536322200838340628> Bảng Xếp Hạng Thần Bài (Số Dư) ໒꒱"
             desc_prefix = "Vinh danh Top 10 đại gia nắm giữ nhiều tiền nhất server:\n\n"
             footer = "Bảng xếp hạng dựa trên số dư hiện tại 🌸"
             
@@ -134,7 +134,7 @@ class EventStatsCog(commands.Cog):
             rank = "Chúa Tể P2W 👑"
 
         embed = discord.Embed(
-            title=f"💳 Ví Sự Kiện Angelic — {target.display_name}",
+            title=f"<:symbol_credit_card:1536308433693712404> Ví Sự Kiện Angelic — {target.display_name}",
             description=f"Hạng của họ: **{rank}**" if target != ctx.author else f"Hạng của bạn: **{rank}**",
             color=0xffb6c1
         )

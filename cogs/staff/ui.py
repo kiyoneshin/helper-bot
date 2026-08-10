@@ -31,13 +31,13 @@ class StaffUICog(commands.Cog):
         """Lệnh hiển thị Menu giới thiệu Ban Quản Trị Angelic"""
         view = MainView(author_id=ctx.author.id)
         view.message = await ctx.send(embed=get_main_embed(), view=view)
-        log.info(f"🌸 {ctx.author.display_name} vừa mở bảng Menu Staff.")
+        log.info(f"{ctx.author.display_name} vừa mở bảng Menu Staff.")
 
     @commands.hybrid_command(name="rule", aliases=["rules", "luat", "dieule"], description="Xem bảng điều lệ server Angelic")
     async def rule_cmd(self, ctx: commands.Context):
         """Lệnh hiển thị Bảng Nội Quy Server Angelic"""
         await ctx.send(embed=get_rules_embed())
-        log.info(f"📜 {ctx.author.display_name} vừa xem bảng điều lệ server.")
+        log.info(f"{ctx.author.display_name} vừa xem bảng điều lệ server.")
 
     @commands.hybrid_command(name="checkdb", description="Kiểm tra toàn bộ danh sách đang có trong Database")
     async def check_db(self, ctx: commands.Context):
@@ -88,7 +88,7 @@ class StaffUICog(commands.Cog):
 
         if not target_id:
             await ctx.send(
-                "❌ **Vui lòng nhập ID hoặc ping nhân sự muốn xem đánh giá!**\n"
+                "<:symbol_wrong:1536289315867598849> **Vui lòng nhập ID hoặc ping nhân sự muốn xem đánh giá!**\n"
                 f"Ví dụ chuẩn: `{ctx.prefix}fb <@468428368828956692>` hoặc `{ctx.prefix}fb 468428368828956692`"
             )
             return
@@ -97,7 +97,7 @@ class StaffUICog(commands.Cog):
             records = await query_db(self.bot, "SELECT display_name, votes, rating FROM profiles WHERE discord_id = $1", target_id)
             if not records:
                 await ctx.send(
-                    "❌ **Không tìm thấy nhân sự này trong Database!**\n"
+                    "<:symbol_wrong:1536289315867598849> **Không tìm thấy nhân sự này trong Database!**\n"
                     "❓ Vui lòng kiểm tra lại chính xác ID hoặc ping lại."
                 )
                 return

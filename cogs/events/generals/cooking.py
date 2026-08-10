@@ -75,11 +75,11 @@ class CookingCog(commands.Cog):
     async def cook_cmd(self, ctx: commands.Context, food_id: int, amount: int = 1):
         """Lệnh nấu ăn. Cú pháp: kcook <id> [số_lượng]"""
         if amount <= 0:
-            await ctx.send("❌ Số lượng phải lớn hơn 0!")
+            await ctx.send("<:symbol_wrong:1536289315867598849> Số lượng phải lớn hơn 0!")
             return
 
         if food_id not in RECIPES:
-            await ctx.send("❌ ID món ăn không hợp lệ! Hãy xem `krecipe` để biết ID món ăn (71-80).")
+            await ctx.send("<:symbol_wrong:1536289315867598849> ID món ăn không hợp lệ! Hãy xem `krecipe` để biết ID món ăn (71-80).")
             return
 
         recipe = RECIPES[food_id]
@@ -109,7 +109,7 @@ class CookingCog(commands.Cog):
 
         if not can_cook:
             req_str = _get_recipe_string(recipe)
-            await ctx.send(f"❌ **Không đủ nguyên liệu!**\nĐể nấu **1x {food_item['icon']} {food_item['name']}** bạn cần: `{req_str}`.")
+            await ctx.send(f"<:symbol_wrong:1536289315867598849> **Không đủ nguyên liệu!**\nĐể nấu **1x {food_item['icon']} {food_item['name']}** bạn cần: `{req_str}`.")
             return
 
         # Thực sự trừ nguyên liệu
@@ -125,7 +125,7 @@ class CookingCog(commands.Cog):
         farm_data["inventory"] = inventory
         await save_farm_data(self.bot, str(ctx.author.id), farm_data)
 
-        await ctx.send(f"👩‍🍳 Bạn đã nấu thành công **{amount}x {food_item['icon']} {food_item['name']}**!\n*(Nguyên liệu đã được trừ vào kho).*")
+        await ctx.send(f"<:symbol_00_cooking:1536007684241756291> Bạn đã nấu thành công **{amount}x {food_item['icon']} {food_item['name']}**!\n*(Nguyên liệu đã được trừ vào kho).*")
         log.info(f"{ctx.author.display_name} vừa nấu {amount}x {food_item['name']}.")
 
     @commands.hybrid_command(name="boost", description="Kiểm tra các hiệu ứng (Boost) đang kích hoạt.")

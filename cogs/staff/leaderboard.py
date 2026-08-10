@@ -586,7 +586,7 @@ class DateSelectionView(discord.ui.View):
         # 5. Xóa panel chọn ngày ephemeral
         try:
             await interaction.response.edit_message(
-                content="✅ **Đã áp dụng thành công!** Panel này sẽ tự đóng.",
+                content="<:symbol_right:1536289313959186472> **Đã áp dụng thành công!** Panel này sẽ tự đóng.",
                 embed=None,
                 view=None,
             )
@@ -730,7 +730,7 @@ class StaffLeaderboardCog(commands.Cog):
         embed = _build_leaderboard_embed(data, "rating", "all", dt_start, dt_end)
         view = LeaderboardView(dt_start, dt_end)
         view.message = await ctx.send(embed=embed, view=view)
-        log.info(f"🏆 {ctx.author.display_name} vừa mở BXH ({_format_date(dt_start)} — {_format_date(dt_end)}).")
+        log.info(f"{ctx.author.display_name} vừa mở BXH ({_format_date(dt_start)} — {_format_date(dt_end)}).")
 
 
 async def setup(bot):

@@ -87,7 +87,7 @@ async def _check_busy(bot: commands.Bot, ctx: commands.Context) -> bool:
     active_players: set = getattr(bot, 'active_players', set())
     if ctx.author.id in active_players:
         await ctx.send(
-            f"❌ {ctx.author.mention} Đang ngồi sòng khác rồi cha nội! Chốt kèo bên kia xong đi rồi qua đây đú tiếp."
+            f"<:symbol_wrong:1536289315867598849> {ctx.author.mention} Đang ngồi sòng khác rồi cha nội! Chốt kèo bên kia xong đi rồi qua đây đú tiếp."
         )
         return True
     return False
@@ -129,7 +129,7 @@ class VietnamGames(commands.Cog):
         choice = choice.lower().strip()
         if choice not in ("tai", "xiu"):
             await ctx.send(
-                f"❌ {ctx.author.mention} Bấm bậy bạ gì vậy? Dùng `tai` hoặc `xiu`.\n"
+                f"<:symbol_wrong:1536289315867598849> {ctx.author.mention} Bấm bậy bạ gì vậy? Dùng `tai` hoặc `xiu`.\n"
                 "Cú pháp: `ktx <tai/xiu> <tiền_cược>`"
             )
             return
@@ -138,7 +138,7 @@ class VietnamGames(commands.Cog):
         balance = await _get_balance(self.bot, uid)
         bet, err, is_all = _parse_bet(bet_raw, balance)
         if err or bet is None:
-            await ctx.send(f"❌ {ctx.author.mention} {err}")
+            await ctx.send(f"<:symbol_wrong:1536289315867598849> {ctx.author.mention} {err}")
             return
 
         if is_all:
@@ -152,7 +152,7 @@ class VietnamGames(commands.Cog):
     @taixiu_cmd.error
     async def taixiu_cmd_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument)):
-            await ctx.send(f"❌ {ctx.author.mention} Muốn làm đại gia Tài Xỉu mà không đặt cược à? Cú pháp: `{ctx.prefix}tx <tai/xiu> <tiền_cược | all>`. Để biết thêm chi tiết hãy xài lệnh `{ctx.prefix}ehelp tx`")
+            await ctx.send(f"<:symbol_wrong:1536289315867598849> {ctx.author.mention} Muốn làm đại gia Tài Xỉu mà không đặt cược à? Cú pháp: `{ctx.prefix}tx <tai/xiu> <tiền_cược | all>`. Để biết thêm chi tiết hãy xài lệnh `{ctx.prefix}ehelp tx`")
 
 
     async def _exec_taixiu(self, ctx: commands.Context, choice: str, bet: int, uid: str, balance: int) -> None:
@@ -190,7 +190,7 @@ class VietnamGames(commands.Cog):
         # ── Cập nhật DB ──────────────────────────────────────────────────
         ok = await _apply_delta(self.bot, uid, delta)
         if not ok:
-            await ctx.send(f"❌ {ctx.author.mention} Sập nguồn cơ sở dữ liệu, thử lại sau!")
+            await ctx.send(f"<:symbol_wrong:1536289315867598849> {ctx.author.mention} Sập nguồn cơ sở dữ liệu, thử lại sau!")
             return
 
         new_balance = balance + delta
@@ -199,10 +199,10 @@ class VietnamGames(commands.Cog):
         choice_str = "TÀI" if choice == "tai" else "XỈU"
         
         if is_bao:
-            embed_title = "🌪️ Tài Xỉu — Bão Lũ Quét Sạch!"
+            embed_title = "Tài Xỉu — Bão Lũ Quét Sạch!"
             embed_color = COLOR_LOSE
             dice_desc = f"Kết quả: **[ {d1} ]  [ {d2} ]  [ {d3} ]**  **BÃO ({total})**"
-            result_name = "🔴 Kết quả"
+            result_name = "<:symbol_wrong:1536289315867598849> Kết quả"
             result_val = f"{delta:,}  *(Đi bụi do dính Bão!)*"
         else:
             embed_title = "<:gambling_dice:1536291212141527050> Tài Xỉu (Sic Bo)"
@@ -210,10 +210,10 @@ class VietnamGames(commands.Cog):
             dice_desc = f"Kết quả: **[ {d1} ]  [ {d2} ]  [ {d3} ]**  Tổng: **{total} ({outcome_desc})**"
             
             if is_win:
-                result_name = "🟢 Kết quả"
+                result_name = "<:symbol_right:1536289313959186472> Kết quả"
                 result_val = f"+{delta:,}  *(Húp +95%)*"
             else:
-                result_name = "🔴 Kết quả"
+                result_name = "<:symbol_wrong:1536289315867598849> Kết quả"
                 result_val = f"{delta:,}  *(Mút trọn)*"
 
         embed = discord.Embed(
@@ -229,7 +229,7 @@ class VietnamGames(commands.Cog):
         # 3 Field Hàng Dọc
         embed.add_field(name="🎯 Lựa chọn của bạn", value=f"{choice_str} - {bet:,}", inline=False)
         embed.add_field(name=result_name, value=result_val, inline=False)
-        embed.add_field(name="💳 Số dư mới", value=f"{new_balance:,}", inline=False)
+        embed.add_field(name="<:symbol_credit_card:1536308433693712404> Số dư mới", value=f"{new_balance:,}", inline=False)
 
         embed.set_footer(text="Angelic Casino • Tài Xỉu 🌸")
         delay = 30.0 if ctx.channel.id == 1498711783223853101 else None
@@ -288,7 +288,7 @@ class VietnamGames(commands.Cog):
             f"{self.BC_EMOJIS[k]} **{total_pool[k]:,}**" if total_pool[k] else f"{self.BC_EMOJIS[k]} `---`"
             for k in self.BC_KEYS
         )
-        embed.add_field(name="📊 Tổng Tiền Bàn", value=pool_lines, inline=False)
+        embed.add_field(name="<:symbol_chart:1536317815336869918> Tổng Tiền Bàn", value=pool_lines, inline=False)
         embed.add_field(
             name="👥 Người tham gia",
             value=f"**{player_count}** người đã cược",
@@ -358,7 +358,7 @@ class VietnamGames(commands.Cog):
                 if err or amount is None:
                     try:
                         await msg.reply(
-                            f"❌ {msg.author.mention} {err}",
+                            f"<:symbol_wrong:1536289315867598849> {msg.author.mention} {err}",
                             delete_after=5,
                         )
                     except discord.HTTPException:
@@ -369,7 +369,7 @@ class VietnamGames(commands.Cog):
                 if not ok:
                     try:
                         await msg.reply(
-                            f"❌ {msg.author.mention} Đỗ nghèo khỉ mà đòi cược thêm **{amount:,}** à?",
+                            f"<:symbol_wrong:1536289315867598849> {msg.author.mention} Đỗ nghèo khỉ mà đòi cược thêm **{amount:,}** à?",
                             delete_after=5,
                         )
                     except discord.HTTPException:
@@ -385,7 +385,7 @@ class VietnamGames(commands.Cog):
 
             if placed_any:
                 try:
-                    await msg.add_reaction("✅")
+                    await msg.add_reaction("<:symbol_right:1536289313959186472>")
                 except discord.HTTPException:
                     pass
 
@@ -443,7 +443,7 @@ class VietnamGames(commands.Cog):
                 f"{self.BC_EMOJIS[k]} **{total_pool[k]:,}**" if total_pool[k] else f"{self.BC_EMOJIS[k]} `---`"
                 for k in self.BC_KEYS
             )
-            closed_embed.add_field(name="📊 Tổng Tiền Bàn", value=pool_lines, inline=False)
+            closed_embed.add_field(name="<:symbol_chart:1536317815336869918> Tổng Tiền Bàn", value=pool_lines, inline=False)
             closed_embed.set_footer(text="Angelic Casino • Bầu Cua Tôm Cá 🌸")
             await lobby_msg.edit(embed=closed_embed)
         except discord.HTTPException:
@@ -510,7 +510,7 @@ class VietnamGames(commands.Cog):
             )
             result_embed.set_author(name=f"{author_name} — baucua", icon_url=author_avatar)
             result_embed.add_field(name=result_field_name, value=result_field_val, inline=False)
-            result_embed.add_field(name="💳 Số dư mới", value=f"{final_balance:,}", inline=False)
+            result_embed.add_field(name="<:symbol_credit_card:1536308433693712404> Số dư mới", value=f"{final_balance:,}", inline=False)
             result_embed.set_footer(text="Angelic Casino • Bầu Cua Tôm Cá 🌸")
 
             try:

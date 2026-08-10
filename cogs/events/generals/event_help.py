@@ -75,7 +75,7 @@ CMD_DATA: dict[str, dict] = {
     },
     "cups": {
         "name": "Cups",
-        "emoji": "🥤",
+        "emoji": "<:gambling_cup:1536019568697409667>",
         "short": "Đoán ly có bảo vật trong 3 ly. Chọn đúng nhận x2.3.",
         "aliases": [],
         "cooldown": "30s timeout",
@@ -155,7 +155,7 @@ CMD_DATA: dict[str, dict] = {
     },
     "slots": {
         "name": "Máy Xẻng (Slots)",
-        "emoji": "🎰",
+        "emoji": "<a:gambling_slot_machine_pixel:1536322200838340628>",
         "short": "Quay máy 5 cuộn. 5 biểu tượng giống nhau = Nổ hũ Jackpot.",
         "aliases": ["slot"],
         "cooldown": None,
@@ -236,7 +236,7 @@ CMD_DATA: dict[str, dict] = {
     },
     "point": {
         "name": "Xem Điểm",
-        "emoji": "📊",
+        "emoji": "<:symbol_chart:1536317815336869918>",
         "short": "Kiểm tra số dư điểm và thông tin sự kiện của bạn (hoặc người khác).",
         "aliases": ["bal", "vi"],
         "cooldown": None,
@@ -439,7 +439,7 @@ CMD_DATA: dict[str, dict] = {
     },
     "trano": {
         "name": "Trả Nợ",
-        "emoji": "💵",
+        "emoji": "<:symbol_money:1536320386315325441>",
         "short": "Trả nợ cho ngân hàng để tránh bị khóa tài khoản.",
         "aliases": ["tra", "payloan"],
         "cooldown": None,
@@ -582,7 +582,7 @@ CMD_DATA: dict[str, dict] = {
 CATEGORY_DATA: dict[str, dict] = {
 
     "Casino & Giải Trí": {
-        "emoji": "🎰",
+        "emoji": "<a:gambling_slot_machine_pixel:1536322200838340628>",
         "desc": "Các minigame cờ bạc và thử vận may.",
         "commands": ["coinflip", "cups", "dice", "roulette", "crash", "wheel", "slots", "taixiu", "baucua", "betvit", "xoso", "multidice"],
         "cogs": ["BasicGames", "CrashGame", "DuckRace", "Lottery", "MultiDice", "VietnamGames", "WheelSlots"],
@@ -649,7 +649,7 @@ def build_home_embed(bot: commands.Bot, author: discord.Member | discord.User) -
 def build_category_embed(cat_name: str, prefix: str = "{prefix}") -> discord.Embed:
     cat = CATEGORY_DATA.get(cat_name)
     if not cat:
-        return discord.Embed(title="❌ Không tìm thấy danh mục", color=discord.Color.red())
+        return discord.Embed(title="<:symbol_wrong:1536289315867598849> Không tìm thấy danh mục", color=discord.Color.red())
 
     embed = discord.Embed(
         title=f"{cat['emoji']} {cat_name}",
@@ -678,7 +678,7 @@ def build_category_embed(cat_name: str, prefix: str = "{prefix}") -> discord.Emb
 def build_detail_embed(cmd_key: str, prefix: str = "{prefix}") -> discord.Embed:
     cmd = CMD_DATA.get(cmd_key)
     if not cmd:
-        return discord.Embed(title="❌ Không tìm thấy lệnh", color=discord.Color.red())
+        return discord.Embed(title="<:symbol_wrong:1536289315867598849> Không tìm thấy lệnh", color=discord.Color.red())
 
     embed = discord.Embed(
         title=f"{cmd['emoji']} {cmd['name']}",
@@ -727,7 +727,7 @@ class HomeView(discord.ui.View):
 
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
         if interaction.user.id != self.author.id:
-            await interaction.response.send_message("❌ Đây không phải cẩm nang của bạn!", ephemeral=True)
+            await interaction.response.send_message("<:symbol_wrong:1536289315867598849> Đây không phải cẩm nang của bạn!", ephemeral=True)
             return False
         return True
 
@@ -781,7 +781,7 @@ class CategoryView(discord.ui.View):
 
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
         if interaction.user.id != self.author.id:
-            await interaction.response.send_message("❌ Đây không phải cẩm nang của bạn!", ephemeral=True)
+            await interaction.response.send_message("<:symbol_wrong:1536289315867598849> Đây không phải cẩm nang của bạn!", ephemeral=True)
             return False
         return True
 
@@ -859,7 +859,7 @@ class DetailView(discord.ui.View):
 
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
         if interaction.user.id != self.author.id:
-            await interaction.response.send_message("❌ Đây không phải cẩm nang của bạn!", ephemeral=True)
+            await interaction.response.send_message("<:symbol_wrong:1536289315867598849> Đây không phải cẩm nang của bạn!", ephemeral=True)
             return False
         return True
 

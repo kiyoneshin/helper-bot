@@ -36,7 +36,7 @@ async def _check_busy(bot: commands.Bot, ctx: commands.Context) -> bool:
     active_players = getattr(bot, 'active_players', set())
     if ctx.author.id in active_players:
         await ctx.send(
-            f"❌ {ctx.author.mention} Đang ngồi sòng khác rồi cha nội! Chốt kèo bên kia xong đi rồi qua đây đú tiếp."
+            f"<:symbol_wrong:1536289315867598849> {ctx.author.mention} Đang ngồi sòng khác rồi cha nội! Chốt kèo bên kia xong đi rồi qua đây đú tiếp."
         )
         return True
     return False
@@ -123,7 +123,7 @@ class BetConfirmView(discord.ui.View):
 
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
         if interaction.user.id != self.ctx.author.id:
-            await interaction.response.send_message("❌ Chưa đến lượt bạn!", ephemeral=True)
+            await interaction.response.send_message("<:symbol_wrong:1536289315867598849> Chưa đến lượt bạn!", ephemeral=True)
             return False
         return True
 
@@ -162,7 +162,7 @@ async def _send_confirm(ctx: commands.Context, bet: int, callback_fn) -> None:
         description=(
             f"{ctx.author.mention} Đầy cả ví ra cược hết!\n\n"
             f"💰 **Số tiền sẽ cược:** **{bet:,.0f}** điểm\n\n"
-            "✅ Nhấn **Xác nhận** để vào sòng, hoặc ❌ **Hủy** để rút lui."
+            "<:symbol_right:1536289313959186472> Nhấn **Xác nhận** để vào sòng, hoặc <:symbol_wrong:1536289315867598849> **Hủy** để rút lui."
         ),
         color=0xFF8C00,
     )
@@ -192,14 +192,14 @@ class BasicGames(commands.Cog):
 
         choice = choice.lower().strip()
         if choice not in ("h", "t"):
-            await ctx.send(f"❌ {ctx.author.mention} Bấm bậy bạ gì vậy? Dùng `h` (Ngửa) hoặc `t` (Sấp).\nCú pháp: `{ctx.prefix}cf <h/t> <tiền_cược | all>`")
+            await ctx.send(f"<:symbol_wrong:1536289315867598849> {ctx.author.mention} Bấm bậy bạ gì vậy? Dùng `h` (Ngửa) hoặc `t` (Sấp).\nCú pháp: `{ctx.prefix}cf <h/t> <tiền_cược | all>`")
             return
 
         uid = str(ctx.author.id)
         balance = await _get_balance(self.bot, uid)
         bet, err, is_all = _parse_bet(bet_raw, balance)
         if err or bet is None:
-            await ctx.send(f"❌ {ctx.author.mention} {err}")
+            await ctx.send(f"<:symbol_wrong:1536289315867598849> {ctx.author.mention} {err}")
             return
 
         # Cược 'all' → hiện confirm trước
@@ -214,7 +214,7 @@ class BasicGames(commands.Cog):
     @coinflip_cmd.error
     async def coinflip_cmd_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument)):
-            await ctx.send(f"❌ {ctx.author.mention} Chơi mà không ném tiền à? Cú pháp: `{ctx.prefix}cf <h/t> <tiền_cược | all>`. Để biết thêm chi tiết hãy xài lệnh `{ctx.prefix}ehelp cf`")
+            await ctx.send(f"<:symbol_wrong:1536289315867598849> {ctx.author.mention} Chơi mà không ném tiền à? Cú pháp: `{ctx.prefix}cf <h/t> <tiền_cược | all>`. Để biết thêm chi tiết hãy xài lệnh `{ctx.prefix}ehelp cf`")
 
 
     async def _exec_coinflip(self, ctx: commands.Context, choice: str, bet: int, uid: str, balance: int):
@@ -243,7 +243,7 @@ class BasicGames(commands.Cog):
 
         ok = await _apply_delta(self.bot, uid, delta)
         if not ok:
-            await ctx.send(f"❌ {ctx.author.mention} Sập nguồn cơ sở dữ liệu, thử lại sau!")
+            await ctx.send(f"<:symbol_wrong:1536289315867598849> {ctx.author.mention} Sập nguồn cơ sở dữ liệu, thử lại sau!")
             return
 
         new_balance = balance + delta
@@ -263,7 +263,7 @@ class BasicGames(commands.Cog):
         embed.add_field(name="\u200b", value="\u200b", inline=True)
         embed.add_field(name="💰 Tiền cược", value=f"{bet:,}", inline=False)
         embed.add_field(name=f"{outcome_emoji} Kết quả", value=result_line, inline=False)
-        embed.add_field(name="💳 Số dư mới", value=f"{new_balance:,}", inline=False)
+        embed.add_field(name="<:symbol_credit_card:1536308433693712404> Số dư mới", value=f"{new_balance:,}", inline=False)
         embed.set_footer(text="Angelic Casino • Coinflip 🌸")
         delay = 30.0 if ctx.channel.id == 1498711783223853101 else None
         if delay is not None:
@@ -283,7 +283,7 @@ class BasicGames(commands.Cog):
         balance = await _get_balance(self.bot, uid)
         bet, err, is_all = _parse_bet(bet_raw, balance)
         if err or bet is None:
-            await ctx.send(f"❌ {ctx.author.mention} {err}")
+            await ctx.send(f"<:symbol_wrong:1536289315867598849> {ctx.author.mention} {err}")
             return
 
         async def _run(ctx: commands.Context, bet: int):
@@ -297,7 +297,7 @@ class BasicGames(commands.Cog):
     @cups_cmd.error
     async def cups_cmd_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument)):
-            await ctx.send(f"❌ {ctx.author.mention} Dốc hết hầu bao đi! Cú pháp: `{ctx.prefix}cups <tiền_cược | all>`. Để biết thêm chi tiết hãy xài lệnh `{ctx.prefix}ehelp cups`")
+            await ctx.send(f"<:symbol_wrong:1536289315867598849> {ctx.author.mention} Dốc hết hầu bao đi! Cú pháp: `{ctx.prefix}cups <tiền_cược | all>`. Để biết thêm chi tiết hãy xài lệnh `{ctx.prefix}ehelp cups`")
 
 
     async def _exec_cups(self, ctx: commands.Context, bet: int, uid: str, balance: int):
@@ -329,7 +329,7 @@ class BasicGames(commands.Cog):
         balance = await _get_balance(self.bot, uid)
         bet, err, is_all = _parse_bet(bet_raw, balance)
         if err or bet is None:
-            await ctx.send(f"❌ {ctx.author.mention} {err}")
+            await ctx.send(f"<:symbol_wrong:1536289315867598849> {ctx.author.mention} {err}")
             return
 
         async def _run(ctx: commands.Context, bet: int):
@@ -343,7 +343,7 @@ class BasicGames(commands.Cog):
     @dice_cmd.error
     async def dice_cmd_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument)):
-            await ctx.send(f"❌ {ctx.author.mention} Lắc xúc xắc bằng niềm tin à? Cú pháp: `{ctx.prefix}dice <tiền_cược | all>`. Để biết thêm chi tiết hãy xài lệnh `{ctx.prefix}ehelp dice`")
+            await ctx.send(f"<:symbol_wrong:1536289315867598849> {ctx.author.mention} Lắc xúc xắc bằng niềm tin à? Cú pháp: `{ctx.prefix}dice <tiền_cược | all>`. Để biết thêm chi tiết hãy xài lệnh `{ctx.prefix}ehelp dice`")
 
 
     async def _exec_dice(self, ctx: commands.Context, bet: int, uid: str, balance: int):
@@ -364,7 +364,7 @@ class BasicGames(commands.Cog):
 
         ok = await _apply_delta(self.bot, uid, delta)
         if not ok:
-            await ctx.send(f"❌ {ctx.author.mention} Nhà cái đang kẹt mạng, thử lại sau!")
+            await ctx.send(f"<:symbol_wrong:1536289315867598849> {ctx.author.mention} Nhà cái đang kẹt mạng, thử lại sau!")
             return
 
         new_balance = balance + delta
@@ -381,7 +381,7 @@ class BasicGames(commands.Cog):
         embed.add_field(name="<:gambling_dice:1536291212141527050> Kết quả lắc", value=f"{face_emoji} - {desc}", inline=False)
         embed.add_field(name="💰 Tiền cược", value=f"{bet:,}", inline=False)
         embed.add_field(name=f"{outcome_emoji} Kết quả", value=result_line, inline=False)
-        embed.add_field(name="💳 Số dư mới", value=f"{new_balance:,}", inline=False)
+        embed.add_field(name="<:symbol_credit_card:1536308433693712404> Số dư mới", value=f"{new_balance:,}", inline=False)
         embed.set_footer(text="Angelic Casino • Dice 7 🌸")
         delay = 30.0 if ctx.channel.id == 1498711783223853101 else None
         if delay is not None:
@@ -401,7 +401,7 @@ class BasicGames(commands.Cog):
         balance = await _get_balance(self.bot, uid)
         bet, err, is_all = _parse_bet(bet_raw, balance)
         if err or bet is None:
-            await ctx.send(f"❌ {ctx.author.mention} {err}")
+            await ctx.send(f"<:symbol_wrong:1536289315867598849> {ctx.author.mention} {err}")
             return
 
         async def _run(ctx: commands.Context, bet: int):
@@ -415,14 +415,14 @@ class BasicGames(commands.Cog):
     @roulette_cmd.error
     async def roulette_cmd_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument)):
-            await ctx.send(f"❌ {ctx.author.mention} Cầm súng mà không mang đạn (tiền) à? Cú pháp: `{ctx.prefix}shot <tiền_cược | all>`. Để biết thêm chi tiết hãy xài lệnh `{ctx.prefix}ehelp shot`")
+            await ctx.send(f"<:symbol_wrong:1536289315867598849> {ctx.author.mention} Cầm súng mà không mang đạn (tiền) à? Cú pháp: `{ctx.prefix}shot <tiền_cược | all>`. Để biết thêm chi tiết hãy xài lệnh `{ctx.prefix}ehelp shot`")
 
 
     async def _exec_roulette(self, ctx: commands.Context, bet: int, uid: str, balance: int):
         """Logic thực thi game roulette."""
         ok = await _apply_delta(self.bot, uid, -bet)
         if not ok:
-            await ctx.send(f"❌ {ctx.author.mention} Lỗi DB, không tạm giữ tiền cược được!")
+            await ctx.send(f"<:symbol_wrong:1536289315867598849> {ctx.author.mention} Lỗi DB, không tạm giữ tiền cược được!")
             return
 
         new_balance = balance - bet
@@ -440,7 +440,7 @@ class BasicGames(commands.Cog):
         )
         embed.set_author(name=f"{ctx.author.display_name} — roulette", icon_url=ctx.author.display_avatar.url)
         embed.add_field(name="💰 Tiền cược (đang giữ)", value=f"{bet:,}", inline=False)
-        embed.add_field(name="💳 Số dư hiện tại", value=f"{new_balance:,}", inline=False)
+        embed.add_field(name="<:symbol_credit_card:1536308433693712404> Số dư hiện tại", value=f"{new_balance:,}", inline=False)
         embed.set_footer(text="Ngâm quá sòng tự động chốt lãi.")
         _lock_user(self.bot, ctx.author.id)
         view = RouletteView(bot=self.bot, author=ctx.author, bet=bet, original_balance=balance)
@@ -467,7 +467,7 @@ class CupsView(discord.ui.View):
 
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
         if interaction.user.id != self.author.id:
-            await interaction.response.send_message("❌ Mày đứng xem thôi, không phải sòng của màk", ephemeral=True)
+            await interaction.response.send_message("<:symbol_wrong:1536289315867598849> Mày đứng xem thôi, không phải sòng của màk", ephemeral=True)
             return False
         return True
 
@@ -513,7 +513,7 @@ class CupsView(discord.ui.View):
         embed.set_author(name=f"{self.author.display_name} — cups", icon_url=self.author.display_avatar.url)
         embed.add_field(name="💰 Tiền cược", value=f"{self.bet:,}", inline=False)
         embed.add_field(name=f"{outcome_emoji} Kết quả", value=result_line, inline=False)
-        embed.add_field(name="💳 Số dư mới", value=f"{new_balance:,}", inline=False)
+        embed.add_field(name="<:symbol_credit_card:1536308433693712404> Số dư mới", value=f"{new_balance:,}", inline=False)
         embed.set_footer(text="Angelic Casino • Cups 🌸")
         await interaction.response.edit_message(embed=embed, view=self)
         if interaction.message and interaction.message.channel.id == 1498711783223853101:
@@ -571,7 +571,7 @@ class RouletteView(discord.ui.View):
 
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
         if interaction.user.id != self.author.id:
-            await interaction.response.send_message("❌ Nín thở ngồi xem thôi, không phải sòng của màk", ephemeral=True)
+            await interaction.response.send_message("<:symbol_wrong:1536289315867598849> Nín thở ngồi xem thôi, không phải sòng của màk", ephemeral=True)
             return False
         return True
 
@@ -599,7 +599,7 @@ class RouletteView(discord.ui.View):
             embed.set_author(name=f"{self.author.display_name} — roulette", icon_url=self.author.display_avatar.url)
             embed.add_field(name="💰 Tiền cược", value=f"{self.bet:,}", inline=False)
             embed.add_field(name="<:symbol_wrong:1536289315867598849> Kết quả", value=f"-{self.bet:,}  *(Mút trọn) & Bị phạt 50*", inline=False)
-            embed.add_field(name="💳 Số dư mới", value=f"{self.balance:,}", inline=False)
+            embed.add_field(name="<:symbol_credit_card:1536308433693712404> Số dư mới", value=f"{self.balance:,}", inline=False)
             embed.set_footer(text="Angelic Casino • Cò Quay Tử Thần 🌸")
             await interaction.response.edit_message(embed=embed, view=self)
             if interaction.message and interaction.message.channel.id == 1498711783223853101:
@@ -681,7 +681,7 @@ class RouletteView(discord.ui.View):
         embed.set_author(name=f"{self.author.display_name} — roulette", icon_url=self.author.display_avatar.url)
         embed.add_field(name="💰 Tiền cược", value=f"{self.bet:,}", inline=False)
         embed.add_field(name=f"{emo} Kết quả", value=res_str, inline=False)
-        embed.add_field(name="💳 Số dư mới", value=f"{new_balance:,}", inline=False)
+        embed.add_field(name="<:symbol_credit_card:1536308433693712404> Số dư mới", value=f"{new_balance:,}", inline=False)
         embed.set_footer(text="Angelic Casino • Cò Quay Tử Thần 🌸")
 
         if interaction:

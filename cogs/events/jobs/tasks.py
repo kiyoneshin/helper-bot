@@ -157,7 +157,7 @@ class TaskCog(commands.Cog):
                     await _add_lootbox_to_inventory(self.bot, str(uid), lb_tier, 1)
                     lb_msg = f" <:gift_00_symbol:1536003307011842099> {TIER_EMOJIS[lb_tier]} {TIER_NAMES[lb_tier]}"
                     
-                claimed_messages.append(f"✅ Đã nhận thưởng nhiệm vụ ngày #{idx} (+{tdata['reward']:,} điểm{pet_msg}{lb_msg})")
+                claimed_messages.append(f"<:symbol_right:1536289313959186472> Đã nhận thưởng nhiệm vụ ngày #{idx} (+{tdata['reward']:,} điểm{pet_msg}{lb_msg})")
                 db_changed = True
 
             status = "COMPLETED" if tdata["claimed"] else f"{tdata['progress']}/{tdata['target']}"

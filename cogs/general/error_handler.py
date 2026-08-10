@@ -38,9 +38,9 @@ class GlobalErrorHandler(commands.Cog):
         if isinstance(error, commands.CheckFailure):
             # Nếu lỗi có lời nhắn tuỳ chỉnh thì in ra
             if str(error) and "The check functions for command" not in str(error):
-                await ctx.send(f"❌ **Không đủ điều kiện:** {str(error)}")
+                await ctx.send(f"<:symbol_wrong:1536289315867598849> **Không đủ điều kiện:** {str(error)}")
             else:
-                await ctx.send("❌ **Bạn không có quyền hoặc không đủ điều kiện để sử dụng lệnh này!**")
+                await ctx.send("<:symbol_wrong:1536289315867598849> **Bạn không có quyền hoặc không đủ điều kiện để sử dụng lệnh này!**")
             return
 
         # Lỗi Cooldown
@@ -108,7 +108,7 @@ class GlobalErrorHandler(commands.Cog):
         
         # Bỏ qua lỗi UserNotFound hoặc MemberNotFound và in ra lỗi đẹp
         if isinstance(error, (commands.UserNotFound, commands.MemberNotFound)):
-            await ctx.send(f"❌ Không tìm thấy người dùng: `{error.argument}`")
+            await ctx.send(f"<:symbol_wrong:1536289315867598849> Không tìm thấy người dùng: `{error.argument}`")
             return
             
         # Log các lỗi chưa xử lý ra console

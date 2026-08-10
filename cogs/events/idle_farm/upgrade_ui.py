@@ -55,7 +55,7 @@ def build_upgrade_embed(author: discord.Member | discord.User, farm_data: Dict[s
 
     embed.description = (
         f"Xin chào **{author.display_name}**!\n"
-        f"💳 **Số dư:** {points:,.0f} điểm\n"
+        f"<:symbol_credit_card:1536308433693712404> **Số dư:** {points:,.0f} điểm\n"
     )
 
     # --- Ô đất ---
@@ -74,7 +74,7 @@ def build_upgrade_embed(author: discord.Member | discord.User, farm_data: Dict[s
     # --- Cuốc chim ---
     pickaxe_name = PICKAXE_NAMES.get(pickaxe_level, f"Lv{pickaxe_level}")
     if pickaxe_level >= MAX_PICKAXE_LEVEL:
-        pick_info = "✅ Đã đạt cấp tối đa!"
+        pick_info = "<:symbol_right:1536289313959186472> Đã đạt cấp tối đa!"
     else:
         cost_pts, cost_items = PICKAXE_UPGRADE_COST[pickaxe_level]
         items_str = ", ".join(
@@ -84,11 +84,11 @@ def build_upgrade_embed(author: discord.Member | discord.User, farm_data: Dict[s
         # Kiểm tra đủ nguyên liệu
         has_items = all(inventory.get(k, 0) >= v for k, v in cost_items.items())
         can_afford = points >= cost_pts
-        status = "✅ Đủ vật liệu" if (has_items and can_afford) else "❌ Chưa đủ"
+        status = "<:symbol_right:1536289313959186472> Đủ vật liệu" if (has_items and can_afford) else "<:symbol_wrong:1536289315867598849> Chưa đủ"
         pick_info = f"**{cost_pts:,.0f}** điểm + {items_str}\n_{status}_"
 
     embed.add_field(
-        name=f"⛏️ Cuốc: {pickaxe_name} (Lv{pickaxe_level})",
+        name=f"<:symbol_00_mining:1536007694920585356> Cuốc: {pickaxe_name} (Lv{pickaxe_level})",
         value=pick_info,
         inline=True,
     )
@@ -96,7 +96,7 @@ def build_upgrade_embed(author: discord.Member | discord.User, farm_data: Dict[s
     # --- Cần câu ---
     rod_name = ROD_NAMES.get(rod_level, f"Lv{rod_level}")
     if rod_level >= MAX_ROD_LEVEL:
-        rod_info = "✅ Đã đạt cấp tối đa!"
+        rod_info = "<:symbol_right:1536289313959186472> Đã đạt cấp tối đa!"
     else:
         cost_pts, cost_items = ROD_UPGRADE_COST[rod_level]
         items_str = ", ".join(
@@ -105,7 +105,7 @@ def build_upgrade_embed(author: discord.Member | discord.User, farm_data: Dict[s
         ) or "_(không rõ nguyên liệu)_"
         has_items = all(inventory.get(k, 0) >= v for k, v in cost_items.items())
         can_afford = points >= cost_pts
-        status = "✅ Đủ vật liệu" if (has_items and can_afford) else "❌ Chưa đủ"
+        status = "<:symbol_right:1536289313959186472> Đủ vật liệu" if (has_items and can_afford) else "<:symbol_wrong:1536289315867598849> Chưa đủ"
         rod_info = f"**{cost_pts:,.0f}** điểm + {items_str}\n_{status}_"
 
     embed.add_field(
@@ -117,7 +117,7 @@ def build_upgrade_embed(author: discord.Member | discord.User, farm_data: Dict[s
     # --- Rìu ---
     axe_name = AXE_NAMES.get(axe_level, f"Lv{axe_level}")
     if axe_level >= MAX_AXE_LEVEL:
-        axe_info = "✅ Đã đạt cấp tối đa!"
+        axe_info = "<:symbol_right:1536289313959186472> Đã đạt cấp tối đa!"
     else:
         cost_pts, cost_items = AXE_UPGRADE_COST[axe_level]
         items_str = ", ".join(
@@ -126,11 +126,11 @@ def build_upgrade_embed(author: discord.Member | discord.User, farm_data: Dict[s
         ) or "_(không rõ nguyên liệu)_"
         has_items = all(inventory.get(k, 0) >= v for k, v in cost_items.items())
         can_afford = points >= cost_pts
-        status = "✅ Đủ vật liệu" if (has_items and can_afford) else "❌ Chưa đủ"
+        status = "<:symbol_right:1536289313959186472> Đủ vật liệu" if (has_items and can_afford) else "<:symbol_wrong:1536289315867598849> Chưa đủ"
         axe_info = f"**{cost_pts:,.0f}** điểm + {items_str}\n_{status}_"
 
     embed.add_field(
-        name=f"🪓 Rìu: {axe_name} (Lv{axe_level})",
+        name=f"<:symbol_00_woodcutting:1536007697491558491> Rìu: {axe_name} (Lv{axe_level})",
         value=axe_info,
         inline=False,
     )
@@ -159,7 +159,7 @@ class UpgradeView(discord.ui.View):
         # Nút 1: Mở rộng ô đất
         btn_slot = discord.ui.Button(
             label="Mở Rộng Ô Đất",
-            emoji="🚜",
+            emoji="<:symbol_plant:1536007706958237828>",
             style=discord.ButtonStyle.primary,
             row=0,
             disabled=(current_slots >= MAX_SLOTS),
@@ -170,7 +170,7 @@ class UpgradeView(discord.ui.View):
         # Nút 2: Nâng cấp Cuốc
         btn_pick = discord.ui.Button(
             label="Nâng Cuốc Chim",
-            emoji="⛏️",
+            emoji="<:symbol_00_mining:1536007694920585356>",
             style=discord.ButtonStyle.secondary,
             row=0,
             disabled=(pickaxe_level >= MAX_PICKAXE_LEVEL),
@@ -181,7 +181,7 @@ class UpgradeView(discord.ui.View):
         # Nút 3: Nâng cấp Cần câu
         btn_rod = discord.ui.Button(
             label="Nâng Cần Câu",
-            emoji="🎣",
+            emoji="<:symbol_00_fishing:1536007692437422171>",
             style=discord.ButtonStyle.secondary,
             row=0,
             disabled=(rod_level >= MAX_ROD_LEVEL),
@@ -192,7 +192,7 @@ class UpgradeView(discord.ui.View):
         # Nút 4: Nâng cấp Rìu
         btn_axe = discord.ui.Button(
             label="Nâng Rìu",
-            emoji="🪓",
+            emoji="<:symbol_00_woodcutting:1536007697491558491>",
             style=discord.ButtonStyle.secondary,
             row=0,
             disabled=(axe_level >= MAX_AXE_LEVEL),
@@ -206,7 +206,7 @@ class UpgradeView(discord.ui.View):
     async def _check_owner(self, interaction: discord.Interaction) -> bool:
         if str(interaction.user.id) != self.user_id:
             await interaction.response.send_message(
-                "❌ Bạn không thể tương tác với giao diện của người khác!", ephemeral=True
+                "<:symbol_wrong:1536289315867598849> Bạn không thể tương tác với giao diện của người khác!", ephemeral=True
             )
             return False
         return True
@@ -222,7 +222,7 @@ class UpgradeView(discord.ui.View):
         new_embed = build_upgrade_embed(self.author, new_farm_data, points)
         new_view  = UpgradeView(self.bot, self.user_id, self.author, new_farm_data)
         await interaction.response.edit_message(embed=new_embed, view=new_view)
-        await interaction.followup.send(f"✅ {msg}", ephemeral=True)
+        await interaction.followup.send(f"<:symbol_right:1536289313959186472> {msg}", ephemeral=True)
 
     # -----------------------------------------------------------------------
     # CALLBACK: Mở rộng ô đất
@@ -232,7 +232,7 @@ class UpgradeView(discord.ui.View):
             return
         ok, msg = await expand_farm_slot(self.bot, self.user_id)
         if not ok:
-            await interaction.response.send_message(f"❌ {msg}", ephemeral=True)
+            await interaction.response.send_message(f"<:symbol_wrong:1536289315867598849> {msg}", ephemeral=True)
             return
         await self.update_view(interaction, msg)
 
@@ -248,7 +248,7 @@ class UpgradeView(discord.ui.View):
         inventory     = farm_data.setdefault("inventory", {})
 
         if pickaxe_level >= MAX_PICKAXE_LEVEL:
-            await interaction.response.send_message("❌ Cuốc đã đạt cấp tối đa!", ephemeral=True)
+            await interaction.response.send_message("<:symbol_wrong:1536289315867598849> Cuốc đã đạt cấp tối đa!", ephemeral=True)
             return
 
         cost_pts, cost_items = PICKAXE_UPGRADE_COST[pickaxe_level]
@@ -258,7 +258,7 @@ class UpgradeView(discord.ui.View):
         points = float(user_points) if user_points else 0.0
         if points < cost_pts:
             await interaction.response.send_message(
-                f"❌ Không đủ điểm! Cần **{cost_pts:,.0f}**, bạn có **{points:,.0f}**.", ephemeral=True
+                f"<:symbol_wrong:1536289315867598849> Không đủ điểm! Cần **{cost_pts:,.0f}**, bạn có **{points:,.0f}**.", ephemeral=True
             )
             return
 
@@ -267,7 +267,7 @@ class UpgradeView(discord.ui.View):
             if inventory.get(item_id, 0) < qty:
                 item_name = MINING_LOOT.get(item_id, {}).get("name", item_id)
                 await interaction.response.send_message(
-                    f"❌ Thiếu **{item_name}**! Cần {qty}, bạn có {inventory.get(item_id, 0)}.", ephemeral=True
+                    f"<:symbol_wrong:1536289315867598849> Thiếu **{item_name}**! Cần {qty}, bạn có {inventory.get(item_id, 0)}.", ephemeral=True
                 )
                 return
 
@@ -294,7 +294,7 @@ class UpgradeView(discord.ui.View):
         inventory = farm_data.setdefault("inventory", {})
 
         if rod_level >= MAX_ROD_LEVEL:
-            await interaction.response.send_message("❌ Cần câu đã đạt cấp tối đa!", ephemeral=True)
+            await interaction.response.send_message("<:symbol_wrong:1536289315867598849> Cần câu đã đạt cấp tối đa!", ephemeral=True)
             return
 
         cost_pts, cost_items = ROD_UPGRADE_COST[rod_level]
@@ -303,7 +303,7 @@ class UpgradeView(discord.ui.View):
         points = float(user_points) if user_points else 0.0
         if points < cost_pts:
             await interaction.response.send_message(
-                f"❌ Không đủ điểm! Cần **{cost_pts:,.0f}**, bạn có **{points:,.0f}**.", ephemeral=True
+                f"<:symbol_wrong:1536289315867598849> Không đủ điểm! Cần **{cost_pts:,.0f}**, bạn có **{points:,.0f}**.", ephemeral=True
             )
             return
 
@@ -312,7 +312,7 @@ class UpgradeView(discord.ui.View):
             if inventory.get(item_id, 0) < qty:
                 item_name = all_items.get(item_id, {}).get("name", item_id)
                 await interaction.response.send_message(
-                    f"❌ Thiếu **{item_name}**! Cần {qty}, bạn có {inventory.get(item_id, 0)}.", ephemeral=True
+                    f"<:symbol_wrong:1536289315867598849> Thiếu **{item_name}**! Cần {qty}, bạn có {inventory.get(item_id, 0)}.", ephemeral=True
                 )
                 return
 
@@ -338,7 +338,7 @@ class UpgradeView(discord.ui.View):
         inventory = farm_data.setdefault("inventory", {})
 
         if axe_level >= MAX_AXE_LEVEL:
-            await interaction.response.send_message("❌ Rìu đã đạt cấp tối đa!", ephemeral=True)
+            await interaction.response.send_message("<:symbol_wrong:1536289315867598849> Rìu đã đạt cấp tối đa!", ephemeral=True)
             return
 
         cost_pts, cost_items = AXE_UPGRADE_COST[axe_level]
@@ -347,7 +347,7 @@ class UpgradeView(discord.ui.View):
         points = float(user_points) if user_points else 0.0
         if points < cost_pts:
             await interaction.response.send_message(
-                f"❌ Không đủ điểm! Cần **{cost_pts:,.0f}**, bạn có **{points:,.0f}**.", ephemeral=True
+                f"<:symbol_wrong:1536289315867598849> Không đủ điểm! Cần **{cost_pts:,.0f}**, bạn có **{points:,.0f}**.", ephemeral=True
             )
             return
 
@@ -356,7 +356,7 @@ class UpgradeView(discord.ui.View):
             if inventory.get(item_id, 0) < qty:
                 item_name = all_items.get(item_id, {}).get("name", item_id)
                 await interaction.response.send_message(
-                    f"❌ Thiếu **{item_name}**! Cần {qty}, bạn có {inventory.get(item_id, 0)}.", ephemeral=True
+                    f"<:symbol_wrong:1536289315867598849> Thiếu **{item_name}**! Cần {qty}, bạn có {inventory.get(item_id, 0)}.", ephemeral=True
                 )
                 return
 

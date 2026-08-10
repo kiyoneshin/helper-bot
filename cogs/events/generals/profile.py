@@ -122,7 +122,7 @@ class ProfileCog(commands.Cog, name="Profile"):
         title_str = data.get("title", "Chưa có danh hiệu")
         
         embed.add_field(
-            name="🎫 Thông Tin Cá Nhân",
+            name="<:symbol_id_card:1536320112565555240> Thông Tin Cá Nhân",
             value=f"**Danh hiệu:** {title_str}\n**Tình trạng:** {marry_status}",
             inline=False
         )
@@ -133,7 +133,7 @@ class ProfileCog(commands.Cog, name="Profile"):
         
         embed.add_field(
             name="💰 Tài Sản & Ngân Khố",
-            value=f"💵 **Số dư (Khả dụng):** {points:,.0f}\n🏆 **Tổng Điểm (Milestones):** {total_earned:,.0f}",
+            value=f"<:symbol_money:1536320386315325441> **Số dư (Khả dụng):** {points:,.0f}\n🏆 **Tổng Điểm (Milestones):** {total_earned:,.0f}",
             inline=True
         )
         
@@ -148,11 +148,11 @@ class ProfileCog(commands.Cog, name="Profile"):
         rod_name = ROD_NAMES.get(rod_lv, f"Lv{rod_lv}")
         
         embed.add_field(
-            name="🛠️ Hành Trang (Tools)",
+            name="<:symbol_00_crafting:1536007686389235733> Hành Trang (Tools)",
             value=(
-                f"🪓 **Rìu:** {axe_name}\n"
-                f"⛏️ **Cuốc:** {pick_name}\n"
-                f"🎣 **Cần Câu:** {rod_name}"
+                f"<:symbol_00_woodcutting:1536007697491558491> **Rìu:** {axe_name}\n"
+                f"<:symbol_00_mining:1536007694920585356> **Cuốc:** {pick_name}\n"
+                f"<:symbol_00_fishing:1536007692437422171> **Cần Câu:** {rod_name}"
             ),
             inline=True
         )
@@ -166,14 +166,14 @@ class ProfileCog(commands.Cog, name="Profile"):
         fishes = data.get("fishes_done", 0)
         
         embed.add_field(
-            name="📊 Bảng Vàng Thành Tích",
+            name="Bảng Vàng Thành Tích",
             value=(
-                f"🎯 **Nhiệm vụ (Quests):** {quests}\n"
-                f"🌱 **Cây trồng (Harvests):** {crops}\n"
-                f"🪓 **Chặt gỗ (Works):** {works}\n"
-                f"⛏️ **Đập đá (Mines):** {mines}\n"
-                f"🎣 **Câu cá (Fishes):** {fishes}\n"
-                f"🐕 **Vô chuồng chó (Jails):** {jail} Lần"
+                f"<:symbol_boards:1536007665153474681> **Nhiệm vụ (Quests):** {quests}\n"
+                f"<:icon_04_seed:1536017185057546242> **Cây trồng (Harvests):** {crops}\n"
+                f"<:symbol_00_woodcutting:1536007697491558491> **Chặt gỗ (Works):** {works}\n"
+                f"<:symbol_00_mining:1536007694920585356> **Đập đá (Mines):** {mines}\n"
+                f"<:symbol_00_fishing:1536007692437422171> **Câu cá (Fishes):** {fishes}\n"
+                f"<a:pet_cat:1535998182029398046> **Vô chuồng chó (Jails):** {jail} Lần"
             ),
             inline=False
         )

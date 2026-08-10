@@ -20,7 +20,7 @@ def _get_db_pool(bot: Any) -> Any:
             db_obj = getattr(bot, name)
             if hasattr(db_obj, 'fetch') or hasattr(db_obj, 'execute'):
                 return db_obj
-    log.error("❌ Không tìm thấy biến kết nối Database hợp lệ trên object bot!")
+    log.error("Không tìm thấy biến kết nối Database hợp lệ trên object bot!")
     return None
 
 async def query_db(bot: Any, sql: str, *args) -> list:
@@ -318,10 +318,10 @@ async def init_all_tables(bot: Any) -> bool:
                 );
             ''')
 
-        log.info("🌸 Toàn bộ Database (Staff + Event + VoiceMaster) đã được khởi tạo và cấu trúc chuẩn xác!")
+        log.info("Toàn bộ Database (Staff + Event + VoiceMaster) đã được khởi tạo và cấu trúc chuẩn xác!")
         return True
     except Exception as e:
-        log.error(f"❌ Lỗi nghiêm trọng khi khởi tạo bảng Database: {e}", exc_info=True)
+        log.error(f"Lỗi nghiêm trọng khi khởi tạo bảng Database: {e}", exc_info=True)
         return False
 
 
@@ -456,7 +456,7 @@ def check_not_locked():
     async def predicate(ctx: commands.Context) -> bool:
         row = await fetchrow_db(ctx.bot, "SELECT is_locked FROM event_profiles WHERE discord_id = $1", str(ctx.author.id))
         if row and row["is_locked"]:
-            await ctx.send(f"❌ {ctx.author.mention} **Tài khoản của bạn đã bị khóa do vỡ nợ ngân hàng!**\n"
+            await ctx.send(f"<:symbol_wrong:1536289315867598849> {ctx.author.mention} **Tài khoản của bạn đã bị khóa do vỡ nợ ngân hàng!**\n"
                            f"Vui lòng sử dụng lệnh `{ctx.prefix}trano` để thanh toán nợ và mở khóa.")
             return False
         return True

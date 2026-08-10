@@ -178,7 +178,7 @@ class ShopView(discord.ui.View):
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
         if interaction.user.id != self.author.id:
             await interaction.response.send_message(
-                "❌ Đây không phải cửa hàng của bạn!", ephemeral=True
+                "<:symbol_wrong:1536289315867598849> Đây không phải cửa hàng của bạn!", ephemeral=True
             )
             return False
         return True
@@ -214,7 +214,7 @@ async def _buy_event_item(
         uid = str(ctx.author.id)
         price = item["price"]
         if price is None:
-            await ctx.send("❌ Vật phẩm này không thể mua!", delete_after=5.0)
+            await ctx.send("<:symbol_wrong:1536289315867598849> Vật phẩm này không thể mua!", delete_after=5.0)
             return
 
         total = price * amount
@@ -226,7 +226,7 @@ async def _buy_event_item(
                 "SELECT COUNT(*) FROM event_profiles WHERE COALESCE((inventory->>'item_4')::int, 0) > 0"
             )
             if count is not None and count >= 5:
-                await ctx.send("❌ Rất tiếc, vật phẩm này đã đạt giới hạn 5 người đổi!", delete_after=5.0)
+                await ctx.send("<:symbol_wrong:1536289315867598849> Rất tiếc, vật phẩm này đã đạt giới hạn 5 người đổi!", delete_after=5.0)
                 return
 
         # Special logic for lootbox 6h cooldown
@@ -246,7 +246,7 @@ async def _buy_event_item(
                     from cogs.events.lootbox.lootbox_config import LB_BUY_COOLDOWN_HOURS
                     if now < last_buy + timedelta(hours=LB_BUY_COOLDOWN_HOURS):
                         next_time = last_buy + timedelta(hours=LB_BUY_COOLDOWN_HOURS)
-                        await ctx.send(f"❌ Bạn đã mua một hộp quà (bất kỳ) gần đây rồi. Mỗi {LB_BUY_COOLDOWN_HOURS} tiếng chỉ được mua 1 hộp. Hãy quay lại vào <t:{int(next_time.timestamp())}:R>!", delete_after=10.0)
+                        await ctx.send(f"<:symbol_wrong:1536289315867598849> Bạn đã mua một hộp quà (bất kỳ) gần đây rồi. Mỗi {LB_BUY_COOLDOWN_HOURS} tiếng chỉ được mua 1 hộp. Hãy quay lại vào <t:{int(next_time.timestamp())}:R>!", delete_after=10.0)
                         return
                 
                 # Lưu lại biến để cập nhật sau khi trừ điểm thành công
@@ -258,7 +258,7 @@ async def _buy_event_item(
         ok = await deduct_event_points(bot, uid, total)
         if not ok:
             await ctx.send(
-                f"❌ {ctx.author.mention} Không đủ điểm! Cần **{total:,}** điểm để mua **{amount}x {item['name']}**.",
+                f"<:symbol_wrong:1536289315867598849> {ctx.author.mention} Không đủ điểm! Cần **{total:,}** điểm để mua **{amount}x {item['name']}**.",
                 delete_after=5.0
             )
             return
@@ -288,7 +288,7 @@ async def _buy_event_item(
         # Notify
         if item["id"] == 5:
             await ctx.send(
-                f"✅ {ctx.author.mention} Đã mua thành công **{item['name']}**! "
+                f"<:symbol_right:1536289313959186472> {ctx.author.mention} Đã mua thành công **{item['name']}**! "
                 f"Yêu cầu của bạn đã được ghi nhận. Ban Quản Trị sẽ sớm liên hệ."
             )
             await ctx.channel.send(
@@ -297,13 +297,13 @@ async def _buy_event_item(
             )
         else:
             await ctx.send(
-                f"✅ {ctx.author.mention} Đã mua **{amount}x {item['icon']} {item['name']}** "
+                f"<:symbol_right:1536289313959186472> {ctx.author.mention} Đã mua **{amount}x {item['icon']} {item['name']}** "
                 f"với giá **{total:,}** điểm. Vật phẩm đã nằm trong `{bot.custom_prefix}inv`!",
                 delete_after=10.0,
             )
     else:
         await ctx.send(
-            f"❌ Vật phẩm **{item['name']}** không thể mua trong shop hiện tại.",
+            f"<:symbol_wrong:1536289315867598849> Vật phẩm **{item['name']}** không thể mua trong shop hiện tại.",
             delete_after=5.0,
         )
 
@@ -320,7 +320,7 @@ async def _buy_farm_item(
     seed_id = seed_key.removeprefix("seed_")  # "wheat"
 
     ok, msg = await buy_seed(bot, str(ctx.author.id), seed_id, amount)
-    status = "✅" if ok else "❌"
+    status = "<:symbol_right:1536289313959186472>" if ok else "<:symbol_wrong:1536289315867598849>"
     await ctx.send(f"{status} {ctx.author.mention} {msg}", delete_after=10.0)
 
 
@@ -334,7 +334,7 @@ async def _buy_blackmarket_item(
     uid = str(ctx.author.id)
     price = item["price"]
     if price is None:
-        await ctx.send("❌ Vật phẩm này không thể mua!", delete_after=5.0)
+        await ctx.send("<:symbol_wrong:1536289315867598849> Vật phẩm này không thể mua!", delete_after=5.0)
         return
 
     total = price * amount
@@ -342,7 +342,7 @@ async def _buy_blackmarket_item(
     ok = await deduct_event_points(bot, uid, total)
     if not ok:
         await ctx.send(
-            f"❌ {ctx.author.mention} Không đủ điểm! Cần **{total:,}** điểm để mua "
+            f"<:symbol_wrong:1536289315867598849> {ctx.author.mention} Không đủ điểm! Cần **{total:,}** điểm để mua "
             f"**{amount}x {item['name']}**.",
             delete_after=5.0,
         )
@@ -368,7 +368,7 @@ async def _buy_blackmarket_item(
     )
 
     await ctx.send(
-        f"✅ {ctx.author.mention} Đã mua **{amount}x {item['icon']} {item['name']}** "
+        f"<:symbol_right:1536289313959186472> {ctx.author.mention} Đã mua **{amount}x {item['icon']} {item['name']}** "
         f"với giá **{total:,}** điểm. Dùng `{bot.custom_prefix}use {item['id']}` để sử dụng!",
         delete_after=10.0,
     )
@@ -413,13 +413,13 @@ class ShopCog(commands.Cog):
     async def buy_cmd(self, ctx: commands.Context, item_id: int, amount: int = 1) -> None:
         """Mua vật phẩm theo ID số trong ITEM_REGISTRY."""
         if amount <= 0:
-            await ctx.send("❌ Số lượng mua phải lớn hơn 0!", delete_after=5.0)
+            await ctx.send("<:symbol_wrong:1536289315867598849> Số lượng mua phải lớn hơn 0!", delete_after=5.0)
             return
 
         item = get_item_by_id(item_id)
         if item is None:
             await ctx.send(
-                f"❌ Không tìm thấy vật phẩm với ID `{item_id}`! "
+                f"<:symbol_wrong:1536289315867598849> Không tìm thấy vật phẩm với ID `{item_id}`! "
                 f"Dùng `{self.bot.custom_prefix}shop` để xem danh sách.",
                 delete_after=5.0,
             )
@@ -428,14 +428,14 @@ class ShopCog(commands.Cog):
         # Block black market buying
         if item["category"] == "blackmarket":
             await ctx.send(
-                f"❌ Bạn không thể mua trực tiếp vật phẩm chợ đen ở đây! Hãy chờ Chợ Đêm mở (`{self.bot.custom_prefix}choden`) và dùng lệnh `{self.bot.custom_prefix}ebuy`.",
+                f"<:symbol_wrong:1536289315867598849> Bạn không thể mua trực tiếp vật phẩm chợ đen ở đây! Hãy chờ Chợ Đêm mở (`{self.bot.custom_prefix}choden`) và dùng lệnh `{self.bot.custom_prefix}ebuy`.",
                 delete_after=7.0,
             )
             return
 
         if item["price"] is None:
             await ctx.send(
-                f"❌ **{item['name']}** không có bán trong cửa hàng!",
+                f"<:symbol_wrong:1536289315867598849> **{item['name']}** không có bán trong cửa hàng!",
                 delete_after=5.0,
             )
             return
@@ -451,7 +451,7 @@ class ShopCog(commands.Cog):
         elif item["category"] == "blackmarket":
             await _buy_blackmarket_item(ctx, self.bot, item, amount)
         else:
-            await ctx.send("❌ Danh mục không hợp lệ.", delete_after=5.0)
+            await ctx.send("<:symbol_wrong:1536289315867598849> Danh mục không hợp lệ.", delete_after=5.0)
 
 
 async def setup(bot: commands.Bot) -> None:

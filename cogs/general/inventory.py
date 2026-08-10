@@ -121,12 +121,12 @@ def _build_farm_embed(
 
     if tab_type == "crop":
         embed = discord.Embed(
-            title="📦 Nông Sản — Túi Đồ Nông Trại",
+            title="<:icon_06_artisan:1536017189386059797> Nông Sản — Túi Đồ Nông Trại",
             color=0x2ecc71,
         )
     else:
         embed = discord.Embed(
-            title="🌾 Hệ Sinh Thái — Túi Đồ Nông Trại",
+            title="<:icon_03_farm_field:1536017183216369815> Hệ Sinh Thái — Túi Đồ Nông Trại",
             color=0xe67e22,
         )
         
@@ -213,28 +213,28 @@ def _build_farm_embed(
     desc_parts: list[str] = []
     if tab_type == "crop":
         if crop_lines:
-            desc_parts.append("**📦 Nông sản:**\n" + "\n".join(crop_lines))
+            desc_parts.append("**<:symbol_plant:1536007706958237828> Nông sản:**\n" + "\n".join(crop_lines))
         if artisan_lines:
-            desc_parts.append("**🏭 Thủ Công Phẩm:**\n" + "\n".join(artisan_lines))
+            desc_parts.append("**<:symbol_machine:1536297937498275850> Thủ Công Phẩm:**\n" + "\n".join(artisan_lines))
     else:
         if ore_lines:
-            desc_parts.append("**⛏️ Khoáng sản & Gỗ:**\n" + "\n".join(ore_lines))
+            desc_parts.append("**<:symbol_00_mining:1536007694920585356> Khoáng sản & Gỗ:**\n" + "\n".join(ore_lines))
         if fish_lines:
-            desc_parts.append("**🐠 Cá:**\n" + "\n".join(fish_lines))
+            desc_parts.append("**<:symbol_fish:1536007699190386740> Cá:**\n" + "\n".join(fish_lines))
 
     embed.description = "\n\n".join(desc_parts) if desc_parts else "*Kho trống.*"
 
     footer_parts: list[str] = []
     if tab_type == "crop":
         if total_crops_worth > 0:
-            footer_parts.append(f"📦 {total_crops_worth:,} điểm")
+            footer_parts.append(f"<:symbol_plant:1536007706958237828> {total_crops_worth:,} điểm")
         if total_artisan_worth > 0:
-            footer_parts.append(f"🏭 {total_artisan_worth:,} điểm")
+            footer_parts.append(f"<:symbol_machine:1536297937498275850> {total_artisan_worth:,} điểm")
     else:
         if total_ores_worth > 0:
-            footer_parts.append(f"⛏️ {total_ores_worth:,} điểm")
+            footer_parts.append(f"<:symbol_00_mining:1536007694920585356> {total_ores_worth:,} điểm")
         if total_fish_worth > 0:
-            footer_parts.append(f"🐠 {total_fish_worth:,} điểm")
+            footer_parts.append(f"<:symbol_fish:1536007699190386740> {total_fish_worth:,} điểm")
             
     if footer_parts:
         embed.add_field(
@@ -290,21 +290,21 @@ class SellItemModal(discord.ui.Modal):
                     raise ValueError
             except ValueError:
                 await interaction.response.send_message(
-                    "❌ Số lượng không hợp lệ! Nhập số nguyên dương hoặc 'all'.",
+                    "<:symbol_wrong:1536289315867598849> Số lượng không hợp lệ! Nhập số nguyên dương hoặc 'all'.",
                     ephemeral=True,
                 )
                 return
 
         ok, profit, msg = await sell_items_partial(self.bot, self.user_id, item_key, amount)
         if not ok:
-            await interaction.response.send_message(f"❌ {msg}", ephemeral=True)
+            await interaction.response.send_message(f"<:symbol_wrong:1536289315867598849> {msg}", ephemeral=True)
             return
 
         # Cập nhật lại embed
         farm_data = await get_farm_data(self.bot, self.user_id)
         new_embed = _build_farm_embed(interaction.user, farm_data)
         await interaction.response.edit_message(embed=new_embed, view=self._view)
-        await interaction.followup.send(f"✅ {msg}", ephemeral=True)
+        await interaction.followup.send(f"<:symbol_right:1536289313959186472> {msg}", ephemeral=True)
 
 
 class SellAllModal(discord.ui.Modal):
@@ -330,13 +330,13 @@ class SellAllModal(discord.ui.Modal):
 
     async def on_submit(self, interaction: discord.Interaction) -> None:
         if self.confirm_input.value.strip().lower() != "xác nhận":
-            await interaction.response.send_message("❌ Đã hủy thao tác bán.", ephemeral=True)
+            await interaction.response.send_message("<:symbol_wrong:1536289315867598849> Đã hủy thao tác bán.", ephemeral=True)
             return
 
         profit = await sell_inventory(self.bot, self.user_id, self.category)
         if profit <= 0:
             await interaction.response.send_message(
-                f"❌ Bạn không có {self.label} nào để bán!", ephemeral=True
+                f"<:symbol_wrong:1536289315867598849> Bạn không có {self.label} nào để bán!", ephemeral=True
             )
             return
 
@@ -344,7 +344,7 @@ class SellAllModal(discord.ui.Modal):
         new_embed = _build_farm_embed(self.author, farm_data)
         await interaction.response.edit_message(embed=new_embed, view=self._view)
         await interaction.followup.send(
-            f"✅ Đã bán toàn bộ **{self.label}**! Thu về **{profit:,.0f}** điểm.",
+            f"<:symbol_right:1536289313959186472> Đã bán toàn bộ **{self.label}**! Thu về **{profit:,.0f}** điểm.",
             ephemeral=True,
         )
 
@@ -485,15 +485,15 @@ class InventoryView(discord.ui.View):
             style=discord.ButtonStyle.primary, row=1,
         )
         self.btn_sell_crops = discord.ui.Button(
-            label="Bán Tất Cả Nông Sản", emoji="📦",
+            label="Bán Tất Cả Nông Sản", emoji="<:symbol_plant:1536007706958237828>",
             style=discord.ButtonStyle.success, row=2,
         )
         self.btn_sell_ores = discord.ui.Button(
-            label="Bán Tất Cả Quặng & Gỗ", emoji="⛏️",
+            label="Bán Tất Cả Quặng & Gỗ", emoji="<:symbol_00_mining:1536007694920585356>",
             style=discord.ButtonStyle.primary, row=2,
         )
         self.btn_sell_fish = discord.ui.Button(
-            label="Bán Tất Cả Cá", emoji="🐠",
+            label="Bán Tất Cả Cá", emoji="<:symbol_fish:1536007699190386740>",
             style=discord.ButtonStyle.secondary, row=2,
         )
 
@@ -535,7 +535,7 @@ class InventoryView(discord.ui.View):
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
         if interaction.user.id != self.author.id:
             await interaction.response.send_message(
-                "❌ Đây không phải túi đồ của bạn!", ephemeral=True
+                "<:symbol_wrong:1536289315867598849> Đây không phải túi đồ của bạn!", ephemeral=True
             )
             return False
         return True
@@ -628,14 +628,14 @@ class UnifiedInventoryCog(commands.Cog):
         item = get_item_by_id(item_id)
         if item is None:
             await ctx.send(
-                f"❌ Không tìm thấy vật phẩm với ID `{item_id}`! Dùng `{self.view.bot.custom_prefix}inv` để xem túi đồ.",
+                f"<:symbol_wrong:1536289315867598849> Không tìm thấy vật phẩm với ID `{item_id}`! Dùng `{self.view.bot.custom_prefix}inv` để xem túi đồ.",
                 delete_after=5.0,
             )
             return
 
         if not item.get("usable", False):
             await ctx.send(
-                f"❌ **{item['name']}** không thể sử dụng bằng lệnh này!",
+                f"<:symbol_wrong:1536289315867598849> **{item['name']}** không thể sử dụng bằng lệnh này!",
                 delete_after=5.0,
             )
             return
@@ -660,7 +660,7 @@ class UnifiedInventoryCog(commands.Cog):
         qty = inv.get(db_key, 0)
         if qty <= 0:
             await ctx.send(
-                f"❌ Bạn không có **{item['icon']} {item['name']}** trong túi đồ!",
+                f"<:symbol_wrong:1536289315867598849> Bạn không có **{item['icon']} {item['name']}** trong túi đồ!",
                 delete_after=5.0,
             )
             return
@@ -690,7 +690,7 @@ class UnifiedInventoryCog(commands.Cog):
             now = time.time()
             if boost_key:
                 if boost_key in boosts and boosts[boost_key].get("expires_at", 0) > now:
-                    await ctx.send(f"❌ Bạn đang có hiệu ứng của đồ ăn này rồi! Phải đợi hiệu ứng cũ hết hạn mới được ăn tiếp.", delete_after=5.0)
+                    await ctx.send(f"<:symbol_wrong:1536289315867598849> Bạn đang có hiệu ứng của đồ ăn này rồi! Phải đợi hiệu ứng cũ hết hạn mới được ăn tiếp.", delete_after=5.0)
                     return
                 boosts[boost_key] = {"value": boost_val, "expires_at": now + duration}
                 await execute_db(self.bot, "UPDATE event_profiles SET active_boosts = $2::jsonb WHERE discord_id = $1", uid, json.dumps(boosts))
@@ -699,7 +699,7 @@ class UnifiedInventoryCog(commands.Cog):
                 from cogs.events.mining.mining_config import MAX_STAMINA
                 current = await get_and_update_stamina(self.bot, uid)
                 if current >= MAX_STAMINA:
-                    await ctx.send("❌ Thể lực của bạn đã đầy, không cần ăn Salad Cà Chua!", delete_after=5.0)
+                    await ctx.send("<:symbol_wrong:1536289315867598849> Thể lực của bạn đã đầy, không cần ăn Salad Cà Chua!", delete_after=5.0)
                     return
                 new_stamina = min(current + 30, MAX_STAMINA)
                 farm_data = await get_farm_data(self.bot, uid)
@@ -733,11 +733,11 @@ class UnifiedInventoryCog(commands.Cog):
         # HIỆU ỨNG THỰC TẾ
         # -------------------------------------------------------------
         if not target and db_key in ["timeout_1m", "timeout_5m", "ghost_ping_card", "jail_card", "disconnect_card", "fake_ban_card", "thief_card", "nickname_change"]:
-            await ctx.send("❌ Vật phẩm này yêu cầu bạn phải `@mục_tiêu`!", delete_after=5.0)
+            await ctx.send("<:symbol_wrong:1536289315867598849> Vật phẩm này yêu cầu bạn phải `@mục_tiêu`!", delete_after=5.0)
             return
 
         if target and not isinstance(target, discord.Member):
-            await ctx.send("❌ Mục tiêu phải là thành viên trong server này!")
+            await ctx.send("<:symbol_wrong:1536289315867598849> Mục tiêu phải là thành viên trong server này!")
             return
         
         if target:
@@ -750,7 +750,7 @@ class UnifiedInventoryCog(commands.Cog):
             # try:
             #     await target.timeout(timedelta(minutes=1), reason=f"Bị {ctx.author} dùng Búa Gõ 1 Phút")
             # except discord.Forbidden:
-            #     await ctx.send("❌ Bot không đủ quyền timeout người này!")
+            #     await ctx.send("<:symbol_wrong:1536289315867598849> Bot không đủ quyền timeout người này!")
             #     return
             await ctx.send(f"🔨 {target.mention} đã bị dán băng keo vào miệng trong 1 phút!")
 
@@ -759,7 +759,7 @@ class UnifiedInventoryCog(commands.Cog):
             # try:
             #     await target.timeout(timedelta(minutes=5), reason=f"Bị {ctx.author} dùng Búa Gõ 5 Phút")
             # except discord.Forbidden:
-            #     await ctx.send("❌ Bot không đủ quyền timeout người này!")
+            #     await ctx.send("<:symbol_wrong:1536289315867598849> Bot không đủ quyền timeout người này!")
             #     return
             await ctx.send(f"🔨 {target.mention} đã bị dán băng keo vào miệng trong 5 phút!")
 
@@ -776,10 +776,10 @@ class UnifiedInventoryCog(commands.Cog):
             #     try:
             #         await target.move_to(None)
             #     except discord.Forbidden:
-            #         await ctx.send("❌ Bot không đủ quyền sút người này!")
+            #         await ctx.send("<:symbol_wrong:1536289315867598849> Bot không đủ quyền sút người này!")
             #         return
             # else:
-            #     await ctx.send(f"❌ {target.mention} không ở trong kênh thoại nào cả!")
+            #     await ctx.send(f"<:symbol_wrong:1536289315867598849> {target.mention} không ở trong kênh thoại nào cả!")
             #     return
             await ctx.send(f"🔌 {target.mention} vừa bị sút văng khỏi kênh thoại!")
 
@@ -800,10 +800,10 @@ class UnifiedInventoryCog(commands.Cog):
             #     try:
             #         await jail_cog.phattu_cmd.callback(jail_cog, ctx, target, 50, reason=f"Bị {ctx.author} dùng Thẻ Bỏ Tù")
             #     except Exception as e:
-            #         await ctx.send(f"❌ Lỗi khi bỏ tù: {e}")
+            #         await ctx.send(f"<:symbol_wrong:1536289315867598849> Lỗi khi bỏ tù: {e}")
             #         return
             # else:
-            #     await ctx.send("❌ Tính năng Chuồng Chó hiện đang bảo trì!")
+            #     await ctx.send("<:symbol_wrong:1536289315867598849> Tính năng Chuồng Chó hiện đang bảo trì!")
             #     return
             await ctx.send(f"🚔 {target.mention} đã bị tống vào chuồng chó!")
 

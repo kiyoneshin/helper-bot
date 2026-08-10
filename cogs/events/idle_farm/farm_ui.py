@@ -21,7 +21,7 @@ class FarmView(discord.ui.View):
     @discord.ui.button(label="Tưới Nước Tất Cả", emoji="<:symbol_watering_can:1536295381862715453>", style=discord.ButtonStyle.primary, row=0)
     async def water_btn(self, interaction: discord.Interaction, button: discord.ui.Button):
         if str(interaction.user.id) != self.user_id:
-            await interaction.response.send_message("❌ Bạn không thể tương tác với nông trại của người khác!", ephemeral=True)
+            await interaction.response.send_message("<:symbol_wrong:1536289315867598849> Bạn không thể tương tác với nông trại của người khác!", ephemeral=True)
             return
             
         ok, count = await water_all(self.bot, self.user_id)
@@ -40,7 +40,7 @@ class FarmView(discord.ui.View):
     @discord.ui.button(label="Thu Hoạch", emoji="<:symbol_00_farming:1536007689979691008>", style=discord.ButtonStyle.success, row=1)
     async def harvest_btn(self, interaction: discord.Interaction, button: discord.ui.Button):
         if str(interaction.user.id) != self.user_id:
-            await interaction.response.send_message("❌ Bạn không thể tương tác với nông trại của người khác!", ephemeral=True)
+            await interaction.response.send_message("<:symbol_wrong:1536289315867598849> Bạn không thể tương tác với nông trại của người khác!", ephemeral=True)
             return
             
         ok, report = await harvest_all(self.bot, self.user_id)
@@ -68,7 +68,7 @@ class FarmView(discord.ui.View):
                 
                 details.append(f"**{qty}x** {seed_name} {emoji}".strip())
                 
-            msg.append(f"✅ Thu hoạch thành công: " + ", ".join(details))
+            msg.append(f"<:symbol_right:1536289313959186472> Thu hoạch thành công: " + ", ".join(details))
             
         if withered > 0:
             msg.append(f"🥀 Đã dọn dẹp **{withered}** cây bị héo.")
@@ -80,7 +80,7 @@ class FarmView(discord.ui.View):
     @discord.ui.button(label="Cuốc Bỏ", emoji="<:symbol_scythe:1536007681502875669>", style=discord.ButtonStyle.danger, row=1)
     async def clear_btn(self, interaction: discord.Interaction, button: discord.ui.Button):
         if str(interaction.user.id) != self.user_id:
-            await interaction.response.send_message("❌ Bạn không thể tương tác với nông trại của người khác!", ephemeral=True)
+            await interaction.response.send_message("<:symbol_wrong:1536289315867598849> Bạn không thể tương tác với nông trại của người khác!", ephemeral=True)
             return
             
         await interaction.response.send_modal(ClearSlotModal(self.bot, self.user_id, self.author, self))
@@ -88,7 +88,7 @@ class FarmView(discord.ui.View):
     @discord.ui.button(label="Làm Mới", emoji="<:symbol_reload:1536007679640600648>", style=discord.ButtonStyle.secondary, row=1)
     async def refresh_btn(self, interaction: discord.Interaction, button: discord.ui.Button):
         if str(interaction.user.id) != self.user_id:
-            await interaction.response.send_message("❌ Bạn không thể tương tác với nông trại của người khác!", ephemeral=True)
+            await interaction.response.send_message("<:symbol_wrong:1536289315867598849> Bạn không thể tương tác với nông trại của người khác!", ephemeral=True)
             return
             
         new_farm_data = await get_farm_data(self.bot, self.user_id)
@@ -118,12 +118,12 @@ class ClearSlotModal(discord.ui.Modal, title="Cuốc Bỏ Cây Trồng"):
         try:
             slot_id = int(self.slot_input.value.strip())
         except ValueError:
-            await interaction.response.send_message("❌ Giá trị không hợp lệ! Vui lòng chỉ nhập số.", ephemeral=True)
+            await interaction.response.send_message("<:symbol_wrong:1536289315867598849> Giá trị không hợp lệ! Vui lòng chỉ nhập số.", ephemeral=True)
             return
             
         ok, msg = await remove_crop(self.bot, self.user_id, str(slot_id))
         if not ok:
-            await interaction.response.send_message(f"❌ {msg}", ephemeral=True)
+            await interaction.response.send_message(f"<:symbol_wrong:1536289315867598849> {msg}", ephemeral=True)
             return
             
         new_farm_data = await get_farm_data(self.bot, self.user_id)
@@ -131,7 +131,7 @@ class ClearSlotModal(discord.ui.Modal, title="Cuốc Bỏ Cây Trồng"):
         
         new_view = FarmView(self.bot, self.user_id, self.author, new_farm_data)
         await interaction.response.edit_message(embed=new_embed, view=new_view)
-        await interaction.followup.send(f"✅ {msg} (Tại Ô {slot_id})", ephemeral=True)
+        await interaction.followup.send(f"<:symbol_right:1536289313959186472> {msg} (Tại Ô {slot_id})", ephemeral=True)
 
 
 def build_farm_embed(author: discord.Member | discord.User, farm_data: Dict[str, Any]) -> discord.Embed:

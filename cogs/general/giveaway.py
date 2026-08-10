@@ -329,7 +329,7 @@ class GiveawaySession:
                 return ans.content.strip()
             except asyncio.TimeoutError:
                 if self.prompt_msg:
-                    await self.prompt_msg.edit(content="❌ Đã hủy do quá thời gian (60s).", view=None)
+                    await self.prompt_msg.edit(content="<:symbol_wrong:1536289315867598849> Đã hủy do quá thời gian (60s).", view=None)
                 if self.msg:
                     emb = self.msg.embeds[0]
                     emb.color = discord.Color.red()
@@ -342,7 +342,7 @@ class GiveawaySession:
         res = await view.wait()
         if res:
             if self.prompt_msg:
-                await self.prompt_msg.edit(content="❌ Đã hủy do quá thời gian (60s).", view=None)
+                await self.prompt_msg.edit(content="<:symbol_wrong:1536289315867598849> Đã hủy do quá thời gian (60s).", view=None)
             if self.msg:
                 emb = self.msg.embeds[0]
                 emb.color = discord.Color.red()
@@ -359,7 +359,7 @@ class GiveawaySession:
                 self.duration_sec = t
                 self._update_fields()
                 break
-            msg_err = await self.ctx.send("❌ Thời gian không hợp lệ. Hãy thử lại (VD: 1m).")
+            msg_err = await self.ctx.send("<:symbol_wrong:1536289315867598849> Thời gian không hợp lệ. Hãy thử lại (VD: 1m).")
             self.bot.loop.create_task(msg_err.delete(delay=3))
 
     async def ask_1_fga(self):
@@ -373,7 +373,7 @@ class GiveawaySession:
                     self.total_fga = int(parts[1])
                     self._update_fields()
                     break
-            msg_err = await self.ctx.send("❌ Không hợp lệ. Hãy thử lại (VD: `1m 10`).")
+            msg_err = await self.ctx.send("<:symbol_wrong:1536289315867598849> Không hợp lệ. Hãy thử lại (VD: `1m 10`).")
             self.bot.loop.create_task(msg_err.delete(delay=3))
 
     async def ask_2(self):
@@ -385,7 +385,7 @@ class GiveawaySession:
                     self.prize_split = split_prize(self.prize_raw, self.winners)
                 self._update_fields()
                 break
-            msg_err = await self.ctx.send("❌ Vui lòng nhập một số nguyên dương.")
+            msg_err = await self.ctx.send("<:symbol_wrong:1536289315867598849> Vui lòng nhập một số nguyên dương.")
             self.bot.loop.create_task(msg_err.delete(delay=3))
 
     async def ask_3(self):
@@ -401,7 +401,7 @@ class GiveawaySession:
                 self.batch_size = int(ans)
                 self._update_fields()
                 break
-            msg_err = await self.ctx.send("❌ Vui lòng nhập một số nguyên dương.")
+            msg_err = await self.ctx.send("<:symbol_wrong:1536289315867598849> Vui lòng nhập một số nguyên dương.")
             self.bot.loop.create_task(msg_err.delete(delay=3))
 
     async def ask_role_step(self):
@@ -420,7 +420,7 @@ class GiveawaySession:
                     self.role_id = r_id
                     self._update_fields()
                     break
-            msg_err = await self.ctx.send("❌ Role không hợp lệ. Vui lòng thử lại.")
+            msg_err = await self.ctx.send("<:symbol_wrong:1536289315867598849> Role không hợp lệ. Vui lòng thử lại.")
             self.bot.loop.create_task(msg_err.delete(delay=3))
 
     async def ask_channel_step(self):
@@ -433,12 +433,12 @@ class GiveawaySession:
     async def show_confirm(self):
         view = ConfirmView()
         if self.prompt_msg:
-            await self.prompt_msg.edit(content="✅ **Cấu hình hoàn tất!** Vui lòng kiểm tra lại thông tin và xác nhận.", view=view)
+            await self.prompt_msg.edit(content="<:symbol_right:1536289313959186472> **Cấu hình hoàn tất!** Vui lòng kiểm tra lại thông tin và xác nhận.", view=view)
         res = await view.wait()
         
         if res:
             if self.prompt_msg:
-                await self.prompt_msg.edit(content="❌ Đã hủy do quá thời gian (60s).", view=None)
+                await self.prompt_msg.edit(content="<:symbol_wrong:1536289315867598849> Đã hủy do quá thời gian (60s).", view=None)
             if self.msg:
                 emb = self.msg.embeds[0]
                 emb.color = discord.Color.red()
@@ -447,7 +447,7 @@ class GiveawaySession:
 
         if view.action == "confirm":
             if not self.channel_id:
-                msg_err = await self.ctx.send("❌ Bạn chưa chọn kênh hợp lệ. Vui lòng sửa lại Kênh.")
+                msg_err = await self.ctx.send("<:symbol_wrong:1536289315867598849> Bạn chưa chọn kênh hợp lệ. Vui lòng sửa lại Kênh.")
                 self.bot.loop.create_task(msg_err.delete(delay=5))
                 return await self.show_confirm()
                 
@@ -456,7 +456,7 @@ class GiveawaySession:
                 await cog.start_giveaway(self)
             
             if self.prompt_msg:
-                await self.prompt_msg.edit(content="✅ Đã lên lịch Giveaway thành công!", view=None)
+                await self.prompt_msg.edit(content="<:symbol_right:1536289313959186472> Đã lên lịch Giveaway thành công!", view=None)
             
         elif view.action == "edit":
             await self.show_edit()
@@ -480,7 +480,7 @@ class GiveawaySession:
         
         if res:
             if self.prompt_msg:
-                await self.prompt_msg.edit(content="❌ Đã hủy do quá thời gian (60s).", view=None)
+                await self.prompt_msg.edit(content="<:symbol_wrong:1536289315867598849> Đã hủy do quá thời gian (60s).", view=None)
             return 
             
         step = view.step_idx
@@ -546,7 +546,7 @@ class GiveawayCog(commands.Cog):
 
     async def cog_command_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, commands.MissingPermissions):
-            await ctx.send("❌ Bạn không có quyền sử dụng lệnh này. Chỉ dành cho Admin/Owner!", ephemeral=True)
+            await ctx.send("<:symbol_wrong:1536289315867598849> Bạn không có quyền sử dụng lệnh này. Chỉ dành cho Admin/Owner!", ephemeral=True)
         else:
             log.error(f"Lỗi trong GiveawayCog ({ctx.command}): {error}")
 
@@ -770,7 +770,7 @@ class GiveawayCog(commands.Cog):
                 try:
                     user = await self.bot.fetch_user(payload.user_id)
                     reason = banned[0]['reason'] or "Không có lý do"
-                    await user.send(f"❌ Bạn đã bị cấm tham gia Giveaway nên không thể thả reaction.\n**Lý do:** {reason}")
+                    await user.send(f"<:symbol_wrong:1536289315867598849> Bạn đã bị cấm tham gia Giveaway nên không thể thả reaction.\n**Lý do:** {reason}")
                 except:
                     pass
 
@@ -778,7 +778,7 @@ class GiveawayCog(commands.Cog):
     @commands.has_permissions(administrator=True)
     async def gaban_cmd(self, ctx: commands.Context, user: discord.User, *, reason: str = "Không có lý do"):
         if user.bot or user.id == ctx.author.id:
-            await ctx.send("❌ Bạn không thể ban bot hoặc chính mình!")
+            await ctx.send("<:symbol_wrong:1536289315867598849> Bạn không thể ban bot hoặc chính mình!")
             return
             
         sql = """
@@ -787,7 +787,7 @@ class GiveawayCog(commands.Cog):
         ON CONFLICT (user_id) DO UPDATE SET reason = EXCLUDED.reason, banned_by = EXCLUDED.banned_by, banned_at = CURRENT_TIMESTAMP
         """
         await execute_db(self.bot, sql, user.id, ctx.author.id, reason)
-        await ctx.send(f"✅ Đã thêm **{user.display_name}** vào danh sách đen Giveaway!\nLý do: {reason}")
+        await ctx.send(f"<:symbol_right:1536289313959186472> Đã thêm **{user.display_name}** vào danh sách đen Giveaway!\nLý do: {reason}")
 
     @commands.hybrid_command(name="gaunban", aliases=["gaunblacklist"], description="Gỡ cấm một người dùng tham gia Giveaway")
     @commands.has_permissions(administrator=True)
@@ -796,14 +796,14 @@ class GiveawayCog(commands.Cog):
         if res and res.endswith("0"):
             await ctx.send(f"⚠️ **{user.display_name}** không có trong danh sách đen.")
         else:
-            await ctx.send(f"✅ Đã gỡ cấm cho **{user.display_name}**, họ có thể tham gia Giveaway trở lại.")
+            await ctx.send(f"<:symbol_right:1536289313959186472> Đã gỡ cấm cho **{user.display_name}**, họ có thể tham gia Giveaway trở lại.")
 
     @commands.hybrid_command(name="gabanlist", aliases=["gabannedlist"], description="Xem danh sách người bị cấm Giveaway")
     @commands.has_permissions(administrator=True)
     async def gabanlist_cmd(self, ctx: commands.Context):
         records = await query_db(self.bot, "SELECT user_id, banned_by, reason, banned_at FROM giveaway_bans ORDER BY banned_at DESC LIMIT 20")
         if not records:
-            await ctx.send("✅ Hiện tại không có ai bị cấm tham gia Giveaway.")
+            await ctx.send("<:symbol_right:1536289313959186472> Hiện tại không có ai bị cấm tham gia Giveaway.")
             return
             
         desc = ""
@@ -823,18 +823,18 @@ class GiveawayCog(commands.Cog):
     @commands.has_permissions(administrator=True)
     async def gareroll_cmd(self, ctx: commands.Context, message_id: str, winners_count: int = 1):
         if not message_id.isdigit():
-            await ctx.send("❌ ID tin nhắn không hợp lệ.")
+            await ctx.send("<:symbol_wrong:1536289315867598849> ID tin nhắn không hợp lệ.")
             return
             
         msg_id = int(message_id)
         try:
             msg = await ctx.channel.fetch_message(msg_id)
         except:
-            await ctx.send("❌ Không tìm thấy tin nhắn trong kênh này. Hãy dùng lệnh ở cùng kênh với Giveaway đó.")
+            await ctx.send("<:symbol_wrong:1536289315867598849> Không tìm thấy tin nhắn trong kênh này. Hãy dùng lệnh ở cùng kênh với Giveaway đó.")
             return
             
         if not msg.embeds:
-            await ctx.send("❌ Tin nhắn không phải là một Giveaway hợp lệ.")
+            await ctx.send("<:symbol_wrong:1536289315867598849> Tin nhắn không phải là một Giveaway hợp lệ.")
             return
             
         emb = msg.embeds[0]
@@ -849,7 +849,7 @@ class GiveawayCog(commands.Cog):
             
         reaction = discord.utils.get(msg.reactions, emoji=GA_EMOJI)
         if not reaction:
-            await ctx.send("❌ Không có ai tham gia Giveaway này.")
+            await ctx.send("<:symbol_wrong:1536289315867598849> Không có ai tham gia Giveaway này.")
             return
             
         banned_records = await query_db(self.bot, "SELECT user_id FROM giveaway_bans")
@@ -872,7 +872,7 @@ class GiveawayCog(commands.Cog):
         prize = emb.title.replace("[ĐÃ KẾT THÚC] ", "") if emb.title else "Phần thưởng ẩn"
         
         await msg.reply(f"🎉 **Reroll Kết Quả!** Chúc mừng {winner_mentions} đã may mắn nhận được **{prize}**!")
-        await ctx.send("✅ Đã reroll thành công!", ephemeral=True)
+        await ctx.send("<:symbol_right:1536289313959186472> Đã reroll thành công!", ephemeral=True)
 
 
 async def setup(bot: commands.Bot):

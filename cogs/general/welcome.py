@@ -72,12 +72,12 @@ class WelcomeCog(commands.Cog):
 
         # 3. Chốt chặn cuối cùng cho Pylance: Nếu sau các bước trên target vẫn không phải là Member thì dừng
         if not isinstance(target, discord.Member):
-            await ctx.send("❌ Không thể xác định được đối tượng Member hợp lệ để chạy kiểm thử!")
+            await ctx.send("<:symbol_wrong:1536289315867598849> Không thể xác định được đối tượng Member hợp lệ để chạy kiểm thử!")
             return
 
         # Từ dòng này trở đi, Pylance hiểu chắc chắn 100% target là discord.Member
-        await ctx.send(f"🧪 **[TEST MODE]** Đang giả lập sự kiện Welcome cho **{target.display_name}** (<@{target.id}>)...")
-        log.info(f"🧪 {ctx.author.display_name} vừa kích hoạt lệnh test_welcome cho mục tiêu {target.id}.")
+        await ctx.send(f"**[TEST MODE]** Đang giả lập sự kiện Welcome cho **{target.display_name}** (<@{target.id}>)...")
+        log.info(f"{ctx.author.display_name} vừa kích hoạt lệnh test_welcome cho mục tiêu {target.id}.")
 
         await self.on_member_join(target)
 

@@ -55,14 +55,14 @@ def build_mining_embed(author: discord.Member | discord.User, stamina: int, farm
     )
 
     bar = _stamina_bar(stamina)
-    regen_info = f"(Hồi đầy sau: {_mins_to_full(stamina, regen_interval)})" if stamina < MAX_STAMINA else "✅ Đã đầy"
+    regen_info = f"(Hồi đầy sau: {_mins_to_full(stamina, regen_interval)})" if stamina < MAX_STAMINA else "<:symbol_right:1536289313959186472> Đã đầy"
     embed.add_field(
         name="💪 Thể Lực",
         value=f"{bar} **{stamina}/{MAX_STAMINA}** {regen_info}",
         inline=False,
     )
     embed.add_field(
-        name="⛏️ Cuốc Hiện Tại",
+        name="<:symbol_00_mining:1536007694920585356> Cuốc Hiện Tại",
         value=f"**{pickaxe_name}** (Lv{pickaxe_level})",
         inline=True,
     )
@@ -72,7 +72,7 @@ def build_mining_embed(author: discord.Member | discord.User, stamina: int, farm
         f"{ore['icon']} **{ore['name']}** — {display_weights[ore_id]}%"
         for ore_id, ore in MINING_LOOT.items()
     ]
-    embed.add_field(name="📊 Tỉ Lệ Rớt Đồ (Base)", value="\n".join(loot_lines), inline=True)
+    embed.add_field(name="<:symbol_chart:1536317815336869918> Tỉ Lệ Rớt Đồ (Base)", value="\n".join(loot_lines), inline=True)
 
     inventory = farm_data.get("inventory", {})
     ore_lines = [
@@ -106,7 +106,7 @@ class MiningView(discord.ui.View):
     async def mine_btn(self, interaction: discord.Interaction, button: discord.ui.Button):
         if str(interaction.user.id) != self.user_id:
             await interaction.response.send_message(
-                "❌ Đây không phải khu mỏ của bạn!", ephemeral=True
+                "<:symbol_wrong:1536289315867598849> Đây không phải khu mỏ của bạn!", ephemeral=True
             )
             return
 
@@ -165,7 +165,7 @@ class MiningView(discord.ui.View):
         new_embed = build_mining_embed(self.author, new_stamina, farm_data)
         await interaction.response.edit_message(embed=new_embed, view=self)
         await interaction.followup.send(
-            f"⛏️ Bạn vừa đào được **{quantity}x {loot_info['icon']} {loot_info['name']}**!{double_str}{lb_msg}\n"
+            f"<:symbol_00_mining:1536007694920585356> Bạn vừa đào được **{quantity}x {loot_info['icon']} {loot_info['name']}**!{double_str}{lb_msg}\n"
             f"*(Thể lực: {new_stamina}/{MAX_STAMINA})*",
             ephemeral=True,
         )

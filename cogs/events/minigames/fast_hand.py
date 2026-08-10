@@ -66,7 +66,7 @@ class FastHandView(discord.ui.View):
         # Bấm sai
         if clicked_id != self.target_id:
             await interaction.response.send_message(
-                "❌ Sai rồi! Hoa mắt chóng mặt rồi à chiến thần ơi, nhìn kỹ lại đi!", 
+                "<:symbol_wrong:1536289315867598849> Sai rồi! Hoa mắt chóng mặt rồi à chiến thần ơi, nhìn kỹ lại đi!", 
                 ephemeral=True
             )
             return

@@ -200,7 +200,7 @@ LB_BUY_COOLDOWN_HOURS: int = 6
 # ---------------------------------------------------------------------------
 
 def parse_tier(raw: str) -> Optional[int]:
-    """Phân giải tier từ tên hoặc chữ tắt. VD: 'c' → 60, 'epic' → 63."""
+    """Phân giải tier từ tên hoặc chữ tắt. VD: 'c' → 61, 'epic' → 64."""
     return TIER_ALIASES.get(raw.lower().strip())
 
 

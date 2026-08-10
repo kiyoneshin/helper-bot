@@ -72,7 +72,7 @@ class BankingCog(commands.Cog):
         profile = await get_or_create_event_profile(self.bot, uid)
         
         if profile and profile.get("is_locked"):
-            await ctx.send("❌ Tài khoản của bạn đang bị khóa do vỡ nợ, không thể vay thêm!")
+            await ctx.send("<:symbol_wrong:1536289315867598849> Tài khoản của bạn đang bị khóa do vỡ nợ, không thể vay thêm!")
             return
 
         total_earned = float(profile.get("total_earned", 0.0)) if profile else 0.0
@@ -82,16 +82,16 @@ class BankingCog(commands.Cog):
         available_loan = max(0.0, max_loan - current_debt)
 
         if available_loan <= 0:
-            await ctx.send(f"❌ {ctx.author.mention} Bạn đã hết hạn mức vay! (Hạn mức: **{max_loan:,.0f}**, Đang nợ: **{current_debt:,.0f}**)")
+            await ctx.send(f"<:symbol_wrong:1536289315867598849> {ctx.author.mention} Bạn đã hết hạn mức vay! (Hạn mức: **{max_loan:,.0f}**, Đang nợ: **{current_debt:,.0f}**)")
             return
 
         amount, err = parse_amount(so_tien, available_loan)
         if err:
-            await ctx.send(f"❌ {ctx.author.mention} {err}")
+            await ctx.send(f"<:symbol_wrong:1536289315867598849> {ctx.author.mention} {err}")
             return
             
         if amount > available_loan:
-            await ctx.send(f"❌ {ctx.author.mention} Hạn mức còn lại của bạn chỉ là **{available_loan:,.0f}** điểm.")
+            await ctx.send(f"<:symbol_wrong:1536289315867598849> {ctx.author.mention} Hạn mức còn lại của bạn chỉ là **{available_loan:,.0f}** điểm.")
             return
 
         # Thực hiện vay
@@ -108,13 +108,13 @@ class BankingCog(commands.Cog):
             new_debt = row["debt"]
             embed = discord.Embed(
                 title="🏦 Ngân Hàng Angelic — Giải Ngân",
-                description=f"✅ Giao dịch vay nợ thành công!\n\n💸 **Số tiền vay:** `{amount:,.0f}` điểm\n💰 **Số dư mới:** `{new_pts:,.0f}` điểm\n📉 **Tổng nợ hiện tại:** `{new_debt:,.0f}` điểm",
+                description=f"<:symbol_right:1536289313959186472> Giao dịch vay nợ thành công!\n\n💸 **Số tiền vay:** `{amount:,.0f}` điểm\n💰 **Số dư mới:** `{new_pts:,.0f}` điểm\n📉 **Tổng nợ hiện tại:** `{new_debt:,.0f}` điểm",
                 color=0x00FF00
             )
             embed.set_footer(text="Lãi suất vay là 1%/ngày. Hãy nhớ ktrano nhé!")
             await ctx.send(embed=embed)
         else:
-            await ctx.send("❌ Đã có lỗi xảy ra khi vay nợ.")
+            await ctx.send("<:symbol_wrong:1536289315867598849> Đã có lỗi xảy ra khi vay nợ.")
 
     @commands.hybrid_command(name="trano", aliases=["tra", "payloan"])
     async def trano_cmd(self, ctx: commands.Context, so_tien: str):
@@ -126,25 +126,25 @@ class BankingCog(commands.Cog):
         current_points = float(profile.get("points", 0.0)) if profile else 0.0
         
         if current_debt <= 0:
-            await ctx.send(f"✅ {ctx.author.mention} Bạn không có khoản nợ nào để trả!")
+            await ctx.send(f"<:symbol_right:1536289313959186472> {ctx.author.mention} Bạn không có khoản nợ nào để trả!")
             return
             
         if current_points <= 0:
-            await ctx.send(f"❌ {ctx.author.mention} Bạn không có tiền trong ví để trả nợ!")
+            await ctx.send(f"<:symbol_wrong:1536289315867598849> {ctx.author.mention} Bạn không có tiền trong ví để trả nợ!")
             return
 
         # Trả tối đa là min(số nợ, số tiền trong ví)
         max_payable = min(current_debt, current_points)
         amount, err = parse_amount(so_tien, max_payable)
         if err:
-            await ctx.send(f"❌ {ctx.author.mention} {err}")
+            await ctx.send(f"<:symbol_wrong:1536289315867598849> {ctx.author.mention} {err}")
             return
             
         if amount > current_debt:
             amount = current_debt # Không cho trả dư
             
         if amount > current_points:
-            await ctx.send(f"❌ {ctx.author.mention} Số dư ví không đủ! (Ví đang có: **{current_points:,.0f}**)")
+            await ctx.send(f"<:symbol_wrong:1536289315867598849> {ctx.author.mention} Số dư ví không đủ! (Ví đang có: **{current_points:,.0f}**)")
             return
 
         sql = '''
@@ -160,7 +160,7 @@ class BankingCog(commands.Cog):
             new_debt = row["debt"]
             is_locked = row["is_locked"]
             
-            desc = f"✅ Đã thanh toán nợ thành công!\n\n💸 **Đã trả:** `{amount:,.0f}` điểm\n💰 **Ví còn:** `{new_pts:,.0f}` điểm\n📉 **Nợ còn lại:** `{new_debt:,.0f}` điểm"
+            desc = f"<:symbol_right:1536289313959186472> Đã thanh toán nợ thành công!\n\n💸 **Đã trả:** `{amount:,.0f}` điểm\n💰 **Ví còn:** `{new_pts:,.0f}` điểm\n📉 **Nợ còn lại:** `{new_debt:,.0f}` điểm"
             
             # Nếu trả nợ giúp (points - debt) >= 0 thì mở khóa (nếu đang bị khóa)
             if (new_pts - new_debt) >= 0:
@@ -175,7 +175,7 @@ class BankingCog(commands.Cog):
             )
             await ctx.send(embed=embed)
         else:
-            await ctx.send("❌ Đã có lỗi xảy ra khi trả nợ.")
+            await ctx.send("<:symbol_wrong:1536289315867598849> Đã có lỗi xảy ra khi trả nợ.")
 
     @tasks.loop(hours=24)
     async def daily_interest_loop(self):

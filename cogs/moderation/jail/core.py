@@ -72,7 +72,7 @@ def is_jailed_check():
         )
         if row is None:
             await ctx.send(
-                f"❌ {ctx.author.mention} Mày không phải phạm nhân, đừng có dùng lệnh này!",
+                f"<:symbol_wrong:1536289315867598849> {ctx.author.mention} Mày không phải phạm nhân, đừng có dùng lệnh này!",
                 delete_after=5.0,
             )
             return False
@@ -109,7 +109,7 @@ async def _init_jail_tables(bot: commands.Bot) -> None:
         bot,
         "ALTER TABLE jail_records ADD COLUMN IF NOT EXISTS original_nick TEXT;",
     )
-    log.info("✅ Bảng jail_records đã sẵn sàng.")
+    log.info("Bảng jail_records đã sẵn sàng.")
 
 
 async def add_penalty(bot: commands.Bot, uid: str, n: int = 1) -> int:
@@ -237,13 +237,13 @@ class JailCore(commands.Cog):
         if ctx.guild is None:
             return
         if member.bot:
-            await ctx.send(f"❌ {ctx.author.mention} Bot thì giam cái gì mậk")
+            await ctx.send(f"<:symbol_wrong:1536289315867598849> {ctx.author.mention} Bot thì giam cái gì mậk")
             return
         if member.id == ctx.author.id:
-            await ctx.send(f"❌ {ctx.author.mention} Tự giam mình à? Thích làm phạm nhân ghê!")
+            await ctx.send(f"<:symbol_wrong:1536289315867598849> {ctx.author.mention} Tự giam mình à? Thích làm phạm nhân ghê!")
             return
         if clean_count <= 0:
-            await ctx.send(f"❌ {ctx.author.mention} Số lần dọn phải lớn hơn 0 chứ!")
+            await ctx.send(f"<:symbol_wrong:1536289315867598849> {ctx.author.mention} Số lần dọn phải lớn hơn 0 chứ!")
             return
 
         existing = await fetchrow_db(
@@ -261,7 +261,7 @@ class JailCore(commands.Cog):
         guild = ctx.guild
         jail_role = guild.get_role(JAIL_ROLE_ID)
         if jail_role is None:
-            await ctx.send("❌ Không tìm thấy role Tù Nhân! Kiểm tra lại `JAIL_ROLE_ID`.")
+            await ctx.send("<:symbol_wrong:1536289315867598849> Không tìm thấy role Tù Nhân! Kiểm tra lại `JAIL_ROLE_ID`.")
             return
 
         bot_top_role = guild.me.top_role
@@ -291,7 +291,7 @@ class JailCore(commands.Cog):
             str(member.id), roles_json, clean_count, reason, original_nick,
         )
         if status is None:
-            await ctx.send("❌ Lỗi Database khi lưu hồ sơ tù nhân!")
+            await ctx.send("<:symbol_wrong:1536289315867598849> Lỗi Database khi lưu hồ sơ tù nhân!")
             return
             
         # Thống kê +1 lần vô tù
@@ -378,7 +378,7 @@ class JailCore(commands.Cog):
             )
             await ctx.send(embed=embed)
         else:
-            await ctx.send(f"❌ Có lỗi xảy ra khi thả {member.mention}!")
+            await ctx.send(f"<:symbol_wrong:1536289315867598849> Có lỗi xảy ra khi thả {member.mention}!")
 
     # ─────────────────────────────────────────────────────────────────
     # Y!LAUDON — LAO ĐỘNG CÔNG ÍCH (TÙ NHÂN)
@@ -395,7 +395,7 @@ class JailCore(commands.Cog):
             uid,
         )
         if row is None:
-            await ctx.send(f"❌ {ctx.author.mention} Mày không phải phạm nhân!")
+            await ctx.send(f"<:symbol_wrong:1536289315867598849> {ctx.author.mention} Mày không phải phạm nhân!")
             return
 
         current = int(row["clean_count"])
@@ -433,18 +433,18 @@ class JailCore(commands.Cog):
     @phattu_cmd.error
     async def phattu_error(self, ctx: commands.Context, error: Exception) -> None:
         if isinstance(error, commands.MissingRequiredArgument):
-            await ctx.send(f"❌ Thiếu thông tin! Cú pháp: `{ctx.prefix}phattu <@member> <số_lần_dọn> [lý do]`")
+            await ctx.send(f"<:symbol_wrong:1536289315867598849> Thiếu thông tin! Cú pháp: `{ctx.prefix}phattu <@member> <số_lần_dọn> [lý do]`")
         elif isinstance(error, commands.MissingAnyRole):
-            await ctx.send("❌ Mày không đủ quyền! Chỉ có **Owner** và **Admin** mới được dùng.")
+            await ctx.send("<:symbol_wrong:1536289315867598849> Mày không đủ quyền! Chỉ có **Owner** và **Admin** mới được dùng.")
         elif isinstance(error, commands.BadArgument):
-            await ctx.send("❌ Sai cú pháp! Kiểm tra lại @mention và số lần dọn.")
+            await ctx.send("<:symbol_wrong:1536289315867598849> Sai cú pháp! Kiểm tra lại @mention và số lần dọn.")
 
     @thatu_cmd.error
     async def thatu_error(self, ctx: commands.Context, error: Exception) -> None:
         if isinstance(error, commands.MissingAnyRole):
-            await ctx.send("❌ Mày không đủ quyền!")
+            await ctx.send("<:symbol_wrong:1536289315867598849> Mày không đủ quyền!")
         elif isinstance(error, commands.BadArgument):
-            await ctx.send("❌ Không tìm thấy thành viên đó.")
+            await ctx.send("<:symbol_wrong:1536289315867598849> Không tìm thấy thành viên đó.")
 
 async def setup(bot: commands.Bot) -> None:
     await bot.add_cog(JailCore(bot))

@@ -46,7 +46,7 @@ def _format_cost(cost_pts: int, cost_items: dict) -> str:
 
 def _build_recipe_embed(ctx, category: str) -> discord.Embed:
     embed = discord.Embed(
-        title="📜 Bách Khoa Toàn Thư Công Thức",
+        title="<:symbol_recipes:1535664863362158743> Bách Khoa Toàn Thư Công Thức",
         color=0xf39c12,
     )
     
@@ -66,7 +66,7 @@ def _build_recipe_embed(ctx, category: str) -> discord.Embed:
             desc = pickaxe_desc.get(level+1, "")
             icon = PICKAXE_NAMES.get(level+1, "").split()[-1] if PICKAXE_NAMES.get(level+1) else ""
             pickaxe_lines.append(f"**Lên Cuốc Lv{level+1} {icon}:** {cost_str}\n  └ *{desc}*")
-        embed.add_field(name="⛏️ Nâng Cấp Cuốc Chim", value="\n".join(pickaxe_lines), inline=False)
+        embed.add_field(name="<:symbol_00_mining:1536007694920585356> Nâng Cấp Cuốc Chim", value="\n".join(pickaxe_lines), inline=False)
 
         rod_desc = {
             2: "Mở khóa tỷ lệ rớt Bạch Tuộc (2%)",
@@ -80,7 +80,7 @@ def _build_recipe_embed(ctx, category: str) -> discord.Embed:
             desc = rod_desc.get(level+1, "")
             icon = ROD_NAMES.get(level+1, "").split()[-1] if ROD_NAMES.get(level+1) else ""
             rod_lines.append(f"**Lên Cần Câu Lv{level+1} {icon}:** {cost_str}\n  └ *{desc}*")
-        embed.add_field(name="🎣 Nâng Cấp Cần Câu", value="\n".join(rod_lines), inline=False)
+        embed.add_field(name="<:symbol_00_fishing:1536007692437422171> Nâng Cấp Cần Câu", value="\n".join(rod_lines), inline=False)
 
         axe_desc = {
             2: "Mở khóa tỷ lệ rớt Nhựa Cây (1%)",
@@ -94,7 +94,7 @@ def _build_recipe_embed(ctx, category: str) -> discord.Embed:
             desc = axe_desc.get(level+1, "")
             icon = AXE_NAMES.get(level+1, "").split()[-1] if AXE_NAMES.get(level+1) else ""
             axe_lines.append(f"**Lên Rìu Lv{level+1} {icon}:** {cost_str}\n  └ *{desc}*")
-        embed.add_field(name="🪓 Nâng Cấp Rìu", value="\n".join(axe_lines), inline=False)
+        embed.add_field(name="<:symbol_00_woodcutting:1536007697491558491> Nâng Cấp Rìu", value="\n".join(axe_lines), inline=False)
 
     elif category == "machine":
         embed.set_thumbnail(url="https://cdn.discordapp.com/emojis/1535660945752326154.gif")
@@ -106,7 +106,7 @@ def _build_recipe_embed(ctx, category: str) -> discord.Embed:
             f"**[ID: 103] <:machine_10_furnace:1535657705958674452> Lò Rèn (Furnace):** **20** {_get_item_name('stone')} + **5** {_get_item_name('copper_ore')}",
             f"*(Dùng lệnh `{ctx.prefix}craft <id>` để xây máy vào 10 slot của bạn)*"
         ]
-        embed.add_field(name="🏗️ Công Thức Xây Máy", value="\n".join(build_machine_lines), inline=False)
+        embed.add_field(name="<:symbol_machine:1536297937498275850> Công Thức Xây Máy", value="\n".join(build_machine_lines), inline=False)
 
     elif category == "artisan":
         embed.set_thumbnail(url="https://cdn.discordapp.com/emojis/1535660945752326154.gif")
@@ -127,7 +127,7 @@ def _build_recipe_embed(ctx, category: str) -> discord.Embed:
         part = 1
         for line in machine_lines:
             if current_len + len(line) + 1 > 1000:
-                embed.add_field(name=f"🏭 Công Thức Chế Biến (Phần {part})", value="\n".join(current_chunk), inline=False)
+                embed.add_field(name=f"<:symbol_machine:1536297937498275850> Công Thức Chế Biến (Phần {part})", value="\n".join(current_chunk), inline=False)
                 current_chunk = []
                 current_len = 0
                 part += 1
@@ -135,7 +135,7 @@ def _build_recipe_embed(ctx, category: str) -> discord.Embed:
             current_len += len(line) + 1
         
         if current_chunk:
-            embed.add_field(name=f"🏭 Công Thức Chế Biến (Phần {part})" if part > 1 else "🏭 Công Thức Chế Biến", value="\n".join(current_chunk), inline=False)
+            embed.add_field(name=f"<:symbol_machine:1536297937498275850> Công Thức Chế Biến (Phần {part})" if part > 1 else "🏭 Công Thức Chế Biến", value="\n".join(current_chunk), inline=False)
 
     elif category == "cook":
         embed.set_thumbnail(url="https://cdn.discordapp.com/emojis/1535660942875041822.gif")
@@ -164,7 +164,7 @@ def _build_recipe_embed(ctx, category: str) -> discord.Embed:
             part = 1
             for line in cooking_lines:
                 if current_len + len(line) + 1 > 1000:
-                    embed.add_field(name=f"👩‍🍳 Công Thức Nấu Ăn (Phần {part})", value="\n".join(current_chunk), inline=False)
+                    embed.add_field(name=f"<:symbol_00_cooking:1536007684241756291> Công Thức Nấu Ăn (Phần {part})", value="\n".join(current_chunk), inline=False)
                     current_chunk = [line]
                     current_len = len(line)
                     part += 1
@@ -173,7 +173,7 @@ def _build_recipe_embed(ctx, category: str) -> discord.Embed:
                     current_len += len(line) + 1
             
             if current_chunk:
-                embed.add_field(name=f"👩‍🍳 Công Thức Nấu Ăn (Phần {part})", value="\n".join(current_chunk), inline=False)
+                embed.add_field(name=f"<:symbol_00_cooking:1536007684241756291> Công Thức Nấu Ăn (Phần {part})", value="\n".join(current_chunk), inline=False)
 
     embed.set_footer(text="Angelic Casino • Bách Khoa Toàn Thư 🌸")
     return embed
@@ -222,7 +222,7 @@ class RecipeSelect(discord.ui.Select):
 
     async def callback(self, interaction: discord.Interaction):
         if interaction.user.id != self.author.id:
-            return await interaction.response.send_message("❌ Bạn không có quyền thao tác menu này!", ephemeral=True)
+            return await interaction.response.send_message("<:symbol_wrong:1536289315867598849> Bạn không có quyền thao tác menu này!", ephemeral=True)
             
         selected = self.values[0]
         for opt in self.options:

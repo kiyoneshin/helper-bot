@@ -32,7 +32,7 @@ async def _init_reward_tables(bot: commands.Bot) -> None:
             ADD COLUMN IF NOT EXISTS last_weekly TIMESTAMPTZ;
             """
         )
-        log.info("✅ Đã cập nhật cấu trúc bảng event_profiles cho Rewards.")
+        log.info("Đã cập nhật cấu trúc bảng event_profiles cho Rewards.")
     except Exception as e:
         log.error(f"Lỗi khi khởi tạo cột Rewards: {e}")
 
@@ -67,7 +67,7 @@ class Rewards(commands.Cog):
         )
         
         if not row:
-            await ctx.send("❌ Đã có lỗi xảy ra khi truy vấn dữ liệu của bạn.")
+            await ctx.send("<:symbol_wrong:1536289315867598849> Đã có lỗi xảy ra khi truy vấn dữ liệu của bạn.")
             return
 
         last_daily = row["last_daily"]
@@ -141,7 +141,7 @@ class Rewards(commands.Cog):
         embed = discord.Embed(
             title="<:gift_00_symbol:1536003307011842099> Điểm Danh Hàng Ngày",
             description=(
-                f"✅ Nhận thành công **{total_reward:,}** điểm!\n"
+                f"<:symbol_right:1536289313959186472> Nhận thành công **{total_reward:,}** điểm!\n"
                 f"*(Cơ bản: {base_reward:,} + Thưởng chuỗi: {streak_bonus:,})*{lb_text}\n\n"
                 f"🔥 **Chuỗi hiện tại:** {daily_streak} ngày\n"
                 f"*(Chuỗi càng dài thưởng càng lớn. Hãy quay lại vào ngày mai để không làm đứt chuỗi nhé!)*"
@@ -172,7 +172,7 @@ class Rewards(commands.Cog):
         )
         
         if not row:
-            await ctx.send("❌ Đã có lỗi xảy ra khi truy vấn dữ liệu của bạn.")
+            await ctx.send("<:symbol_wrong:1536289315867598849> Đã có lỗi xảy ra khi truy vấn dữ liệu của bạn.")
             return
 
         last_weekly = row["last_weekly"]

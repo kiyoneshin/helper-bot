@@ -114,7 +114,7 @@ async def start_dice_lobby_game(bot, channel: discord.abc.Messageable, core_cog)
         if isinstance(item, discord.ui.Button):
             item.disabled = True
             
-    embed.description = "🎰 **NHÀ CÁI ĐANG LẮC XÚC XẮC... CHỜ CHÚT NÀO!**"
+    embed.description = "<a:gambling_slot_machine_pixel:1536322200838340628> **NHÀ CÁI ĐANG LẮC XÚC XẮC... CHỜ CHÚT NÀO!**"
     rolling_list = "\n".join([f"{p.mention} ── {ROLLING_EMOJI} Đang lắc..." for p in view.players])
     embed.set_field_at(0, name=f"👥 Danh sách tham gia ({len(view.players)}/10)", value=rolling_list, inline=False)
     
@@ -154,7 +154,7 @@ async def start_dice_lobby_game(bot, channel: discord.abc.Messageable, core_cog)
     winner = random.choice(winners)  # Nếu hòa, chọn ngẫu nhiên 1 người
     
     embed.color = 0x57f287
-    embed.description = "🎰 **KẾT QUẢ SẢNH XÚC XẮC:**"
+    embed.description = "<a:gambling_slot_machine_pixel:1536322200838340628> **KẾT QUẢ SẢNH XÚC XẮC:**"
     
     result_lines = []
     for r in results:

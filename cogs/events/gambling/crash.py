@@ -128,7 +128,7 @@ class BetModal(discord.ui.Modal, title="💰 Đặt Cược - Quả Bóng Tham L
 
         if not self.lobby_view.is_active:
             await interaction.response.send_message(
-                "❌ Sảnh đã đóng, hết chỗ chen chân rồi!",
+                "<:symbol_wrong:1536289315867598849> Sảnh đã đóng, hết chỗ chen chân rồi!",
                 ephemeral=True,
             )
             return
@@ -137,7 +137,7 @@ class BetModal(discord.ui.Modal, title="💰 Đặt Cược - Quả Bóng Tham L
         bet, err = _parse_bet(raw, balance)
         if err or bet is None:
             await interaction.response.send_message(
-                f"❌ {interaction.user.mention} {err}",
+                f"<:symbol_wrong:1536289315867598849> {interaction.user.mention} {err}",
                 ephemeral=True,
             )
             return
@@ -145,7 +145,7 @@ class BetModal(discord.ui.Modal, title="💰 Đặt Cược - Quả Bóng Tham L
         ok = await _apply_delta(self.bot, uid, -bet)
         if not ok:
             await interaction.response.send_message(
-                f"❌ {interaction.user.mention} Trừ tiền thất bại - chắc do số dư không đủ. Kiểm tra lại túi đi!",
+                f"<:symbol_wrong:1536289315867598849> {interaction.user.mention} Trừ tiền thất bại - chắc do số dư không đủ. Kiểm tra lại túi đi!",
                 ephemeral=True,
             )
             return
@@ -160,7 +160,7 @@ class BetModal(discord.ui.Modal, title="💰 Đặt Cược - Quả Bóng Tham L
         )
 
         await interaction.response.send_message(
-            f"✅ **Ghi nhận!** Bạn đã xuống xác **{bet:,}** điểm.\n"
+            f"<:symbol_right:1536289313959186472> **Ghi nhận!** Bạn đã xuống xác **{bet:,}** điểm.\n"
             "Tiền đã được nhà cái giữ. Chờ bóng bay nhé! 🚀",
             ephemeral=True,
         )
@@ -197,7 +197,7 @@ class CrashLobbyView(discord.ui.View):
     ) -> None:
         lobby_msg = self.lobby_message_ref[0] if self.lobby_message_ref else None
         if lobby_msg is None:
-            await interaction.response.send_message("❌ Lỗi nội bộ sòng bài!", ephemeral=True)
+            await interaction.response.send_message("<:symbol_wrong:1536289315867598849> Lỗi nội bộ sòng bài!", ephemeral=True)
             return
 
         modal = BetModal(
@@ -251,7 +251,7 @@ class CrashActiveView(discord.ui.View):
 
             if user_id not in self.players_bets:
                 await interaction.response.send_message(
-                    "❌ Đã đứng ngó mà còn bấm bậy, có cược đâu mà đòi chốt!",
+                    "<:symbol_wrong:1536289315867598849> Đã đứng ngó mà còn bấm bậy, có cược đâu mà đòi chốt!",
                     ephemeral=True,
                 )
                 return
@@ -272,7 +272,7 @@ class CrashActiveView(discord.ui.View):
             ok = await _apply_delta(self.bot, uid, payout)
             if not ok:
                 await interaction.response.send_message(
-                    "❌ Sập nguồn DB khi chốt lời. Kêu Admin cứu!",
+                    "<:symbol_wrong:1536289315867598849> Sập nguồn DB khi chốt lời. Kêu Admin cứu!",
                     ephemeral=True,
                 )
                 return
@@ -300,7 +300,7 @@ class CrashActiveView(discord.ui.View):
             )
         else:
             await interaction.response.send_message(
-                f"✅ **Chốt lời thành công** nhảy dù kịp ở hệ số **x{snapshot_mult:.2f}**!\n"
+                f"<:symbol_right:1536289313959186472> **Chốt lời thành công** nhảy dù kịp ở hệ số **x{snapshot_mult:.2f}**!\n"
                 f"Vốn: **{bet:,}** -> Lụm lúa: **{payout:,}** "
                 f"(+**{profit_display:,}** lãi) 🎉",
                 ephemeral=True,
@@ -377,7 +377,7 @@ def _build_flight_embed(
         for uid, payout in cashed_out.items():
             bet    = players_bets.get(uid, 0)
             profit = payout - bet
-            safe_lines.append(f"<@{uid}> ✅ **+{profit:,}**")
+            safe_lines.append(f"<@{uid}> <:symbol_right:1536289313959186472> **+{profit:,}**")
         embed.add_field(name="🏆 Đã Lụm Lúa", value="\n".join(safe_lines), inline=False)
 
     still_flying = [uid for uid in players_bets if uid not in cashed_out]
@@ -482,11 +482,11 @@ class CrashGame(commands.Cog):
     @crash_cmd.error
     async def crash_cmd_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument)):
-            await ctx.send(f"❌ {ctx.author.mention} Tính lên tàu bay dạo không vé hả? Cú pháp: `{ctx.prefix}crash <tiền_cược>`. Để biết thêm chi tiết hãy xài lệnh `{ctx.prefix}ehelp crash`")
+            await ctx.send(f"<:symbol_wrong:1536289315867598849> {ctx.author.mention} Tính lên tàu bay dạo không vé hả? Cú pháp: `{ctx.prefix}crash <tiền_cược>`. Để biết thêm chi tiết hãy xài lệnh `{ctx.prefix}ehelp crash`")
         elif isinstance(error, commands.CommandInvokeError):
             log.error("Loi crash_cmd: %s", error.original, exc_info=True)
             await ctx.send(
-                "❌ Đã xảy ra lỗi nội bộ làm sập sòng Crash. "
+                "<:symbol_wrong:1536289315867598849> Đã xảy ra lỗi nội bộ làm sập sòng Crash. "
                 "Phiên chơi bị huỷ kèo và ván mới có thể bắt đầu.",
                 delete_after=10.0,
             )

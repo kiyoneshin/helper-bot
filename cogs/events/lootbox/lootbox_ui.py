@@ -213,7 +213,7 @@ def build_history_embed(
     top_str = "\n".join(f"{icon} **{qty}x** {name}" for name, icon, qty in top_items)
 
     embed.add_field(
-        name="📊 Thống Kê",
+        name="<:symbol_chart:1536317815336869918> Thống Kê",
         value=(
             f"**Tổng mở:** {total_opened} hộp\n"
             f"**Rank TB nhận được:** {avg_rank:.2f}\n"
@@ -293,7 +293,7 @@ class LootboxInfoSelect(discord.ui.Select):
 
     async def callback(self, interaction: discord.Interaction):
         if interaction.user.id != self.author_id:
-            await interaction.response.send_message("❌ Đây không phải lượt của bạn!", ephemeral=True)
+            await interaction.response.send_message("<:symbol_wrong:1536289315867598849> Đây không phải lượt của bạn!", ephemeral=True)
             return
         tier_id = int(self.values[0])
         embed = build_info_embed(tier_id)

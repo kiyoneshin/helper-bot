@@ -192,7 +192,7 @@ class InviteView(discord.ui.View):
         lines: list[str] = []
         for m in self.invitees:
             s = self.statuses.get(m.id)
-            icon = "✅" if s is True else ("❌" if s is False else "⏳")
+            icon = "<:symbol_right:1536289313959186472>" if s is True else ("<:symbol_wrong:1536289315867598849>" if s is False else "⏳")
             lines.append(f"{icon} {m.mention}")
         embed.add_field(name="Danh Sách Được Kéo Mồi", value="\n".join(lines), inline=False)
         embed.set_footer(text=f"Bỏ chạy coi chừng mất mặt")
@@ -202,19 +202,19 @@ class InviteView(discord.ui.View):
     async def join_btn(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
         uid = interaction.user.id
         if uid not in self.statuses:
-            await interaction.response.send_message(f"❌ {interaction.user.mention} Mày không nằm trong danh sách, lui ra!", delete_after=5.0)
+            await interaction.response.send_message(f"<:symbol_wrong:1536289315867598849> {interaction.user.mention} Mày không nằm trong danh sách, lui ra!", delete_after=5.0)
             return
         if self.statuses[uid] is True:
-            await interaction.response.send_message(f"❌ {interaction.user.mention} Đã vào rồi, bấm loạn làm gì!", delete_after=5.0)
+            await interaction.response.send_message(f"<:symbol_wrong:1536289315867598849> {interaction.user.mention} Đã vào rồi, bấm loạn làm gì!", delete_after=5.0)
             return
         if self.statuses[uid] is False:
-            await interaction.response.send_message(f"❌ {interaction.user.mention} Đã bỏ chạy rồi, lần sau đừng hèn!", delete_after=5.0)
+            await interaction.response.send_message(f"<:symbol_wrong:1536289315867598849> {interaction.user.mention} Đã bỏ chạy rồi, lần sau đừng hèn!", delete_after=5.0)
             return
 
         # Kiểm tra bận
         if _is_busy(self.bot, uid):
             await interaction.response.send_message(
-                f"❌ {interaction.user.mention} Đang chơi game khác rồi! Kết thúc game đó trước."
+                f"<:symbol_wrong:1536289315867598849> {interaction.user.mention} Đang chơi game khác rồi! Kết thúc game đó trước."
             , delete_after=5.0)
             return
 
@@ -223,13 +223,13 @@ class InviteView(discord.ui.View):
         if bal < self.bet:
             self.statuses[uid] = False
             await interaction.response.send_message(
-                f"❌ {interaction.user.mention} Ví có **{bal:,}** mà đòi cược **{self.bet:,}**? Nghèo mà ham! Gạch tên."
+                f"<:symbol_wrong:1536289315867598849> {interaction.user.mention} Ví có **{bal:,}** mà đòi cược **{self.bet:,}**? Nghèo mà ham! Gạch tên."
             , delete_after=5.0)
         else:
             ok = await _apply_delta(self.bot, str(uid), -self.bet)
             if not ok:
                 self.statuses[uid] = False
-                await interaction.response.send_message(f"❌ {interaction.user.mention} Lỗi DB! Thử lại sau.", delete_after=5.0)
+                await interaction.response.send_message(f"<:symbol_wrong:1536289315867598849> {interaction.user.mention} Lỗi DB! Thử lại sau.", delete_after=5.0)
             else:
                 self.statuses[uid] = True
                 _lock_user(self.bot, uid)
@@ -237,7 +237,7 @@ class InviteView(discord.ui.View):
                 if isinstance(member, discord.Member):
                     self.confirmed.append(member)
                 await interaction.response.send_message(
-                    f"✅ {interaction.user.mention} Chốt! Đã trừ **{self.bet:,}**. Ngồi chờ sảnh mở."
+                    f"<:symbol_right:1536289313959186472> {interaction.user.mention} Chốt! Đã trừ **{self.bet:,}**. Ngồi chờ sảnh mở."
                 , delete_after=5.0)
 
         try:
@@ -253,10 +253,10 @@ class InviteView(discord.ui.View):
     async def leave_btn(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
         uid = interaction.user.id
         if uid not in self.statuses:
-            await interaction.response.send_message(f"❌ {interaction.user.mention} Không liên quan!", delete_after=5.0)
+            await interaction.response.send_message(f"<:symbol_wrong:1536289315867598849> {interaction.user.mention} Không liên quan!", delete_after=5.0)
             return
         if self.statuses[uid] is not None:
-            await interaction.response.send_message(f"❌ {interaction.user.mention} Đã chốt rồi, không thay đổi được!", delete_after=5.0)
+            await interaction.response.send_message(f"<:symbol_wrong:1536289315867598849> {interaction.user.mention} Đã chốt rồi, không thay đổi được!", delete_after=5.0)
             return
 
         self.statuses[uid] = False
@@ -334,27 +334,27 @@ class PublicLobbyView(discord.ui.View):
         uid = interaction.user.id
 
         if uid in self.player_ids:
-            await interaction.response.send_message(f"❌ {interaction.user.mention} Mày đã ngồi bàn rồi, bấm loạn làm gì!", delete_after=5.0)
+            await interaction.response.send_message(f"<:symbol_wrong:1536289315867598849> {interaction.user.mention} Mày đã ngồi bàn rồi, bấm loạn làm gì!", delete_after=5.0)
             return
         if len(self.players) >= MAX_PLAYERS:
-            await interaction.response.send_message(f"❌ {interaction.user.mention} Bàn đầy rồi! Trễ mất rồi.", delete_after=5.0)
+            await interaction.response.send_message(f"<:symbol_wrong:1536289315867598849> {interaction.user.mention} Bàn đầy rồi! Trễ mất rồi.", delete_after=5.0)
             return
         if _is_busy(self.bot, uid):
             await interaction.response.send_message(
-                f"❌ {interaction.user.mention} Đang chơi game khác rồi! Kết thúc trước đã."
+                f"<:symbol_wrong:1536289315867598849> {interaction.user.mention} Đang chơi game khác rồi! Kết thúc trước đã."
             , delete_after=5.0)
             return
 
         bal = await _get_balance(self.bot, str(uid))
         if bal < self.bet:
             await interaction.response.send_message(
-                f"❌ {interaction.user.mention} Ví có **{bal:,}** mà đòi cược **{self.bet:,}**? Nghèo mà ham!"
+                f"<:symbol_wrong:1536289315867598849> {interaction.user.mention} Ví có **{bal:,}** mà đòi cược **{self.bet:,}**? Nghèo mà ham!"
             , delete_after=5.0)
             return
 
         ok = await _apply_delta(self.bot, str(uid), -self.bet)
         if not ok:
-            await interaction.response.send_message(f"❌ {interaction.user.mention} Lỗi DB! Thử lại sau.", delete_after=5.0)
+            await interaction.response.send_message(f"<:symbol_wrong:1536289315867598849> {interaction.user.mention} Lỗi DB! Thử lại sau.", delete_after=5.0)
             return
 
         _lock_user(self.bot, uid)
@@ -364,7 +364,7 @@ class PublicLobbyView(discord.ui.View):
             self.players.append(member)
 
         await interaction.response.send_message(
-            f"✅ {interaction.user.mention} Đóng hụi! Trừ **{self.bet:,}**. Ngồi xuống chờ."
+            f"<:symbol_right:1536289313959186472> {interaction.user.mention} Đóng hụi! Trừ **{self.bet:,}**. Ngồi xuống chờ."
         , delete_after=5.0)
 
         try:
@@ -455,12 +455,12 @@ class RollView(discord.ui.View):
     async def roll_btn(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
         uid = interaction.user.id
         if uid not in self.player_infos:
-            await interaction.response.send_message(f"❌ {interaction.user.mention} Mày không ngồi bàn này!", delete_after=5.0)
+            await interaction.response.send_message(f"<:symbol_wrong:1536289315867598849> {interaction.user.mention} Mày không ngồi bàn này!", delete_after=5.0)
             return
 
         info = self.player_infos[uid]
         if info.has_rolled:
-            await interaction.response.send_message(f"❌ {interaction.user.mention} Lắc rồi! Nhìn màn hình chờ đi.", delete_after=5.0)
+            await interaction.response.send_message(f"<:symbol_wrong:1536289315867598849> {interaction.user.mention} Lắc rồi! Nhìn màn hình chờ đi.", delete_after=5.0)
             return
 
         info.click_time = time.time()
@@ -503,14 +503,14 @@ class SpectatorBetModal(discord.ui.Modal, title="💰 Đặt Cược Khán Đài
         bet, err = _parse_bet(raw, balance)
         if err or bet is None:
             await interaction.response.send_message(
-                f"❌ {interaction.user.mention} {err or 'Số tiền không hợp lệ!'}", delete_after=5.0
+                f"<:symbol_wrong:1536289315867598849> {interaction.user.mention} {err or 'Số tiền không hợp lệ!'}", delete_after=5.0
             )
             return
 
         ok = await _apply_delta(self.view_ref.bot, str(uid), -bet)
         if not ok:
             await interaction.response.send_message(
-                f"❌ {interaction.user.mention} Lỗi DB khi trừ tiền — thử lại!", delete_after=5.0
+                f"<:symbol_wrong:1536289315867598849> {interaction.user.mention} Lỗi DB khi trừ tiền — thử lại!", delete_after=5.0
             )
             return
 
@@ -526,7 +526,7 @@ class SpectatorBetModal(discord.ui.Modal, title="💰 Đặt Cược Khán Đài
         player_name = self.view_ref.player_names.get(self.player_id, f"<@{self.player_id}>")
         total_on_player = bets_dict[self.player_id]
         await interaction.response.send_message(
-            f"✅ {interaction.user.mention} Cược **{bet:,}** vào **{player_name}**! "
+            f"<:symbol_right:1536289313959186472> {interaction.user.mention} Cược **{bet:,}** vào **{player_name}**! "
             f"(Tổng trên người này: **{total_on_player:,}**)",
             delete_after=5.0,
         )
@@ -627,7 +627,7 @@ class SpectatorBetView(discord.ui.View):
         # Không cho người chơi chính tự cược chính mình
         if uid in self.player_ids:
             await interaction.response.send_message(
-                f"❌ {interaction.user.mention} Mày đang trên sàn, đặt cược cái gì!",
+                f"<:symbol_wrong:1536289315867598849> {interaction.user.mention} Mày đang trên sàn, đặt cược cái gì!",
                 delete_after=5.0,
             )
             return
@@ -635,7 +635,7 @@ class SpectatorBetView(discord.ui.View):
         # Kiểm tra bận (chỉ chặn nếu đang chơi game KHÁC, không phải đang cược khán đài)
         if _is_busy(self.bot, uid) and uid not in self.locked_spectators:
             await interaction.response.send_message(
-                f"❌ {interaction.user.mention} Đang bận game khác rồi!",
+                f"<:symbol_wrong:1536289315867598849> {interaction.user.mention} Đang bận game khác rồi!",
                 delete_after=5.0,
             )
             return
@@ -649,7 +649,7 @@ class SpectatorBetView(discord.ui.View):
         uid = interaction.user.id
         if uid not in self.spectator_bets or not self.spectator_bets[uid]:
             await interaction.response.send_message(
-                f"❌ {interaction.user.mention} Mày có cược gì đâu mà hủk",
+                f"<:symbol_wrong:1536289315867598849> {interaction.user.mention} Mày có cược gì đâu mà hủk",
                 delete_after=5.0,
             )
             return
@@ -714,7 +714,7 @@ class MultiDice(commands.Cog):
         # ── Kiểm tra host bận ───────────────────────────────────────────
         if _is_busy(self.bot, host.id):
             await ctx.send(
-                f"❌ {host.mention}, đang chơi game khác rồi! Kết thúc trước đã."
+                f"<:symbol_wrong:1536289315867598849> {host.mention}, đang chơi game khác rồi! Kết thúc trước đã."
             )
             return
 
@@ -722,7 +722,7 @@ class MultiDice(commands.Cog):
         host_bal = await _get_balance(self.bot, str(host.id))
         bet, err = _parse_bet(bet_raw, host_bal)
         if err or bet is None:
-            await ctx.send(f"❌ {host.mention} {err or 'Tiền cược không hợp lệ!'}")
+            await ctx.send(f"<:symbol_wrong:1536289315867598849> {host.mention} {err or 'Tiền cược không hợp lệ!'}")
             return
 
         # ── Lọc danh sách được mời ──────────────────────────────────────
@@ -921,7 +921,7 @@ class MultiDice(commands.Cog):
     @multidice_cmd.error
     async def multidice_cmd_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument)):
-            await ctx.send(f"❌ {ctx.author.mention} Lắc xí ngầu tập thể mà không có cắc bạc nào à? Cú pháp: `{ctx.prefix}md <tiền_cược> <@user1> <@user2>...`. Để biết thêm chi tiết hãy xài lệnh `{ctx.prefix}ehelp md`")
+            await ctx.send(f"<:symbol_wrong:1536289315867598849> {ctx.author.mention} Lắc xí ngầu tập thể mà không có cắc bạc nào à? Cú pháp: `{ctx.prefix}md <tiền_cược> <@user1> <@user2>...`. Để biết thêm chi tiết hãy xài lệnh `{ctx.prefix}ehelp md`")
 
 
     async def _resolve_game(
@@ -980,7 +980,7 @@ class MultiDice(commands.Cog):
             all_lines.append(
                 f"{medal} <@{info.user_id}> — {d1e}+{d2e} = **{info.total}**{auto}"
             )
-        embed.add_field(name="📊 Bảng Điểm Toàn Sân", value="\n".join(all_lines), inline=False)
+        embed.add_field(name="<:symbol_chart:1536317815336869918> Bảng Điểm Toàn Sân", value="\n".join(all_lines), inline=False)
 
         # Người thắng
         win_lines: list[str] = []

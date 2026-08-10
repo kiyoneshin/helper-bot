@@ -55,7 +55,7 @@ class EventCoreCog(commands.Cog):
         self.last_minigame_end = None
         self.msg_count_after_cooldown = 0
         self.voice_scanner.start()
-        log.info("🌸 EventCoreCog loaded — Task quét Voice 15p đã khởi động.")
+        log.info("EventCoreCog loaded — Task quét Voice 15p đã khởi động.")
 
     async def cog_unload(self):
         """Hủy task chạy ngầm khi Cog bị unload."""
@@ -252,26 +252,26 @@ class EventCoreCog(commands.Cog):
     async def sendfaq_cmd(self, ctx: commands.Context):
         """[ADMIN] Gửi cẩm nang EVENT_FAQ dưới dạng Embed vào kênh quy định."""
         if not self._is_bank_owner(ctx):
-            return await ctx.send("❌ Chỉ có Bank Owner mới được dùng lệnh này!")
+            return await ctx.send("<:symbol_wrong:1536289315867598849> Chỉ có Bank Owner mới được dùng lệnh này!")
             
         import os, re
         faq_path = os.path.join(os.getcwd(), "EVENT_FAQ.md")
         if not os.path.exists(faq_path):
-            return await ctx.send("❌ Không tìm thấy file EVENT_FAQ.md")
+            return await ctx.send("<:symbol_wrong:1536289315867598849> Không tìm thấy file EVENT_FAQ.md")
             
         channel = self.bot.get_channel(1533131441398091917)
         if not channel:
             try:
                 channel = await self.bot.fetch_channel(1533131441398091917)
             except:
-                return await ctx.send("❌ Không tìm thấy kênh đích (ID: 1533131441398091917)!")
+                return await ctx.send("<:symbol_wrong:1536289315867598849> Không tìm thấy kênh đích (ID: 1533131441398091917)!")
             
         with open(faq_path, "r", encoding="utf-8") as f:
             content = f.read().replace("{prefix}", ctx.prefix)
             
         parts = re.split(r'(?m)^###\s+Phần', content)
         if len(parts) < 2:
-            return await ctx.send("❌ Không tìm thấy các '### Phần' trong EVENT_FAQ.md")
+            return await ctx.send("<:symbol_wrong:1536289315867598849> Không tìm thấy các '### Phần' trong EVENT_FAQ.md")
             
         await ctx.send(f"Đang xóa tin nhắn cũ và gửi Cẩm Nang Sự Kiện vào kênh <#{channel.id}>...", ephemeral=True)
         
@@ -368,7 +368,7 @@ class EventCoreCog(commands.Cog):
         embed.set_footer(text=f"Hãy dùng điểm này để đổi quà trong {ctx.prefix}shop nhé! 🌸")
         
         await msg.edit(content=None, embed=embed)
-        log.info(f"🎉 [GIVE ALL] {ctx.author.display_name} đã phát {_fmt(val)} điểm cho {len(valid_members)} thành viên.")
+        log.info(f"[GIVE ALL] {ctx.author.display_name} đã phát {_fmt(val)} điểm cho {len(valid_members)} thành viên.")
 
     # =====================================================================
     # 4. LỆNH THU HỒI / ROLLBACK: Y!TAKE VÀ Y!TAKEALL (MỚI THÊM)
@@ -406,7 +406,7 @@ class EventCoreCog(commands.Cog):
             )
             embed.set_footer(text=f"Thực hiện bởi: {ctx.author.display_name} ໒꒱")
             await ctx.send(embed=embed)
-            log.info(f"⚖️ [TAKE] {ctx.author.display_name} đã rút {_fmt(val)} điểm từ {target.display_name} ({target.id}).")
+            log.info(f"[TAKE] {ctx.author.display_name} đã rút {_fmt(val)} điểm từ {target.display_name} ({target.id}).")
         else:
             await ctx.send("Giao dịch thất bại! Có lỗi xảy ra khi cập nhật Database.", ephemeral=True)
 
@@ -451,7 +451,7 @@ class EventCoreCog(commands.Cog):
         embed.set_footer(text="Hệ thống Ngân Hàng Angelic • Cân bằng lại dòng tiền 🌸")
         
         await msg.edit(content=None, embed=embed)
-        log.info(f"🌪️ [TAKE ALL] {ctx.author.display_name} đã thu hồi {_fmt(val)} điểm từ {len(valid_members)} thành viên.")
+        log.info(f"[TAKE ALL] {ctx.author.display_name} đã thu hồi {_fmt(val)} điểm từ {len(valid_members)} thành viên.")
 
     class DummyCore:
         is_minigame_running = True

@@ -91,9 +91,9 @@ class StaffBot(commands.Bot):
                         
                         try:
                             await self.load_extension(cog_name)
-                            log.info(f"🌸 Đã nạp thành công Cog: {cog_name}")
+                            log.info(f"Đã nạp thành công Cog: {cog_name}")
                         except Exception as e:
-                            log.error(f"❌ Lỗi khi nạp Cog [{cog_name}]: {e}", exc_info=True)
+                            log.error(f"Lỗi khi nạp Cog [{cog_name}]: {e}", exc_info=True)
         else:
             log.warning("Không tìm thấy thư mục ./cogs để nạp module!")
 

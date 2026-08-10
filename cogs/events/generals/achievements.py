@@ -31,7 +31,7 @@ class AchCategorySelect(discord.ui.Select):
 
     async def callback(self, interaction: discord.Interaction):
         if interaction.user.id != self.author.id:
-            return await interaction.response.send_message("❌ Bạn không có quyền sử dụng menu này!", ephemeral=True)
+            return await interaction.response.send_message("<:symbol_wrong:1536289315867598849> Bạn không có quyền sử dụng menu này!", ephemeral=True)
             
         category = self.values[0]
         
@@ -44,7 +44,7 @@ class AchCategorySelect(discord.ui.Select):
         )
         
         if not row:
-            return await interaction.response.send_message("❌ Bạn chưa có hồ sơ Sự Kiện!", ephemeral=True)
+            return await interaction.response.send_message("<:symbol_wrong:1536289315867598849> Bạn chưa có hồ sơ Sự Kiện!", ephemeral=True)
             
         try:
             stats = json.loads(row["stats"]) if isinstance(row["stats"], str) else (row["stats"] or {})
@@ -85,7 +85,7 @@ class ClaimButton(discord.ui.Button):
         
     async def callback(self, interaction: discord.Interaction):
         if interaction.user.id != self.author.id:
-            return await interaction.response.send_message("❌ Bạn không có quyền!", ephemeral=True)
+            return await interaction.response.send_message("<:symbol_wrong:1536289315867598849> Bạn không có quyền!", ephemeral=True)
             
         uid = str(interaction.user.id)
         
@@ -127,7 +127,7 @@ class ClaimButton(discord.ui.Button):
                     reward_messages.append(f"**{ach['name']}**: Danh hiệu `{title}` + {lootbox_qty}x Lootbox {lootbox_id}")
                     
         if not newly_claimed:
-            return await interaction.response.send_message("❌ Có lỗi xảy ra hoặc bạn đã nhận thưởng rồi.", ephemeral=True)
+            return await interaction.response.send_message("<:symbol_wrong:1536289315867598849> Có lỗi xảy ra hoặc bạn đã nhận thưởng rồi.", ephemeral=True)
             
         # Update DB
         await execute_db(
@@ -203,7 +203,7 @@ async def build_ach_embed(bot, user, category: str, stats: dict, claimed: list) 
             
             if is_claimed:
                 claimed_in_cat += 1
-                status_emoji = "✅"
+                status_emoji = "<:symbol_right:1536289313959186472>"
                 progress_str = f"Hoàn thành ({ach['target']}/{ach['target']})"
             else:
                 stat_val = stats.get(ach["stat_key"], 0)
@@ -272,7 +272,7 @@ class AchievementCog(commands.Cog):
             
         if action and action.lower() in ["use", "equip", "dung", "xai"]:
             if not arg:
-                return await ctx.send("❌ Vui lòng nhập tên danh hiệu. Vd: `ktitle use Kẻ Đang Yêu`", ephemeral=True)
+                return await ctx.send("<:symbol_wrong:1536289315867598849> Vui lòng nhập tên danh hiệu. Vd: `ktitle use Kẻ Đang Yêu`", ephemeral=True)
                 
             # Fuzzy match
             found = None
@@ -282,14 +282,14 @@ class AchievementCog(commands.Cog):
                     break
                     
             if not found:
-                return await ctx.send(f"❌ Bạn không sở hữu danh hiệu nào có tên `{arg}`!", ephemeral=True)
+                return await ctx.send(f"<:symbol_wrong:1536289315867598849> Bạn không sở hữu danh hiệu nào có tên `{arg}`!", ephemeral=True)
                 
             await execute_db(
                 self.bot,
                 "UPDATE event_profiles SET title = $1 WHERE discord_id = $2",
                 found, uid
             )
-            return await ctx.send(f"✅ Đã trang bị danh hiệu: **{found}**")
+            return await ctx.send(f"<:symbol_right:1536289313959186472> Đã trang bị danh hiệu: **{found}**")
             
         # Hiển thị danh sách
         lines = []

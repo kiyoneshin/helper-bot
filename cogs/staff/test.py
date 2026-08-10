@@ -72,7 +72,7 @@ class StaffTestCog(commands.Cog):
                 f"{db_role} để vote cho họ nhé!"
             )
             await ctx.send(reminder_text)
-            await ctx.message.add_reaction("✅")
+            await ctx.message.add_reaction("<:symbol_right:1536289313959186472>")
         except Exception as e:
             await ctx.send(f"Lỗi truy vấn khi test: {e}")
 

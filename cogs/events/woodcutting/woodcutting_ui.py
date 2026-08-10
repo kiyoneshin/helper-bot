@@ -29,7 +29,7 @@ def build_woodcutting_embed(author: discord.Member | discord.User, stamina: int,
     )
 
     bar = _stamina_bar(stamina)
-    regen_info = f"(Hồi đầy sau: {_mins_to_full(stamina, regen_interval)})" if stamina < MAX_STAMINA else "✅ Đã đầy"
+    regen_info = f"(Hồi đầy sau: {_mins_to_full(stamina, regen_interval)})" if stamina < MAX_STAMINA else "<:symbol_right:1536289313959186472> Đã đầy"
     
     embed.add_field(
         name="💪 Thể Lực",
@@ -38,7 +38,7 @@ def build_woodcutting_embed(author: discord.Member | discord.User, stamina: int,
     )
     
     embed.add_field(
-        name="🪓 Rìu Hiện Tại",
+        name="<:symbol_00_woodcutting:1536007697491558491> Rìu Hiện Tại",
         value=f"**{axe_name}** (Lv{axe_level})",
         inline=True,
     )
@@ -48,7 +48,7 @@ def build_woodcutting_embed(author: discord.Member | discord.User, stamina: int,
         f"{item['icon']} **{item['name']}** — {display_weights[item_id]}%"
         for item_id, item in WOODCUTTING_LOOT.items()
     ]
-    embed.add_field(name="📊 Tỉ Lệ Rớt (Base)", value="\n".join(loot_lines), inline=True)
+    embed.add_field(name="<:symbol_chart:1536317815336869918> Tỉ Lệ Rớt (Base)", value="\n".join(loot_lines), inline=True)
 
     inventory = farm_data.get("inventory", {})
     inv_lines = [
@@ -75,7 +75,7 @@ class WoodcuttingView(discord.ui.View):
     @discord.ui.button(label="Chặt Cây", emoji="<:symbol_00_woodcutting:1536007697491558491>", style=discord.ButtonStyle.success)
     async def chop_btn(self, interaction: discord.Interaction, button: discord.ui.Button):
         if str(interaction.user.id) != self.user_id:
-            await interaction.response.send_message("❌ Khu rừng của người khác, cấm chặt trộm!", ephemeral=True)
+            await interaction.response.send_message("<:symbol_wrong:1536289315867598849> Khu rừng của người khác, cấm chặt trộm!", ephemeral=True)
             return
 
         from cogs.common.db import get_active_boosts
@@ -89,7 +89,7 @@ class WoodcuttingView(discord.ui.View):
             button.disabled = True
             farm_data = await get_farm_data(self.bot, self.user_id)
             await interaction.response.edit_message(embed=build_woodcutting_embed(self.author, current_stamina, farm_data, self.regen_interval), view=self)
-            await interaction.followup.send(f"❌ Bạn đã **kiệt sức**! Hãy đợi thể lực hồi phục.\n*(Hồi đầy sau: {_mins_to_full(current_stamina, self.regen_interval)})*", ephemeral=True)
+            await interaction.followup.send(f"<:symbol_wrong:1536289315867598849> Bạn đã **kiệt sức**! Hãy đợi thể lực hồi phục.\n*(Hồi đầy sau: {_mins_to_full(current_stamina, self.regen_interval)})*", ephemeral=True)
             return
 
         farm_data = await get_farm_data(self.bot, self.user_id)
@@ -125,4 +125,4 @@ class WoodcuttingView(discord.ui.View):
         if loot_info.get("name") in ["Gỗ Sồi (Hiếm)", "Gỗ Gụ (Cực Hiếm)", "Gỗ Thần Trầm Hương (Huyền Thoại)"] or "rare" in loot_id or "epic" in loot_id or "legendary" in loot_id:
             await update_event_stat(self.bot, self.user_id, "rare_wood_chopped", quantity)
         
-        await interaction.followup.send(f"🪓 Bạn vung rìu và nhận được: {loot_info['icon']} **{quantity}x {loot_info['name']}**{double_str}!{lb_msg}", ephemeral=True)
+        await interaction.followup.send(f"<:symbol_00_woodcutting:1536007697491558491> Bạn vung rìu và nhận được: {loot_info['icon']} **{quantity}x {loot_info['name']}**{double_str}!{lb_msg}", ephemeral=True)

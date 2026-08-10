@@ -249,7 +249,7 @@ class WheelSlots(commands.Cog):
         balance = await _get_balance(self.bot, uid)
         bet, err, is_all = _parse_bet(bet_raw, balance)
         if err or bet is None:
-            await ctx.send(f"❌ {ctx.author.mention} {err}")
+            await ctx.send(f"<:symbol_wrong:1536289315867598849> {ctx.author.mention} {err}")
             return
 
         if is_all:
@@ -263,7 +263,7 @@ class WheelSlots(commands.Cog):
     @wheel_cmd.error
     async def wheel_cmd_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument)):
-            await ctx.send(f"❌ {ctx.author.mention} Quay tay bằng không khí à? Cú pháp: `{ctx.prefix}wheel <tiền_cược | all>`. Để biết thêm chi tiết hãy xài lệnh `{ctx.prefix}ehelp wheel`")
+            await ctx.send(f"<:symbol_wrong:1536289315867598849> {ctx.author.mention} Quay tay bằng không khí à? Cú pháp: `{ctx.prefix}wheel <tiền_cược | all>`. Để biết thêm chi tiết hãy xài lệnh `{ctx.prefix}ehelp wheel`")
 
 
     async def _exec_wheel(self, ctx: commands.Context, bet: int, uid: str, balance: int) -> None:
@@ -279,7 +279,7 @@ class WheelSlots(commands.Cog):
         # ── Cập nhật DB ───────────────────────────────────────────────────
         ok = await _apply_delta(self.bot, uid, delta)
         if not ok:
-            await ctx.send(f"❌ {ctx.author.mention} Sập nguồn cơ sở dữ liệu, thử lại sau!")
+            await ctx.send(f"<:symbol_wrong:1536289315867598849> {ctx.author.mention} Sập nguồn cơ sở dữ liệu, thử lại sau!")
             return
 
         new_balance = balance + delta
@@ -323,7 +323,7 @@ class WheelSlots(commands.Cog):
         # 3 field hàng dọc
         embed.add_field(name="💰 Tiền cược",       value=f"{bet:,}",         inline=False)
         embed.add_field(name=f"{result_emoji} Kết quả", value=result_value,  inline=False)
-        embed.add_field(name="💳 Số dư mới",       value=f"{new_balance:,}", inline=False)
+        embed.add_field(name="<:symbol_credit_card:1536308433693712404> Số dư mới",       value=f"{new_balance:,}", inline=False)
 
         embed.set_footer(text="Angelic Casino • Vòng Quay May Mắn 🌸")
         delay = 30.0 if ctx.channel.id == 1498711783223853101 else None
@@ -353,7 +353,7 @@ class WheelSlots(commands.Cog):
         balance = await _get_balance(self.bot, uid)
         bet, err, is_all = _parse_bet(bet_raw, balance)
         if err or bet is None:
-            await ctx.send(f"❌ {ctx.author.mention} {err}")
+            await ctx.send(f"<:symbol_wrong:1536289315867598849> {ctx.author.mention} {err}")
             return
 
         if is_all:
@@ -367,7 +367,7 @@ class WheelSlots(commands.Cog):
     @slots_cmd.error
     async def slots_cmd_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument)):
-            await ctx.send(f"❌ {ctx.author.mention} Đút xèng vào máy đi chứ! Cú pháp: `{ctx.prefix}slots <tiền_cược | all>`. Để biết thêm chi tiết hãy xài lệnh `{ctx.prefix}ehelp slots`")
+            await ctx.send(f"<:symbol_wrong:1536289315867598849> {ctx.author.mention} Đút xèng vào máy đi chứ! Cú pháp: `{ctx.prefix}slots <tiền_cược | all>`. Để biết thêm chi tiết hãy xài lệnh `{ctx.prefix}ehelp slots`")
 
 
     async def _exec_slots(self, ctx: commands.Context, bet: int, uid: str, balance: int) -> None:
@@ -382,7 +382,7 @@ class WheelSlots(commands.Cog):
         # ── Cập nhật DB ──────────────────────────────────────────────────
         ok = await _apply_delta(self.bot, uid, delta)
         if not ok:
-            await ctx.send(f"❌ {ctx.author.mention} Sập nguồn cơ sở dữ liệu, thử lại sau!")
+            await ctx.send(f"<:symbol_wrong:1536289315867598849> {ctx.author.mention} Sập nguồn cơ sở dữ liệu, thử lại sau!")
             return
 
         new_balance = balance + delta
@@ -405,7 +405,7 @@ class WheelSlots(commands.Cog):
             result_val = f"{delta:,}  *({desc})*"
 
         embed = discord.Embed(
-            title="🎰 Máy Xẻng (Slots)",
+            title="<a:gambling_slot_machine_pixel:1536322200838340628> Máy Xẻng (Slots)",
             description=f"**Kết quả:**\n\n{slots_display}",
             color=embed_color,
         )
@@ -417,7 +417,7 @@ class WheelSlots(commands.Cog):
         # 3 Field Hàng Dọc
         embed.add_field(name="💰 Tiền cược", value=f"{bet:,}", inline=False)
         embed.add_field(name=result_name, value=result_val, inline=False)
-        embed.add_field(name="💳 Số dư mới", value=f"{new_balance:,}", inline=False)
+        embed.add_field(name="<:symbol_credit_card:1536308433693712404> Số dư mới", value=f"{new_balance:,}", inline=False)
 
         embed.set_footer(text="Angelic Casino • Máy Xẻng 🌸")
         delay = 30.0 if ctx.channel.id == 1498711783223853101 else None

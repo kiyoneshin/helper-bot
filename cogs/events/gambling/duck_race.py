@@ -110,7 +110,7 @@ async def _init_duck_table(bot: commands.Bot) -> None:
         );
         """,
     )
-    log.info("✅ Bảng duck_bets đã sẵn sàng.")
+    log.info("Bảng duck_bets đã sẵn sàng.")
 
 
 async def _get_pool_stats(bot: commands.Bot) -> dict[str, int]:
@@ -155,7 +155,7 @@ def _build_race_track(positions: dict[str, int], finished: Optional[list[str]] =
         name_part = f"{emoji} {label:<6}"
         if pos >= TRACK_LENGTH:
             bar = "=" * TRACK_LENGTH + " 🏁"
-            crown = " 🏆" if (finished and key in finished) else " ✅"
+            crown = " 🏆" if (finished and key in finished) else " <:symbol_right:1536289313959186472>"
             row = f"{name_part}: {bar}{crown}"
         else:
             bar = "=" * pos + "<:gambling_duck:1536019587844546671>" + "-" * (TRACK_LENGTH - pos)
@@ -339,7 +339,7 @@ class DuckRace(commands.Cog):
         odds = dp / total_winner_pool
 
         embed.add_field(
-            name="📊 Hệ Số Thực Tế",
+            name="<:symbol_chart:1536317815336869918> Hệ Số Thực Tế",
             value=f"1 ăn **{odds:.3f}x** *(Tổng DP {dp:,} / Pool vịt thắng {total_winner_pool:,})*",
             inline=False,
         )
@@ -391,7 +391,7 @@ class DuckRace(commands.Cog):
         if color_key is None:
             valid = ", ".join(f"`{k}`" for k in DUCKS)
             await ctx.send(
-                f"❌ {ctx.author.mention} Vịt gì vậy? Không nhận ra **{color_raw}**!\n"
+                f"<:symbol_wrong:1536289315867598849> {ctx.author.mention} Vịt gì vậy? Không nhận ra **{color_raw}**!\n"
                 f"Các con vịt hợp lệ: {valid}"
             )
             return
@@ -400,7 +400,7 @@ class DuckRace(commands.Cog):
         balance = await _get_balance(self.bot, uid)
         bet, err = _parse_bet(bet_raw, balance)
         if err or bet is None:
-            await ctx.send(f"❌ {ctx.author.mention} {err}")
+            await ctx.send(f"<:symbol_wrong:1536289315867598849> {ctx.author.mention} {err}")
             return
 
         existing = await fetchrow_db(
@@ -424,7 +424,7 @@ class DuckRace(commands.Cog):
             else:
                 ok = await _apply_delta(self.bot, uid, -bet)
                 if not ok:
-                    await ctx.send(f"❌ {ctx.author.mention} Lỗi DB khi trừ tiền — thử lại sau!")
+                    await ctx.send(f"<:symbol_wrong:1536289315867598849> {ctx.author.mention} Lỗi DB khi trừ tiền — thử lại sau!")
                     return
 
                 new_bet = ex_bet + bet
@@ -435,7 +435,7 @@ class DuckRace(commands.Cog):
                 )
                 if status is None:
                     await _apply_delta(self.bot, uid, bet)
-                    await ctx.send(f"❌ {ctx.author.mention} Lỗi DB khi ghi cược — tiền đã hoàn lại!")
+                    await ctx.send(f"<:symbol_wrong:1536289315867598849> {ctx.author.mention} Lỗi DB khi ghi cược — tiền đã hoàn lại!")
                     return
                     
                 embed = discord.Embed(
@@ -452,7 +452,7 @@ class DuckRace(commands.Cog):
         # (Trường hợp cược mới tinh)
         ok = await _apply_delta(self.bot, uid, -bet)
         if not ok:
-            await ctx.send(f"❌ {ctx.author.mention} Lỗi DB khi trừ tiền — thử lại sau!")
+            await ctx.send(f"<:symbol_wrong:1536289315867598849> {ctx.author.mention} Lỗi DB khi trừ tiền — thử lại sau!")
             return
 
         status = await execute_db(
@@ -464,7 +464,7 @@ class DuckRace(commands.Cog):
         )
         if status is None:
             await _apply_delta(self.bot, uid, bet)
-            await ctx.send(f"❌ {ctx.author.mention} Lỗi DB khi ghi cược — tiền đã hoàn lại!")
+            await ctx.send(f"<:symbol_wrong:1536289315867598849> {ctx.author.mention} Lỗi DB khi ghi cược — tiền đã hoàn lại!")
             return
 
         duck_label = DUCKS[color_key]
@@ -486,7 +486,7 @@ class DuckRace(commands.Cog):
     async def betvit_error(self, ctx: commands.Context, error: Exception) -> None:
         if isinstance(error, commands.MissingRequiredArgument):
             await ctx.send(
-                f"❌ {ctx.author.mention} Thiếu thông tin kèo!\n"
+                f"<:symbol_wrong:1536289315867598849> {ctx.author.mention} Thiếu thông tin kèo!\n"
                 "Cú pháp: `kbetvit <màu_vịt> <tiền_cược>`\n"
                 "Các vịt: `do`, `xanh`, `vang`, `hong`, `yon`\n"
                 "Ví dụ: `kbetvit yon 500k`"
@@ -510,7 +510,7 @@ class DuckRace(commands.Cog):
         )
         if existing is None:
             await ctx.send(
-                f"❌ {ctx.author.mention} Mày chưa có kèo nào để hủy cả!\n"
+                f"<:symbol_wrong:1536289315867598849> {ctx.author.mention} Mày chưa có kèo nào để hủy cả!\n"
                 "Dùng `kbetvit <màu> <tiền>` để đặt cược."
             )
             return
@@ -544,7 +544,7 @@ class DuckRace(commands.Cog):
         lock_status = (
             "🔒 **SỔ ĐÃ ĐÓNG** — đang chờ khởi tranh!"
             if self.is_locked
-            else "✅ Đang nhận cược"
+            else "<:symbol_right:1536289313959186472> Đang nhận cược"
         )
 
         embed = _build_pool_embed(
@@ -598,7 +598,7 @@ class DuckRace(commands.Cog):
             self.is_racing = False
             self._lock_fired.clear()
             self._race_fired.clear()
-            await ctx.send("✅ [Admin] Reset bảng cược + mở khoá hoàn tất.")
+            await ctx.send("<:symbol_right:1536289313959186472> [Admin] Reset bảng cược + mở khoá hoàn tất.")
         else:
             await ctx.send("Hành động không hợp lệ. Dùng: `lock`, `race`, `reset`")
 
