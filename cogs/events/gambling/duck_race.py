@@ -56,7 +56,7 @@ DUCK_EMOJI: dict[str, str] = {
     "xanh": "🔵",
     "vang": "🟡",
     "hong": "💖",
-    "yon":  "🦆",
+    "yon":  "<:gambling_duck:1536019587844546671>",
 }
 
 DUCK_ALIASES: dict[str, str] = {
@@ -158,7 +158,7 @@ def _build_race_track(positions: dict[str, int], finished: Optional[list[str]] =
             crown = " 🏆" if (finished and key in finished) else " ✅"
             row = f"{name_part}: {bar}{crown}"
         else:
-            bar = "=" * pos + "🦆" + "-" * (TRACK_LENGTH - pos)
+            bar = "=" * pos + "<:gambling_duck:1536019587844546671>" + "-" * (TRACK_LENGTH - pos)
             row = f"{name_part}: {bar}"
         lines.append(row)
     lines.append("```")
@@ -411,7 +411,7 @@ class DuckRace(commands.Cog):
         if existing is not None:
             ex_color = str(existing["duck_color"])
             ex_label = DUCKS.get(ex_color, ex_color)
-            ex_emoji = DUCK_EMOJI.get(ex_color, "🦆")
+            ex_emoji = DUCK_EMOJI.get(ex_color, "<:gambling_duck:1536019587844546671>")
             ex_bet = int(existing['bet_amount'])
             
             if ex_color != color_key:
@@ -518,7 +518,7 @@ class DuckRace(commands.Cog):
         bet_amount = int(existing["bet_amount"])
         color_key = str(existing["duck_color"])
         duck_label = DUCKS.get(color_key, color_key)
-        duck_emoji = DUCK_EMOJI.get(color_key, "🦆")
+        duck_emoji = DUCK_EMOJI.get(color_key, "<:gambling_duck:1536019587844546671>")
 
         await execute_db(self.bot, "DELETE FROM duck_bets WHERE discord_id = $1", uid)
         await _apply_delta(self.bot, uid, bet_amount)
@@ -563,7 +563,7 @@ class DuckRace(commands.Cog):
             my_color = str(my_bet["duck_color"])
             my_amount = int(my_bet["bet_amount"])
             my_label = DUCKS.get(my_color, my_color)
-            my_emoji = DUCK_EMOJI.get(my_color, "🦆")
+            my_emoji = DUCK_EMOJI.get(my_color, "<:gambling_duck:1536019587844546671>")
             embed.add_field(
                 name="🎯 Cược Của Bạn",
                 value=f"{my_emoji} **{my_label}** — {my_amount:,}",

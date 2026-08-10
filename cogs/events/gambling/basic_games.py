@@ -247,10 +247,10 @@ class BasicGames(commands.Cog):
             return
 
         new_balance = balance + delta
-        face_map = {"h": "NGỬA 🌕", "t": "SẤP 🌑"}
+        face_map = {"h": "<:gambling_headscoin:1536019591191330837> NGỬA", "t": "<:gambling_tailscoin:1536019595838758922> SẤP"}
         your_pick = face_map[choice]
         if outcome == "side":
-            landed = "ĐỨNG 🟡"
+            landed = "🟡 ĐỨNG"
         elif outcome == "win":
             landed = face_map[choice]
         else:
@@ -304,7 +304,7 @@ class BasicGames(commands.Cog):
         """Logic thực thi game cups."""
         end_time = int(time.time()) + 30
         embed = discord.Embed(
-            description=f"Cục màu trắng ở đâu? ◽ **1, 2** hay **3** ?\nNhanh tay lẹ mắt nhào vô trước <t:{end_time}:R>!\n\n🥤  🥤  🥤\n",
+            description=f"Cục màu trắng ở đâu? ◽ **1, 2** hay **3** ?\nNhanh tay lẹ mắt nhào vô trước <t:{end_time}:R>!\n\n<:gambling_cup:1536019568697409667>  <:gambling_cup:1536019568697409667>  <:gambling_cup:1536019568697409667>\n",
             color=0xffb6c1,
         )
         embed.set_author(name=f"{ctx.author.display_name} — cups", icon_url=ctx.author.display_avatar.url)
@@ -351,13 +351,13 @@ class BasicGames(commands.Cog):
         face = random.choices([1, 2, 3, 4, 5, 6, 7], weights=[16.75, 16.75, 16.75, 16.5, 16.5, 16.5, 0.25], k=1)[0]
         # ... logic tính điểm ...
         PAYOUT = {
-            1: (-1.00, "1️⃣", COLOR_LOSE,    "Mút trọn (Mất 100%)"),
-            2: (-0.50, "2️⃣", COLOR_LOSE,    "Cắt nửa vầng trăng (Mất 50%)"),
-            3: (-0.25, "3️⃣", COLOR_LOSE,    "Rớt miếng thịt (Mất 25%)"),
-            4: ( 0.25, "4️⃣", COLOR_WIN,     "Húp tí xíu (+25%)"),
-            5: ( 0.50, "5️⃣", COLOR_WIN,     "Húp vừa vừa (+50%)"),
-            6: ( 1.00, "6️⃣", COLOR_WIN,     "Lụm chẵn (+100%)"),
-            7: ( 7.00, "🌟", COLOR_JACKPOT, "JACKPOT NỔ HŨ (+700%)!"),
+            1: (-1.00, "<:gambling_dice_1:1536019570849091706>", COLOR_LOSE,    "Mút trọn (Mất 100%)"),
+            2: (-0.50, "<:gambling_dice_2:1536019573252554894>", COLOR_LOSE,    "Cắt nửa vầng trăng (Mất 50%)"),
+            3: (-0.25, "<:gambling_dice_3:1536019575768875200>", COLOR_LOSE,    "Rớt miếng thịt (Mất 25%)"),
+            4: ( 0.25, "<:gambling_dice_4:1536019579304808619>", COLOR_WIN,     "Húp tí xíu (+25%)"),
+            5: ( 0.50, "<:gambling_dice_5:1536019581301424158>", COLOR_WIN,     "Húp vừa vừa (+50%)"),
+            6: ( 1.00, "<:gambling_dice_6:1536019583264362566>", COLOR_WIN,     "Lụm chẵn (+100%)"),
+            7: ( 7.00, "<:gambling_dice_7:1536019585365446716>", COLOR_JACKPOT, "JACKPOT NỔ HŨ (+700%)!"),
         }
         mult, face_emoji, color, desc = PAYOUT[face]
         delta = round(mult * bet)
@@ -428,7 +428,7 @@ class BasicGames(commands.Cog):
         new_balance = balance - bet
         end_time = int(time.time()) + 60
         embed = discord.Embed(
-            title="🔫 Cò Quay Tử Thần",
+            title="<a:gambling_00_russian_roulette:1536019552889077860> Cò Quay Tử Thần",
             description=(
                 "Ổ đạn 6 buồng, chỉ có 1 viên đạn thật. Bóp cò là không có đường lui.\n\n"
                 "Sống sót càng lâu, húp càng đẫm. Dám chơi lớn không? 💥\n\n"
@@ -481,7 +481,7 @@ class CupsView(discord.ui.View):
         _unlock_user(self.bot, self.author.id)
 
         correct = random.randint(1, 3)
-        cups_display = ["🥤", "🥤", "🥤"]
+        cups_display = ["<:gambling_cup:1536019568697409667>", "<:gambling_cup:1536019568697409667>", "<:gambling_cup:1536019568697409667>"]
         cups_display[correct - 1] = "◽"
         cups_line = "  ".join(cups_display)
 
@@ -520,15 +520,15 @@ class CupsView(discord.ui.View):
             if interaction.message:
                 await interaction.message.delete(delay=30.0)
 
-    @discord.ui.button(label="🥤 1", style=discord.ButtonStyle.secondary)
+    @discord.ui.button(label="1", emoji="<:gambling_cup:1536019568697409667>", style=discord.ButtonStyle.secondary)
     async def cup_1(self, interaction: discord.Interaction, button: discord.ui.Button):
         await self._resolve(interaction, 1)
 
-    @discord.ui.button(label="🥤 2", style=discord.ButtonStyle.secondary)
+    @discord.ui.button(label="2", emoji="<:gambling_cup:1536019568697409667>", style=discord.ButtonStyle.secondary)
     async def cup_2(self, interaction: discord.Interaction, button: discord.ui.Button):
         await self._resolve(interaction, 2)
 
-    @discord.ui.button(label="🥤 3", style=discord.ButtonStyle.secondary)
+    @discord.ui.button(label="3", emoji="<:gambling_cup:1536019568697409667>", style=discord.ButtonStyle.secondary)
     async def cup_3(self, interaction: discord.Interaction, button: discord.ui.Button):
         await self._resolve(interaction, 3)
 
@@ -542,10 +542,10 @@ class CupsView(discord.ui.View):
         if self.message:
             try:
                 embed = discord.Embed(
-                    title="🥤 Cups — Nhát Gan Bỏ Chạk",
-                    description=f"Ngâm quá 30 giây không dám bốc.\nTiền cược **{self.bet:,}** được **trả lại** nguyên vẹn.\n\n🥤  🥤  🥤",
-                    color=0x95a5a6,
-                )
+            title="<:gambling_cup:1536019568697409667> Cups — Nhát Gan Bỏ Chạk",
+            description=f"Ngâm quá 30 giây không dám bốc.\nTiền cược **{self.bet:,}** được **trả lại** nguyên vẹn.\n\n<:gambling_cup:1536019568697409667>  <:gambling_cup:1536019568697409667>  <:gambling_cup:1536019568697409667>",
+            color=0x95a5a6,
+        )
                 embed.set_author(name=f"{self.author.display_name} — cups", icon_url=self.author.display_avatar.url)
                 embed.set_footer(text="Angelic Casino • Cups 🌸")
                 await self.message.edit(embed=embed, view=self)
@@ -575,7 +575,7 @@ class RouletteView(discord.ui.View):
             return False
         return True
 
-    @discord.ui.button(label="🔫 Bóp cò", style=discord.ButtonStyle.danger)
+    @discord.ui.button(label="Bóp cò", emoji="<a:gambling_00_russian_roulette:1536019552889077860>", style=discord.ButtonStyle.danger)
     async def pull_trigger(self, interaction: discord.Interaction, button: discord.ui.Button):
         uid = str(self.author.id)
         bullet = self.chamber.pop()
@@ -592,7 +592,7 @@ class RouletteView(discord.ui.View):
             _unlock_user(self.bot, self.author.id)
             
             embed = discord.Embed(
-                title="🔫 Cò Quay Tử Thần — Đăng Xuất! 💀",
+                title="<a:gambling_00_russian_roulette:1536019552889077860> Cò Quay Tử Thần — Đăng Xuất! 💀",
                 description="***PANG!*** 💥\n\nNằm mẹ nó rồi!\nSòng bạc tịch thu cược và cắn thêm **50** điểm vì làm bẩn sàn. 💀",
                 color=COLOR_LOSE,
             )
@@ -621,7 +621,7 @@ class RouletteView(discord.ui.View):
             
             new_end_time = int(time.time()) + 60
             embed = discord.Embed(
-                title=f"🔫 Cò Quay Tử Thần — Sống Sót Lần {self.survived_rounds}!",
+                title=f"<a:gambling_00_russian_roulette:1536019552889077860> Cò Quay Tử Thần — Sống Sót Lần {self.survived_rounds}!",
                 description=(
                     "*lách cách...* Phew! 😮‍💨\n\n"
                     f"Bạn đã sống sót qua viên thứ **{self.survived_rounds}**!\n\n"
@@ -660,13 +660,13 @@ class RouletteView(discord.ui.View):
         profit = payout - self.bet
         
         if self.survived_rounds == 0:
-            title = "🔫 Cò Quay Tử Thần — Hoàn Tiền"
+            title = "<a:gambling_00_russian_roulette:1536019552889077860> Cò Quay Tử Thần — Hoàn Tiền"
             desc = "Trò chơi kết thúc do hết giờ. Tiền cược đã được hoàn trả."
             color = 0x95a5a6
             res_str = f"+0  *(Hoàn tiền)*"
             emo = "🟢"
         else:
-            title = "🔫 Cò Quay Tử Thần — Húp An Toàn!"
+            title = "<a:gambling_00_russian_roulette:1536019552889077860> Cò Quay Tử Thần — Húp An Toàn!"
             desc = f"Biết điều đấk Ôm nhẹ **{payout:,}** về sau khi né được **{self.survived_rounds}** phát đạn."
             if auto_cashout and self.survived_rounds == 5:
                 desc = f"BÀN TAY VÀNG TRONG LÀNG BÓP CÒ! Sống sót qua 5 viên lép!\nNổ hũ ẵm trọn **{payout:,}**."
