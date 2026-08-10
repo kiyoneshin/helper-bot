@@ -81,7 +81,7 @@ def build_mining_embed(author: discord.Member | discord.User, stamina: int, farm
         if inventory.get(ore_id, 0) > 0
     ]
     if ore_lines:
-        embed.add_field(name="🎒 Kho Quặng Của Bạn", value="\n".join(ore_lines), inline=False)
+        embed.add_field(name="<:icon_07_inventory:1535664855300710422> Kho Quặng Của Bạn", value="\n".join(ore_lines), inline=False)
 
     embed.set_thumbnail(url="https://cdn.discordapp.com/emojis/1535660962781331497.gif")
     embed.set_footer(text=f"Dùng kbag để bán quặng. Thể lực hồi 1 điểm mỗi {regen_interval} giây.")
@@ -102,7 +102,7 @@ class MiningView(discord.ui.View):
         self.author = author
         self.mine_btn.disabled = (stamina < STAMINA_PER_HIT)
 
-    @discord.ui.button(label="Đập Đá", emoji="⛏️", style=discord.ButtonStyle.primary)
+    @discord.ui.button(label="Đập Đá", emoji="<:symbol_00_mining:1536007694920585356>", style=discord.ButtonStyle.primary)
     async def mine_btn(self, interaction: discord.Interaction, button: discord.ui.Button):
         if str(interaction.user.id) != self.user_id:
             await interaction.response.send_message(

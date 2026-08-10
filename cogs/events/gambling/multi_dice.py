@@ -180,7 +180,7 @@ class InviteView(discord.ui.View):
 
     def build_embed(self) -> discord.Embed:
         embed = discord.Embed(
-            title="🎲 Xúc Xắc Quần Hùng — Chiêu Mộ Anh Tài",
+            title="<:gambling_dice:1536291212141527050> Xúc Xắc Quần Hùng — Chiêu Mộ Anh Tài",
             description=(
                 f"{self.host.mention} đang kéo mồi!\n"
                 f"Cược: **{self.bet:,}**/người *(trừ 5% thuế vào sảnh)*\n\n"
@@ -198,7 +198,7 @@ class InviteView(discord.ui.View):
         embed.set_footer(text=f"Bỏ chạy coi chừng mất mặt")
         return embed
 
-    @discord.ui.button(label="✅ Tham Gia", style=discord.ButtonStyle.success, custom_id="md_invite_join")
+    @discord.ui.button(label="Tham Gia", style=discord.ButtonStyle.success, custom_id="md_invite_join", emoji="<:symbol_right:1536289313959186472>")
     async def join_btn(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
         uid = interaction.user.id
         if uid not in self.statuses:
@@ -249,7 +249,7 @@ class InviteView(discord.ui.View):
         if self._all_decided():
             self._done.set()
 
-    @discord.ui.button(label="🏃 Bỏ Chạy", style=discord.ButtonStyle.danger, custom_id="md_invite_leave")
+    @discord.ui.button(label="Bỏ Chạy", style=discord.ButtonStyle.danger, custom_id="md_invite_leave")
     async def leave_btn(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
         uid = interaction.user.id
         if uid not in self.statuses:
@@ -312,7 +312,7 @@ class PublicLobbyView(discord.ui.View):
         count = len(self.players)
         spots = MAX_PLAYERS - count
         embed = discord.Embed(
-            title="🎲 Xúc Xắc Quần Hùng — Sòng Đã Mở!",
+            title="<:gambling_dice:1536291212141527050> Xúc Xắc Quần Hùng — Sòng Đã Mở!",
             description=(
                 f"Mại dô mại dô! Tay nhanh hơn não!\n"
                 f"Cược: **{self.bet:,}**/người *(trừ 5% thuế vào sảnh)*\n\n"
@@ -329,7 +329,7 @@ class PublicLobbyView(discord.ui.View):
         embed.set_footer(text="Đóng hụi đi! Chờ lâu mất chỗ.")
         return embed
 
-    @discord.ui.button(label="🎰 Đóng Hụi (Vào Bàn)", style=discord.ButtonStyle.primary, custom_id="md_lobby_join")
+    @discord.ui.button(label="Vào Bàn", style=discord.ButtonStyle.primary, custom_id="md_lobby_join")
     async def join_btn(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
         uid = interaction.user.id
 
@@ -407,7 +407,7 @@ class RollView(discord.ui.View):
     def build_embed(self) -> discord.Embed:
         """Render trạng thái animation hiện tại — gọi mỗi ANIM_INTERVAL giây."""
         embed = discord.Embed(
-            title="🎲 Xúc Xắc Quần Hùng — Đang Lắc!",
+            title="<:gambling_dice:1536291212141527050> Xúc Xắc Quần Hùng — Đang Lắc!",
             description=(
                 "Ai dám lắc trước, kẻ đó có lợi thế tie-break!\n"
                 f"Qua <t:{self.end_time}:R> không bấm thì Bot lắc thay — đừng trách."
@@ -434,7 +434,7 @@ class RollView(discord.ui.View):
                 total = info.total
                 auto = " *(bot lắc)*" if info.auto_rolled else ""
                 dice_str = f"**{d1e} + {d2e} = {total}**{auto}"
-            lines.append(f"🎲 <@{uid}> ── {dice_str}")
+            lines.append(f"<:gambling_dice:1536291212141527050> <@{uid}> ── {dice_str}")
 
         # Người chưa bấm
         for uid in self.player_infos:
@@ -451,7 +451,7 @@ class RollView(discord.ui.View):
         embed.set_footer(text="Chờ xúc xắc dừng quay... • Angelic Casino 🌸")
         return embed
 
-    @discord.ui.button(label="🎲 Lắc Xúc Xắc", style=discord.ButtonStyle.primary, custom_id="md_roll")
+    @discord.ui.button(label="Lắc Xúc Xắc", style=discord.ButtonStyle.primary, custom_id="md_roll", emoji="<:gambling_dice:1536291212141527050>")
     async def roll_btn(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
         uid = interaction.user.id
         if uid not in self.player_infos:
@@ -469,7 +469,7 @@ class RollView(discord.ui.View):
         self.roll_order.append(uid)
 
         await interaction.response.send_message(
-            f"🎲 {interaction.user.mention} Đã lắc! Xúc xắc đang quay... đợi kết quả hiện ra."
+            f"<:gambling_dice:1536291212141527050> {interaction.user.mention} Đã lắc! Xúc xắc đang quay... đợi kết quả hiện ra."
         , delete_after=5.0)
 
         if all(p.has_rolled for p in self.player_infos.values()):
@@ -618,7 +618,7 @@ class SpectatorBetView(discord.ui.View):
                 value=f"**{total_spec_pool:,}** điểm",
                 inline=False,
             )
-        embed.set_footer(text="Cược bao nhiêu cửa cũng được, cộng dồn tuỳ thích! 🎲")
+        embed.set_footer(text="Cược bao nhiêu cửa cũng được, cộng dồn tuỳ thích!")
         return embed
 
     async def _select_callback(self, interaction: discord.Interaction) -> None:
@@ -644,7 +644,7 @@ class SpectatorBetView(discord.ui.View):
         modal = SpectatorBetModal(view=self, player_id=selected_player_id)
         await interaction.response.send_modal(modal)
 
-    @discord.ui.button(label="🗑️ Hủy cược (Hoàn tiền)", style=discord.ButtonStyle.danger, custom_id="md_spectator_cancel")
+    @discord.ui.button(label="Hủy cược (Hoàn tiền)", style=discord.ButtonStyle.danger, custom_id="md_spectator_cancel")
     async def cancel_btn(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
         uid = interaction.user.id
         if uid not in self.spectator_bets or not self.spectator_bets[uid]:
@@ -899,7 +899,7 @@ class MultiDice(commands.Cog):
                     child.disabled = True
             try:
                 final_roll_embed = roll_view.build_embed()
-                final_roll_embed.title = "🎲 Xúc Xắc Quần Hùng — Đã Chốt Điểm!"
+                final_roll_embed.title = "<:gambling_dice:1536291212141527050> Xúc Xắc Quần Hùng — Đã Chốt Điểm!"
                 if roll_view.message:
                     await roll_view.message.edit(embed=final_roll_embed, view=roll_view)
             except discord.HTTPException:

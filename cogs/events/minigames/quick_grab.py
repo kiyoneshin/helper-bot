@@ -16,7 +16,7 @@ class QuickGrabView(discord.ui.View):
         self.message: discord.Message | None = None
         self.rewards = [100, 50, 20]
         
-    @discord.ui.button(label="👋 Nhặt Lấy", style=discord.ButtonStyle.success)
+    @discord.ui.button(label="Nhặt Lấy", style=discord.ButtonStyle.success)
     async def grab_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         user_id = interaction.user.id
         

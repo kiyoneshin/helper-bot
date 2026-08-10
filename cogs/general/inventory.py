@@ -51,11 +51,11 @@ def _build_regular_embed(
         "lootbox":     ("<:lootbox:1535664857276489749> Hộp Quà Lootbox",         0x3498db, f"💡 Dùng `{prefix}lb open <tier>` để mở"),
         "farm":        ("<:icon_04_seed:1536017185057546242> Hạt giống",               0x2ecc71, f"💡 Mua thêm hạt giống tại `{prefix}shop`"),
     }
-    title, color, footer = CATEGORY_META.get(category, ("🎒 Túi đồ", 0x7289da, ""))
+    title, color, footer = CATEGORY_META.get(category, ("<:icon_07_inventory:1535664855300710422> Túi đồ", 0x7289da, ""))
 
     embed = discord.Embed(title=title, color=color)
     embed.set_author(
-        name=f"🎒 Túi Đồ của {author.display_name}",
+        name=f"<:icon_07_inventory:1535664855300710422> Túi Đồ của {author.display_name}",
         icon_url=author.display_avatar.url,
     )
     embed.set_thumbnail(url=author.display_avatar.url)
@@ -131,7 +131,7 @@ def _build_farm_embed(
         )
         
     embed.set_author(
-        name=f"🎒 Túi Đồ của {author.display_name}",
+        name=f"<:icon_07_inventory:1535664855300710422> Túi Đồ của {author.display_name}",
         icon_url=author.display_avatar.url,
     )
     embed.set_thumbnail(url=author.display_avatar.url)
@@ -362,42 +362,42 @@ class InventorySelect(discord.ui.Select):
             discord.SelectOption(
                 label="Vật phẩm Sự kiện",
                 value="event",
-                emoji="🎪",
+                emoji="<:icon_08_shop:1536025530728587384>",
                 description="Xem đồ nhận từ sự kiện",
                 default=(current == "event"),
             ),
             discord.SelectOption(
                 label="Hạt giống",
                 value="farm",
-                emoji="🌱",
+                emoji="<:icon_04_seed:1536017185057546242>",
                 description="Xem hạt giống để trồng trọt",
                 default=(current == "farm"),
             ),
             discord.SelectOption(
                 label="Nông sản",
                 value="crop",
-                emoji="📦",
+                emoji="<:icon_06_artisan:1536017189386059797>",
                 description="Cây đã thu hoạch & thủ công phẩm",
                 default=(current == "crop"),
             ),
             discord.SelectOption(
                 label="Hệ sinh thái",
                 value="eco",
-                emoji="🌾",
+                emoji="<:icon_03_farm_field:1536017183216369815>",
                 description="Xem khoáng sản, gỗ, cá",
                 default=(current == "eco"),
             ),
             discord.SelectOption(
                 label="Vật phẩm Chợ đen",
                 value="blackmarket",
-                emoji="🌙",
+                emoji="<:icon_05_bm:1536017187243032736>",
                 description="Xem đồ mua từ chợ đen",
                 default=(current == "blackmarket"),
             ),
             discord.SelectOption(
                 label="Nhẫn Cưới & Trang sức",
                 value="ring",
-                emoji="💍",
+                emoji="<:icon_02_ring:1536017180951318528>",
                 description="Nhẫn cưới để cầu hôn",
                 default=(current == "ring"),
             ),
@@ -411,14 +411,14 @@ class InventorySelect(discord.ui.Select):
             discord.SelectOption(
                 label="Lootbox",
                 value="lootbox",
-                emoji="📦",
+                emoji="<:icon_01_chest:1536017178615091311>",
                 description="Xem hộp quà may mắn",
                 default=(current == "lootbox"),
             ),
             discord.SelectOption(
                 label="Thức Ăn",
                 value="food",
-                emoji="🍲",
+                emoji="<:icon_00_food:1536017176434049065>",
                 description="Xem món ăn và buff",
                 default=(current == "food"),
             ),
@@ -563,7 +563,7 @@ class UnifiedInventoryCog(commands.Cog):
     @commands.hybrid_command(
         name="inv",
         aliases=["bag", "tuido", "khodo", "inventory"],
-        description="🎒 Xem toàn bộ túi đồ (Chợ đen, Sự kiện, Nông trại...)",
+        description="Xem toàn bộ túi đồ (Chợ đen, Sự kiện, Nông trại...)",
     )
     async def inventory_cmd(self, ctx: commands.Context, category: str = None) -> None:
         """Lệnh hợp nhất Túi đồ bằng Dropdown UI."""

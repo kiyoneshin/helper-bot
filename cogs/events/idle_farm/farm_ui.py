@@ -18,7 +18,7 @@ class FarmView(discord.ui.View):
         self.author = author
         # Dropdown gieo trồng đã được thay thế bằng lệnh kplant
         
-    @discord.ui.button(label="Tưới Nước Tất Cả", emoji="💧", style=discord.ButtonStyle.primary, row=0)
+    @discord.ui.button(label="Tưới Nước Tất Cả", emoji="<:symbol_watering_can:1536295381862715453>", style=discord.ButtonStyle.primary, row=0)
     async def water_btn(self, interaction: discord.Interaction, button: discord.ui.Button):
         if str(interaction.user.id) != self.user_id:
             await interaction.response.send_message("❌ Bạn không thể tương tác với nông trại của người khác!", ephemeral=True)
@@ -37,7 +37,7 @@ class FarmView(discord.ui.View):
         await interaction.response.edit_message(embed=new_embed, view=new_view)
         await interaction.followup.send(f"💦 Đã tưới nước cho **{count}** cây! (Thời gian sinh trưởng giảm {int(WATER_BONUS * 100)}%)", ephemeral=True)
         
-    @discord.ui.button(label="Thu Hoạch", emoji="🧺", style=discord.ButtonStyle.success, row=1)
+    @discord.ui.button(label="Thu Hoạch", emoji="<:symbol_00_farming:1536007689979691008>", style=discord.ButtonStyle.success, row=1)
     async def harvest_btn(self, interaction: discord.Interaction, button: discord.ui.Button):
         if str(interaction.user.id) != self.user_id:
             await interaction.response.send_message("❌ Bạn không thể tương tác với nông trại của người khác!", ephemeral=True)
@@ -77,7 +77,7 @@ class FarmView(discord.ui.View):
         await interaction.response.edit_message(embed=new_embed, view=new_view)
         await interaction.followup.send("\n".join(msg), ephemeral=True)
 
-    @discord.ui.button(label="Cuốc Bỏ", emoji="⛏️", style=discord.ButtonStyle.danger, row=1)
+    @discord.ui.button(label="Cuốc Bỏ", emoji="<:symbol_scythe:1536007681502875669>", style=discord.ButtonStyle.danger, row=1)
     async def clear_btn(self, interaction: discord.Interaction, button: discord.ui.Button):
         if str(interaction.user.id) != self.user_id:
             await interaction.response.send_message("❌ Bạn không thể tương tác với nông trại của người khác!", ephemeral=True)
@@ -85,7 +85,7 @@ class FarmView(discord.ui.View):
             
         await interaction.response.send_modal(ClearSlotModal(self.bot, self.user_id, self.author, self))
 
-    @discord.ui.button(label="Làm Mới", emoji="🔄", style=discord.ButtonStyle.secondary, row=1)
+    @discord.ui.button(label="Làm Mới", emoji="<:symbol_reload:1536007679640600648>", style=discord.ButtonStyle.secondary, row=1)
     async def refresh_btn(self, interaction: discord.Interaction, button: discord.ui.Button):
         if str(interaction.user.id) != self.user_id:
             await interaction.response.send_message("❌ Bạn không thể tương tác với nông trại của người khác!", ephemeral=True)

@@ -187,7 +187,7 @@ class MarryConfirmView(discord.ui.View):
         except:
             pass
 
-    @discord.ui.button(label="Đồng ý", style=discord.ButtonStyle.success, emoji="💍")
+    @discord.ui.button(label="Đồng ý", style=discord.ButtonStyle.success, emoji="<:icon_02_ring:1536017180951318528>")
     async def btn_accept(self, interaction: discord.Interaction, button: discord.ui.Button):
         if interaction.user.id != self.target.id:
             return await interaction.response.send_message("❌ Người ta cầu hôn bạn đâu mà bấm?", ephemeral=True)
@@ -248,7 +248,7 @@ class MarryConfirmView(discord.ui.View):
         finally:
             self.stop()
 
-    @discord.ui.button(label="Từ chối/Hủy", style=discord.ButtonStyle.danger, emoji="💔")
+    @discord.ui.button(label="Từ chối/Hủy", style=discord.ButtonStyle.danger, emoji="<:symbol_wrong:1536289315867598849>")
     async def btn_decline(self, interaction: discord.Interaction, button: discord.ui.Button):
         if interaction.user.id not in (self.target.id, self.proposer.id):
             return await interaction.response.send_message("❌ Xin lỗi, bạn không phải là nhân vật chính.", ephemeral=True)
@@ -323,7 +323,7 @@ class DivorceConfirmView(discord.ui.View):
         except:
             pass
 
-    @discord.ui.button(label="Đồng ý Ly Hôn", style=discord.ButtonStyle.success, emoji="💔")
+    @discord.ui.button(label="Đồng ý Ly Hôn", style=discord.ButtonStyle.success, emoji="<:symbol_heart_breaking:1536296911655673936>")
     async def btn_accept(self, interaction: discord.Interaction, button: discord.ui.Button):
         if interaction.user.id not in (self.proposer.id, self.target_id):
             return await interaction.response.send_message("❌ Đây không phải chuyện của bạn!", ephemeral=True)

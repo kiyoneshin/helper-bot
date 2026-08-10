@@ -300,7 +300,7 @@ class VoiceControlView(discord.ui.View):
         self.add_item(SettingsSelect(channel, bot, owner_id))
         self.add_item(PermissionsSelect(channel, bot, owner_id))
 
-    @discord.ui.button(label="👑 Nhận quyền chủ phòng", style=discord.ButtonStyle.primary,
+    @discord.ui.button(label="Nhận quyền chủ phòng", style=discord.ButtonStyle.primary,
                        custom_id="vm_claim", row=2)
     async def btn_claim(self, interaction: discord.Interaction, button: discord.ui.Button):
         pool = getattr(self.bot, "db_pool", None)
@@ -376,7 +376,7 @@ class VoiceControlView(discord.ui.View):
         embed.set_footer(text="Cấu hình lấy từ hồ sơ cá nhân của chủ mới.")
         await interaction.response.send_message(embed=embed)
 
-    @discord.ui.button(label="🗑️ Xóa Kênh", style=discord.ButtonStyle.danger, custom_id="vm_delete", row=2)
+    @discord.ui.button(label="Xóa Kênh", style=discord.ButtonStyle.danger, custom_id="vm_delete", row=2)
     async def btn_delete(self, interaction: discord.Interaction, button: discord.ui.Button):
         pool = getattr(self.bot, "db_pool", None)
         if pool:

@@ -127,7 +127,7 @@ class BetConfirmView(discord.ui.View):
             return False
         return True
 
-    @discord.ui.button(label="✅ Xác nhận cược all", style=discord.ButtonStyle.danger)
+    @discord.ui.button(label="Xác nhận cược all", style=discord.ButtonStyle.danger, emoji="<:symbol_right:1536289313959186472>")
     async def confirm_btn(self, interaction: discord.Interaction, button: discord.ui.Button):
         self.stop()
         for item in self.children:
@@ -136,7 +136,7 @@ class BetConfirmView(discord.ui.View):
         # Khởi chạy game
         await self.callback_fn(self.ctx, self.bet)
 
-    @discord.ui.button(label="❌ Hủy", style=discord.ButtonStyle.secondary)
+    @discord.ui.button(label="Hủy", style=discord.ButtonStyle.secondary, emoji="<:symbol_wrong:1536289315867598849>")
     async def cancel_btn(self, interaction: discord.Interaction, button: discord.ui.Button):
         self.stop()
         await interaction.response.edit_message(
@@ -224,21 +224,21 @@ class BasicGames(commands.Cog):
             payout = round(bet * 1.9)
             delta = payout - bet
             color = COLOR_WIN
-            title = "🪙 Coinflip — Thắng!"
-            outcome_emoji = "🟢"
+            title = "Coinflip — Thắng!"
+            outcome_emoji = "<:symbol_right:1536289313959186472>"
             result_line = f"+{delta:,}  *(x1.9)*"
         elif outcome == "lose":
             delta = -bet
             color = COLOR_LOSE
-            title = "🪙 Coinflip — Thua!"
-            outcome_emoji = "🔴"
+            title = "Coinflip — Thua!"
+            outcome_emoji = "<:symbol_wrong:1536289315867598849>"
             result_line = f"-{bet:,}  *(Mất trắng)*"
         else:
             payout = round(bet * 5.0)
             delta = payout - bet
             color = COLOR_JACKPOT
             title = "🌟 Coinflip — Đứng Xu Jackpot! 🌟"
-            outcome_emoji = "🌟"
+            outcome_emoji = "<:gambling_sidecoin:1536290493800120380>"
             result_line = f"+{delta:,}  *(x5.0)*"
 
         ok = await _apply_delta(self.bot, uid, delta)
@@ -371,14 +371,14 @@ class BasicGames(commands.Cog):
 
         if delta >= 0:
             result_line = f"+{delta:,}  *(x{1 + mult:.2f})*"
-            outcome_emoji = "🌟" if face == 7 else "🟢"
+            outcome_emoji = "<:gambling_dice_7:1536019585365446716>" if face == 7 else "<:symbol_right:1536289313959186472>"
         else:
             result_line = f"{delta:,}  *(-{abs(mult) * 100:.0f}%)*"
-            outcome_emoji = "🔴"
+            outcome_emoji = "<:symbol_wrong:1536289315867598849>"
 
-        embed = discord.Embed(title="🎲 Dice", color=color)
+        embed = discord.Embed(title="<:gambling_dice:1536291212141527050> Dice", color=color)
         embed.set_author(name=f"{ctx.author.display_name} — dice", icon_url=ctx.author.display_avatar.url)
-        embed.add_field(name="🎲 Kết quả lắc", value=f"{face_emoji} - {desc}", inline=False)
+        embed.add_field(name="<:gambling_dice:1536291212141527050> Kết quả lắc", value=f"{face_emoji} - {desc}", inline=False)
         embed.add_field(name="💰 Tiền cược", value=f"{bet:,}", inline=False)
         embed.add_field(name=f"{outcome_emoji} Kết quả", value=result_line, inline=False)
         embed.add_field(name="💳 Số dư mới", value=f"{new_balance:,}", inline=False)
@@ -494,16 +494,16 @@ class CupsView(discord.ui.View):
             new_balance = self.balance + delta
             result_line = f"+{delta:,}  *(x2.3)*"
             color = COLOR_WIN
-            title = "🥤 Cups — Lụm Lúa! 🎉"
-            outcome_emoji = "🟢"
+            title = "<:gambling_cup:1536019568697409667> Cups — Lụm Lúa! 🎉"
+            outcome_emoji = "<:symbol_right:1536289313959186472>"
         else:
             delta = -self.bet
             await _apply_delta(self.bot, uid, delta)
             new_balance = self.balance + delta
             result_line = f"-{self.bet:,}  *(Mút trọn)*"
             color = COLOR_LOSE
-            title = "🥤 Cups — Bị Lùa! 😢"
-            outcome_emoji = "🔴"
+            title = "<:gambling_cup:1536019568697409667> Cups — Bị Lùa! 😢"
+            outcome_emoji = "<:symbol_wrong:1536289315867598849>"
 
         embed = discord.Embed(
             title=title,
@@ -598,7 +598,7 @@ class RouletteView(discord.ui.View):
             )
             embed.set_author(name=f"{self.author.display_name} — roulette", icon_url=self.author.display_avatar.url)
             embed.add_field(name="💰 Tiền cược", value=f"{self.bet:,}", inline=False)
-            embed.add_field(name="🔴 Kết quả", value=f"-{self.bet:,}  *(Mút trọn) & Bị phạt 50*", inline=False)
+            embed.add_field(name="<:symbol_wrong:1536289315867598849> Kết quả", value=f"-{self.bet:,}  *(Mút trọn) & Bị phạt 50*", inline=False)
             embed.add_field(name="💳 Số dư mới", value=f"{self.balance:,}", inline=False)
             embed.set_footer(text="Angelic Casino • Cò Quay Tử Thần 🌸")
             await interaction.response.edit_message(embed=embed, view=self)
@@ -664,7 +664,7 @@ class RouletteView(discord.ui.View):
             desc = "Trò chơi kết thúc do hết giờ. Tiền cược đã được hoàn trả."
             color = 0x95a5a6
             res_str = f"+0  *(Hoàn tiền)*"
-            emo = "🟢"
+            emo = "<:symbol_right:1536289313959186472>"
         else:
             title = "<a:gambling_00_russian_roulette:1536019552889077860> Cò Quay Tử Thần — Húp An Toàn!"
             desc = f"Biết điều đấk Ôm nhẹ **{payout:,}** về sau khi né được **{self.survived_rounds}** phát đạn."
@@ -675,7 +675,7 @@ class RouletteView(discord.ui.View):
             
             color = COLOR_WIN
             res_str = f"+{profit:,}  *(x{mult:.2f})*"
-            emo = "🟢"
+            emo = "<:symbol_right:1536289313959186472>"
 
         embed = discord.Embed(title=title, description=desc, color=color)
         embed.set_author(name=f"{self.author.display_name} — roulette", icon_url=self.author.display_avatar.url)

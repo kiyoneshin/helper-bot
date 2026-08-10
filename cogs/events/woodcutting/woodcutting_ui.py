@@ -57,7 +57,7 @@ def build_woodcutting_embed(author: discord.Member | discord.User, stamina: int,
         if inventory.get(item_id, 0) > 0
     ]
     if inv_lines:
-        embed.add_field(name="🎒 Kho Gỗ Của Bạn", value="\n".join(inv_lines), inline=False)
+        embed.add_field(name="<:icon_07_inventory:1535664855300710422> Kho Gỗ Của Bạn", value="\n".join(inv_lines), inline=False)
 
     embed.set_thumbnail(url="https://cdn.discordapp.com/emojis/1535660965637652510.gif")
     embed.set_footer(text=f"Dùng kbag để bán vật phẩm. Thể lực hồi 1 điểm mỗi {regen_interval} giây.")
@@ -72,7 +72,7 @@ class WoodcuttingView(discord.ui.View):
         self.regen_interval = regen_interval
         self.chop_btn.disabled = (stamina < STAMINA_PER_CHOP)
 
-    @discord.ui.button(label="Chặt Cây", emoji="🪓", style=discord.ButtonStyle.success)
+    @discord.ui.button(label="Chặt Cây", emoji="<:symbol_00_woodcutting:1536007697491558491>", style=discord.ButtonStyle.success)
     async def chop_btn(self, interaction: discord.Interaction, button: discord.ui.Button):
         if str(interaction.user.id) != self.user_id:
             await interaction.response.send_message("❌ Khu rừng của người khác, cấm chặt trộm!", ephemeral=True)

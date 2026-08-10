@@ -205,7 +205,7 @@ class VietnamGames(commands.Cog):
             result_name = "🔴 Kết quả"
             result_val = f"{delta:,}  *(Đi bụi do dính Bão!)*"
         else:
-            embed_title = "🎲 Tài Xỉu (Sic Bo)"
+            embed_title = "<:gambling_dice:1536291212141527050> Tài Xỉu (Sic Bo)"
             embed_color = COLOR_WIN if is_win else COLOR_LOSE
             dice_desc = f"Kết quả: **[ {d1} ]  [ {d2} ]  [ {d3} ]**  Tổng: **{total} ({outcome_desc})**"
             
@@ -249,21 +249,21 @@ class VietnamGames(commands.Cog):
 
     # Cấu hình 6 linh vật: key nhập (bao gồm tiếng Việt) → (kóa chuẩn, emoji)
     BC_ANIMALS: dict[str, tuple[str, str]] = {
-        "bau":  ("bau",  "🎃"),   # Bầu
-        "bầu": ("bau",  "🎃"),
-        "cua":  ("cua",  "🦀"),   # Cua
-        "tom":  ("tom",  "🦐"),   # Tôm
-        "tôm": ("tom",  "🦐"),
-        "ca":   ("ca",   "🐟"),   # Cá
-        "cá":  ("ca",   "🐟"),
-        "nai":  ("nai",  "🦌"),   # Nai
-        "ga":   ("ga",   "🐓"),   # Gà
-        "gà":  ("ga",   "🐓"),
+        "bau":  ("bau",  "<:gambling_01_bctc_gourd:1536019563123183686>"),   # Bầu
+        "bầu": ("bau",  "<:gambling_01_bctc_gourd:1536019563123183686>"),
+        "cua":  ("cua",  "<:gambling_01_bctc_crab:1536019554826715186>"),   # Cua
+        "tom":  ("tom",  "<:gambling_01_bctc_shrimp:1536019566512316556>"),   # Tôm
+        "tôm": ("tom",  "<:gambling_01_bctc_shrimp:1536019566512316556>"),
+        "ca":   ("ca",   "<:gambling_01_bctc_fish:1536019560908591225>"),   # Cá
+        "cá":  ("ca",   "<:gambling_01_bctc_fish:1536019560908591225>"),
+        "nai":  ("nai",  "<:gambling_01_bctc_deer:1536019559029674095>"),   # Nai
+        "ga":   ("ga",   "<:gambling_01_bctc_chicken:1536019556970135593>"),   # Gà
+        "gà":  ("ga",   "<:gambling_01_bctc_chicken:1536019556970135593>"),
     }
     BC_KEYS   = ["bau", "cua", "tom", "ca", "nai", "ga"]
     BC_EMOJIS = {
-        "bau": "🎃", "cua": "🦀", "tom": "🦐",
-        "ca":  "🐟", "nai": "🦌", "ga":  "🐓",
+        "bau": "<:gambling_01_bctc_gourd:1536019563123183686>", "cua": "<:gambling_01_bctc_crab:1536019554826715186>", "tom": "<:gambling_01_bctc_shrimp:1536019566512316556>",
+        "ca":  "<:gambling_01_bctc_fish:1536019560908591225>", "nai": "<:gambling_01_bctc_deer:1536019559029674095>", "ga":  "<:gambling_01_bctc_chicken:1536019556970135593>",
     }
 
     def _build_lobby_embed(
@@ -274,7 +274,7 @@ class VietnamGames(commands.Cog):
     ) -> discord.Embed:
         """Dựng Embed Lobby với tổng tiền cược toàn bàn và đồng hồ đếm ngược."""
         embed = discord.Embed(
-            title="🎲 Bàn Bầu Cua Tôm Cá",
+            title="<:gambling_dice:1536291212141527050> Bàn Bầu Cua Tôm Cá",
             description=(
                 "Nhanh tay gõ xuống kênh chat để cược: `<tên_con_vật> <số_tiền>`\n"
                 "Tay nhanh hơn não thì cược nhiều con 1 dòng luôn (cách nhau dấu phẩy).\n"
@@ -296,7 +296,7 @@ class VietnamGames(commands.Cog):
         )
         embed.add_field(
             name="⏳ Đóng sảnh sau",
-            value=f"**{time_left} giây**  `[ 🎲 ] [ 🎲 ] [ 🎲 ]`",
+            value=f"**{time_left} giây**  `[ <:gambling_dice:1536291212141527050> ] [ <:gambling_dice:1536291212141527050> ] [ <:gambling_dice:1536291212141527050> ]`",
             inline=True,
         )
         embed.set_footer(text="Angelic Casino • Bầu Cua Tôm Cá 🌸")
@@ -418,7 +418,7 @@ class VietnamGames(commands.Cog):
             try:
                 await lobby_msg.edit(
                     embed=discord.Embed(
-                        title="🎲 Bầu Cua Tôm Cá",
+                        title="<:gambling_dice:1536291212141527050> Bầu Cua Tôm Cá",
                         description="Không có ai đặt cược. Trò chơi kết thúc!",
                         color=0x808080,
                     )
@@ -435,7 +435,7 @@ class VietnamGames(commands.Cog):
         # Chốt Embed Lobby — hiển thị kết quả xúc xắc
         try:
             closed_embed = discord.Embed(
-                title="🎲 Bầu Cua Tôm Cá — Đã Chốt!",
+                title="<:gambling_dice:1536291212141527050> Bầu Cua Tôm Cá — Đã Chốt!",
                 description=f"Kết quả xúc xắc:\n\n{dice_display}",
                 color=0xFF8C00,
             )
@@ -451,7 +451,7 @@ class VietnamGames(commands.Cog):
 
         # Gửi thông báo kết quả chung
         await ctx.send(
-            f"🎲 **Sòng đã mở:** {dice_display}\n"
+            f"<:gambling_dice:1536291212141527050> **Sòng đã mở:** {dice_display}\n"
             f"*(Đang chia tiền cho {len(player_bets)} con bạc...)*"
         )
 
@@ -483,16 +483,16 @@ class VietnamGames(commands.Cog):
                 line = f"{emoji} Cược: **{bets[key]:,}**"
                 if count > 0:
                     payout = bets[key] + bets[key] * count
-                    line += f" → ✅ Trúng {count}x → +**{payout:,}**"
+                    line += f" → <:symbol_boards:1536007665153474681> Trúng {count}x → +**{payout:,}**"
                 else:
-                    line += " → ❌"
+                    line += " → <:symbol_wrong:1536289315867598849>"
                 bet_lines.append(line)
 
             result_desc = f"{dice_display}\n\n" + "\n".join(bet_lines)
 
             is_profit = net_gain > 0
             embed_color = 0x00FF00 if is_profit else (0x808080 if net_gain == 0 else 0xFF0000)
-            result_field_name = "🟢 Kết quả" if is_profit else ("🔴 Kết quả" if net_gain < 0 else "⚪ Kết quả")
+            result_field_name = "<:symbol_right:1536289313959186472> Kết quả" if is_profit else ("<:symbol_wrong:1536289315867598849> Kết quả" if net_gain < 0 else "⚪ Kết quả")
             result_field_val = (
                 f"+{net_gain:,}  *(Húp)*" if net_gain > 0
                 else (f"{net_gain:,}  *(Mút trọn)*" if net_gain < 0 else "Hoà vốn")
@@ -504,7 +504,7 @@ class VietnamGames(commands.Cog):
             author_avatar = user.display_avatar.url if user else discord.Embed.Empty  # type: ignore[attr-defined]
 
             result_embed = discord.Embed(
-                title="🎲 Bầu Cua Tôm Cá — Kết Quả",
+                title="<:gambling_dice:1536291212141527050> Bầu Cua Tôm Cá — Kết Quả",
                 description=result_desc,
                 color=embed_color,
             )

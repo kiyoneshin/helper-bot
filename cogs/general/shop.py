@@ -144,7 +144,7 @@ class ShopSelect(discord.ui.Select):
             discord.SelectOption(
                 label="Lootbox",
                 value="lootbox",
-                emoji="<:lootbox:1535664857276489749>",
+                emoji="<:icon_01_chest:1536017178615091311>",
                 description="Hộp quà may mắn (có giới hạn mua)",
                 default=(current_category == "lootbox"),
             ),

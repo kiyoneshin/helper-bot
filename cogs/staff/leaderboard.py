@@ -670,7 +670,7 @@ class LeaderboardView(discord.ui.View):
         embed = _build_leaderboard_embed(data, self.current_sort, self.current_role, self.dt_start, self.dt_end)
         await interaction.response.edit_message(embed=embed, view=self)
 
-    @discord.ui.button(label="📅 Chọn Khoảng Ngày", style=discord.ButtonStyle.secondary, row=2)
+    @discord.ui.button(label="Chọn Khoảng Ngày", style=discord.ButtonStyle.secondary, row=2)
     async def date_filter_btn(self, interaction: discord.Interaction, button: discord.ui.Button):
         """Mở panel chọn khoảng ngày (Dropdown Tháng + Modal Ngày) dạng ephemeral."""
         panel = DateSelectionView(leaderboard_view=self)
@@ -680,7 +680,7 @@ class LeaderboardView(discord.ui.View):
             ephemeral=True,
         )
 
-    @discord.ui.button(label="🔄 Reset Bộ Lọc", style=discord.ButtonStyle.danger, row=2)
+    @discord.ui.button(label="Reset Bộ Lọc", style=discord.ButtonStyle.danger, row=2, emoji="<:symbol_reload:1536007679640600648>")
     async def reset_filter_btn(self, interaction: discord.Interaction, button: discord.ui.Button):
         """Reset toàn bộ bộ lọc về mặc định (Tuần hiện tại, Xếp hạng: Rating, Chức vụ: Tất cả)."""
         self.dt_start, self.dt_end = _get_current_week_range()

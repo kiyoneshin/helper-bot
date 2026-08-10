@@ -88,7 +88,7 @@ def build_fishing_embed(author: discord.Member | discord.User, stamina: int, far
         if inventory.get(fish_id, 0) > 0
     ]
     if inv_lines:
-        embed.add_field(name="🎒 Giỏ Cá Của Bạn", value="\n".join(inv_lines), inline=False)
+        embed.add_field(name="<:icon_07_inventory:1535664855300710422> Giỏ Cá Của Bạn", value="\n".join(inv_lines), inline=False)
 
     embed.set_thumbnail(url="https://cdn.discordapp.com/emojis/1535660959224565902.gif")
     embed.set_footer(text=f"Dùng kbag để bán cá. Thể lực hồi 1 điểm mỗi {regen_interval} giây.")
@@ -111,7 +111,7 @@ class FishCatchView(discord.ui.View):
         self.reaction_time: float = CATCH_WINDOW_SECONDS  # worst-case nếu timeout
         self.start_time: float = time.time()
 
-    @discord.ui.button(label="🎣 GIẬT CẦN!", style=discord.ButtonStyle.success)
+    @discord.ui.button(label="GIẬT CẦN!", style=discord.ButtonStyle.success, emoji="<:symbol_00_fishing:1536007692437422171>")
     async def catch_btn(self, interaction: discord.Interaction, button: discord.ui.Button):
         self.reaction_time = round(time.time() - self.start_time, 2)
         self.caught = True
@@ -138,7 +138,7 @@ class FishingView(discord.ui.View):
         self.farm_data = farm_data
         self.cast_btn.disabled = (stamina < STAMINA_PER_FISH)
 
-    @discord.ui.button(label="Quăng Cần", emoji="🎣", style=discord.ButtonStyle.primary)
+    @discord.ui.button(label="Quăng Cần", emoji="<:symbol_00_fishing:1536007692437422171>", style=discord.ButtonStyle.primary)
     async def cast_btn(self, interaction: discord.Interaction, button: discord.ui.Button):
         if str(interaction.user.id) != self.user_id:
             await interaction.response.send_message(

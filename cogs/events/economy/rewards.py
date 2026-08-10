@@ -113,13 +113,13 @@ class Rewards(commands.Cog):
         lb_emoji = None
         from cogs.events.lootbox.lootbox_config import LB_COMMON, LB_UNCOMMON, LB_RARE, LB_EPIC
         if daily_streak >= 15:
-            lb_tier, lb_name, lb_emoji = LB_EPIC, "Lootbox Epic", "🟣"
+            lb_tier, lb_name, lb_emoji = LB_EPIC, "Lootbox Epic", "<:lb_04_epic:1535552635778760774>"
         elif daily_streak >= 10:
-            lb_tier, lb_name, lb_emoji = LB_RARE, "Lootbox Rare", "🔵"
+            lb_tier, lb_name, lb_emoji = LB_RARE, "Lootbox Rare", "<:lb_03_rare:1535552633660776509>"
         elif daily_streak >= 6:
-            lb_tier, lb_name, lb_emoji = LB_UNCOMMON, "Lootbox Uncommon", "🟢"
+            lb_tier, lb_name, lb_emoji = LB_UNCOMMON, "Lootbox Uncommon", "<:lb_02_uncommon:1535552631257174138>"
         elif daily_streak >= 3:
-            lb_tier, lb_name, lb_emoji = LB_COMMON, "Lootbox Common", "📦"
+            lb_tier, lb_name, lb_emoji = LB_COMMON, "Lootbox Common", "<:lb_01_common:1535552629092913172>"
 
         # Cập nhật DB
         await execute_db(

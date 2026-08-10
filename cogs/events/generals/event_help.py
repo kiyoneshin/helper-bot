@@ -24,7 +24,7 @@ COLOR_THEME = 0xFFB6C1  # Angelic pink
 CMD_DATA: dict[str, dict] = {
     "inv": {
         "name": "Kho Đồ",
-        "emoji": "🎒",
+        "emoji": "<:icon_07_inventory:1535664855300710422>",
         "short": "Xem túi đồ của bạn.",
         "aliases": ["bag", "tuido", "khodo", "inventory"],
         "cooldown": None,
@@ -85,7 +85,7 @@ CMD_DATA: dict[str, dict] = {
     },
     "dice": {
         "name": "Dice 7",
-        "emoji": "🎲",
+        "emoji": "<:gambling_dice:1536291212141527050>",
         "short": "Lắc xúc xắc 7 mặt. Mặt 4-6 thắng x1.25~x2.0. Mặt 7 nổ hũ x8.0 tiền cược.",
         "aliases": [],
         "cooldown": None,
@@ -165,7 +165,7 @@ CMD_DATA: dict[str, dict] = {
     },
     "taixiu": {
         "name": "Tài Xỉu",
-        "emoji": "🎲",
+        "emoji": "<:gambling_dice:1536291212141527050>",
         "short": "Lắc 3 xúc xắc. Tài (11-17) / Xỉu (4-10). Thắng x1.95.",
         "aliases": ["tx"],
         "cooldown": None,
@@ -205,7 +205,7 @@ CMD_DATA: dict[str, dict] = {
     },
     "multidice": {
         "name": "Multi Dice (PvP)",
-        "emoji": "🎲",
+        "emoji": "<:gambling_dice:1536291212141527050>",
         "short": "Xúc Xắc PvP nhiều người. Điểm cao nhất ăn cả nồi.",
         "aliases": ["md", "quanhung"],
         "cooldown": None,

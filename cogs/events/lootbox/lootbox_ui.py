@@ -221,7 +221,7 @@ def build_history_embed(
         inline=True,
     )
     embed.add_field(
-        name="🎒 Đồ Nhận Nhiều Nhất",
+        name="<:icon_07_inventory:1535664855300710422> Đồ Nhận Nhiều Nhất",
         value=top_str or "*(chưa có)*",
         inline=True,
     )
@@ -258,12 +258,36 @@ class LootboxInfoSelect(discord.ui.Select):
         self.author_id = author_id
         from .lootbox_config import LB_COMMON, LB_UNCOMMON, LB_RARE, LB_EPIC, LB_LEGENDARY, LB_GODLY
         options = [
-            discord.SelectOption(label="📦 Common",    value=str(LB_COMMON)),
-            discord.SelectOption(label="🟢 Uncommon",  value=str(LB_UNCOMMON)),
-            discord.SelectOption(label="🔵 Rare",      value=str(LB_RARE)),
-            discord.SelectOption(label="🟣 Epic",      value=str(LB_EPIC)),
-            discord.SelectOption(label="🟠 Legendary", value=str(LB_LEGENDARY)),
-            discord.SelectOption(label="🌟 Godly",     value=str(LB_GODLY)),
+            discord.SelectOption(
+                label="Common", 
+                value=str(LB_COMMON), 
+                emoji="<:lb_01_common:1535552629092913172>"
+            ),
+            discord.SelectOption(
+                label="Uncommon", 
+                value=str(LB_UNCOMMON), 
+                emoji="<:lb_02_uncommon:1535552631257174138>"
+            ),
+            discord.SelectOption(
+                label="Rare", 
+                value=str(LB_RARE), 
+                emoji="<:lb_03_rare:1535552633660776509>"
+            ),
+            discord.SelectOption(
+                label="Epic", 
+                value=str(LB_EPIC), 
+                emoji="<:lb_04_epic:1535552635778760774>"
+            ),
+            discord.SelectOption(
+                label="Legendary", 
+                value=str(LB_LEGENDARY), 
+                emoji="<:lb_05_legendary:1535552637850624011>"
+            ),
+            discord.SelectOption(
+                label="Godly", 
+                value=str(LB_GODLY), 
+                emoji="<:lb_06_godly:1535552639834783764>"
+            ),
         ]
         super().__init__(placeholder="Chọn tier để xem tỉ lệ...", options=options)
 
