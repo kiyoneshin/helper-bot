@@ -56,12 +56,12 @@ TIER_COLORS: dict[int, int] = {
 
 # Rank colors cho vật phẩm nhận được
 RANK_COLORS: dict[int, str] = {
-    0: "⬜",  # Common
-    1: "🟩",  # Common+
-    2: "🟦",  # Rare
-    3: "🟪",  # Epic
-    4: "🟧",  # Legendary
-    5: "🌟",  # Godly
+    0: "<:lb_rarity_01_common:1536333367451062293>",  # Common
+    1: "<:lb_rarity_02_uncommon:1536333369636425728>",  # Common+
+    2: "<:lb_rarity_03_rare:1536333371590971482>",  # Rare
+    3: "<:lb_rarity_04_epic:1536333373692444732>",  # Epic
+    4: "<:lb_rarity_05_legendarypng:1536333376003379300>",  # Legendary
+    5: "<:lb_rarity_06_godly:1536333377819381811>",  # Godly
 }
 
 # ---------------------------------------------------------------------------
