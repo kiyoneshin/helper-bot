@@ -18,7 +18,7 @@ class FarmView(discord.ui.View):
         self.author = author
         # Dropdown gieo trồng đã được thay thế bằng lệnh kplant
         
-    @discord.ui.button(label="Tưới Nước Tất Cả", emoji="<:symbol_watering_can:1536295381862715453>", style=discord.ButtonStyle.primary, row=0)
+    @discord.ui.button(label="Tưới Nước Tất Cả", emoji="💧", style=discord.ButtonStyle.primary, row=0)
     async def water_btn(self, interaction: discord.Interaction, button: discord.ui.Button):
         if str(interaction.user.id) != self.user_id:
             await interaction.response.send_message("<:symbol_wrong:1536289315867598849> Bạn không thể tương tác với nông trại của người khác!", ephemeral=True)
