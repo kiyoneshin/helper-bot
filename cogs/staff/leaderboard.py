@@ -586,7 +586,7 @@ class DateSelectionView(discord.ui.View):
         # 5. Xóa panel chọn ngày ephemeral
         try:
             await interaction.response.edit_message(
-                content="<:symbol_right:1536289313959186472> **Đã áp dụng thành công!** Panel này sẽ tự đóng.",
+                content="<:symbol_right:1536629912515903578> **Đã áp dụng thành công!** Panel này sẽ tự đóng.",
                 embed=None,
                 view=None,
             )

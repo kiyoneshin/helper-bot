@@ -61,21 +61,21 @@ async def buy_lottery_tickets(
         return False, "🔒 Sòng đang đóng cửa quay số, chen ngang làm gì!"
 
     if amount <= 0:
-        return False, "<:symbol_wrong:1536289315867598849> Mua 0 vé thì trúng gió à? Nhập số đàng hoàng vô!"
+        return False, "<:symbol_wrong:1536629915598848072> Mua 0 vé thì trúng gió à? Nhập số đàng hoàng vô!"
 
     current_tickets = await fetchval_db(bot, "SELECT tickets FROM lottery_tickets WHERE discord_id = $1", uid)
     current_tickets = int(current_tickets) if current_tickets else 0
 
     if current_tickets + amount > MAX_TICKETS_PER_USER:
         return False, (
-            f"<:symbol_wrong:1536289315867598849> Tham lam vừa thôi! Đang có **{current_tickets}** vé rồi, mua thêm **{amount}** là lố luật "
+            f"<:symbol_wrong:1536629915598848072> Tham lam vừa thôi! Đang có **{current_tickets}** vé rồi, mua thêm **{amount}** là lố luật "
             f"{MAX_TICKETS_PER_USER} vé của sòng!"
         )
 
     cost = amount * TICKET_PRICE
     ok = await deduct_event_points(bot, uid, cost)
     if not ok:
-        return False, f"<:symbol_wrong:1536289315867598849> Ví rỗng tuẼh mà đòi đú **{amount}** vé? Kiếm thêm **{cost:,}** điểm rồi quay lại!"
+        return False, f"<:symbol_wrong:1536629915598848072> Ví rỗng tuẼh mà đòi đú **{amount}** vé? Kiếm thêm **{cost:,}** điểm rồi quay lại!"
 
     await execute_db(
         bot,
@@ -87,7 +87,7 @@ async def buy_lottery_tickets(
     )
 
     return True, (
-        f"<:symbol_right:1536289313959186472> Chốt kèo! Đã múc **{amount:,}** vé (bay mất **{cost:,}** điểm).\n"
+        f"<:symbol_right:1536629912515903578> Chốt kèo! Đã múc **{amount:,}** vé (bay mất **{cost:,}** điểm).\n"
         f"Trong tay đang có **{current_tickets + amount:,}** vé, chuẩn bị đổi đời thôi!"
     )
 
@@ -315,7 +315,7 @@ class Lottery(commands.Cog):
             return
 
         if amount <= 0:
-            await ctx.send(f"<:symbol_wrong:1536289315867598849> {ctx.author.mention} Bán 0 vé thì sòng mua kiểu gì? Bấm lại!", delete_after=5.0)
+            await ctx.send(f"<:symbol_wrong:1536629915598848072> {ctx.author.mention} Bán 0 vé thì sòng mua kiểu gì? Bấm lại!", delete_after=5.0)
             return
 
         uid = str(ctx.author.id)
@@ -325,7 +325,7 @@ class Lottery(commands.Cog):
         current_tickets = int(current_tickets) if current_tickets else 0
 
         if current_tickets < amount:
-            await ctx.send(f"<:symbol_wrong:1536289315867598849> {ctx.author.mention} Gáy to vậy? Trong tay có mỗi **{current_tickets}** vé mà đòi bán tới **{amount}** vé à!", delete_after=5.0)
+            await ctx.send(f"<:symbol_wrong:1536629915598848072> {ctx.author.mention} Gáy to vậy? Trong tay có mỗi **{current_tickets}** vé mà đòi bán tới **{amount}** vé à!", delete_after=5.0)
             return
 
         refund = amount * TICKET_PRICE

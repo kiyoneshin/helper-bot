@@ -168,7 +168,7 @@ class LootboxCog(commands.Cog):
             uid,
         )
         if not row:
-            await ctx.send("<:symbol_wrong:1536289315867598849> Không tìm thấy hồ sơ của bạn.", ephemeral=True)
+            await ctx.send("<:symbol_wrong:1536629915598848072> Không tìm thấy hồ sơ của bạn.", ephemeral=True)
             return
 
         last_pray = row["last_pray"]
@@ -244,13 +244,13 @@ class LootboxCog(commands.Cog):
         tier_id = parse_tier(tier_raw)
         if tier_id is None:
             await ctx.send(
-                f"<:symbol_wrong:1536289315867598849> Tier không hợp lệ! Dùng: `c/u/r/e/l/g` hoặc tên đầy đủ như `epic`.",
+                f"<:symbol_wrong:1536629915598848072> Tier không hợp lệ! Dùng: `c/u/r/e/l/g` hoặc tên đầy đủ như `epic`.",
                 ephemeral=True,
             )
             return
 
         if qty < 1 or qty > 50:
-            await ctx.send("<:symbol_wrong:1536289315867598849> Số lượng phải từ 1 đến 50.", ephemeral=True)
+            await ctx.send("<:symbol_wrong:1536629915598848072> Số lượng phải từ 1 đến 50.", ephemeral=True)
             return
 
         uid = str(ctx.author.id)
@@ -261,7 +261,7 @@ class LootboxCog(commands.Cog):
             self.bot, "SELECT inventory FROM event_profiles WHERE discord_id = $1", uid
         )
         if not row:
-            await ctx.send("<:symbol_wrong:1536289315867598849> Không tìm thấy hồ sơ!", ephemeral=True)
+            await ctx.send("<:symbol_wrong:1536629915598848072> Không tìm thấy hồ sơ!", ephemeral=True)
             return
 
         inv = row["inventory"]
@@ -275,7 +275,7 @@ class LootboxCog(commands.Cog):
             tier_name = TIER_NAMES[tier_id]
             tier_emoji = TIER_EMOJIS[tier_id]
             await ctx.send(
-                f"<:symbol_wrong:1536289315867598849> Bạn chỉ có **{has_qty}x {tier_emoji} {tier_name}** lootbox, "
+                f"<:symbol_wrong:1536629915598848072> Bạn chỉ có **{has_qty}x {tier_emoji} {tier_name}** lootbox, "
                 f"không đủ để mở {qty}x!",
                 ephemeral=True,
             )
@@ -337,7 +337,7 @@ class LootboxCog(commands.Cog):
         if tier_raw:
             tier_id = parse_tier(tier_raw)
             if tier_id is None:
-                await ctx.send("<:symbol_wrong:1536289315867598849> Tier không hợp lệ!", ephemeral=True)
+                await ctx.send("<:symbol_wrong:1536629915598848072> Tier không hợp lệ!", ephemeral=True)
                 return
             embed = build_info_embed(tier_id)
             await ctx.send(embed=embed)
@@ -361,7 +361,7 @@ class LootboxCog(commands.Cog):
         if tier_raw:
             tier_id = parse_tier(tier_raw)
             if tier_id is None:
-                await ctx.send("<:symbol_wrong:1536289315867598849> Tier không hợp lệ!", ephemeral=True)
+                await ctx.send("<:symbol_wrong:1536629915598848072> Tier không hợp lệ!", ephemeral=True)
                 return
             tiers_to_show = [tier_id]
         else:

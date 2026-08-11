@@ -87,7 +87,7 @@ async def _check_busy(bot: commands.Bot, ctx: commands.Context) -> bool:
     active_players: set = getattr(bot, 'active_players', set())
     if ctx.author.id in active_players:
         await ctx.send(
-            f"<:symbol_wrong:1536289315867598849> {ctx.author.mention} Đang ngồi sòng khác rồi cha nội! Chốt kèo bên kia xong đi rồi qua đây đú tiếp."
+            f"<:symbol_wrong:1536629915598848072> {ctx.author.mention} Đang ngồi sòng khác rồi cha nội! Chốt kèo bên kia xong đi rồi qua đây đú tiếp."
         )
         return True
     return False
@@ -129,7 +129,7 @@ class VietnamGames(commands.Cog):
         choice = choice.lower().strip()
         if choice not in ("tai", "xiu"):
             await ctx.send(
-                f"<:symbol_wrong:1536289315867598849> {ctx.author.mention} Bấm bậy bạ gì vậy? Dùng `tai` hoặc `xiu`.\n"
+                f"<:symbol_wrong:1536629915598848072> {ctx.author.mention} Bấm bậy bạ gì vậy? Dùng `tai` hoặc `xiu`.\n"
                 "Cú pháp: `ktx <tai/xiu> <tiền_cược>`"
             )
             return
@@ -138,7 +138,7 @@ class VietnamGames(commands.Cog):
         balance = await _get_balance(self.bot, uid)
         bet, err, is_all = _parse_bet(bet_raw, balance)
         if err or bet is None:
-            await ctx.send(f"<:symbol_wrong:1536289315867598849> {ctx.author.mention} {err}")
+            await ctx.send(f"<:symbol_wrong:1536629915598848072> {ctx.author.mention} {err}")
             return
 
         if is_all:
@@ -152,7 +152,7 @@ class VietnamGames(commands.Cog):
     @taixiu_cmd.error
     async def taixiu_cmd_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument)):
-            await ctx.send(f"<:symbol_wrong:1536289315867598849> {ctx.author.mention} Muốn làm đại gia Tài Xỉu mà không đặt cược à? Cú pháp: `{ctx.prefix}tx <tai/xiu> <tiền_cược | all>`. Để biết thêm chi tiết hãy xài lệnh `{ctx.prefix}ehelp tx`")
+            await ctx.send(f"<:symbol_wrong:1536629915598848072> {ctx.author.mention} Muốn làm đại gia Tài Xỉu mà không đặt cược à? Cú pháp: `{ctx.prefix}tx <tai/xiu> <tiền_cược | all>`. Để biết thêm chi tiết hãy xài lệnh `{ctx.prefix}ehelp tx`")
 
 
     async def _exec_taixiu(self, ctx: commands.Context, choice: str, bet: int, uid: str, balance: int) -> None:
@@ -190,7 +190,7 @@ class VietnamGames(commands.Cog):
         # ── Cập nhật DB ──────────────────────────────────────────────────
         ok = await _apply_delta(self.bot, uid, delta)
         if not ok:
-            await ctx.send(f"<:symbol_wrong:1536289315867598849> {ctx.author.mention} Sập nguồn cơ sở dữ liệu, thử lại sau!")
+            await ctx.send(f"<:symbol_wrong:1536629915598848072> {ctx.author.mention} Sập nguồn cơ sở dữ liệu, thử lại sau!")
             return
 
         new_balance = balance + delta
@@ -202,7 +202,7 @@ class VietnamGames(commands.Cog):
             embed_title = "Tài Xỉu — Bão Lũ Quét Sạch!"
             embed_color = COLOR_LOSE
             dice_desc = f"Kết quả: **[ {d1} ]  [ {d2} ]  [ {d3} ]**  **BÃO ({total})**"
-            result_name = "<:symbol_wrong:1536289315867598849> Kết quả"
+            result_name = "<:symbol_wrong:1536629915598848072> Kết quả"
             result_val = f"{delta:,}  *(Đi bụi do dính Bão!)*"
         else:
             embed_title = "<:gambling_dice:1536291212141527050> Tài Xỉu (Sic Bo)"
@@ -210,10 +210,10 @@ class VietnamGames(commands.Cog):
             dice_desc = f"Kết quả: **[ {d1} ]  [ {d2} ]  [ {d3} ]**  Tổng: **{total} ({outcome_desc})**"
             
             if is_win:
-                result_name = "<:symbol_right:1536289313959186472> Kết quả"
+                result_name = "<:symbol_right:1536629912515903578> Kết quả"
                 result_val = f"+{delta:,}  *(Húp +95%)*"
             else:
-                result_name = "<:symbol_wrong:1536289315867598849> Kết quả"
+                result_name = "<:symbol_wrong:1536629915598848072> Kết quả"
                 result_val = f"{delta:,}  *(Mút trọn)*"
 
         embed = discord.Embed(
@@ -358,7 +358,7 @@ class VietnamGames(commands.Cog):
                 if err or amount is None:
                     try:
                         await msg.reply(
-                            f"<:symbol_wrong:1536289315867598849> {msg.author.mention} {err}",
+                            f"<:symbol_wrong:1536629915598848072> {msg.author.mention} {err}",
                             delete_after=5,
                         )
                     except discord.HTTPException:
@@ -369,7 +369,7 @@ class VietnamGames(commands.Cog):
                 if not ok:
                     try:
                         await msg.reply(
-                            f"<:symbol_wrong:1536289315867598849> {msg.author.mention} Đỗ nghèo khỉ mà đòi cược thêm **{amount:,}** à?",
+                            f"<:symbol_wrong:1536629915598848072> {msg.author.mention} Đỗ nghèo khỉ mà đòi cược thêm **{amount:,}** à?",
                             delete_after=5,
                         )
                     except discord.HTTPException:
@@ -385,7 +385,7 @@ class VietnamGames(commands.Cog):
 
             if placed_any:
                 try:
-                    await msg.add_reaction("<:symbol_right:1536289313959186472>")
+                    await msg.add_reaction("<:symbol_right:1536629912515903578>")
                 except discord.HTTPException:
                     pass
 
@@ -485,14 +485,14 @@ class VietnamGames(commands.Cog):
                     payout = bets[key] + bets[key] * count
                     line += f" → <:symbol_boards:1536007665153474681> Trúng {count}x → +**{payout:,}**"
                 else:
-                    line += " → <:symbol_wrong:1536289315867598849>"
+                    line += " → <:symbol_wrong:1536629915598848072>"
                 bet_lines.append(line)
 
             result_desc = f"{dice_display}\n\n" + "\n".join(bet_lines)
 
             is_profit = net_gain > 0
             embed_color = 0x00FF00 if is_profit else (0x808080 if net_gain == 0 else 0xFF0000)
-            result_field_name = "<:symbol_right:1536289313959186472> Kết quả" if is_profit else ("<:symbol_wrong:1536289315867598849> Kết quả" if net_gain < 0 else "⚪ Kết quả")
+            result_field_name = "<:symbol_right:1536629912515903578> Kết quả" if is_profit else ("<:symbol_wrong:1536629915598848072> Kết quả" if net_gain < 0 else "⚪ Kết quả")
             result_field_val = (
                 f"+{net_gain:,}  *(Húp)*" if net_gain > 0
                 else (f"{net_gain:,}  *(Mút trọn)*" if net_gain < 0 else "Hoà vốn")

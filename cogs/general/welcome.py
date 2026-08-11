@@ -72,7 +72,7 @@ class WelcomeCog(commands.Cog):
 
         # 3. Chốt chặn cuối cùng cho Pylance: Nếu sau các bước trên target vẫn không phải là Member thì dừng
         if not isinstance(target, discord.Member):
-            await ctx.send("<:symbol_wrong:1536289315867598849> Không thể xác định được đối tượng Member hợp lệ để chạy kiểm thử!")
+            await ctx.send("<:symbol_wrong:1536629915598848072> Không thể xác định được đối tượng Member hợp lệ để chạy kiểm thử!")
             return
 
         # Từ dòng này trở đi, Pylance hiểu chắc chắn 100% target là discord.Member

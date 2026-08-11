@@ -88,7 +88,7 @@ class StaffUICog(commands.Cog):
 
         if not target_id:
             await ctx.send(
-                "<:symbol_wrong:1536289315867598849> **Vui lòng nhập ID hoặc ping nhân sự muốn xem đánh giá!**\n"
+                "<:symbol_wrong:1536629915598848072> **Vui lòng nhập ID hoặc ping nhân sự muốn xem đánh giá!**\n"
                 f"Ví dụ chuẩn: `{ctx.prefix}fb <@468428368828956692>` hoặc `{ctx.prefix}fb 468428368828956692`"
             )
             return
@@ -97,7 +97,7 @@ class StaffUICog(commands.Cog):
             records = await query_db(self.bot, "SELECT display_name, votes, rating FROM profiles WHERE discord_id = $1", target_id)
             if not records:
                 await ctx.send(
-                    "<:symbol_wrong:1536289315867598849> **Không tìm thấy nhân sự này trong Database!**\n"
+                    "<:symbol_wrong:1536629915598848072> **Không tìm thấy nhân sự này trong Database!**\n"
                     "❓ Vui lòng kiểm tra lại chính xác ID hoặc ping lại."
                 )
                 return

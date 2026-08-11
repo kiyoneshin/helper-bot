@@ -109,7 +109,7 @@ class JailTasks(commands.Cog):
             if freed:
                 embed_ok = discord.Embed(
                     title="🎓 Thiên Tài! Trả Tự Do!",
-                    description=f"<:symbol_right:1536289313959186472> {ctx.author.mention} Đúng! Đáp án là **{answer}**.\nHoàn thành cải tạo — thả tù ngay!",
+                    description=f"<:symbol_right:1536629912515903578> {ctx.author.mention} Đúng! Đáp án là **{answer}**.\nHoàn thành cải tạo — thả tù ngay!",
                     color=COLOR_FREE,
                 )
             else:
@@ -120,7 +120,7 @@ class JailTasks(commands.Cog):
                 )
                 remaining = int(row["clean_count"]) if row else 0
                 embed_ok = discord.Embed(
-                    title="<:symbol_right:1536289313959186472> Chính Xác!",
+                    title="<:symbol_right:1536629912515903578> Chính Xác!",
                     description=(
                         f"{ctx.author.mention} Đúng rồi! Đáp án là **{answer}**.\n"
                         f"Giảm **2 án** — còn lại **{remaining}** lần nữa."
@@ -130,7 +130,7 @@ class JailTasks(commands.Cog):
             await ctx.send(embed=embed_ok)
         else:
             embed_fail = discord.Embed(
-                title="<:symbol_wrong:1536289315867598849> Sai Bét!",
+                title="<:symbol_wrong:1536629915598848072> Sai Bét!",
                 description=(
                     f"{ctx.author.mention} Sai rồi! Đáp án đúng là **{answer}**, "
                     f"mày điền **{user_answer}**.\n\n"

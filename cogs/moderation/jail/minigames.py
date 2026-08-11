@@ -52,7 +52,7 @@ class JailGames(commands.Cog):
             uid,
         )
         if row is None:
-            await ctx.send(f"<:symbol_wrong:1536289315867598849> {ctx.author.mention} Không có dữ liệu tù nhân.")
+            await ctx.send(f"<:symbol_wrong:1536629915598848072> {ctx.author.mention} Không có dữ liệu tù nhân.")
             return
 
         current = int(row["clean_count"])
@@ -147,7 +147,7 @@ class JailGames(commands.Cog):
             uid,
         )
         if row is None:
-            await ctx.send(f"<:symbol_wrong:1536289315867598849> {ctx.author.mention} Không có dữ liệu tù nhân.")
+            await ctx.send(f"<:symbol_wrong:1536629915598848072> {ctx.author.mention} Không có dữ liệu tù nhân.")
             return
 
         current = int(row["clean_count"])

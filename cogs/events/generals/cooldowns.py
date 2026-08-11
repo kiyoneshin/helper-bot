@@ -35,8 +35,8 @@ def format_timedelta(td: timedelta) -> str:
 def _format_cd(is_ready: bool, label: str, duration_str: str = "") -> str:
     if is_ready:
         if duration_str:
-            return f"<:symbol_right:1536289313959186472> — **{label}** ({duration_str})"
-        return f"<:symbol_right:1536289313959186472> — **{label}**"
+            return f"<:symbol_right:1536629912515903578> — **{label}** ({duration_str})"
+        return f"<:symbol_right:1536629912515903578> — **{label}**"
     if duration_str:
         return f"🕒 — **{label}** ({duration_str})"
     return f"🕒 — **{label}**"
@@ -268,7 +268,7 @@ class CooldownsCog(commands.Cog):
                         rem = actual_cd - passed
                         tier_parts.append(f"{action} {format_timedelta(timedelta(seconds=rem))}")
                     else:
-                        tier_parts.append(f"{action} <:symbol_right:1536289313959186472>")
+                        tier_parts.append(f"{action} <:symbol_right:1536629912515903578>")
                         
                 actions_lines.append(f"**Tier {tier}:** " + " — ".join(tier_parts))
                         

@@ -85,17 +85,17 @@ class RenameModal(discord.ui.Modal, title="Đổi tên phòng"):
     async def on_submit(self, interaction: discord.Interaction):
         new_name = str(self.name_input).strip()
         if not new_name:
-            await interaction.response.send_message("<:symbol_wrong:1536289315867598849> Tên phòng không được để trống!", ephemeral=True)
+            await interaction.response.send_message("<:symbol_wrong:1536629915598848072> Tên phòng không được để trống!", ephemeral=True)
             return
         try:
             await self.channel.edit(name=new_name)
             pool = getattr(self.bot, "db_pool", None)
             if pool:
                 await _save_user_settings(pool, self.owner_id, channel_name=new_name)
-            await interaction.response.send_message(f"<:symbol_right:1536289313959186472> Đã đổi tên phòng: **{new_name}**", ephemeral=True)
+            await interaction.response.send_message(f"<:symbol_right:1536629912515903578> Đã đổi tên phòng: **{new_name}**", ephemeral=True)
         except discord.HTTPException as e:
             msg = "Rate Limit! Discord chỉ cho đổi tên 2 lần/10 phút. Hãy đợi rồi thử lại!" if e.status == 429 else str(e)
-            await interaction.response.send_message(f"<:symbol_wrong:1536289315867598849> {msg}", ephemeral=True)
+            await interaction.response.send_message(f"<:symbol_wrong:1536629915598848072> {msg}", ephemeral=True)
 
 
 class LimitModal(discord.ui.Modal, title="Giới hạn người dùng"):
@@ -109,16 +109,16 @@ class LimitModal(discord.ui.Modal, title="Giới hạn người dùng"):
         try:
             limit = int(str(self.limit_input))
             if not 0 <= limit <= 99:
-                await interaction.response.send_message("<:symbol_wrong:1536289315867598849> Giới hạn phải từ 0 đến 99!", ephemeral=True)
+                await interaction.response.send_message("<:symbol_wrong:1536629915598848072> Giới hạn phải từ 0 đến 99!", ephemeral=True)
                 return
             await self.channel.edit(user_limit=limit)
             pool = getattr(self.bot, "db_pool", None)
             if pool:
                 await _save_user_settings(pool, self.owner_id, user_limit=limit)
             label = "không giới hạn" if limit == 0 else f"**{limit}** người"
-            await interaction.response.send_message(f"<:symbol_right:1536289313959186472> Đã đặt giới hạn: {label}", ephemeral=True)
+            await interaction.response.send_message(f"<:symbol_right:1536629912515903578> Đã đặt giới hạn: {label}", ephemeral=True)
         except ValueError:
-            await interaction.response.send_message("<:symbol_wrong:1536289315867598849> Vui lòng nhập số hợp lệ!", ephemeral=True)
+            await interaction.response.send_message("<:symbol_wrong:1536629915598848072> Vui lòng nhập số hợp lệ!", ephemeral=True)
 
 
 class PermitModal(discord.ui.Modal, title="Cho phép người dùng"):
@@ -132,18 +132,18 @@ class PermitModal(discord.ui.Modal, title="Cho phép người dùng"):
         raw   = str(self.user_input).strip()
         match = re.search(r"\d{17,20}", raw)
         if not match:
-            await interaction.response.send_message("<:symbol_wrong:1536289315867598849> Không tìm thấy ID hợp lệ!", ephemeral=True)
+            await interaction.response.send_message("<:symbol_wrong:1536629915598848072> Không tìm thấy ID hợp lệ!", ephemeral=True)
             return
         if not isinstance(interaction.guild, discord.Guild):
             return
         target = interaction.guild.get_member(int(match.group()))
         if not target:
-            await interaction.response.send_message("<:symbol_wrong:1536289315867598849> Không tìm thấy thành viên trong server!", ephemeral=True)
+            await interaction.response.send_message("<:symbol_wrong:1536629915598848072> Không tìm thấy thành viên trong server!", ephemeral=True)
             return
         ow = self.channel.overwrites_for(target)
         ow.connect, ow.view_channel = True, True
         await self.channel.set_permissions(target, overwrite=ow)
-        await interaction.response.send_message(f"<:symbol_right:1536289313959186472> Đã cấp quyền vào phòng cho **{target.display_name}**!", ephemeral=True)
+        await interaction.response.send_message(f"<:symbol_right:1536629912515903578> Đã cấp quyền vào phòng cho **{target.display_name}**!", ephemeral=True)
 
 # ==============================================================================
 # USER SELECTS
@@ -157,7 +157,7 @@ class RejectSelect(discord.ui.UserSelect):
     async def callback(self, interaction: discord.Interaction):
         target = self.values[0]
         if target.id == interaction.user.id or target.bot:
-            await interaction.response.send_message("<:symbol_wrong:1536289315867598849> Không thể chọn người này!", ephemeral=True)
+            await interaction.response.send_message("<:symbol_wrong:1536629915598848072> Không thể chọn người này!", ephemeral=True)
             return
         
         if isinstance(interaction.guild, discord.Guild):
@@ -181,9 +181,9 @@ class TransferSelect(discord.ui.UserSelect):
     async def callback(self, interaction: discord.Interaction):
         new_owner = self.values[0]
         if new_owner.bot or new_owner.id == interaction.user.id:
-            return await interaction.response.send_message("<:symbol_wrong:1536289315867598849> Không thể chọn người này!", ephemeral=True)
+            return await interaction.response.send_message("<:symbol_wrong:1536629915598848072> Không thể chọn người này!", ephemeral=True)
         if new_owner not in self.channel.members:
-            return await interaction.response.send_message("<:symbol_wrong:1536289315867598849> Người này không có trong phòng!", ephemeral=True)
+            return await interaction.response.send_message("<:symbol_wrong:1536629915598848072> Người này không có trong phòng!", ephemeral=True)
         pool = getattr(self.bot, "db_pool", None)
         if pool:
             await pool.execute("UPDATE active_voice_channels SET owner_id=$1 WHERE channel_id=$2",
@@ -211,13 +211,13 @@ class SettingsSelect(discord.ui.Select):
         if pool:
             row = await _get_active_channel(pool, self.channel.id)
             if row and interaction.user.id != row["owner_id"]:
-                return await interaction.response.send_message("<:symbol_wrong:1536289315867598849> Chỉ **chủ phòng** mới có thể thay đổi!", ephemeral=True)
+                return await interaction.response.send_message("<:symbol_wrong:1536629915598848072> Chỉ **chủ phòng** mới có thể thay đổi!", ephemeral=True)
         if not isinstance(interaction.guild, discord.Guild) or not isinstance(interaction.user, discord.Member):
             return
         perm_key = "can_change_name" if self.values[0] == "rename" else "can_change_limit"
         has_perm = await _check_perm(pool, interaction.guild.id, interaction.user, perm_key) if pool else False
         if not has_perm:
-            return await interaction.response.send_message("<:symbol_wrong:1536289315867598849> Role của bạn chưa có quyền này!", ephemeral=True)
+            return await interaction.response.send_message("<:symbol_wrong:1536629915598848072> Role của bạn chưa có quyền này!", ephemeral=True)
         if self.values[0] == "rename":
             await interaction.response.send_modal(RenameModal(self.channel, self.bot, self.owner_id))
         else:
@@ -235,7 +235,7 @@ class PermissionsSelect(discord.ui.Select):
                 discord.SelectOption(label="Mở khóa",  description="Mở lại kênh",                          emoji="🔓", value="unlock"),
                 discord.SelectOption(label="Ẩn",       description="Ẩn kênh khỏi danh sách",               emoji="👻", value="hide"),
                 discord.SelectOption(label="Hiện",     description="Hiển thị lại kênh",                    emoji="👁️", value="show"),
-                discord.SelectOption(label="Cho phép", description="Cấp quyền vào cho 1 người",            emoji="<:symbol_right:1536289313959186472>",    value="permit"),
+                discord.SelectOption(label="Cho phép", description="Cấp quyền vào cho 1 người",            emoji="<:symbol_right:1536629912515903578>",    value="permit"),
                 discord.SelectOption(label="Từ chối",  description="Đuổi và cấm người dùng vào kênh",      emoji="🥾", value="reject"),
                 discord.SelectOption(label="Mời",      description="Cấp quyền mà không đuổi",              emoji="📨", value="invite"),
                 discord.SelectOption(label="Chuyển",   description="Chuyển quyền chủ phòng",               emoji="👑", value="transfer"),
@@ -248,13 +248,13 @@ class PermissionsSelect(discord.ui.Select):
         if pool:
             row = await _get_active_channel(pool, self.channel.id)
             if row and interaction.user.id != row["owner_id"]:
-                return await interaction.response.send_message("<:symbol_wrong:1536289315867598849> Chỉ **chủ phòng** mới có thể đổi quyền!", ephemeral=True)
+                return await interaction.response.send_message("<:symbol_wrong:1536629915598848072> Chỉ **chủ phòng** mới có thể đổi quyền!", ephemeral=True)
         if not isinstance(interaction.guild, discord.Guild) or not isinstance(interaction.user, discord.Member):
             return
 
         if val in ("lock", "unlock"):
             if not await _check_perm(pool, interaction.guild.id, interaction.user, "can_lock") if pool else False:
-                return await interaction.response.send_message("<:symbol_wrong:1536289315867598849> Chưa có quyền khóa/mở phòng!", ephemeral=True)
+                return await interaction.response.send_message("<:symbol_wrong:1536629915598848072> Chưa có quyền khóa/mở phòng!", ephemeral=True)
             ow = self.channel.overwrites_for(interaction.guild.default_role)
             ow.connect = False if val == "lock" else None
             await self.channel.set_permissions(interaction.guild.default_role, overwrite=ow)
@@ -265,7 +265,7 @@ class PermissionsSelect(discord.ui.Select):
 
         elif val in ("hide", "show"):
             if not await _check_perm(pool, interaction.guild.id, interaction.user, "can_hide") if pool else False:
-                return await interaction.response.send_message("<:symbol_wrong:1536289315867598849> Chưa có quyền ẩn/hiện phòng!", ephemeral=True)
+                return await interaction.response.send_message("<:symbol_wrong:1536629915598848072> Chưa có quyền ẩn/hiện phòng!", ephemeral=True)
             ow = self.channel.overwrites_for(interaction.guild.default_role)
             ow.view_channel = False if val == "hide" else None
             await self.channel.set_permissions(interaction.guild.default_role, overwrite=ow)
@@ -283,9 +283,9 @@ class PermissionsSelect(discord.ui.Select):
 
         elif val == "transfer":
             if not await _check_perm(pool, interaction.guild.id, interaction.user, "can_transfer") if pool else False:
-                return await interaction.response.send_message("<:symbol_wrong:1536289315867598849> Chưa có quyền chuyển chủ phòng!", ephemeral=True)
+                return await interaction.response.send_message("<:symbol_wrong:1536629915598848072> Chưa có quyền chuyển chủ phòng!", ephemeral=True)
             if await _check_perm(pool, interaction.guild.id, interaction.user, "is_persistent") if pool else False:
-                return await interaction.response.send_message("<:symbol_wrong:1536289315867598849> Kênh cá nhân (Level 50+) không thể chuyển nhượng!", ephemeral=True)
+                return await interaction.response.send_message("<:symbol_wrong:1536629915598848072> Kênh cá nhân (Level 50+) không thể chuyển nhượng!", ephemeral=True)
             v = discord.ui.View(timeout=30); v.add_item(TransferSelect(self.channel, self.bot))
             await interaction.response.send_message("Chọn người nhận quyền chủ:", view=v, ephemeral=True)
 
@@ -305,29 +305,29 @@ class VoiceControlView(discord.ui.View):
     async def btn_claim(self, interaction: discord.Interaction, button: discord.ui.Button):
         pool = getattr(self.bot, "db_pool", None)
         if not pool or not isinstance(interaction.guild, discord.Guild) or not isinstance(interaction.user, discord.Member):
-            return await interaction.response.send_message("<:symbol_wrong:1536289315867598849> Lỗi hệ thống!", ephemeral=True)
+            return await interaction.response.send_message("<:symbol_wrong:1536629915598848072> Lỗi hệ thống!", ephemeral=True)
 
         row = await _get_active_channel(pool, self.channel.id)
         if not row:
-            return await interaction.response.send_message("<:symbol_wrong:1536289315867598849> Không tìm thấy thông tin phòng!", ephemeral=True)
+            return await interaction.response.send_message("<:symbol_wrong:1536629915598848072> Không tìm thấy thông tin phòng!", ephemeral=True)
 
         claimer = interaction.user
         current_owner_id = row["owner_id"]
 
         if claimer.id == current_owner_id:
-            return await interaction.response.send_message("<:symbol_wrong:1536289315867598849> Bạn đang là chủ phòng rồi!", ephemeral=True)
+            return await interaction.response.send_message("<:symbol_wrong:1536629915598848072> Bạn đang là chủ phòng rồi!", ephemeral=True)
         if claimer not in self.channel.members:
-            return await interaction.response.send_message("<:symbol_wrong:1536289315867598849> Bạn phải ở trong phòng để nhận quyền!", ephemeral=True)
+            return await interaction.response.send_message("<:symbol_wrong:1536629915598848072> Bạn phải ở trong phòng để nhận quyền!", ephemeral=True)
             
         old_owner = self.channel.guild.get_member(current_owner_id)
         if old_owner:
             if old_owner in self.channel.members:
                 return await interaction.response.send_message(
-                    f"<:symbol_wrong:1536289315867598849> **{old_owner.display_name}** vẫn trong phòng! Không thể Claim.", ephemeral=True
+                    f"<:symbol_wrong:1536629915598848072> **{old_owner.display_name}** vẫn trong phòng! Không thể Claim.", ephemeral=True
                 )
             if await _check_perm(pool, interaction.guild.id, old_owner, "is_persistent"):
                 return await interaction.response.send_message(
-                    "<:symbol_wrong:1536289315867598849> Đây là Kênh Cá Nhân của người khác. Không thể Claim!", ephemeral=True
+                    "<:symbol_wrong:1536629915598848072> Đây là Kênh Cá Nhân của người khác. Không thể Claim!", ephemeral=True
                 )
 
         # Apply claimer config
@@ -382,9 +382,9 @@ class VoiceControlView(discord.ui.View):
         if pool:
             row = await _get_active_channel(pool, self.channel.id)
             if row and interaction.user.id != row["owner_id"]:
-                return await interaction.response.send_message("<:symbol_wrong:1536289315867598849> Chỉ **chủ phòng** mới có quyền xóa kênh thủ công!", ephemeral=True)
+                return await interaction.response.send_message("<:symbol_wrong:1536629915598848072> Chỉ **chủ phòng** mới có quyền xóa kênh thủ công!", ephemeral=True)
         
-        await interaction.response.send_message("<:symbol_right:1536289313959186472> Đang xóa kênh...", ephemeral=True)
+        await interaction.response.send_message("<:symbol_right:1536629912515903578> Đang xóa kênh...", ephemeral=True)
         try:
             await self.channel.delete(reason="Chủ phòng tự xóa")
             if pool:

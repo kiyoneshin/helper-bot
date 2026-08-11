@@ -46,7 +46,7 @@ def build_mining_embed(author: discord.Member | discord.User, stamina: int, farm
     pickaxe_name  = PICKAXE_NAMES.get(pickaxe_level, f"Lv{pickaxe_level}")
 
     embed = discord.Embed(
-        title="⛏️ Khu Mỏ Hang Động",
+        title="Khu Mỏ Kì Bí",
         description=(
             f"Chào mừng **{author.display_name}** đến với hang động bí ẩn!\n"
             f"Hãy đập đá để tìm quặng quý. Mỗi lần đập tốn **{STAMINA_PER_HIT}** thể lực.\n"
@@ -55,9 +55,9 @@ def build_mining_embed(author: discord.Member | discord.User, stamina: int, farm
     )
 
     bar = _stamina_bar(stamina)
-    regen_info = f"(Hồi đầy sau: {_mins_to_full(stamina, regen_interval)})" if stamina < MAX_STAMINA else "<:symbol_right:1536289313959186472> Đã đầy"
+    regen_info = f"(Hồi đầy sau: {_mins_to_full(stamina, regen_interval)})" if stamina < MAX_STAMINA else "<:symbol_right:1536629912515903578> Đã đầy"
     embed.add_field(
-        name="💪 Thể Lực",
+        name="<:symbol_stamina:1536618972668235826> Thể Lực",
         value=f"{bar} **{stamina}/{MAX_STAMINA}** {regen_info}",
         inline=False,
     )
@@ -106,7 +106,7 @@ class MiningView(discord.ui.View):
     async def mine_btn(self, interaction: discord.Interaction, button: discord.ui.Button):
         if str(interaction.user.id) != self.user_id:
             await interaction.response.send_message(
-                "<:symbol_wrong:1536289315867598849> Đây không phải khu mỏ của bạn!", ephemeral=True
+                "<:symbol_wrong:1536629915598848072> Đây không phải khu mỏ của bạn!", ephemeral=True
             )
             return
 

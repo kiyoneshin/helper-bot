@@ -164,7 +164,7 @@ CMD_DATA: dict[str, dict] = {
     },
     "gaunban": {
         "name": "Mở Cấm Giveaway",
-        "emoji": "<:symbol_right:1536289313959186472>",
+        "emoji": "<:symbol_right:1536629912515903578>",
         "short": "Gỡ cấm tham gia Giveaway cho người chơi.",
         "aliases": ["gaunblacklist"],
         "cooldown": None,
@@ -369,7 +369,7 @@ def build_home_embed(bot: commands.Bot, author: discord.Member | discord.User, p
 def build_category_embed(cat_name: str, prefix: str = 'k') -> discord.Embed:
     cat = CATEGORY_DATA.get(cat_name)
     if not cat:
-        return discord.Embed(title="<:symbol_wrong:1536289315867598849> Không tìm thấy danh mục", color=discord.Color.red())
+        return discord.Embed(title="<:symbol_wrong:1536629915598848072> Không tìm thấy danh mục", color=discord.Color.red())
     embed = discord.Embed(
         title=f"{cat['emoji']} {cat_name}",
         description=f"{cat['desc']}\n\n**Chọn lệnh từ menu bên dưới để xem chi tiết:**",
@@ -397,7 +397,7 @@ def build_category_embed(cat_name: str, prefix: str = 'k') -> discord.Embed:
 def build_detail_embed(cmd_key: str, prefix: str = 'k') -> discord.Embed:
     cmd = CMD_DATA.get(cmd_key)
     if not cmd:
-        return discord.Embed(title="<:symbol_wrong:1536289315867598849> Không tìm thấy lệnh", color=discord.Color.red())
+        return discord.Embed(title="<:symbol_wrong:1536629915598848072> Không tìm thấy lệnh", color=discord.Color.red())
     embed = discord.Embed(
         title=f"{cmd['emoji']} {cmd['name']}",
         description=cmd["short"],
@@ -431,7 +431,7 @@ class HomeView(discord.ui.View):
 
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
         if interaction.user.id != self.author.id:
-            await interaction.response.send_message("<:symbol_wrong:1536289315867598849> Đây không phải trang trợ giúp của bạn!", ephemeral=True)
+            await interaction.response.send_message("<:symbol_wrong:1536629915598848072> Đây không phải trang trợ giúp của bạn!", ephemeral=True)
             return False
         return True
 
@@ -480,7 +480,7 @@ class CategoryView(discord.ui.View):
 
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
         if interaction.user.id != self.author.id:
-            await interaction.response.send_message("<:symbol_wrong:1536289315867598849> Đây không phải trang trợ giúp của bạn!", ephemeral=True)
+            await interaction.response.send_message("<:symbol_wrong:1536629915598848072> Đây không phải trang trợ giúp của bạn!", ephemeral=True)
             return False
         return True
 
@@ -542,7 +542,7 @@ class DetailView(discord.ui.View):
 
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
         if interaction.user.id != self.author.id:
-            await interaction.response.send_message("<:symbol_wrong:1536289315867598849> Đây không phải trang trợ giúp của bạn!", ephemeral=True)
+            await interaction.response.send_message("<:symbol_wrong:1536629915598848072> Đây không phải trang trợ giúp của bạn!", ephemeral=True)
             return False
         return True
 

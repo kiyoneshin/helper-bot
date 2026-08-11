@@ -183,14 +183,14 @@ class MarryConfirmView(discord.ui.View):
         import traceback
         traceback.print_exc()
         try:
-            await interaction.response.send_message(f"<:symbol_wrong:1536289315867598849> Đã xảy ra lỗi: {error}", ephemeral=True)
+            await interaction.response.send_message(f"<:symbol_wrong:1536629915598848072> Đã xảy ra lỗi: {error}", ephemeral=True)
         except:
             pass
 
     @discord.ui.button(label="Đồng ý", style=discord.ButtonStyle.success, emoji="<:icon_02_ring:1536017180951318528>")
     async def btn_accept(self, interaction: discord.Interaction, button: discord.ui.Button):
         if interaction.user.id != self.target.id:
-            return await interaction.response.send_message("<:symbol_wrong:1536289315867598849> Người ta cầu hôn bạn đâu mà bấm?", ephemeral=True)
+            return await interaction.response.send_message("<:symbol_wrong:1536629915598848072> Người ta cầu hôn bạn đâu mà bấm?", ephemeral=True)
             
         await interaction.response.defer()
         try:
@@ -198,20 +198,20 @@ class MarryConfirmView(discord.ui.View):
             
             # Double check nếu ai đó kết hôn trong lúc chờ
             if await get_marriage(self.bot, uid1) or await get_marriage(self.bot, uid2):
-                await interaction.followup.send("<:symbol_wrong:1536289315867598849> Một trong hai người đã kết hôn với người khác rồi!", ephemeral=True)
+                await interaction.followup.send("<:symbol_wrong:1536629915598848072> Một trong hai người đã kết hôn với người khác rồi!", ephemeral=True)
                 self.stop()
                 return
                 
             # Trừ nhẫn trong inventory của người cầu hôn
             row = await fetchrow_db(self.bot, "SELECT inventory FROM event_profiles WHERE discord_id = $1", uid1)
             if not row or not row["inventory"]:
-                await interaction.followup.send("<:symbol_wrong:1536289315867598849> Không tìm thấy túi đồ của người cầu hôn!", ephemeral=True)
+                await interaction.followup.send("<:symbol_wrong:1536629915598848072> Không tìm thấy túi đồ của người cầu hôn!", ephemeral=True)
                 return
             
             inv = json.loads(row["inventory"]) if isinstance(row["inventory"], str) else row["inventory"]
             ring_key = f"ring_{self.ring_id}"
             if inv.get(ring_key, 0) < 1:
-                await interaction.followup.send("<:symbol_wrong:1536289315867598849> Người cầu hôn đã làm mất chiếc nhẫn rồi!", ephemeral=True)
+                await interaction.followup.send("<:symbol_wrong:1536629915598848072> Người cầu hôn đã làm mất chiếc nhẫn rồi!", ephemeral=True)
                 return
                 
             inv[ring_key] -= 1
@@ -244,14 +244,14 @@ class MarryConfirmView(discord.ui.View):
         except Exception as e:
             import traceback
             traceback.print_exc()
-            await interaction.followup.send(f"<:symbol_wrong:1536289315867598849> Có lỗi xảy ra trong quá trình xử lý: {e}", ephemeral=True)
+            await interaction.followup.send(f"<:symbol_wrong:1536629915598848072> Có lỗi xảy ra trong quá trình xử lý: {e}", ephemeral=True)
         finally:
             self.stop()
 
-    @discord.ui.button(label="Từ chối/Hủy", style=discord.ButtonStyle.danger, emoji="<:symbol_wrong:1536289315867598849>")
+    @discord.ui.button(label="Từ chối/Hủy", style=discord.ButtonStyle.danger, emoji="<:symbol_wrong:1536629915598848072>")
     async def btn_decline(self, interaction: discord.Interaction, button: discord.ui.Button):
         if interaction.user.id not in (self.target.id, self.proposer.id):
-            return await interaction.response.send_message("<:symbol_wrong:1536289315867598849> Xin lỗi, bạn không phải là nhân vật chính.", ephemeral=True)
+            return await interaction.response.send_message("<:symbol_wrong:1536629915598848072> Xin lỗi, bạn không phải là nhân vật chính.", ephemeral=True)
             
         await interaction.response.defer()
         
@@ -283,7 +283,7 @@ class PetAdoptConfirmView(discord.ui.View):
     @discord.ui.button(label="Chắc chắn Đổi", style=discord.ButtonStyle.red)
     async def confirm(self, interaction: discord.Interaction, button: discord.ui.Button):
         if interaction.user.id != self.author.id:
-            return await interaction.response.send_message("<:symbol_wrong:1536289315867598849> Bạn không phải là người đưa ra yêu cầu!", ephemeral=True)
+            return await interaction.response.send_message("<:symbol_wrong:1536629915598848072> Bạn không phải là người đưa ra yêu cầu!", ephemeral=True)
             
         from cogs.common.db import execute_db
         await execute_db(self.bot, "UPDATE marriages SET pet_type = $1, pet_name = NULL, pet_exp = 0.0 WHERE id = $2", self.new_base_name, self.mar_id)
@@ -297,7 +297,7 @@ class PetAdoptConfirmView(discord.ui.View):
     @discord.ui.button(label="Hủy bỏ", style=discord.ButtonStyle.gray)
     async def cancel(self, interaction: discord.Interaction, button: discord.ui.Button):
         if interaction.user.id != self.author.id:
-            return await interaction.response.send_message("<:symbol_wrong:1536289315867598849> Bạn không phải là người đưa ra yêu cầu!", ephemeral=True)
+            return await interaction.response.send_message("<:symbol_wrong:1536629915598848072> Bạn không phải là người đưa ra yêu cầu!", ephemeral=True)
             
         for child in self.children:
             if isinstance(child, (discord.ui.Button, discord.ui.Select)):
@@ -319,14 +319,14 @@ class DivorceConfirmView(discord.ui.View):
         import traceback
         traceback.print_exc()
         try:
-            await interaction.response.send_message(f"<:symbol_wrong:1536289315867598849> Đã xảy ra lỗi: {error}", ephemeral=True)
+            await interaction.response.send_message(f"<:symbol_wrong:1536629915598848072> Đã xảy ra lỗi: {error}", ephemeral=True)
         except:
             pass
 
     @discord.ui.button(label="Đồng ý Ly Hôn", style=discord.ButtonStyle.success, emoji="<:symbol_heart_breaking:1536296911655673936>")
     async def btn_accept(self, interaction: discord.Interaction, button: discord.ui.Button):
         if interaction.user.id not in (self.proposer.id, self.target_id):
-            return await interaction.response.send_message("<:symbol_wrong:1536289315867598849> Đây không phải chuyện của bạn!", ephemeral=True)
+            return await interaction.response.send_message("<:symbol_wrong:1536629915598848072> Đây không phải chuyện của bạn!", ephemeral=True)
             
         await interaction.response.defer()
         
@@ -349,14 +349,14 @@ class DivorceConfirmView(discord.ui.View):
     @discord.ui.button(label="Hủy Bỏ", style=discord.ButtonStyle.danger)
     async def btn_decline(self, interaction: discord.Interaction, button: discord.ui.Button):
         if interaction.user.id not in (self.proposer.id, self.target_id):
-            return await interaction.response.send_message("<:symbol_wrong:1536289315867598849> Đây không phải chuyện của bạn!", ephemeral=True)
+            return await interaction.response.send_message("<:symbol_wrong:1536629915598848072> Đây không phải chuyện của bạn!", ephemeral=True)
             
         for child in self.children:
             if getattr(child, 'disabled', None) is not None or isinstance(child, discord.ui.Button):
                 child.disabled = True # type: ignore
                 
         emb = interaction.message.embeds[0] if interaction.message and getattr(interaction.message, "embeds", None) else discord.Embed()
-        emb.title = "<:symbol_wrong:1536289315867598849> HỦY LY HÔN"
+        emb.title = "<:symbol_wrong:1536629915598848072> HỦY LY HÔN"
         emb.description = f"**{interaction.user.display_name}** đã hủy bỏ quyết định ly hôn. Hãy cố gắng trân trọng nhau nhé!"
         emb.color = discord.Color.green()
         
@@ -383,7 +383,7 @@ class MarriageCog(commands.Cog):
         if not target:
             mar = await get_marriage(self.bot, uid)
             if not mar:
-                return await ctx.send(f"<:symbol_wrong:1536289315867598849> Bạn chưa kết hôn với ai cả! Hãy dùng `{ctx.prefix}marry @user` để cầu hôn nhé.")
+                return await ctx.send(f"<:symbol_wrong:1536629915598848072> Bạn chưa kết hôn với ai cả! Hãy dùng `{ctx.prefix}marry @user` để cầu hôn nhé.")
                 
             partner_id = mar["user2_id"] if mar["user1_id"] == uid else mar["user1_id"]
             
@@ -501,14 +501,14 @@ class MarriageCog(commands.Cog):
             
         # 2. Cầu hôn
         if target.id == ctx.author.id or target.bot:
-            return await ctx.send("<:symbol_wrong:1536289315867598849> Bạn không thể cầu hôn chính mình hoặc Bot!")
+            return await ctx.send("<:symbol_wrong:1536629915598848072> Bạn không thể cầu hôn chính mình hoặc Bot!")
             
         uid2 = str(target.id)
         if await get_marriage(self.bot, uid) or await get_marriage(self.bot, uid2):
-            return await ctx.send("<:symbol_wrong:1536289315867598849> Một trong hai người đã có gia đình! Cấm ngoại tình!")
+            return await ctx.send("<:symbol_wrong:1536629915598848072> Một trong hai người đã có gia đình! Cấm ngoại tình!")
             
         if ring_id not in RING_BUFFS:
-            return await ctx.send("<:symbol_wrong:1536289315867598849> Nhẫn không hợp lệ! Vui lòng chọn nhẫn ID từ 31 đến 40.")
+            return await ctx.send("<:symbol_wrong:1536629915598848072> Nhẫn không hợp lệ! Vui lòng chọn nhẫn ID từ 31 đến 40.")
             
         # Kiểm tra inventory
         await get_or_create_event_profile(self.bot, uid)
@@ -517,7 +517,7 @@ class MarriageCog(commands.Cog):
         if isinstance(inv, str): inv = json.loads(inv)
         
         if inv.get(f"ring_{ring_id}", 0) < 1:
-            return await ctx.send(f"<:symbol_wrong:1536289315867598849> Bạn không có chiếc nhẫn này trong túi đồ! Dùng `{ctx.prefix}shop` để mua nhé.")
+            return await ctx.send(f"<:symbol_wrong:1536629915598848072> Bạn không có chiếc nhẫn này trong túi đồ! Dùng `{ctx.prefix}shop` để mua nhé.")
             
         ring_info = get_item_by_id(ring_id)
         ring_name = f"{ring_info['icon']} {ring_info['name']}" if ring_info else "🌿 Nhẫn Cỏ"
@@ -528,14 +528,14 @@ class MarriageCog(commands.Cog):
             color=discord.Color.pink()
         )
         if not isinstance(ctx.author, discord.Member):
-            return await ctx.send("<:symbol_wrong:1536289315867598849> Lệnh này chỉ dùng trong server!")
+            return await ctx.send("<:symbol_wrong:1536629915598848072> Lệnh này chỉ dùng trong server!")
         view = MarryConfirmView(self.bot, ctx.author, target, ring_id)
         await ctx.send(content=target.mention, embed=emb, view=view)
 
     @marry_cmd.error
     async def marry_cmd_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument)):
-            await ctx.send(f"<:symbol_wrong:1536289315867598849> {ctx.author.mention} Đòi cưới mà không thèm tag tên người ta? Ai thèm lấk Cú pháp: `{ctx.prefix}marry <@user>`. Để biết thêm chi tiết hãy xài lệnh `{ctx.prefix}ehelp marry`")
+            await ctx.send(f"<:symbol_wrong:1536629915598848072> {ctx.author.mention} Đòi cưới mà không thèm tag tên người ta? Ai thèm lấk Cú pháp: `{ctx.prefix}marry <@user>`. Để biết thêm chi tiết hãy xài lệnh `{ctx.prefix}ehelp marry`")
 
 
     @commands.hybrid_command(name="divorce", aliases=["lydi", "lyhon", "lidi"])
@@ -544,11 +544,11 @@ class MarriageCog(commands.Cog):
         uid = str(ctx.author.id)
         mar = await get_marriage(self.bot, uid)
         if not mar:
-            return await ctx.send("<:symbol_wrong:1536289315867598849> Bạn chưa kết hôn mà đòi ly hôn cái gì?")
+            return await ctx.send("<:symbol_wrong:1536629915598848072> Bạn chưa kết hôn mà đòi ly hôn cái gì?")
             
         partner_id = mar["user2_id"] if mar["user1_id"] == uid else mar["user1_id"]
         if str(target.id) != partner_id:
-            return await ctx.send("<:symbol_wrong:1536289315867598849> Người đó đâu phải vợ/chồng của bạn mà đòi ly dị? Bạn hãy tag đúng tên người bạn muốn ly hôn nhé!")
+            return await ctx.send("<:symbol_wrong:1536629915598848072> Người đó đâu phải vợ/chồng của bạn mà đòi ly dị? Bạn hãy tag đúng tên người bạn muốn ly hôn nhé!")
             
         emb = discord.Embed(
             title="💔 YÊU CẦU LY HÔN",
@@ -563,7 +563,7 @@ class MarriageCog(commands.Cog):
     @divorce_cmd.error
     async def divorce_cmd_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument)):
-            await ctx.send(f"<:symbol_wrong:1536289315867598849> {ctx.author.mention} Đã ly dị còn không dám gọi thẳng tên nó? Cú pháp: `{ctx.prefix}divorce <@user>`. Để biết thêm chi tiết hãy xài lệnh `{ctx.prefix}ehelp divorce`")
+            await ctx.send(f"<:symbol_wrong:1536629915598848072> {ctx.author.mention} Đã ly dị còn không dám gọi thẳng tên nó? Cú pháp: `{ctx.prefix}divorce <@user>`. Để biết thêm chi tiết hãy xài lệnh `{ctx.prefix}ehelp divorce`")
 
 
     @commands.hybrid_command(name="promise", aliases=["hua"])
@@ -572,10 +572,10 @@ class MarriageCog(commands.Cog):
         uid = str(ctx.author.id)
         mar = await get_marriage(self.bot, uid)
         if not mar:
-            return await ctx.send("<:symbol_wrong:1536289315867598849> Cần phải kết hôn mới có người để thề non hẹn biển chứ!")
+            return await ctx.send("<:symbol_wrong:1536629915598848072> Cần phải kết hôn mới có người để thề non hẹn biển chứ!")
             
         if len(text) > 200:
-            return await ctx.send("<:symbol_wrong:1536289315867598849> Lời hứa quá dài! Hãy viết ngắn gọn dưới 200 ký tự thôi.")
+            return await ctx.send("<:symbol_wrong:1536629915598848072> Lời hứa quá dài! Hãy viết ngắn gọn dưới 200 ký tự thôi.")
             
         # Lấy promise_text hiện tại và cập nhật
         try:
@@ -591,7 +591,7 @@ class MarriageCog(commands.Cog):
     @promise_cmd.error
     async def promise_cmd_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument)):
-            await ctx.send(f"<:symbol_wrong:1536289315867598849> {ctx.author.mention} Định thề non hẹn biển bằng sự im lặng à? Cú pháp: `{ctx.prefix}promise <lời_thề>`. Để biết thêm chi tiết hãy xài lệnh `{ctx.prefix}ehelp promise`")
+            await ctx.send(f"<:symbol_wrong:1536629915598848072> {ctx.author.mention} Định thề non hẹn biển bằng sự im lặng à? Cú pháp: `{ctx.prefix}promise <lời_thề>`. Để biết thêm chi tiết hãy xài lệnh `{ctx.prefix}ehelp promise`")
 
 
     @commands.hybrid_command(name="adopt")
@@ -600,8 +600,8 @@ class MarriageCog(commands.Cog):
         uid = str(ctx.author.id)
         mar = await get_marriage(self.bot, uid)
         
-        if not mar: return await ctx.send("<:symbol_wrong:1536289315867598849> Hãy tìm một nửa của mình trước khi nghĩ đến việc nuôi con nhé!")
-        if float(mar["intimacy_points"]) < 200: return await ctx.send("<:symbol_wrong:1536289315867598849> Tình cảm chưa đủ chín muồi (Cần 200 DTM) để gánh vác trách nhiệm nuôi Pet!")
+        if not mar: return await ctx.send("<:symbol_wrong:1536629915598848072> Hãy tìm một nửa của mình trước khi nghĩ đến việc nuôi con nhé!")
+        if float(mar["intimacy_points"]) < 200: return await ctx.send("<:symbol_wrong:1536629915598848072> Tình cảm chưa đủ chín muồi (Cần 200 DTM) để gánh vác trách nhiệm nuôi Pet!")
         
         ptype = pet_type.lower()
         PET_MAP = {
@@ -616,13 +616,13 @@ class MarriageCog(commands.Cog):
         }
         
         if ptype not in PET_MAP:
-            return await ctx.send("<:symbol_wrong:1536289315867598849> Hiện tại trại thú chỉ cung cấp: `dog, cat, fox, wolf, penguin, rabbit, bear, dragon`.")
+            return await ctx.send("<:symbol_wrong:1536629915598848072> Hiện tại trại thú chỉ cung cấp: `dog, cat, fox, wolf, penguin, rabbit, bear, dragon`.")
             
         base_name = PET_MAP[ptype]
         
         if mar["pet_type"]:
             if mar["pet_type"] == base_name:
-                return await ctx.send(f"<:symbol_wrong:1536289315867598849> Bạn đang nuôi loài **{base_name}** rồi, không thể nhận nuôi lại!")
+                return await ctx.send(f"<:symbol_wrong:1536629915598848072> Bạn đang nuôi loài **{base_name}** rồi, không thể nhận nuôi lại!")
             
             view = PetAdoptConfirmView(self.bot, ctx.author, mar["id"], base_name)
             await ctx.send(f"⚠️ Hai bạn đang nuôi một bé **{mar['pet_type']}**. Nếu bạn nhận nuôi **{base_name}**, thú cưng cũ sẽ ra đi và **Kinh nghiệm thú cưng (Pet <:xp:1535664865308577884>) sẽ bị reset về 0** (Level 1). Bạn có chắc chắn muốn đổi không?", view=view)
@@ -634,7 +634,7 @@ class MarriageCog(commands.Cog):
     @adopt_cmd.error
     async def adopt_cmd_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument)):
-            await ctx.send(f"<:symbol_wrong:1536289315867598849> {ctx.author.mention} Muốn nuôi sếp mà không thèm chọn giống nào à? Cú pháp: `{ctx.prefix}adopt <tên_thú_cưng>`. Để biết thêm chi tiết hãy xài lệnh `{ctx.prefix}ehelp adopt`")
+            await ctx.send(f"<:symbol_wrong:1536629915598848072> {ctx.author.mention} Muốn nuôi sếp mà không thèm chọn giống nào à? Cú pháp: `{ctx.prefix}adopt <tên_thú_cưng>`. Để biết thêm chi tiết hãy xài lệnh `{ctx.prefix}ehelp adopt`")
 
 
     @commands.hybrid_command(name="upgradering", aliases=["nangcapnhan"])
@@ -643,14 +643,14 @@ class MarriageCog(commands.Cog):
         uid = str(ctx.author.id)
         mar = await get_marriage(self.bot, uid)
         if not mar:
-            return await ctx.send("<:symbol_wrong:1536289315867598849> Bạn chưa kết hôn nên không thể nâng cấp nhẫn!")
+            return await ctx.send("<:symbol_wrong:1536629915598848072> Bạn chưa kết hôn nên không thể nâng cấp nhẫn!")
             
         current_ring = mar.get("ring_id", 31)
         if ring_id not in RING_BUFFS:
-            return await ctx.send("<:symbol_wrong:1536289315867598849> ID Nhẫn không hợp lệ! Vui lòng chọn nhẫn ID từ 32 đến 40.")
+            return await ctx.send("<:symbol_wrong:1536629915598848072> ID Nhẫn không hợp lệ! Vui lòng chọn nhẫn ID từ 32 đến 40.")
             
         if ring_id <= current_ring:
-            return await ctx.send(f"<:symbol_wrong:1536289315867598849> Bạn chỉ có thể đổi sang nhẫn xịn hơn (ID > {current_ring})!")
+            return await ctx.send(f"<:symbol_wrong:1536629915598848072> Bạn chỉ có thể đổi sang nhẫn xịn hơn (ID > {current_ring})!")
             
         # Check inventory
         from cogs.common.db import fetchrow_db
@@ -660,7 +660,7 @@ class MarriageCog(commands.Cog):
         
         ring_key = f"ring_{ring_id}"
         if inv.get(ring_key, 0) < 1:
-            return await ctx.send(f"<:symbol_wrong:1536289315867598849> Bạn không có chiếc nhẫn này trong túi đồ! Dùng `{ctx.prefix}shop` để mua trước nhé.")
+            return await ctx.send(f"<:symbol_wrong:1536629915598848072> Bạn không có chiếc nhẫn này trong túi đồ! Dùng `{ctx.prefix}shop` để mua trước nhé.")
             
         # Deduct ring from inventory
         inv[ring_key] -= 1
@@ -681,13 +681,13 @@ class MarriageCog(commands.Cog):
         uid = str(ctx.author.id)
         mar = await get_marriage(self.bot, uid)
         if not mar:
-            return await ctx.send("<:symbol_wrong:1536289315867598849> Bạn chưa kết hôn nên không thể cài ảnh được!")
+            return await ctx.send("<:symbol_wrong:1536629915598848072> Bạn chưa kết hôn nên không thể cài ảnh được!")
             
         if not url.startswith("http"):
-            return await ctx.send("<:symbol_wrong:1536289315867598849> Link ảnh không hợp lệ (Phải bắt đầu bằng http/https).")
+            return await ctx.send("<:symbol_wrong:1536629915598848072> Link ảnh không hợp lệ (Phải bắt đầu bằng http/https).")
             
         await execute_db(self.bot, "UPDATE marriages SET custom_image = $1 WHERE id = $2", url, mar["id"])
-        await ctx.send(f"<:symbol_right:1536289313959186472> Đã cập nhật ảnh thành công! Bạn có thể gõ `{ctx.prefix}marry` để kiểm tra.")
+        await ctx.send(f"<:symbol_right:1536629912515903578> Đã cập nhật ảnh thành công! Bạn có thể gõ `{ctx.prefix}marry` để kiểm tra.")
 
     @commands.hybrid_command(name="pet", aliases=["thucung"])
     async def pet_cmd(self, ctx: commands.Context):
@@ -695,9 +695,9 @@ class MarriageCog(commands.Cog):
         uid = str(ctx.author.id)
         mar = await get_marriage(self.bot, uid)
         if not mar:
-            return await ctx.send("<:symbol_wrong:1536289315867598849> Bạn chưa kết hôn!")
+            return await ctx.send("<:symbol_wrong:1536629915598848072> Bạn chưa kết hôn!")
         if not mar.get("pet_type"):
-            return await ctx.send(f"<:symbol_wrong:1536289315867598849> Hai bạn chưa nhận nuôi thú cưng nào cả! Dùng `{ctx.prefix}adopt` nhé.")
+            return await ctx.send(f"<:symbol_wrong:1536629915598848072> Hai bạn chưa nhận nuôi thú cưng nào cả! Dùng `{ctx.prefix}adopt` nhé.")
             
         pet_exp = float(mar.get('pet_exp', 0.0))
         base_type = mar["pet_type"]
@@ -782,20 +782,20 @@ class MarriageCog(commands.Cog):
         uid = str(ctx.author.id)
         mar = await get_marriage(self.bot, uid)
         if not mar:
-            return await ctx.send("<:symbol_wrong:1536289315867598849> Bạn chưa kết hôn!")
+            return await ctx.send("<:symbol_wrong:1536629915598848072> Bạn chưa kết hôn!")
         if not mar.get("pet_type"):
-            return await ctx.send(f"<:symbol_wrong:1536289315867598849> Hai bạn chưa nhận nuôi thú cưng nào cả! Dùng `{ctx.prefix}adopt` nhé.")
+            return await ctx.send(f"<:symbol_wrong:1536629915598848072> Hai bạn chưa nhận nuôi thú cưng nào cả! Dùng `{ctx.prefix}adopt` nhé.")
         
         if len(pet_name) > 30:
-            return await ctx.send("<:symbol_wrong:1536289315867598849> Tên thú cưng quá dài (tối đa 30 ký tự).")
+            return await ctx.send("<:symbol_wrong:1536629915598848072> Tên thú cưng quá dài (tối đa 30 ký tự).")
             
         await execute_db(self.bot, "UPDATE marriages SET pet_name = $1 WHERE id = $2", pet_name, mar["id"])
-        await ctx.send(f"<:symbol_right:1536289313959186472> Đã đặt tên thú cưng của hai bạn thành: **{pet_name}**!")
+        await ctx.send(f"<:symbol_right:1536629912515903578> Đã đặt tên thú cưng của hai bạn thành: **{pet_name}**!")
 
     @namepet_cmd.error
     async def namepet_cmd_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument)):
-            await ctx.send(f"<:symbol_wrong:1536289315867598849> {ctx.author.mention} Đặt tên mà không nghĩ ra chữ nào à? Cú pháp: `{ctx.prefix}namepet <tên_gọi>`. Để biết thêm chi tiết hãy xài lệnh `{ctx.prefix}ehelp namepet`")
+            await ctx.send(f"<:symbol_wrong:1536629915598848072> {ctx.author.mention} Đặt tên mà không nghĩ ra chữ nào à? Cú pháp: `{ctx.prefix}namepet <tên_gọi>`. Để biết thêm chi tiết hãy xài lệnh `{ctx.prefix}ehelp namepet`")
 
 
     @commands.hybrid_command(name="gift", aliases=["tangqua"])
@@ -804,16 +804,16 @@ class MarriageCog(commands.Cog):
         uid = str(ctx.author.id)
         mar = await get_marriage(self.bot, uid)
         if not mar:
-            return await ctx.send("<:symbol_wrong:1536289315867598849> Bạn chưa kết hôn thì lấy ai mà tặng quà?")
+            return await ctx.send("<:symbol_wrong:1536629915598848072> Bạn chưa kết hôn thì lấy ai mà tặng quà?")
             
         partner_id = mar["user2_id"] if mar["user1_id"] == uid else mar["user1_id"]
         if str(target.id) != partner_id:
-            return await ctx.send("<:symbol_wrong:1536289315867598849> Quà tặng này chứa chan tình cảm, chỉ dành riêng cho vợ/chồng của bạn thôi!")
+            return await ctx.send("<:symbol_wrong:1536629915598848072> Quà tặng này chứa chan tình cảm, chỉ dành riêng cho vợ/chồng của bạn thôi!")
             
         from cogs.common.item_config import get_item_by_id
         item = get_item_by_id(item_id)
         if not item or item["category"] != "gift":
-            return await ctx.send(f"<:symbol_wrong:1536289315867598849> ID vật phẩm không hợp lệ! Hãy chọn ID của Quà Tặng trong `{ctx.prefix}shop`.")
+            return await ctx.send(f"<:symbol_wrong:1536629915598848072> ID vật phẩm không hợp lệ! Hãy chọn ID của Quà Tặng trong `{ctx.prefix}shop`.")
             
         # Check inventory
         from cogs.common.db import fetchrow_db
@@ -823,7 +823,7 @@ class MarriageCog(commands.Cog):
         
         db_key = item["db_key"]
         if inv.get(db_key, 0) < 1:
-            return await ctx.send(f"<:symbol_wrong:1536289315867598849> Bạn không có **{item['name']}** trong túi đồ! Dùng `{ctx.prefix}buy {item_id}` để mua trước nhé.")
+            return await ctx.send(f"<:symbol_wrong:1536629915598848072> Bạn không có **{item['name']}** trong túi đồ! Dùng `{ctx.prefix}buy {item_id}` để mua trước nhé.")
             
         # Deduct item
         inv[db_key] -= 1
@@ -866,7 +866,7 @@ class MarriageCog(commands.Cog):
     @gift_cmd.error
     async def gift_cmd_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument)):
-            await ctx.send(f"<:symbol_wrong:1536289315867598849> {ctx.author.mention} Tặng quà mà giấu giếm thế? Cú pháp: `{ctx.prefix}gift <@user> <ID_món_quà>`. Để biết thêm chi tiết hãy xài lệnh `{ctx.prefix}ehelp gift`")
+            await ctx.send(f"<:symbol_wrong:1536629915598848072> {ctx.author.mention} Tặng quà mà giấu giếm thế? Cú pháp: `{ctx.prefix}gift <@user> <ID_món_quà>`. Để biết thêm chi tiết hãy xài lệnh `{ctx.prefix}ehelp gift`")
 
 
     @commands.hybrid_command(name="coupletask")
@@ -875,7 +875,7 @@ class MarriageCog(commands.Cog):
         uid = str(ctx.author.id)
         mar = await get_marriage(self.bot, uid)
         if not mar:
-            return await ctx.send("<:symbol_wrong:1536289315867598849> Đã kết hôn đâu mà đòi làm nhiệm vụ chung?")
+            return await ctx.send("<:symbol_wrong:1536629915598848072> Đã kết hôn đâu mà đòi làm nhiệm vụ chung?")
             
         task_str = mar.get("couple_task")
         task_data = json.loads(task_str) if (task_str and isinstance(task_str, str)) else (task_str or {})
@@ -907,7 +907,7 @@ class MarriageCog(commands.Cog):
             await execute_db(self.bot, "UPDATE marriages SET couple_task = $1::jsonb WHERE id = $2", json.dumps(task_data), mar["id"])
             
         if task_data["completed"]:
-            return await ctx.send("<:symbol_right:1536289313959186472> Hai bạn đã hoàn thành nhiệm vụ của ngày hôm nay rồi! Hãy quay lại vào ngày mai nhé.")
+            return await ctx.send("<:symbol_right:1536629912515903578> Hai bạn đã hoàn thành nhiệm vụ của ngày hôm nay rồi! Hãy quay lại vào ngày mai nhé.")
             
         emb = discord.Embed(
             title="<:symbol_boards:1536007665153474681> Nhiệm Vụ Cặp Đôi (Daily)",
@@ -931,17 +931,17 @@ class MarriageCog(commands.Cog):
 
         if target is None:
             if not mar:
-                return await ctx.send(f"<:symbol_wrong:1536289315867598849> {ctx.author.mention} Tính tự kỷ hay gì mà xài hành động không tag ai? Nhớ tag tên hoặc reply tin nhắn của người ta nha! Xem chi tiết: `{ctx.prefix}ehelp {action}`")
+                return await ctx.send(f"<:symbol_wrong:1536629915598848072> {ctx.author.mention} Tính tự kỷ hay gì mà xài hành động không tag ai? Nhớ tag tên hoặc reply tin nhắn của người ta nha! Xem chi tiết: `{ctx.prefix}ehelp {action}`")
             
             partner_id = mar["user2_id"] if mar["user1_id"] == uid1 else mar["user1_id"]
             if ctx.guild:
                 target = ctx.guild.get_member(int(partner_id))
                 
             if not target:
-                return await ctx.send("<:symbol_wrong:1536289315867598849> Vợ/chồng của bạn hiện không có trong server này để nhận hành động!")
+                return await ctx.send("<:symbol_wrong:1536629915598848072> Vợ/chồng của bạn hiện không có trong server này để nhận hành động!")
                 
         if target.id == ctx.author.id or target.bot:
-            return await ctx.send("<:symbol_wrong:1536289315867598849> Tự kỷ à? Hoặc tha cho con Bot đi!")
+            return await ctx.send("<:symbol_wrong:1536629915598848072> Tự kỷ à? Hoặc tha cho con Bot đi!")
             
         uid2 = str(target.id)
         is_married = mar is not None and (mar["user1_id"] == uid2 or mar["user2_id"] == uid2)
@@ -1099,7 +1099,7 @@ class MarriageCog(commands.Cog):
     @poke.error
     async def poke_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument)):
-            await ctx.send(f"<:symbol_wrong:1536289315867598849> {ctx.author.mention} Tính tự kỷ hay gì mà xài hành động không tìm thấy ai? Nhớ tag tên hoặc reply tin nhắn của người ta nha! Xem chi tiết: `{ctx.prefix}ehelp poke`")
+            await ctx.send(f"<:symbol_wrong:1536629915598848072> {ctx.author.mention} Tính tự kỷ hay gì mà xài hành động không tìm thấy ai? Nhớ tag tên hoặc reply tin nhắn của người ta nha! Xem chi tiết: `{ctx.prefix}ehelp poke`")
 
     @commands.hybrid_command(aliases=["xoadau"])
     async def pat(self, ctx, target: Optional[discord.Member] = None): await self.handle_action(ctx, target, "pat")
@@ -1107,7 +1107,7 @@ class MarriageCog(commands.Cog):
     @pat.error
     async def pat_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument)):
-            await ctx.send(f"<:symbol_wrong:1536289315867598849> {ctx.author.mention} Tính tự kỷ hay gì mà xài hành động không tìm thấy ai? Nhớ tag tên hoặc reply tin nhắn của người ta nha! Xem chi tiết: `{ctx.prefix}ehelp pat`")
+            await ctx.send(f"<:symbol_wrong:1536629915598848072> {ctx.author.mention} Tính tự kỷ hay gì mà xài hành động không tìm thấy ai? Nhớ tag tên hoặc reply tin nhắn của người ta nha! Xem chi tiết: `{ctx.prefix}ehelp pat`")
 
     @commands.hybrid_command(aliases=["tat"])
     async def slap(self, ctx, target: Optional[discord.Member] = None): await self.handle_action(ctx, target, "slap")
@@ -1115,7 +1115,7 @@ class MarriageCog(commands.Cog):
     @slap.error
     async def slap_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument)):
-            await ctx.send(f"<:symbol_wrong:1536289315867598849> {ctx.author.mention} Tính tự kỷ hay gì mà xài hành động không tìm thấy ai? Nhớ tag tên hoặc reply tin nhắn của người ta nha! Xem chi tiết: `{ctx.prefix}ehelp slap`")
+            await ctx.send(f"<:symbol_wrong:1536629915598848072> {ctx.author.mention} Tính tự kỷ hay gì mà xài hành động không tìm thấy ai? Nhớ tag tên hoặc reply tin nhắn của người ta nha! Xem chi tiết: `{ctx.prefix}ehelp slap`")
 
     @commands.hybrid_command(aliases=["dam"])
     async def punch(self, ctx, target: Optional[discord.Member] = None): await self.handle_action(ctx, target, "punch")
@@ -1123,7 +1123,7 @@ class MarriageCog(commands.Cog):
     @punch.error
     async def punch_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument)):
-            await ctx.send(f"<:symbol_wrong:1536289315867598849> {ctx.author.mention} Tính tự kỷ hay gì mà xài hành động không tìm thấy ai? Nhớ tag tên hoặc reply tin nhắn của người ta nha! Xem chi tiết: `{ctx.prefix}ehelp punch`")
+            await ctx.send(f"<:symbol_wrong:1536629915598848072> {ctx.author.mention} Tính tự kỷ hay gì mà xài hành động không tìm thấy ai? Nhớ tag tên hoặc reply tin nhắn của người ta nha! Xem chi tiết: `{ctx.prefix}ehelp punch`")
 
     @commands.hybrid_command(aliases=["choclet"])
     async def tickle(self, ctx, target: Optional[discord.Member] = None): await self.handle_action(ctx, target, "tickle")
@@ -1131,7 +1131,7 @@ class MarriageCog(commands.Cog):
     @tickle.error
     async def tickle_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument)):
-            await ctx.send(f"<:symbol_wrong:1536289315867598849> {ctx.author.mention} Tính tự kỷ hay gì mà xài hành động không tìm thấy ai? Nhớ tag tên hoặc reply tin nhắn của người ta nha! Xem chi tiết: `{ctx.prefix}ehelp {ctx.command.name}`")
+            await ctx.send(f"<:symbol_wrong:1536629915598848072> {ctx.author.mention} Tính tự kỷ hay gì mà xài hành động không tìm thấy ai? Nhớ tag tên hoặc reply tin nhắn của người ta nha! Xem chi tiết: `{ctx.prefix}ehelp {ctx.command.name}`")
 
     @commands.hybrid_command(aliases=["can"])
     async def bite(self, ctx, target: Optional[discord.Member] = None): await self.handle_action(ctx, target, "bite")
@@ -1139,7 +1139,7 @@ class MarriageCog(commands.Cog):
     @bite.error
     async def bite_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument)):
-            await ctx.send(f"<:symbol_wrong:1536289315867598849> {ctx.author.mention} Tính tự kỷ hay gì mà xài hành động không tìm thấy ai? Nhớ tag tên hoặc reply tin nhắn của người ta nha! Xem chi tiết: `{ctx.prefix}ehelp bite`")
+            await ctx.send(f"<:symbol_wrong:1536629915598848072> {ctx.author.mention} Tính tự kỷ hay gì mà xài hành động không tìm thấy ai? Nhớ tag tên hoặc reply tin nhắn của người ta nha! Xem chi tiết: `{ctx.prefix}ehelp bite`")
 
     
     @commands.hybrid_command(aliases=["om"])
@@ -1148,7 +1148,7 @@ class MarriageCog(commands.Cog):
     @hug.error
     async def hug_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument)):
-            await ctx.send(f"<:symbol_wrong:1536289315867598849> {ctx.author.mention} Tính tự kỷ hay gì mà xài hành động không tìm thấy ai? Nhớ tag tên hoặc reply tin nhắn của người ta nha! Xem chi tiết: `{ctx.prefix}ehelp hug`")
+            await ctx.send(f"<:symbol_wrong:1536629915598848072> {ctx.author.mention} Tính tự kỷ hay gì mà xài hành động không tìm thấy ai? Nhớ tag tên hoặc reply tin nhắn của người ta nha! Xem chi tiết: `{ctx.prefix}ehelp hug`")
 
     @commands.hybrid_command(aliases=["auyem"])
     async def cuddle(self, ctx, target: Optional[discord.Member] = None): await self.handle_action(ctx, target, "cuddle")
@@ -1156,7 +1156,7 @@ class MarriageCog(commands.Cog):
     @cuddle.error
     async def cuddle_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument)):
-            await ctx.send(f"<:symbol_wrong:1536289315867598849> {ctx.author.mention} Tính tự kỷ hay gì mà xài hành động không tìm thấy ai? Nhớ tag tên hoặc reply tin nhắn của người ta nha! Xem chi tiết: `{ctx.prefix}ehelp cuddle`")
+            await ctx.send(f"<:symbol_wrong:1536629915598848072> {ctx.author.mention} Tính tự kỷ hay gì mà xài hành động không tìm thấy ai? Nhớ tag tên hoặc reply tin nhắn của người ta nha! Xem chi tiết: `{ctx.prefix}ehelp cuddle`")
 
     @commands.hybrid_command(aliases=["mam"])
     async def nom(self, ctx, target: Optional[discord.Member] = None): await self.handle_action(ctx, target, "nom")
@@ -1164,7 +1164,7 @@ class MarriageCog(commands.Cog):
     @nom.error
     async def nom_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument)):
-            await ctx.send(f"<:symbol_wrong:1536289315867598849> {ctx.author.mention} Tính tự kỷ hay gì mà xài hành động không tìm thấy ai? Nhớ tag tên hoặc reply tin nhắn của người ta nha! Xem chi tiết: `{ctx.prefix}ehelp nom`")
+            await ctx.send(f"<:symbol_wrong:1536629915598848072> {ctx.author.mention} Tính tự kỷ hay gì mà xài hành động không tìm thấy ai? Nhớ tag tên hoặc reply tin nhắn của người ta nha! Xem chi tiết: `{ctx.prefix}ehelp nom`")
 
     @commands.hybrid_command(aliases=["nung", "nũng"])
     async def snuggle(self, ctx, target: Optional[discord.Member] = None): await self.handle_action(ctx, target, "snuggle")
@@ -1172,7 +1172,7 @@ class MarriageCog(commands.Cog):
     @snuggle.error
     async def snuggle_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument)):
-            await ctx.send(f"<:symbol_wrong:1536289315867598849> {ctx.author.mention} Tính tự kỷ hay gì mà xài hành động không tìm thấy ai? Nhớ tag tên hoặc reply tin nhắn của người ta nha! Xem chi tiết: `{ctx.prefix}ehelp snuggle`")
+            await ctx.send(f"<:symbol_wrong:1536629915598848072> {ctx.author.mention} Tính tự kỷ hay gì mà xài hành động không tìm thấy ai? Nhớ tag tên hoặc reply tin nhắn của người ta nha! Xem chi tiết: `{ctx.prefix}ehelp snuggle`")
 
     
     @commands.hybrid_command(aliases=["hon", "hun"])
@@ -1181,7 +1181,7 @@ class MarriageCog(commands.Cog):
     @kiss.error
     async def kiss_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument)):
-            await ctx.send(f"<:symbol_wrong:1536289315867598849> {ctx.author.mention} Tính tự kỷ hay gì mà xài hành động không tìm thấy ai? Nhớ tag tên hoặc reply tin nhắn của người ta nha! Xem chi tiết: `{ctx.prefix}ehelp kiss`")
+            await ctx.send(f"<:symbol_wrong:1536629915598848072> {ctx.author.mention} Tính tự kỷ hay gì mà xài hành động không tìm thấy ai? Nhớ tag tên hoặc reply tin nhắn của người ta nha! Xem chi tiết: `{ctx.prefix}ehelp kiss`")
 
     @commands.hybrid_command(aliases=["liem"])
     async def lick(self, ctx, target: Optional[discord.Member] = None): await self.handle_action(ctx, target, "lick")
@@ -1189,7 +1189,7 @@ class MarriageCog(commands.Cog):
     @lick.error
     async def lick_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument)):
-            await ctx.send(f"<:symbol_wrong:1536289315867598849> {ctx.author.mention} Tính tự kỷ hay gì mà xài hành động không tìm thấy ai? Nhớ tag tên hoặc reply tin nhắn của người ta nha! Xem chi tiết: `{ctx.prefix}ehelp lick`")
+            await ctx.send(f"<:symbol_wrong:1536629915598848072> {ctx.author.mention} Tính tự kỷ hay gì mà xài hành động không tìm thấy ai? Nhớ tag tên hoặc reply tin nhắn của người ta nha! Xem chi tiết: `{ctx.prefix}ehelp lick`")
 
     @commands.hybrid_command(aliases=["noiyeu", "iuem", "iuanh"])
     async def saylove(self, ctx, target: Optional[discord.Member] = None): await self.handle_action(ctx, target, "saylove")
@@ -1197,7 +1197,7 @@ class MarriageCog(commands.Cog):
     @saylove.error
     async def saylove_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument)):
-            await ctx.send(f"<:symbol_wrong:1536289315867598849> {ctx.author.mention} Tính tự kỷ hay gì mà xài hành động không tìm thấy ai? Nhớ tag tên hoặc reply tin nhắn của người ta nha! Xem chi tiết: `{ctx.prefix}ehelp saylove`")
+            await ctx.send(f"<:symbol_wrong:1536629915598848072> {ctx.author.mention} Tính tự kỷ hay gì mà xài hành động không tìm thấy ai? Nhớ tag tên hoặc reply tin nhắn của người ta nha! Xem chi tiết: `{ctx.prefix}ehelp saylove`")
 
     @commands.hybrid_command()
     async def fuck(self, ctx, target: Optional[discord.Member] = None): await self.handle_action(ctx, target, "fuck")
@@ -1205,7 +1205,7 @@ class MarriageCog(commands.Cog):
     @fuck.error
     async def fuck_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument)):
-            await ctx.send(f"<:symbol_wrong:1536289315867598849> {ctx.author.mention} Tính tự kỷ hay gì mà xài hành động không tìm thấy ai? Nhớ tag tên hoặc reply tin nhắn của người ta nha! Xem chi tiết: `{ctx.prefix}ehelp fuck`")
+            await ctx.send(f"<:symbol_wrong:1536629915598848072> {ctx.author.mention} Tính tự kỷ hay gì mà xài hành động không tìm thấy ai? Nhớ tag tên hoặc reply tin nhắn của người ta nha! Xem chi tiết: `{ctx.prefix}ehelp fuck`")
 
     @commands.hybrid_command(aliases=["seg"])
     async def dutdit(self, ctx, target: Optional[discord.Member] = None): await self.handle_action(ctx, target, "dutdit")
@@ -1213,7 +1213,7 @@ class MarriageCog(commands.Cog):
     @dutdit.error
     async def dutdit_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument)):
-            await ctx.send(f"<:symbol_wrong:1536289315867598849> {ctx.author.mention} Tính tự kỷ hay gì mà xài hành động không tìm thấy ai? Nhớ tag tên hoặc reply tin nhắn của người ta nha! Xem chi tiết: `{ctx.prefix}ehelp dutdit`")
+            await ctx.send(f"<:symbol_wrong:1536629915598848072> {ctx.author.mention} Tính tự kỷ hay gì mà xài hành động không tìm thấy ai? Nhớ tag tên hoặc reply tin nhắn của người ta nha! Xem chi tiết: `{ctx.prefix}ehelp dutdit`")
 
     # ---------------------------------------------------------
     # BACKGROUND TASK: ANTI GHOSTING

@@ -40,7 +40,7 @@ class BailConfirmView(discord.ui.View):
 
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
         if interaction.user.id != self.author_id:
-            await interaction.response.send_message("<:symbol_wrong:1536289315867598849> Đây không phải yêu cầu của bạn!", ephemeral=True)
+            await interaction.response.send_message("<:symbol_wrong:1536629915598848072> Đây không phải yêu cầu của bạn!", ephemeral=True)
             return False
         return True
 
@@ -73,10 +73,10 @@ class JailInteraction(commands.Cog):
         if ctx.guild is None:
             return
         if member.bot:
-            await ctx.send("<:symbol_wrong:1536289315867598849> Chọc bot làm gì?", delete_after=5.0)
+            await ctx.send("<:symbol_wrong:1536629915598848072> Chọc bot làm gì?", delete_after=5.0)
             return
         if member.id == ctx.author.id:
-            await ctx.send("<:symbol_wrong:1536289315867598849> Tự chọc mình à? 🤦", delete_after=5.0)
+            await ctx.send("<:symbol_wrong:1536629915598848072> Tự chọc mình à? 🤦", delete_after=5.0)
             return
 
         uid = str(member.id)
@@ -108,9 +108,9 @@ class JailInteraction(commands.Cog):
                 delete_after=6.0,
             )
         elif isinstance(error, commands.MissingRequiredArgument):
-            await ctx.send(f"<:symbol_wrong:1536289315867598849> Cú pháp: `{ctx.prefix}choccho <@member>`", delete_after=5.0)
+            await ctx.send(f"<:symbol_wrong:1536629915598848072> Cú pháp: `{ctx.prefix}choccho <@member>`", delete_after=5.0)
         elif isinstance(error, commands.BadArgument):
-            await ctx.send("<:symbol_wrong:1536289315867598849> Không tìm thấy thành viên đó.", delete_after=5.0)
+            await ctx.send("<:symbol_wrong:1536629915598848072> Không tìm thấy thành viên đó.", delete_after=5.0)
 
     # ─────────────────────────────────────────────────────────────────
     # Y!CHOAN @user — GIẢM 1 ÁN (Cooldown 60 giây/người)
@@ -122,7 +122,7 @@ class JailInteraction(commands.Cog):
         if ctx.guild is None:
             return
         if member.bot:
-            await ctx.send("<:symbol_wrong:1536289315867598849> Bot ăn gì được đâu?", delete_after=5.0)
+            await ctx.send("<:symbol_wrong:1536629915598848072> Bot ăn gì được đâu?", delete_after=5.0)
             return
 
         uid = str(member.id)
@@ -170,9 +170,9 @@ class JailInteraction(commands.Cog):
                 delete_after=6.0,
             )
         elif isinstance(error, commands.MissingRequiredArgument):
-            await ctx.send(f"<:symbol_wrong:1536289315867598849> Cú pháp: `{ctx.prefix}choan <@member>`", delete_after=5.0)
+            await ctx.send(f"<:symbol_wrong:1536629915598848072> Cú pháp: `{ctx.prefix}choan <@member>`", delete_after=5.0)
         elif isinstance(error, commands.BadArgument):
-            await ctx.send("<:symbol_wrong:1536289315867598849> Không tìm thấy thành viên đó.", delete_after=5.0)
+            await ctx.send("<:symbol_wrong:1536629915598848072> Không tìm thấy thành viên đó.", delete_after=5.0)
 
     # ─────────────────────────────────────────────────────────────────
     # Y!BAOLANH @user — BẢO LÃNH (TRẢ ĐIỂM SỰ KIỆN)
@@ -184,7 +184,7 @@ class JailInteraction(commands.Cog):
         if ctx.guild is None:
             return
         if member.bot:
-            await ctx.send("<:symbol_wrong:1536289315867598849> Bảo lãnh bot làm gì?", delete_after=5.0)
+            await ctx.send("<:symbol_wrong:1536629915598848072> Bảo lãnh bot làm gì?", delete_after=5.0)
             return
 
         uid = str(member.id)
@@ -202,7 +202,7 @@ class JailInteraction(commands.Cog):
             uid,
         )
         if row is None:
-            await ctx.send("<:symbol_wrong:1536289315867598849> Không tìm thấy hồ sơ tù nhân.", delete_after=5.0)
+            await ctx.send("<:symbol_wrong:1536629915598848072> Không tìm thấy hồ sơ tù nhân.", delete_after=5.0)
             return
 
         clean_count = int(row["clean_count"])
@@ -247,17 +247,17 @@ class JailInteraction(commands.Cog):
         await view.wait()
 
         if view.value is None:
-            await msg.edit(content="<:symbol_wrong:1536289315867598849> Đã hủy do quá thời gian.", embed=None, view=None)
+            await msg.edit(content="<:symbol_wrong:1536629915598848072> Đã hủy do quá thời gian.", embed=None, view=None)
             return
         elif not view.value:
-            await msg.edit(content="<:symbol_wrong:1536289315867598849> Bạn đã hủy bỏ yêu cầu bảo lãnh.", embed=None, view=None)
+            await msg.edit(content="<:symbol_wrong:1536629915598848072> Bạn đã hủy bỏ yêu cầu bảo lãnh.", embed=None, view=None)
             return
 
         # Trừ điểm người bảo lãnh
         ok = await deduct_event_points(self.bot, payer_uid, bail_cost)
         if not ok:
             await msg.edit(
-                content=f"<:symbol_wrong:1536289315867598849> {ctx.author.mention} Lỗi khi trừ điểm! Vui lòng thử lại.",
+                content=f"<:symbol_wrong:1536629915598848072> {ctx.author.mention} Lỗi khi trừ điểm! Vui lòng thử lại.",
                 embed=None, view=None
             )
             return
@@ -285,9 +285,9 @@ class JailInteraction(commands.Cog):
                 delete_after=6.0,
             )
         elif isinstance(error, commands.MissingRequiredArgument):
-            await ctx.send(f"<:symbol_wrong:1536289315867598849> Cú pháp: `{ctx.prefix}baolanh <@member>`", delete_after=5.0)
+            await ctx.send(f"<:symbol_wrong:1536629915598848072> Cú pháp: `{ctx.prefix}baolanh <@member>`", delete_after=5.0)
         elif isinstance(error, commands.BadArgument):
-            await ctx.send("<:symbol_wrong:1536289315867598849> Không tìm thấy thành viên đó.", delete_after=5.0)
+            await ctx.send("<:symbol_wrong:1536629915598848072> Không tìm thấy thành viên đó.", delete_after=5.0)
 
 async def setup(bot: commands.Bot) -> None:
     await bot.add_cog(JailInteraction(bot))

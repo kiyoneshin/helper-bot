@@ -36,9 +36,9 @@ class SystemCog(commands.Cog, name="System"):
             if not extension.startswith("cogs."):
                 extension = f"cogs.{extension}"
             await self.bot.reload_extension(extension)
-            await ctx.send(f"<:symbol_right:1536289313959186472> Đã tải lại thành công: `{extension}`")
+            await ctx.send(f"<:symbol_right:1536629912515903578> Đã tải lại thành công: `{extension}`")
         except Exception as e:
-            await ctx.send(f"<:symbol_wrong:1536289315867598849> Lỗi khi tải lại `{extension}`:\n```py\n{e}\n```")
+            await ctx.send(f"<:symbol_wrong:1536629915598848072> Lỗi khi tải lại `{extension}`:\n```py\n{e}\n```")
 
     @commands.command(name="load")
     @commands.is_owner()
@@ -48,16 +48,16 @@ class SystemCog(commands.Cog, name="System"):
             if not extension.startswith("cogs."):
                 extension = f"cogs.{extension}"
             await self.bot.load_extension(extension)
-            await ctx.send(f"<:symbol_right:1536289313959186472> Đã tải thành công: `{extension}`")
+            await ctx.send(f"<:symbol_right:1536629912515903578> Đã tải thành công: `{extension}`")
         except Exception as e:
-            await ctx.send(f"<:symbol_wrong:1536289315867598849> Lỗi khi tải `{extension}`:\n```py\n{e}\n```")
+            await ctx.send(f"<:symbol_wrong:1536629915598848072> Lỗi khi tải `{extension}`:\n```py\n{e}\n```")
 
     @commands.hybrid_command(name="prefix")
     @commands.has_permissions(administrator=True)
     async def prefix_cmd(self, ctx: commands.Context, new_prefix: str) -> None:
         """[Admin] Đổi tiền tố (prefix) của bot trên toàn server."""
         if len(new_prefix) > 10:
-            await ctx.send("<:symbol_wrong:1536289315867598849> Prefix không được dài quá 10 ký tự!")
+            await ctx.send("<:symbol_wrong:1536629915598848072> Prefix không được dài quá 10 ký tự!")
             return
             
         try:
@@ -70,9 +70,9 @@ class SystemCog(commands.Cog, name="System"):
             if db_pool:
                 await db_pool.execute(sql, new_prefix)
             self.bot.custom_prefix = new_prefix  # type: ignore
-            await ctx.send(f"<:symbol_right:1536289313959186472> Đã đổi tiền tố của bot thành: `{new_prefix}`\n(Từ giờ hãy dùng `{new_prefix}help`)")
+            await ctx.send(f"<:symbol_right:1536629912515903578> Đã đổi tiền tố của bot thành: `{new_prefix}`\n(Từ giờ hãy dùng `{new_prefix}help`)")
         except Exception as e:
-            await ctx.send(f"<:symbol_wrong:1536289315867598849> Lỗi khi đổi prefix: `{e}`")
+            await ctx.send(f"<:symbol_wrong:1536629915598848072> Lỗi khi đổi prefix: `{e}`")
 
 
 async def setup(bot: commands.Bot) -> None:

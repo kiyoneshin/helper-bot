@@ -146,7 +146,7 @@ def build_machine_embed(
                 output_id = item.get("output_id", "")
                 output_info = ARTISAN_GOODS.get(output_id, {})
                 output_display = f"{output_info.get('icon', '')} {output_info.get('name', output_id)}"
-                lines.append(f"`{num:>2}.` {machine_icon} **{machine_name}**: {output_display} | <:symbol_right:1536289313959186472> Xong!")
+                lines.append(f"`{num:>2}.` {machine_icon} **{machine_name}**: {output_display} | <:symbol_right:1536629912515903578> Xong!")
             else:
                 # processing
                 output_id = item.get("output_id", "")
@@ -232,7 +232,7 @@ class RecipeSelect(discord.ui.Select):
     async def callback(self, interaction: discord.Interaction):
         if str(interaction.user.id) != self.user_id:
             return await interaction.response.send_message(
-                "<:symbol_wrong:1536289315867598849> Đây không phải khu chế biến của bạn!", ephemeral=True
+                "<:symbol_wrong:1536629915598848072> Đây không phải khu chế biến của bạn!", ephemeral=True
             )
 
         recipe_id = self.values[0]
@@ -244,13 +244,13 @@ class RecipeSelect(discord.ui.Select):
 
         if self.slot_id not in machine_queue:
             return await interaction.response.send_message(
-                "<:symbol_wrong:1536289315867598849> Máy này không còn tồn tại hoặc đã bị lỗi!", ephemeral=True
+                "<:symbol_wrong:1536629915598848072> Máy này không còn tồn tại hoặc đã bị lỗi!", ephemeral=True
             )
             
         slot_data = machine_queue[self.slot_id]
         if slot_data.get("status") != "idle":
             return await interaction.response.send_message(
-                "<:symbol_wrong:1536289315867598849> Máy này không còn trống nữa!", ephemeral=True
+                "<:symbol_wrong:1536629915598848072> Máy này không còn trống nữa!", ephemeral=True
             )
 
         # Kiểm tra nguyên liệu
@@ -264,7 +264,7 @@ class RecipeSelect(discord.ui.Select):
         if missing:
             missing_str = "\n".join(f"• {m}" for m in missing)
             return await interaction.response.send_message(
-                f"<:symbol_wrong:1536289315867598849> Không đủ nguyên liệu để chế **{recipe['name']}**!\n{missing_str}",
+                f"<:symbol_wrong:1536629915598848072> Không đủ nguyên liệu để chế **{recipe['name']}**!\n{missing_str}",
                 ephemeral=True,
             )
 
@@ -364,7 +364,7 @@ class MachineView(discord.ui.View):
     async def _harvest_callback(self, interaction: discord.Interaction):
         if str(interaction.user.id) != self.user_id:
             return await interaction.response.send_message(
-                "<:symbol_wrong:1536289315867598849> Bạn không thể thao tác trên nông trại người khác!", ephemeral=True
+                "<:symbol_wrong:1536629915598848072> Bạn không thể thao tác trên nông trại người khác!", ephemeral=True
             )
 
         farm_data = await get_farm_data(self.bot, self.user_id)
@@ -393,7 +393,7 @@ class MachineView(discord.ui.View):
 
         if not harvested_items:
             return await interaction.response.send_message(
-                "<:symbol_wrong:1536289315867598849> Không có gì để thu hoạch!", ephemeral=True
+                "<:symbol_wrong:1536629915598848072> Không có gì để thu hoạch!", ephemeral=True
             )
 
         farm_data["inventory"] = inventory
@@ -419,7 +419,7 @@ class MachineView(discord.ui.View):
         async def callback(interaction: discord.Interaction):
             if str(interaction.user.id) != self.user_id:
                 return await interaction.response.send_message(
-                    "<:symbol_wrong:1536289315867598849> Bạn không có quyền thao tác!", ephemeral=True
+                    "<:symbol_wrong:1536629915598848072> Bạn không có quyền thao tác!", ephemeral=True
                 )
                 
             farm_data = await get_farm_data(self.bot, self.user_id)
@@ -434,7 +434,7 @@ class MachineView(discord.ui.View):
                     
             if not idle_slot_id:
                 return await interaction.response.send_message(
-                    f"<:symbol_wrong:1536289315867598849> Bạn không có cái {MACHINES[machine_id]['name']} nào đang trống! Vui lòng Thu Hoạch máy cũ hoặc xây thêm máy mới bằng lệnh `{self.bot.custom_prefix}craft`.", 
+                    f"<:symbol_wrong:1536629915598848072> Bạn không có cái {MACHINES[machine_id]['name']} nào đang trống! Vui lòng Thu Hoạch máy cũ hoặc xây thêm máy mới bằng lệnh `{self.bot.custom_prefix}craft`.", 
                     ephemeral=True
                 )
 

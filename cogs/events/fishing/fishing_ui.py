@@ -50,7 +50,7 @@ def build_fishing_embed(author: discord.Member | discord.User, stamina: int, far
     rod_name = ROD_NAMES.get(rod_level, f"Lv{rod_level}")
 
     embed = discord.Embed(
-        title="🎣 Hồ Câu Cá Bình Yên",
+        title="Hồ Câu Cá Bình Yên",
         description=(
             f"Chào mừng **{author.display_name}** đến với hồ câu!\n"
             f"Mỗi lần quăng cần tốn **{STAMINA_PER_FISH}** thể lực.\n"
@@ -62,14 +62,14 @@ def build_fishing_embed(author: discord.Member | discord.User, stamina: int, far
     )
 
     bar = _stamina_bar(stamina)
-    regen_info = f"(Hồi đầy sau: {_mins_to_full(stamina, regen_interval)})" if stamina < MAX_STAMINA else "<:symbol_right:1536289313959186472> Đã đầy"
+    regen_info = f"(Hồi đầy sau: {_mins_to_full(stamina, regen_interval)})" if stamina < MAX_STAMINA else "<:symbol_right:1536629912515903578> Đã đầy"
     embed.add_field(
-        name="💪 Thể Lực",
+        name="<:symbol_stamina:1536618972668235826> Thể Lực",
         value=f"{bar} **{stamina}/{MAX_STAMINA}** {regen_info}",
         inline=False,
     )
     embed.add_field(
-        name="🎣 Cần Câu",
+        name="<:symbol_00_fishing:1536007692437422171> Cần Câu",
         value=f"**{rod_name}** (Lv{rod_level})",
         inline=True,
     )
@@ -142,13 +142,13 @@ class FishingView(discord.ui.View):
     async def cast_btn(self, interaction: discord.Interaction, button: discord.ui.Button):
         if str(interaction.user.id) != self.user_id:
             await interaction.response.send_message(
-                "<:symbol_wrong:1536289315867598849> Đây là cần câu của người khác!", ephemeral=True
+                "<:symbol_wrong:1536629915598848072> Đây là cần câu của người khác!", ephemeral=True
             )
             return
 
         # BƯỚC 1 — Respond ngay trong 3 giây (khoá giao diện cũ)
         await interaction.response.edit_message(
-            content="🎣 **Đang thả mồi... Hãy chuẩn bị giật cần!**",
+            content="<:button_fishing:1536007667649347624> **Đang thả mồi... Hãy chuẩn bị giật cần!**",
             embed=None,
             view=None,
         )
@@ -165,7 +165,7 @@ class FishingView(discord.ui.View):
             button.disabled = True
             farm_data = await get_farm_data(self.bot, self.user_id)
             await interaction.response.edit_message(embed=build_fishing_embed(self.author, current_stamina, farm_data, self.regen_interval), view=self)
-            await interaction.followup.send(f"<:symbol_wrong:1536289315867598849> Bạn đã **kiệt sức**! Hãy đợi thể lực hồi phục.\n*(Hồi đầy sau: {_mins_to_full(current_stamina, self.regen_interval)})*", ephemeral=True)
+            await interaction.followup.send(f"<:symbol_wrong:1536629915598848072> Bạn đã **kiệt sức**! Hãy đợi thể lực hồi phục.\n*(Hồi đầy sau: {_mins_to_full(current_stamina, self.regen_interval)})*", ephemeral=True)
             return
 
         farm_data = await get_farm_data(self.bot, self.user_id)

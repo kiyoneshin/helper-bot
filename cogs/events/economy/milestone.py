@@ -105,7 +105,7 @@ class MilestoneCog(commands.Cog):
             claimed = str(moc_diem) in claimed_milestones or moc_diem in claimed_milestones
             
             if claimed:
-                status = "<:symbol_right:1536289313959186472> Đã nhận"
+                status = "<:symbol_right:1536629912515903578> Đã nhận"
             elif total_earned >= moc_diem:
                 status = "<:gift_00_symbol:1536003307011842099> Có thể nhận (Gõ knhanqua)"
             else:
@@ -155,7 +155,7 @@ class MilestoneCog(commands.Cog):
         )
         
         if not row:
-            await ctx.send("<:symbol_wrong:1536289315867598849> Không tìm thấy hồ sơ của bạn trong hệ thống sự kiện!")
+            await ctx.send("<:symbol_wrong:1536629915598848072> Không tìm thấy hồ sơ của bạn trong hệ thống sự kiện!")
             return
             
         total_earned = float(row["total_earned"]) if row["total_earned"] else 0.0
@@ -179,7 +179,7 @@ class MilestoneCog(commands.Cog):
                 valid_milestones.append((moc_diem, data))
                 
         if not valid_milestones:
-            await ctx.send("<:symbol_wrong:1536289315867598849> Bạn chưa đạt mốc mới nào hoặc đã nhận hết quà rồi!", ephemeral=True)
+            await ctx.send("<:symbol_wrong:1536629915598848072> Bạn chưa đạt mốc mới nào hoặc đã nhận hết quà rồi!", ephemeral=True)
             return
             
         total_points = 0.0

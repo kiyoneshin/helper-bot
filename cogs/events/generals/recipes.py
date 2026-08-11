@@ -222,7 +222,7 @@ class RecipeSelect(discord.ui.Select):
 
     async def callback(self, interaction: discord.Interaction):
         if interaction.user.id != self.author.id:
-            return await interaction.response.send_message("<:symbol_wrong:1536289315867598849> Bạn không có quyền thao tác menu này!", ephemeral=True)
+            return await interaction.response.send_message("<:symbol_wrong:1536629915598848072> Bạn không có quyền thao tác menu này!", ephemeral=True)
             
         selected = self.values[0]
         for opt in self.options:

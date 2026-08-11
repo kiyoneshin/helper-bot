@@ -249,7 +249,7 @@ class WheelSlots(commands.Cog):
         balance = await _get_balance(self.bot, uid)
         bet, err, is_all = _parse_bet(bet_raw, balance)
         if err or bet is None:
-            await ctx.send(f"<:symbol_wrong:1536289315867598849> {ctx.author.mention} {err}")
+            await ctx.send(f"<:symbol_wrong:1536629915598848072> {ctx.author.mention} {err}")
             return
 
         if is_all:
@@ -263,7 +263,7 @@ class WheelSlots(commands.Cog):
     @wheel_cmd.error
     async def wheel_cmd_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument)):
-            await ctx.send(f"<:symbol_wrong:1536289315867598849> {ctx.author.mention} Quay tay bằng không khí à? Cú pháp: `{ctx.prefix}wheel <tiền_cược | all>`. Để biết thêm chi tiết hãy xài lệnh `{ctx.prefix}ehelp wheel`")
+            await ctx.send(f"<:symbol_wrong:1536629915598848072> {ctx.author.mention} Quay tay bằng không khí à? Cú pháp: `{ctx.prefix}wheel <tiền_cược | all>`. Để biết thêm chi tiết hãy xài lệnh `{ctx.prefix}ehelp wheel`")
 
 
     async def _exec_wheel(self, ctx: commands.Context, bet: int, uid: str, balance: int) -> None:
@@ -279,7 +279,7 @@ class WheelSlots(commands.Cog):
         # ── Cập nhật DB ───────────────────────────────────────────────────
         ok = await _apply_delta(self.bot, uid, delta)
         if not ok:
-            await ctx.send(f"<:symbol_wrong:1536289315867598849> {ctx.author.mention} Sập nguồn cơ sở dữ liệu, thử lại sau!")
+            await ctx.send(f"<:symbol_wrong:1536629915598848072> {ctx.author.mention} Sập nguồn cơ sở dữ liệu, thử lại sau!")
             return
 
         new_balance = balance + delta
@@ -353,7 +353,7 @@ class WheelSlots(commands.Cog):
         balance = await _get_balance(self.bot, uid)
         bet, err, is_all = _parse_bet(bet_raw, balance)
         if err or bet is None:
-            await ctx.send(f"<:symbol_wrong:1536289315867598849> {ctx.author.mention} {err}")
+            await ctx.send(f"<:symbol_wrong:1536629915598848072> {ctx.author.mention} {err}")
             return
 
         if is_all:
@@ -367,7 +367,7 @@ class WheelSlots(commands.Cog):
     @slots_cmd.error
     async def slots_cmd_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument)):
-            await ctx.send(f"<:symbol_wrong:1536289315867598849> {ctx.author.mention} Đút xèng vào máy đi chứ! Cú pháp: `{ctx.prefix}slots <tiền_cược | all>`. Để biết thêm chi tiết hãy xài lệnh `{ctx.prefix}ehelp slots`")
+            await ctx.send(f"<:symbol_wrong:1536629915598848072> {ctx.author.mention} Đút xèng vào máy đi chứ! Cú pháp: `{ctx.prefix}slots <tiền_cược | all>`. Để biết thêm chi tiết hãy xài lệnh `{ctx.prefix}ehelp slots`")
 
 
     async def _exec_slots(self, ctx: commands.Context, bet: int, uid: str, balance: int) -> None:
@@ -382,7 +382,7 @@ class WheelSlots(commands.Cog):
         # ── Cập nhật DB ──────────────────────────────────────────────────
         ok = await _apply_delta(self.bot, uid, delta)
         if not ok:
-            await ctx.send(f"<:symbol_wrong:1536289315867598849> {ctx.author.mention} Sập nguồn cơ sở dữ liệu, thử lại sau!")
+            await ctx.send(f"<:symbol_wrong:1536629915598848072> {ctx.author.mention} Sập nguồn cơ sở dữ liệu, thử lại sau!")
             return
 
         new_balance = balance + delta

@@ -100,12 +100,12 @@ class ArcaneLevelSync(commands.Cog):
         await ctx.defer()
         
         if ctx.guild is None:
-            await ctx.send("<:symbol_wrong:1536289315867598849> Lệnh này chỉ dùng được trong Server!")
+            await ctx.send("<:symbol_wrong:1536629915598848072> Lệnh này chỉ dùng được trong Server!")
             return
 
         channel = self.bot.get_channel(CHANNEL_ID)
         if not isinstance(channel, (discord.TextChannel, discord.Thread, discord.VoiceChannel)):
-            await ctx.send("<:symbol_wrong:1536289315867598849> Kênh cấu hình CHANNEL_ID không hợp lệ hoặc bot không truy cập được.")
+            await ctx.send("<:symbol_wrong:1536629915598848072> Kênh cấu hình CHANNEL_ID không hợp lệ hoặc bot không truy cập được.")
             return
 
         processed_users: set[int] = set()
@@ -156,7 +156,7 @@ class ArcaneLevelSync(commands.Cog):
                 count += 1
 
         await ctx.send(
-            f"<:symbol_right:1536289313959186472> **Hoàn tất đồng bộ!**\n"
+            f"<:symbol_right:1536629912515903578> **Hoàn tất đồng bộ!**\n"
             f"🔹 Đã cập nhật thành công cho **{count}** người dùng.\n"
             f"🔹 Bỏ qua **{skipped_processed}** tin nhắn level thấp hơn.\n"
             f"🔹 Bỏ qua **{skipped_old}** tin nhắn từ 'kiếp trước'."
@@ -165,7 +165,7 @@ class ArcaneLevelSync(commands.Cog):
     @synclv_cmd.error
     async def synclv_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, commands.MissingPermissions):
-            await ctx.send("<:symbol_wrong:1536289315867598849> Bạn phải là Administrator mới có thể sử dụng lệnh này!")
+            await ctx.send("<:symbol_wrong:1536629915598848072> Bạn phải là Administrator mới có thể sử dụng lệnh này!")
 
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):

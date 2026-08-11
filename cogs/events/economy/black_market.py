@@ -175,21 +175,21 @@ class BlackMarketCog(commands.Cog):
         """Mua vật phẩm từ Chợ Đêm theo mã số ID vật phẩm"""
         now_vn = datetime.now(UTC7)
         if not (0 <= now_vn.hour < 2):
-            await ctx.send(f"<:symbol_wrong:1536289315867598849> Chợ Đêm hiện đang đóng cửa! Gõ `{ctx.prefix}choden` để xem thời gian mở lại.", delete_after=5.0)
+            await ctx.send(f"<:symbol_wrong:1536629915598848072> Chợ Đêm hiện đang đóng cửa! Gõ `{ctx.prefix}choden` để xem thời gian mở lại.", delete_after=5.0)
             return
 
         uid = str(ctx.author.id)
 
         # 1. Kiểm tra đầu vào
         if quantity <= 0:
-            await ctx.send("<:symbol_wrong:1536289315867598849> Số lượng mua phải lớn hơn 0!", delete_after=5.0)
+            await ctx.send("<:symbol_wrong:1536629915598848072> Số lượng mua phải lớn hơn 0!", delete_after=5.0)
             return
 
         shop_data = await _get_or_refresh_daily_shop(self.bot)
 
         if slot_id not in shop_data:
             await ctx.send(
-                f"<:symbol_wrong:1536289315867598849> Mã số không hợp lệ! Vui lòng nhập đúng mã số vật phẩm đang bán trong `{ctx.prefix}choden`.",
+                f"<:symbol_wrong:1536629915598848072> Mã số không hợp lệ! Vui lòng nhập đúng mã số vật phẩm đang bán trong `{ctx.prefix}choden`.",
                 delete_after=5.0,
             )
             return
@@ -205,14 +205,14 @@ class BlackMarketCog(commands.Cog):
 
         if stock == 0:
             await ctx.send(
-                f"<:symbol_wrong:1536289315867598849> **{item_name}** đã **cháy hàng** rồi! Chờ ngày mai nhé.",
+                f"<:symbol_wrong:1536629915598848072> **{item_name}** đã **cháy hàng** rồi! Chờ ngày mai nhé.",
                 delete_after=5.0,
             )
             return
 
         if quantity > stock:
             await ctx.send(
-                f"<:symbol_wrong:1536289315867598849> Chỉ còn **{stock}** chiếc **{item_name}**, không đủ để mua **{quantity}** chiếc!",
+                f"<:symbol_wrong:1536629915598848072> Chỉ còn **{stock}** chiếc **{item_name}**, không đủ để mua **{quantity}** chiếc!",
                 delete_after=5.0,
             )
             return
@@ -223,7 +223,7 @@ class BlackMarketCog(commands.Cog):
         success = await deduct_event_points(self.bot, uid, total_price)
         if not success:
             await ctx.send(
-                f"<:symbol_wrong:1536289315867598849> Số dư không đủ! Bạn cần **{total_price:,}** điểm để mua {quantity}x **{item_name}**.",
+                f"<:symbol_wrong:1536629915598848072> Số dư không đủ! Bạn cần **{total_price:,}** điểm để mua {quantity}x **{item_name}**.",
                 delete_after=5.0,
             )
             return

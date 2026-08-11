@@ -75,11 +75,11 @@ class CookingCog(commands.Cog):
     async def cook_cmd(self, ctx: commands.Context, food_id: int, amount: int = 1):
         """Lệnh nấu ăn. Cú pháp: kcook <id> [số_lượng]"""
         if amount <= 0:
-            await ctx.send("<:symbol_wrong:1536289315867598849> Số lượng phải lớn hơn 0!")
+            await ctx.send("<:symbol_wrong:1536629915598848072> Số lượng phải lớn hơn 0!")
             return
 
         if food_id not in RECIPES:
-            await ctx.send("<:symbol_wrong:1536289315867598849> ID món ăn không hợp lệ! Hãy xem `krecipe` để biết ID món ăn (71-80).")
+            await ctx.send("<:symbol_wrong:1536629915598848072> ID món ăn không hợp lệ! Hãy xem `krecipe` để biết ID món ăn (71-80).")
             return
 
         recipe = RECIPES[food_id]
@@ -109,7 +109,7 @@ class CookingCog(commands.Cog):
 
         if not can_cook:
             req_str = _get_recipe_string(recipe)
-            await ctx.send(f"<:symbol_wrong:1536289315867598849> **Không đủ nguyên liệu!**\nĐể nấu **1x {food_item['icon']} {food_item['name']}** bạn cần: `{req_str}`.")
+            await ctx.send(f"<:symbol_wrong:1536629915598848072> **Không đủ nguyên liệu!**\nĐể nấu **1x {food_item['icon']} {food_item['name']}** bạn cần: `{req_str}`.")
             return
 
         # Thực sự trừ nguyên liệu

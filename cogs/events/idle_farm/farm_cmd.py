@@ -82,7 +82,7 @@ class IdleFarmCog(commands.Cog):
                     for k, v in SEEDS.items()
                 )
                 return await ctx.send(
-                    f"<:symbol_wrong:1536289315867598849> Không tìm thấy hạt giống `{seed_type}`!\n"
+                    f"<:symbol_wrong:1536629915598848072> Không tìm thấy hạt giống `{seed_type}`!\n"
                     f"**Danh sách hạt giống hợp lệ:**\n{seed_list}\n\n"
                     f"*Cú pháp: `{prefix}plant <loại_hạt/id_hạt> <ô 1> <ô 2> ...`*"
                 )
@@ -92,7 +92,7 @@ class IdleFarmCog(commands.Cog):
         raw_numbers = re.findall(r'\d+', slots_str)
         if not raw_numbers:
             return await ctx.send(
-                f"<:symbol_wrong:1536289315867598849> Bạn chưa nhập số ô đất nào!\n"
+                f"<:symbol_wrong:1536629915598848072> Bạn chưa nhập số ô đất nào!\n"
                 f"*Cú pháp: `{prefix}plant <loại_hạt/id_hạt> <ô 1> <ô 2> ...`\n"
                 f"Ví dụ: `{prefix}plant wheat 1 2 3` hoặc `{prefix}plant 51 1 2 3`*"
             )
@@ -141,13 +141,13 @@ class IdleFarmCog(commands.Cog):
             machine_numeric = int(machine_id_str)
         except ValueError:
             return await ctx.send(
-                f"<:symbol_wrong:1536289315867598849> {ctx.author.mention} ID máy phải là số! (Ví dụ: Keg là `61`).\n"
+                f"<:symbol_wrong:1536629915598848072> {ctx.author.mention} ID máy phải là số! (Ví dụ: Keg là `61`).\n"
                 f"*Dùng `{ctx.prefix}recipe` để xem ID của từng máy.*"
             )
 
         if machine_numeric not in MACHINE_BY_ID:
             return await ctx.send(
-                f"<:symbol_wrong:1536289315867598849> {ctx.author.mention} Không tìm thấy máy nào có ID `{machine_numeric}`!\n"
+                f"<:symbol_wrong:1536629915598848072> {ctx.author.mention} Không tìm thấy máy nào có ID `{machine_numeric}`!\n"
                 f"*Dùng `{ctx.prefix}recipe` để xem ID hợp lệ.*"
             )
 
@@ -155,7 +155,7 @@ class IdleFarmCog(commands.Cog):
         machine = MACHINES[machine_key]
 
         if quantity <= 0:
-            return await ctx.send(f"<:symbol_wrong:1536289315867598849> {ctx.author.mention} Số lượng phải lớn hơn 0!")
+            return await ctx.send(f"<:symbol_wrong:1536629915598848072> {ctx.author.mention} Số lượng phải lớn hơn 0!")
 
         farm_data = await get_farm_data(self.bot, user_id)
         queue_list = _get_queue_list(farm_data)
@@ -166,7 +166,7 @@ class IdleFarmCog(commands.Cog):
         if current_slots + quantity > MAX_QUEUE_SLOTS:
             free_slots = MAX_QUEUE_SLOTS - current_slots
             return await ctx.send(
-                f"<:symbol_wrong:1536289315867598849> {ctx.author.mention} Bạn không đủ slot trống! "
+                f"<:symbol_wrong:1536629915598848072> {ctx.author.mention} Bạn không đủ slot trống! "
                 f"(Đang có {current_slots}/{MAX_QUEUE_SLOTS}, muốn xây {quantity}).\n"
                 f"*Số slot trống hiện tại: {free_slots}*"
             )
@@ -183,7 +183,7 @@ class IdleFarmCog(commands.Cog):
         if missing:
             missing_str = "\n".join(f"• {m}" for m in missing)
             return await ctx.send(
-                f"<:symbol_wrong:1536289315867598849> {ctx.author.mention} Không đủ nguyên liệu để xây **{quantity}x {machine['name']}**!\n"
+                f"<:symbol_wrong:1536629915598848072> {ctx.author.mention} Không đủ nguyên liệu để xây **{quantity}x {machine['name']}**!\n"
                 f"{missing_str}"
             )
 

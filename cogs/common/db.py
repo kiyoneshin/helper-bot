@@ -456,7 +456,7 @@ def check_not_locked():
     async def predicate(ctx: commands.Context) -> bool:
         row = await fetchrow_db(ctx.bot, "SELECT is_locked FROM event_profiles WHERE discord_id = $1", str(ctx.author.id))
         if row and row["is_locked"]:
-            await ctx.send(f"<:symbol_wrong:1536289315867598849> {ctx.author.mention} **Tài khoản của bạn đã bị khóa do vỡ nợ ngân hàng!**\n"
+            await ctx.send(f"<:symbol_wrong:1536629915598848072> {ctx.author.mention} **Tài khoản của bạn đã bị khóa do vỡ nợ ngân hàng!**\n"
                            f"Vui lòng sử dụng lệnh `{ctx.prefix}trano` để thanh toán nợ và mở khóa.")
             return False
         return True

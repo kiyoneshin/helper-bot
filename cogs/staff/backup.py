@@ -92,7 +92,7 @@ class StaffBackupCog(commands.Cog):
         if not db_url:
             log.error("Thiếu biến môi trường DATABASE_URL để thực hiện backup.")
             if ctx:
-                await ctx.send("<:symbol_wrong:1536289315867598849> Thiếu biến môi trường `DATABASE_URL`!")
+                await ctx.send("<:symbol_wrong:1536629915598848072> Thiếu biến môi trường `DATABASE_URL`!")
             return
 
         now = datetime.now(UTC7)
