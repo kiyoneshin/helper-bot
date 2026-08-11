@@ -60,7 +60,7 @@ def build_upgrade_embed(author: discord.Member | discord.User, farm_data: Dict[s
 
     # --- Ô đất ---
     if current_slots >= MAX_SLOTS:
-        slot_info = "🎉 Đã đạt kích thước tối đa!"
+        slot_info = "<:symbol_right:1536629912515903578> Đã đạt kích thước tối đa!"
     else:
         slot_price = get_slot_price(current_slots)
         slot_info = f"Ô thứ {current_slots + 1} → **{slot_price:,.0f}** điểm"
@@ -85,7 +85,7 @@ def build_upgrade_embed(author: discord.Member | discord.User, farm_data: Dict[s
         has_items = all(inventory.get(k, 0) >= v for k, v in cost_items.items())
         can_afford = points >= cost_pts
         status = "<:symbol_right:1536629912515903578> Đủ vật liệu" if (has_items and can_afford) else "<:symbol_wrong:1536629915598848072> Chưa đủ"
-        pick_info = f"**{cost_pts:,.0f}** điểm + {items_str}\n_{status}_"
+        pick_info = f"**{cost_pts:,.0f}** điểm + {items_str}\n{status}"
 
     embed.add_field(
         name=f"<:symbol_00_mining:1536007694920585356> Cuốc: {pickaxe_name} (Lv{pickaxe_level})",
@@ -106,7 +106,7 @@ def build_upgrade_embed(author: discord.Member | discord.User, farm_data: Dict[s
         has_items = all(inventory.get(k, 0) >= v for k, v in cost_items.items())
         can_afford = points >= cost_pts
         status = "<:symbol_right:1536629912515903578> Đủ vật liệu" if (has_items and can_afford) else "<:symbol_wrong:1536629915598848072> Chưa đủ"
-        rod_info = f"**{cost_pts:,.0f}** điểm + {items_str}\n_{status}_"
+        rod_info = f"**{cost_pts:,.0f}** điểm + {items_str}\n{status}"
 
     embed.add_field(
         name=f"<:symbol_00_fishing:1536007692437422171> Cần Câu: {rod_name} (Lv{rod_level})",
@@ -127,7 +127,7 @@ def build_upgrade_embed(author: discord.Member | discord.User, farm_data: Dict[s
         has_items = all(inventory.get(k, 0) >= v for k, v in cost_items.items())
         can_afford = points >= cost_pts
         status = "<:symbol_right:1536629912515903578> Đủ vật liệu" if (has_items and can_afford) else "<:symbol_wrong:1536629915598848072> Chưa đủ"
-        axe_info = f"**{cost_pts:,.0f}** điểm + {items_str}\n_{status}_"
+        axe_info = f"**{cost_pts:,.0f}** điểm + {items_str}\n{status}"
 
     embed.add_field(
         name=f"<:symbol_00_woodcutting:1536007697491558491> Rìu: {axe_name} (Lv{axe_level})",
