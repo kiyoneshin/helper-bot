@@ -64,7 +64,7 @@ def build_fishing_embed(author: discord.Member | discord.User, stamina: int, far
     bar = _stamina_bar(stamina)
     regen_info = f"(Hồi đầy sau: {_mins_to_full(stamina, regen_interval)})" if stamina < MAX_STAMINA else "<:symbol_right:1536629912515903578> Đã đầy"
     embed.add_field(
-        name="<:symbol_stamina:1536618972668235826> Thể Lực",
+        name="<:symbol_stamina:1536644916502077480> Thể Lực",
         value=f"{bar} **{stamina}/{MAX_STAMINA}** {regen_info}",
         inline=False,
     )
