@@ -56,7 +56,7 @@ DUCK_EMOJI: dict[str, str] = {
     "xanh": "🔵",
     "vang": "🟡",
     "hong": "💖",
-    "yon":  "<:gambling_duck:1536019587844546671>",
+    "yon":  "🦆",
 }
 
 DUCK_ALIASES: dict[str, str] = {
@@ -158,7 +158,7 @@ def _build_race_track(positions: dict[str, int], finished: Optional[list[str]] =
             crown = " 🏆" if (finished and key in finished) else " <:symbol_right:1536629912515903578>"
             row = f"{name_part}: {bar}{crown}"
         else:
-            bar = "=" * pos + "<:gambling_duck:1536019587844546671>" + "-" * (TRACK_LENGTH - pos)
+            bar = "=" * pos + "🦆" + "-" * (TRACK_LENGTH - pos)
             row = f"{name_part}: {bar}"
         lines.append(row)
     lines.append("```")
