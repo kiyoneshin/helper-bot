@@ -180,7 +180,7 @@ class InviteView(discord.ui.View):
 
     def build_embed(self) -> discord.Embed:
         embed = discord.Embed(
-            title="<:gambling_dice:1536291212141527050> Xúc Xắc Quần Hùng — Chiêu Mộ Anh Tài",
+            title="<:gambling_dice:1537539887769591828> Xúc Xắc Quần Hùng — Chiêu Mộ Anh Tài",
             description=(
                 f"{self.host.mention} đang kéo mồi!\n"
                 f"Cược: **{self.bet:,}**/người *(trừ 5% thuế vào sảnh)*\n\n"
@@ -312,7 +312,7 @@ class PublicLobbyView(discord.ui.View):
         count = len(self.players)
         spots = MAX_PLAYERS - count
         embed = discord.Embed(
-            title="<:gambling_dice:1536291212141527050> Xúc Xắc Quần Hùng — Sòng Đã Mở!",
+            title="<:gambling_dice:1537539887769591828> Xúc Xắc Quần Hùng — Sòng Đã Mở!",
             description=(
                 f"Mại dô mại dô! Tay nhanh hơn não!\n"
                 f"Cược: **{self.bet:,}**/người *(trừ 5% thuế vào sảnh)*\n\n"
@@ -407,7 +407,7 @@ class RollView(discord.ui.View):
     def build_embed(self) -> discord.Embed:
         """Render trạng thái animation hiện tại — gọi mỗi ANIM_INTERVAL giây."""
         embed = discord.Embed(
-            title="<:gambling_dice:1536291212141527050> Xúc Xắc Quần Hùng — Đang Lắc!",
+            title="<:gambling_dice:1537539887769591828> Xúc Xắc Quần Hùng — Đang Lắc!",
             description=(
                 "Ai dám lắc trước, kẻ đó có lợi thế tie-break!\n"
                 f"Qua <t:{self.end_time}:R> không bấm thì Bot lắc thay — đừng trách."
@@ -434,7 +434,7 @@ class RollView(discord.ui.View):
                 total = info.total
                 auto = " *(bot lắc)*" if info.auto_rolled else ""
                 dice_str = f"**{d1e} + {d2e} = {total}**{auto}"
-            lines.append(f"<:gambling_dice:1536291212141527050> <@{uid}> ── {dice_str}")
+            lines.append(f"<:gambling_dice:1537539887769591828> <@{uid}> ── {dice_str}")
 
         # Người chưa bấm
         for uid in self.player_infos:
@@ -451,7 +451,7 @@ class RollView(discord.ui.View):
         embed.set_footer(text="Chờ xúc xắc dừng quay... • Angelic Casino 🌸")
         return embed
 
-    @discord.ui.button(label="Lắc Xúc Xắc", style=discord.ButtonStyle.primary, custom_id="md_roll", emoji="<:gambling_dice:1536291212141527050>")
+    @discord.ui.button(label="Lắc Xúc Xắc", style=discord.ButtonStyle.primary, custom_id="md_roll", emoji="<:gambling_dice:1537539887769591828>")
     async def roll_btn(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
         uid = interaction.user.id
         if uid not in self.player_infos:
@@ -469,7 +469,7 @@ class RollView(discord.ui.View):
         self.roll_order.append(uid)
 
         await interaction.response.send_message(
-            f"<:gambling_dice:1536291212141527050> {interaction.user.mention} Đã lắc! Xúc xắc đang quay... đợi kết quả hiện ra."
+            f"<:gambling_dice:1537539887769591828> {interaction.user.mention} Đã lắc! Xúc xắc đang quay... đợi kết quả hiện ra."
         , delete_after=5.0)
 
         if all(p.has_rolled for p in self.player_infos.values()):
@@ -899,7 +899,7 @@ class MultiDice(commands.Cog):
                     child.disabled = True
             try:
                 final_roll_embed = roll_view.build_embed()
-                final_roll_embed.title = "<:gambling_dice:1536291212141527050> Xúc Xắc Quần Hùng — Đã Chốt Điểm!"
+                final_roll_embed.title = "<:gambling_dice:1537539887769591828> Xúc Xắc Quần Hùng — Đã Chốt Điểm!"
                 if roll_view.message:
                     await roll_view.message.edit(embed=final_roll_embed, view=roll_view)
             except discord.HTTPException:

@@ -334,7 +334,7 @@ class JailCore(commands.Cog):
                     "🧮 **Cày chay (Trí tuệ & Nhân phẩm):**\n"
                     f"• `{ctx.prefix}sua`: Giải toán cấp tốc giảm 2 án (Cooldown: 15s)\n"
                     f"• `{ctx.prefix}nhatxuong`: Nhặt xương 70% giảm 5 án, 30% cắn ngược +1 án (Cooldown: 30s)\n\n"
-                    "<:gambling_dice:1536291212141527050> **Sinh tử (Cờ bạc & Liều mạng):**\n"
+                    "<:gambling_dice:1537539887769591828> **Sinh tử (Cờ bạc & Liều mạng):**\n"
                     f"• `{ctx.prefix}lcuoc`: Tung đồng xu 50% giảm 5 án, 50% tăng 10 án (Cooldown: 20s)\n"
                     f"• `{ctx.prefix}lvuotnguc`: 5% thoát ngay lập tức, 95% nhân 3 án và bị bêu rếu (Cooldown: 5 phút)\n\n"
                     f"💸 **Bảo lãnh:** Hãy nhờ bạn bè dùng `{ctx.prefix}baolanh @bạn` để chuộc bạn ra bằng điểm sự kiện!\n\n"

@@ -122,37 +122,37 @@ def _get_icon(item_id: str, default: str) -> str:
 RANK_POOL: dict[int, list[tuple[str, str, str]]] = {
     # (item_id, name, icon) — qty sẽ random 1-2
     0: [
-        ("trash",  "Rác",       _get_icon("trash", "🥫")),
-        ("stone",  "Đá",        _get_icon("stone", "🪨")),
-        ("twigs",  "Que Củi",   _get_icon("twigs", "🪵")),
+        ("trash",  "Rác",       _get_icon("trash", "<:fish_00_trash:1535649328562053230>")),
+        ("stone",  "Đá",        _get_icon("stone", "<:mine_00_stone:1535654559412781067>")),
+        ("twigs",  "Que Củi",   _get_icon("twigs", "<:wood_00_twigs:1535654317321748570>")),
     ],
     1: [
-        ("carp",    "Cá Chép",   _get_icon("carp", "🐟")),
-        ("coal",    "Than Đá",   _get_icon("coal", "⬛")),
-        ("wood",    "Gỗ Thường", _get_icon("wood", "🌲")),
+        ("carp",    "Cá Chép",   _get_icon("carp", "<:fish_01_carp:1535649330952802364>")),
+        ("coal",    "Than Đá",   _get_icon("coal", "<:mine_01_coal:1535654561480708106>")),
+        ("wood",    "Gỗ Thường", _get_icon("wood", "<:wood_01_wood_scrap:1535654318856999043>")),
     ],
     2: [
-        ("lobster",    "Tôm Hùm",    _get_icon("lobster", "🦞")),
-        ("salmon",     "Cá Hồi",     _get_icon("salmon", "🍣")),
-        ("copper_ore", "Quặng Đồng", _get_icon("copper_ore", "🟠")),
-        ("iron_ore",   "Quặng Sắt",  _get_icon("iron_ore", "⚙️")),
-        ("hardwood",   "Gỗ Cứng",    _get_icon("hardwood", "🌳")),
+        ("lobster",    "Tôm Hùm",    _get_icon("lobster", "<:fish_02_lobster:1535649333762985994>")),
+        ("salmon",     "Cá Hồi",     _get_icon("salmon", "<:fish_03_salmon:1535649337458163763>")),
+        ("copper_ore", "Quặng Đồng", _get_icon("copper_ore", "<:mine_02_copper_ore:1535654564504670449>")),
+        ("iron_ore",   "Quặng Sắt",  _get_icon("iron_ore", "<:mine_03_iron_ore:1535654566853615717>")),
+        ("hardwood",   "Gỗ Cứng",    _get_icon("hardwood", "<:wood_02_hardwood:1535654321025196102>")),
     ],
     3: [
-        ("jellyfish",  "Sứa",        _get_icon("jellyfish", "🪼")),
-        ("squid",      "Mực",        _get_icon("squid", "🦑")),
-        ("gold_ore",   "Quặng Vàng", _get_icon("gold_ore", "🌕")),
-        ("pine_resin", "Nhựa Thông", _get_icon("pine_resin", "🫙")),
-        ("sap",        "Nhựa Cây",   _get_icon("sap", "💧")),
+        ("jellyfish",  "Sứa",        _get_icon("jellyfish", "<:fish_04_jellyfish:1535649339396067349>")),
+        ("squid",      "Mực",        _get_icon("squid", "<:fish_05_squid:1535649341254017024>")),
+        ("gold_ore",   "Quặng Vàng", _get_icon("gold_ore", "<:mine_04_gold_ore:1535654569143566396>")),
+        ("pine_resin", "Nhựa Thông", _get_icon("pine_resin", "<:wood_03_resin:1535654323231522857>")),
+        ("sap",        "Nhựa Cây",   _get_icon("sap", "<:wood_04_sap:1535654325530136636>")),
     ],
     4: [
-        ("stingray", "Cá Đuối",  _get_icon("stingray", "🦈")),
-        ("diamond",  "Kim Cương",  _get_icon("diamond", "💎")),
+        ("stingray", "Cá Đuối",  _get_icon("stingray", "<:fish_06_stingray:1535649344156467260>")),
+        ("diamond",  "Kim Cương",  _get_icon("diamond", "<:mine_05_diamond:1535654571039260774>")),
     ],
     5: [
-        ("legendary_fish", "Cá Huyền Thoại", _get_icon("legendary_fish", "🐉")),
-        ("diamond",        "Kim Cương x2",   _get_icon("diamond", "💎")),
-        ("sap",            "Nhựa Cây x2",    _get_icon("sap", "💧")),
+        ("legendary_fish", "Cá Huyền Thoại", _get_icon("legendary_fish", "<:fish_07_legendary:1535649346421395526>")),
+        ("diamond",        "Kim Cương",   _get_icon("diamond", "<:mine_05_diamond:1535654571039260774>")),
+        ("sap",            "Nhựa Cây",    _get_icon("sap", "<:wood_04_sap:1535654325530136636>")),
     ],
 }
 

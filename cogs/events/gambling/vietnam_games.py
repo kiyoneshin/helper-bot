@@ -205,7 +205,7 @@ class VietnamGames(commands.Cog):
             result_name = "<:symbol_wrong:1536629915598848072> Kết quả"
             result_val = f"{delta:,}  *(Đi bụi do dính Bão!)*"
         else:
-            embed_title = "<:gambling_dice:1536291212141527050> Tài Xỉu (Sic Bo)"
+            embed_title = "<:gambling_dice:1537539887769591828> Tài Xỉu (Sic Bo)"
             embed_color = COLOR_WIN if is_win else COLOR_LOSE
             dice_desc = f"Kết quả: **[ {d1} ]  [ {d2} ]  [ {d3} ]**  Tổng: **{total} ({outcome_desc})**"
             
@@ -274,7 +274,7 @@ class VietnamGames(commands.Cog):
     ) -> discord.Embed:
         """Dựng Embed Lobby với tổng tiền cược toàn bàn và đồng hồ đếm ngược."""
         embed = discord.Embed(
-            title="<:gambling_dice:1536291212141527050> Bàn Bầu Cua Tôm Cá",
+            title="<:gambling_dice:1537539887769591828> Bàn Bầu Cua Tôm Cá",
             description=(
                 "Nhanh tay gõ xuống kênh chat để cược: `<tên_con_vật> <số_tiền>`\n"
                 "Tay nhanh hơn não thì cược nhiều con 1 dòng luôn (cách nhau dấu phẩy).\n"
@@ -296,7 +296,7 @@ class VietnamGames(commands.Cog):
         )
         embed.add_field(
             name="⏳ Đóng sảnh sau",
-            value=f"**{time_left} giây**  `[ <:gambling_dice:1536291212141527050> ] [ <:gambling_dice:1536291212141527050> ] [ <:gambling_dice:1536291212141527050> ]`",
+            value=f"**{time_left} giây**  `[ <:gambling_dice:1537539887769591828> ] [ <:gambling_dice:1537539887769591828> ] [ <:gambling_dice:1537539887769591828> ]`",
             inline=True,
         )
         embed.set_footer(text="Angelic Casino • Bầu Cua Tôm Cá 🌸")
@@ -418,7 +418,7 @@ class VietnamGames(commands.Cog):
             try:
                 await lobby_msg.edit(
                     embed=discord.Embed(
-                        title="<:gambling_dice:1536291212141527050> Bầu Cua Tôm Cá",
+                        title="<:gambling_dice:1537539887769591828> Bầu Cua Tôm Cá",
                         description="Không có ai đặt cược. Trò chơi kết thúc!",
                         color=0x808080,
                     )
@@ -435,7 +435,7 @@ class VietnamGames(commands.Cog):
         # Chốt Embed Lobby — hiển thị kết quả xúc xắc
         try:
             closed_embed = discord.Embed(
-                title="<:gambling_dice:1536291212141527050> Bầu Cua Tôm Cá — Đã Chốt!",
+                title="<:gambling_dice:1537539887769591828> Bầu Cua Tôm Cá — Đã Chốt!",
                 description=f"Kết quả xúc xắc:\n\n{dice_display}",
                 color=0xFF8C00,
             )
@@ -451,7 +451,7 @@ class VietnamGames(commands.Cog):
 
         # Gửi thông báo kết quả chung
         await ctx.send(
-            f"<:gambling_dice:1536291212141527050> **Sòng đã mở:** {dice_display}\n"
+            f"<:gambling_dice:1537539887769591828> **Sòng đã mở:** {dice_display}\n"
             f"*(Đang chia tiền cho {len(player_bets)} con bạc...)*"
         )
 
@@ -504,7 +504,7 @@ class VietnamGames(commands.Cog):
             author_avatar = user.display_avatar.url if user else discord.Embed.Empty  # type: ignore[attr-defined]
 
             result_embed = discord.Embed(
-                title="<:gambling_dice:1536291212141527050> Bầu Cua Tôm Cá — Kết Quả",
+                title="<:gambling_dice:1537539887769591828> Bầu Cua Tôm Cá — Kết Quả",
                 description=result_desc,
                 color=embed_color,
             )

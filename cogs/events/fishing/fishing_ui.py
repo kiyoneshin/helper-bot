@@ -2,13 +2,13 @@
 fishing_ui.py — Giao diện và Minigame Câu Cá
 =============================================
 
-⚠️  LUỒNG DISCORD INTERACTION CẦN HIỂU ĐÚNG:
-    Discord yêu cầu response trong vòng 3 giây sau khi người dùng bấm nút.
-    Vì chúng ta cần asyncio.sleep() lâu hơn 3 giây (2~5s chờ cá cắn),
-    chúng ta phải RESPOND NGAY trong 3 giây đầu (bước 1),
-    rồi dùng edit_original_response() — webhook API không bị giới hạn 3s —
-    để cập nhật tin nhắn trong các bước tiếp theo.
-    """
+LUỒNG DISCORD INTERACTION CẦN HIỂU ĐÚNG:
+Discord yêu cầu response trong vòng 3 giây sau khi người dùng bấm nút.
+Vì chúng ta cần asyncio.sleep() lâu hơn 3 giây (2~5s chờ cá cắn),
+chúng ta phải RESPOND NGAY trong 3 giây đầu (bước 1),
+rồi dùng edit_original_response() — webhook API không bị giới hạn 3s —
+để cập nhật tin nhắn trong các bước tiếp theo.
+"""
 
 import asyncio
 import random

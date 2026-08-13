@@ -135,7 +135,7 @@ def _build_recipe_embed(ctx, category: str) -> discord.Embed:
             current_len += len(line) + 1
         
         if current_chunk:
-            embed.add_field(name=f"<:symbol_machine:1536297937498275850> Công Thức Chế Biến (Phần {part})" if part > 1 else "🏭 Công Thức Chế Biến", value="\n".join(current_chunk), inline=False)
+            embed.add_field(name=f"<:symbol_machine:1536297937498275850> Công Thức Chế Biến (Phần {part})" if part > 1 else "Công Thức Chế Biến", value="\n".join(current_chunk), inline=False)
 
     elif category == "cook":
         embed.set_thumbnail(url="https://cdn.discordapp.com/emojis/1535660942875041822.gif")

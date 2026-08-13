@@ -19,7 +19,7 @@ class DiceLobbyView(discord.ui.View):
         self.game_started = False
         self.ready_event = asyncio.Event()
 
-    @discord.ui.button(label="Tham Gia Ngay", style=discord.ButtonStyle.success, emoji="<:gambling_dice:1536291212141527050>")
+    @discord.ui.button(label="Tham Gia Ngay", style=discord.ButtonStyle.success, emoji="<:gambling_dice:1537539887769591828>")
     async def join_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         if self.game_started:
             await interaction.response.send_message("⚠️ Sảnh đã khóa sổ, chờ ván sau nhé!", ephemeral=True)
@@ -59,12 +59,12 @@ class DiceLobbyView(discord.ui.View):
 async def start_dice_lobby_game(bot, channel: discord.abc.Messageable, core_cog):
     """Khởi chạy minigame Sảnh Xúc Xắc Nhân Phẩm"""
     embed = discord.Embed(
-        title="<:gambling_dice:1536291212141527050> SẢNH XÚC XẮC NHÂN PHẨM ANGELIC ໒꒱",
+        title="<:gambling_dice:1537539887769591828> SẢNH XÚC XẮC NHÂN PHẨM ANGELIC ໒꒱",
         description=(
             "Một sảnh cờ bạc siêu tốc vừa được mở ra! Hãy nhanh tay đăng ký để thử vận may!\n\n"
             "⏳ **Thời gian gom phòng:** 60 giây (hoặc khi đủ 10 người)\n"
             "<:gift_00_symbol:1536003307011842099> **Luật chơi:** Winner Takes All — Người đổ ra tổng điểm cao nhất ăn trọn **100 điểm thưởng**!\n"
-            "🌟 **Đặc biệt:** Ai đổ ra bộ đôi hoàn hảo (1-1 hoặc 6-6) sẽ được thưởng nóng thêm **+50 điểm Nhân Phẩm Vô Cực**!"
+            "🌟 **Đặc biệt:** Ai đổ ra bộ đôi hoàn hảo (1-1 hoặc 6-6) sẽ được thưởng nóng thêm **+ 50 điểm Nhân Phẩm Vô Cực**!"
         ),
         color=0xf1c40f
     )
@@ -159,7 +159,7 @@ async def start_dice_lobby_game(bot, channel: discord.abc.Messageable, core_cog)
     result_lines = []
     for r in results:
         p = r["user"]
-        line = f"{p.mention} ── <:gambling_dice:1536291212141527050> [{r['d1']}] + [{r['d2']}] = **{r['total']} điểm**"
+        line = f"{p.mention} ── <:gambling_dice:1537539887769591828> [{r['d1']}] + [{r['d2']}] = **{r['total']} điểm**"
         
         points_to_add = 0
         # Check thưởng nhân phẩm vô cực

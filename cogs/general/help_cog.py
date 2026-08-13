@@ -92,7 +92,7 @@ CMD_DATA: dict[str, dict] = {
     },
     "lcuoc": {
         "name": "Lật Cược",
-        "emoji": "<:gambling_dice:1536291212141527050>",
+        "emoji": "<:gambling_dice:1537539887769591828>",
         "short": "Tung đồng xu: 50% giảm 5 án / 50% tăng 10 án. CD 20s.",
         "aliases": ["lc", "jailflip"],
         "cooldown": "20s",

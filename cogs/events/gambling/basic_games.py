@@ -376,9 +376,9 @@ class BasicGames(commands.Cog):
             result_line = f"{delta:,}  *(-{abs(mult) * 100:.0f}%)*"
             outcome_emoji = "<:symbol_wrong:1536629915598848072>"
 
-        embed = discord.Embed(title="<:gambling_dice:1536291212141527050> Dice", color=color)
+        embed = discord.Embed(title="<:gambling_dice:1537539887769591828> Dice", color=color)
         embed.set_author(name=f"{ctx.author.display_name} — dice", icon_url=ctx.author.display_avatar.url)
-        embed.add_field(name="<:gambling_dice:1536291212141527050> Kết quả lắc", value=f"{face_emoji} - {desc}", inline=False)
+        embed.add_field(name="<:gambling_dice:1537539887769591828> Kết quả lắc", value=f"{face_emoji} - {desc}", inline=False)
         embed.add_field(name="💰 Tiền cược", value=f"{bet:,}", inline=False)
         embed.add_field(name=f"{outcome_emoji} Kết quả", value=result_line, inline=False)
         embed.add_field(name="<:symbol_credit_card:1536308433693712404> Số dư mới", value=f"{new_balance:,}", inline=False)

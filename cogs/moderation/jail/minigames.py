@@ -64,7 +64,7 @@ class JailGames(commands.Cog):
                 f"{ctx.author.mention} run run tung đồng xu...\n\n"
                 f"**Thắng:** Giảm **5 án** (còn {max(0, current-5)})\n"
                 f"**Thua:** Tăng **10 án** (lên {current+10})\n\n"
-                "<:gambling_dice:1536291212141527050> *Quay vòng...*"
+                "<:gambling_dice:1537539887769591828> *Quay vòng...*"
             ),
             color=COLOR_WARN,
         )
