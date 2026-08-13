@@ -21,6 +21,7 @@ class AchCategorySelect(discord.ui.Select):
             )
             for cat_id, name in ACH_CATEGORIES.items()
         ]
+        options.insert(0, discord.SelectOption(label="Bảng Tổng Kết", value="summary", emoji="🏆"))
         super().__init__(
             placeholder="Chọn danh mục thành tựu...",
             min_values=1,
@@ -53,10 +54,10 @@ class AchCategorySelect(discord.ui.Select):
             stats = {}
             claimed = []
             
-        # Tính toán riêng các stat đặc biệt (intimacy, pet_level) từ bảng marriages nếu cần
-        # Để đơn giản, ta sẽ query trực tiếp trong hàm build_ach_embed hoặc để update_user_stat xử lý
-        
-        embed = await build_ach_embed(interaction.client, interaction.user, category, stats, claimed)
+        if category == "summary":
+            embed = await build_ach_summary_embed(interaction.client, interaction.user, stats, claimed)
+        else:
+            embed = await build_ach_embed(interaction.client, interaction.user, category, stats, claimed)
         
         # Build view with claim button
         view = AchView(self.author, category, stats, claimed)
@@ -68,7 +69,7 @@ class ClaimButton(discord.ui.Button):
         # Tính xem có bao nhiêu thành tựu chưa claim mà ĐỦ ĐIỀU KIỆN
         claimable = 0
         for ach_id, ach in ACHIEVEMENTS.items():
-            if ach["category"] == category and ach_id not in claimed:
+            if (category == "summary" or ach["category"] == category) and ach_id not in claimed:
                 stat_val = stats.get(ach["stat_key"], 0)
                 if stat_val >= ach["target"]:
                     claimable += 1
@@ -110,7 +111,7 @@ class ClaimButton(discord.ui.Button):
         inventory = (farm_data or {}).setdefault("inventory", {})
         
         for ach_id, ach in ACHIEVEMENTS.items():
-            if ach["category"] == self.category and ach_id not in claimed:
+            if (self.category == "summary" or ach["category"] == self.category) and ach_id not in claimed:
                 stat_val = stats.get(ach["stat_key"], 0)
                 if stat_val >= ach["target"]:
                     newly_claimed.append(ach_id)
@@ -139,7 +140,11 @@ class ClaimButton(discord.ui.Button):
         
         msg = f"🎉 Chúc mừng bạn đã hoàn thành **{len(newly_claimed)}** thành tựu!\n\n" + "\n".join(reward_messages)
         
-        embed = await build_ach_embed(interaction.client, interaction.user, self.category, stats, claimed)
+        if self.category == "summary":
+            embed = await build_ach_summary_embed(interaction.client, interaction.user, stats, claimed)
+        else:
+            embed = await build_ach_embed(interaction.client, interaction.user, self.category, stats, claimed)
+            
         view = AchView(self.author, self.category, stats, claimed)
         await interaction.response.edit_message(embed=embed, view=view)
         
@@ -149,8 +154,59 @@ class ClaimButton(discord.ui.Button):
 class AchView(discord.ui.View):
     def __init__(self, author: discord.Member | discord.User, category: str, stats: dict, claimed: list):
         super().__init__(timeout=120)
-        self.add_item(AchCategorySelect(author))
+        
+        select = AchCategorySelect(author)
+        # Set default value in dropdown based on category
+        for opt in select.options:
+            if opt.value == category:
+                opt.default = True
+                
+        self.add_item(select)
         self.add_item(ClaimButton(author, category, stats, claimed))
+
+
+async def build_ach_summary_embed(bot, user, stats: dict, claimed: list) -> discord.Embed:
+    # Nếu stat_key là total_earned thì lấy trực tiếp từ DB
+    row = await fetchrow_db(bot, "SELECT total_earned FROM event_profiles WHERE discord_id = $1", str(user.id))
+    if row:
+        stats["total_earned"] = row["total_earned"] or 0
+        
+    row_love = await fetchrow_db(
+        bot,
+        "SELECT intimacy_points, pet_level, ring_id FROM marriages WHERE user1_id = $1 OR user2_id = $1",
+        str(user.id)
+    )
+    if row_love:
+        stats["intimacy"] = row_love["intimacy_points"] or 0
+        stats["pet_level"] = row_love["pet_level"] or 1
+        stats["ring_level"] = max(1, (row_love["ring_id"] or 31) - 30)
+
+    total_achievements = len(ACHIEVEMENTS)
+    total_claimed = len(claimed)
+
+    embed = discord.Embed(
+        description=f"🏆 **{total_claimed}/{total_achievements}**\n\nXem chi tiết thành tựu của từng danh mục thông qua Menu lựa chọn bên dưới.\n\u200b",
+        color=0xffd700
+    )
+    embed.set_author(name=f"{user.display_name} — Thành Tựu", icon_url=user.display_avatar.url)
+    embed.set_thumbnail(url="https://cdn.discordapp.com/emojis/1535664842977976400.png")
+
+    for cat_id, cat_name in ACH_CATEGORIES.items():
+        cat_total = 0
+        cat_claimed = 0
+        for ach_id, ach in ACHIEVEMENTS.items():
+            if ach["category"] == cat_id:
+                cat_total += 1
+                if ach_id in claimed:
+                    cat_claimed += 1
+                    
+        embed.add_field(
+            name=f"**{cat_name}**",
+            value=f"{cat_claimed}/{cat_total}",
+            inline=True
+        )
+
+    return embed
 
 
 async def build_ach_embed(bot, user, category: str, stats: dict, claimed: list) -> discord.Embed:
@@ -248,8 +304,8 @@ class AchievementCog(commands.Cog):
         stats = json.loads(row["stats"]) if isinstance(row["stats"], str) else (row["stats"] or {})
         claimed = json.loads(row["achievements"]) if isinstance(row["achievements"], str) else (row["achievements"] or [])
         
-        embed = await build_ach_embed(self.bot, ctx.author, "eco", stats, claimed)
-        view = AchView(ctx.author, "eco", stats, claimed)
+        embed = await build_ach_summary_embed(self.bot, ctx.author, stats, claimed)
+        view = AchView(ctx.author, "summary", stats, claimed)
         await ctx.send(embed=embed, view=view)
         
     @commands.hybrid_command(name="title", aliases=["danhhieu"])

@@ -72,7 +72,7 @@ def build_mining_embed(author: discord.Member | discord.User, stamina: int, farm
         f"{ore['icon']} **{ore['name']}** — {display_weights[ore_id]}%"
         for ore_id, ore in MINING_LOOT.items()
     ]
-    embed.add_field(name="<:symbol_chart:1536317815336869918> Tỉ Lệ Rớt Đồ (Base)", value="\n".join(loot_lines), inline=True)
+    embed.add_field(name="<:symbol_mineral:1536007704076615792> Tỉ Lệ Rớt Đồ (Base)", value="\n".join(loot_lines), inline=True)
 
     inventory = farm_data.get("inventory", {})
     ore_lines = [

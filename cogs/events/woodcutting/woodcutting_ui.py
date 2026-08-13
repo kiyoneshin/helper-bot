@@ -48,7 +48,7 @@ def build_woodcutting_embed(author: discord.Member | discord.User, stamina: int,
         f"{item['icon']} **{item['name']}** — {display_weights[item_id]}%"
         for item_id, item in WOODCUTTING_LOOT.items()
     ]
-    embed.add_field(name="<:symbol_chart:1536317815336869918> Tỉ Lệ Rớt (Base)", value="\n".join(loot_lines), inline=True)
+    embed.add_field(name="<:symbol_log:1536007701518229544> Tỉ Lệ Rớt (Base)", value="\n".join(loot_lines), inline=True)
 
     inventory = farm_data.get("inventory", {})
     inv_lines = [
