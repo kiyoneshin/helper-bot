@@ -142,8 +142,8 @@ def _build_farm_embed(
         embed.set_footer(text="💡 Dùng các nút bên dưới để bán vật phẩm.")
         return embed
 
-    seed_lines, crop_lines, ore_lines, fish_lines, artisan_lines = [], [], [], [], []
-    total_crops_worth = total_ores_worth = total_fish_worth = total_artisan_worth = 0
+    seed_lines, crop_lines, ore_lines, wood_lines, fish_lines, artisan_lines = [], [], [], [], [], []
+    total_crops_worth = total_ores_worth = total_wood_worth = total_fish_worth = total_artisan_worth = 0
 
     for item_id, count in inventory.items():
         if count <= 0:
@@ -192,8 +192,8 @@ def _build_farm_embed(
             elif item_id in WOODCUTTING_LOOT:
                 wood = WOODCUTTING_LOOT[item_id]
                 price = wood.get("price", 0)
-                total_ores_worth += price * count
-                ore_lines.append(
+                total_wood_worth += price * count
+                wood_lines.append(
                     f"• `[{item_id}]` {wood['icon']} **{wood['name']}** (x{count})"
                     f" — {price:,} điểm/cái"
                 )
@@ -218,7 +218,9 @@ def _build_farm_embed(
             desc_parts.append("**<:symbol_machine:1536297937498275850> Thủ Công Phẩm:**\n" + "\n".join(artisan_lines))
     else:
         if ore_lines:
-            desc_parts.append("**<:symbol_00_mining:1536007694920585356> Khoáng sản & Gỗ:**\n" + "\n".join(ore_lines))
+            desc_parts.append("**<:symbol_00_mining:1536007694920585356> Khoáng sản:**\n" + "\n".join(ore_lines))
+        if wood_lines:
+            desc_parts.append("**<:symbol_00_woodcutting:1536007697491558491> Gỗ:**\n" + "\n".join(wood_lines))
         if fish_lines:
             desc_parts.append("**<:symbol_fish:1536007699190386740> Cá:**\n" + "\n".join(fish_lines))
 
@@ -233,6 +235,8 @@ def _build_farm_embed(
     else:
         if total_ores_worth > 0:
             footer_parts.append(f"<:symbol_00_mining:1536007694920585356> {total_ores_worth:,} điểm")
+        if total_wood_worth > 0:
+            footer_parts.append(f"<:symbol_00_woodcutting:1536007697491558491> {total_wood_worth:,} điểm")
         if total_fish_worth > 0:
             footer_parts.append(f"<:symbol_fish:1536007699190386740> {total_fish_worth:,} điểm")
             
@@ -489,8 +493,12 @@ class InventoryView(discord.ui.View):
             style=discord.ButtonStyle.success, row=2,
         )
         self.btn_sell_ores = discord.ui.Button(
-            label="Bán Tất Cả Quặng & Gỗ", emoji="<:symbol_00_mining:1536007694920585356>",
+            label="Bán Tất Cả Quặng", emoji="<:symbol_00_mining:1536007694920585356>",
             style=discord.ButtonStyle.primary, row=2,
+        )
+        self.btn_sell_wood = discord.ui.Button(
+            label="Bán Tất Cả Gỗ", emoji="<:symbol_00_woodcutting:1536007697491558491>",
+            style=discord.ButtonStyle.success, row=2,
         )
         self.btn_sell_fish = discord.ui.Button(
             label="Bán Tất Cả Cá", emoji="<:symbol_fish:1536007699190386740>",
@@ -501,6 +509,7 @@ class InventoryView(discord.ui.View):
         self.btn_sell_item.callback = self._on_sell_item
         self.btn_sell_crops.callback = lambda interaction: self._on_sell_all(interaction, "crops", "Nông sản")
         self.btn_sell_ores.callback = lambda interaction: self._on_sell_all(interaction, "ores", "Khoáng sản")
+        self.btn_sell_wood.callback = lambda interaction: self._on_sell_all(interaction, "wood", "Gỗ")
         self.btn_sell_fish.callback = lambda interaction: self._on_sell_all(interaction, "fish", "Cá")
 
         # Mặc định tab không phải farm nên ẩn nút
@@ -516,6 +525,7 @@ class InventoryView(discord.ui.View):
         elif tab == "eco":
             self.add_item(self.btn_sell_item)
             self.add_item(self.btn_sell_ores)
+            self.add_item(self.btn_sell_wood)
             self.add_item(self.btn_sell_fish)
 
     def _hide_farm_buttons(self) -> None:
