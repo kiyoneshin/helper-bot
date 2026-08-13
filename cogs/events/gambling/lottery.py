@@ -271,7 +271,7 @@ class Lottery(commands.Cog):
             color=COLOR_GOLD
         )
         embed.add_field(
-            name="<:symbol_money:1536320386315325441> Giá vé",
+            name="<:symbol_money:1537466097282842775> Giá vé",
             value=f"**{TICKET_PRICE:,}** điểm / vé\n*(Tối đa {MAX_TICKETS_PER_USER} vé)*",
             inline=True
         )

@@ -439,7 +439,7 @@ CMD_DATA: dict[str, dict] = {
     },
     "trano": {
         "name": "Trả Nợ",
-        "emoji": "<:symbol_money:1536320386315325441>",
+        "emoji": "<:symbol_money:1537466097282842775>",
         "short": "Trả nợ cho ngân hàng để tránh bị khóa tài khoản.",
         "aliases": ["tra", "payloan"],
         "cooldown": None,

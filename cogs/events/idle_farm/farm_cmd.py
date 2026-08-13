@@ -163,7 +163,12 @@ class IdleFarmCog(commands.Cog):
         inventory = farm_data.get("inventory", {})
 
         current_slots = len(queue_list)
-        if current_slots + quantity > MAX_QUEUE_SLOTS:
+        if current_slots >= MAX_QUEUE_SLOTS:
+            return await ctx.send(
+                f"<:symbol_wrong:1536629915598848072> {ctx.author.mention} Khu chế biến của bạn đã đầy (tối đa {MAX_QUEUE_SLOTS} máy)!\n"
+                f"*Vui lòng dùng nút `Phá Dỡ Máy` trong lệnh `{ctx.prefix}machine` để giải phóng slot.*"
+            )
+        elif current_slots + quantity > MAX_QUEUE_SLOTS:
             free_slots = MAX_QUEUE_SLOTS - current_slots
             return await ctx.send(
                 f"<:symbol_wrong:1536629915598848072> {ctx.author.mention} Bạn không đủ slot trống! "

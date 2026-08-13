@@ -45,11 +45,11 @@ COLOR_RACE   = 0x7289DA
 COLOR_LOCK   = 0xFF6B6B
 
 DUCKS: dict[str, str] = {
-    "do":   "🔴 Đỏ",
-    "xanh": "🔵 Xanh",
-    "vang": "🟡 Vàng",
-    "hong": "💖 Hồng",
-    "yon":  "🦆 Yon",
+    "do":   "Đỏ",
+    "xanh": "Xanh",
+    "vang": "Vàng",
+    "hong": "Hồng",
+    "yon":  "Yon",
 }
 DUCK_EMOJI: dict[str, str] = {
     "do":   "🔴",

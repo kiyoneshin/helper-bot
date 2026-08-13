@@ -130,7 +130,8 @@ def build_machine_embed(
     embed.description = header
 
     lines = []
-    for i in range(MAX_QUEUE_SLOTS):
+    display_slots = max(MAX_QUEUE_SLOTS, len(queue_list))
+    for i in range(display_slots):
         num = i + 1
         if i < len(queue_list):
             slot_id, item = queue_list[i]
@@ -306,6 +307,142 @@ class RecipeSelectView(discord.ui.View):
         self.add_item(select_obj)
 
 # ---------------------------------------------------------------------------
+# SELECT MENU — PHÁ DỠ MÁY (ephemeral)
+# ---------------------------------------------------------------------------
+
+class DemolishSelect(discord.ui.Select):
+    def __init__(
+        self,
+        bot: commands.Bot,
+        user_id: str,
+        farm_data: Dict[str, Any],
+        author: discord.Member | discord.User,
+    ):
+        self.bot = bot
+        self.user_id = user_id
+        self.author = author
+        
+        options = []
+        queue_list = _get_queue_list(farm_data)
+        for i, (slot_id, item) in enumerate(queue_list):
+            machine_id = item.get("machine_id", "")
+            machine = MACHINES.get(machine_id, {})
+            status = item.get("status", "idle")
+            
+            label = f"Slot {i+1}: {machine.get('name', machine_id)}"
+            desc = "Đang trống" if status == "idle" else ("Đang chờ thu hoạch" if status == "done" else "Đang chế biến")
+            options.append(
+                discord.SelectOption(
+                    label=label,
+                    value=slot_id,
+                    description=desc,
+                    emoji=machine.get("icon", "⚙️")
+                )
+            )
+
+        if not options:
+            options.append(discord.SelectOption(label="Không có máy nào", value="none"))
+
+        super().__init__(
+            placeholder="🔨 Chọn máy để phá dỡ...",
+            min_values=1,
+            max_values=1,
+            options=options[:25],
+        )
+
+    async def callback(self, interaction: discord.Interaction):
+        if str(interaction.user.id) != self.user_id:
+            return await interaction.response.send_message(
+                "<:symbol_wrong:1536629915598848072> Bạn không có quyền thao tác!", ephemeral=True
+            )
+            
+        slot_id = self.values[0]
+        if slot_id == "none":
+            return await interaction.response.send_message("Không có máy nào để phá!", ephemeral=True)
+            
+        farm_data = await get_farm_data(self.bot, self.user_id)
+        queue_list = _get_queue_list(farm_data)
+        
+        machine_queue = farm_data.get("machine_queue", {})
+        if slot_id not in machine_queue:
+            return await interaction.response.send_message("Máy không tồn tại hoặc đã bị phá!", ephemeral=True)
+            
+        item = machine_queue[slot_id]
+        machine_id = item.get("machine_id", "")
+        machine = MACHINES.get(machine_id, {})
+        machine_name = machine.get("name", machine_id)
+        
+        index = next((i for i, (s_id, _) in enumerate(queue_list) if s_id == slot_id), 0) + 1
+        
+        confirm_view = DemolishConfirmView(
+            self.bot, self.user_id, self.author, slot_id, machine_id, index
+        )
+        
+        await interaction.response.send_message(
+            f"⚠️ **CẢNH BÁO:** Bạn sắp phá dỡ **Slot {index}: {machine_name}**.\n"
+            f"Bạn sẽ nhận lại 50% nguyên liệu chế tạo máy. Nếu máy đang hoạt động, nguyên liệu chế biến bên trong sẽ **mất hoàn toàn**.\n"
+            f"Bạn có chắc chắn muốn phá dỡ không?",
+            view=confirm_view,
+            ephemeral=True
+        )
+
+class DemolishSelectView(discord.ui.View):
+    def __init__(self, select_obj: discord.ui.Select):
+        super().__init__(timeout=60)
+        self.add_item(select_obj)
+
+class DemolishConfirmView(discord.ui.View):
+    def __init__(
+        self,
+        bot: commands.Bot,
+        user_id: str,
+        author: discord.Member | discord.User,
+        slot_id: str,
+        machine_id: str,
+        index: int
+    ):
+        super().__init__(timeout=60)
+        self.bot = bot
+        self.user_id = user_id
+        self.author = author
+        self.slot_id = slot_id
+        self.machine_id = machine_id
+        self.index = index
+
+    @discord.ui.button(label="Đồng Ý Phá", style=discord.ButtonStyle.danger, emoji="💥")
+    async def confirm_btn(self, interaction: discord.Interaction, button: discord.ui.Button):
+        if str(interaction.user.id) != self.user_id:
+            return await interaction.response.send_message("Không có quyền!", ephemeral=True)
+            
+        farm_data = await get_farm_data(self.bot, self.user_id)
+        machine_queue = farm_data.get("machine_queue", {})
+        inventory = farm_data.get("inventory", {})
+        
+        if self.slot_id not in machine_queue:
+            return await interaction.response.send_message("Máy không tồn tại hoặc đã bị phá rồi!", ephemeral=True)
+            
+        machine = MACHINES.get(self.machine_id, {})
+        refunds = []
+        for mat_id, qty in machine.get("ingredients", {}).items():
+            refund_qty = max(1, qty // 2) if qty > 1 else 1 
+            inventory[mat_id] = inventory.get(mat_id, 0) + refund_qty
+            name = _get_item_display_name(mat_id)
+            refunds.append(f"**{refund_qty}x** {name}")
+            
+        del machine_queue[self.slot_id]
+        farm_data["inventory"] = inventory
+        farm_data["machine_queue"] = machine_queue
+        await save_farm_data(self.bot, self.user_id, farm_data)
+        
+        refund_str = "\n".join([f"• {r}" for r in refunds])
+        msg = (
+            f"💥 Đã phá dỡ thành công **Slot {self.index}: {machine.get('name', self.machine_id)}**.\n"
+            f"**Nguyên liệu thu hồi:**\n{refund_str}"
+        )
+        
+        await interaction.response.edit_message(content=msg, view=None)
+
+# ---------------------------------------------------------------------------
 # MAIN VIEW — 4 NÚT
 # ---------------------------------------------------------------------------
 
@@ -342,9 +479,9 @@ class MachineView(discord.ui.View):
 
         # Nút cho các máy
         machine_styles = {
-            "keg": ("🍺", "Keg", discord.ButtonStyle.primary),
-            "jar": ("🫙", "Jar", discord.ButtonStyle.primary),
-            "furnace": ("🔥", "Furnace", discord.ButtonStyle.primary),
+            "keg": (MACHINES["keg"]["icon"], "Keg", discord.ButtonStyle.primary),
+            "jar": (MACHINES["jar"]["icon"], "Jar", discord.ButtonStyle.primary),
+            "furnace": (MACHINES["furnace"]["icon"], "Furnace", discord.ButtonStyle.primary),
         }
 
         for machine_id, (icon, label, style) in machine_styles.items():
@@ -360,6 +497,18 @@ class MachineView(discord.ui.View):
             )
             btn.callback = self._make_machine_callback(machine_id)
             self.add_item(btn)
+            
+        # Nút Phá Dỡ
+        btn_demolish = discord.ui.Button(
+            label="Phá Dỡ Máy",
+            style=discord.ButtonStyle.danger,
+            emoji="<:symbol_demolish:1537466095412314192>",
+            custom_id="btn_demolish",
+            disabled=(len(queue_list) == 0),
+            row=1,
+        )
+        btn_demolish.callback = self._demolish_callback
+        self.add_item(btn_demolish)
 
     async def _harvest_callback(self, interaction: discord.Interaction):
         if str(interaction.user.id) != self.user_id:
@@ -454,6 +603,33 @@ class MachineView(discord.ui.View):
             )
 
         return callback
+
+    async def _demolish_callback(self, interaction: discord.Interaction):
+        if str(interaction.user.id) != self.user_id:
+            return await interaction.response.send_message(
+                "<:symbol_wrong:1536629915598848072> Bạn không có quyền thao tác!", ephemeral=True
+            )
+            
+        farm_data = await get_farm_data(self.bot, self.user_id)
+        queue_list = _get_queue_list(farm_data)
+        
+        if len(queue_list) == 0:
+            return await interaction.response.send_message(
+                "<:symbol_wrong:1536629915598848072> Không có máy nào để phá!", ephemeral=True
+            )
+            
+        select = DemolishSelect(
+            bot=self.bot,
+            user_id=self.user_id,
+            farm_data=farm_data,
+            author=self.author,
+        )
+        view = DemolishSelectView(select)
+        await interaction.response.send_message(
+            "<:symbol_demolish:1537466095412314192> Vui lòng chọn máy bạn muốn phá dỡ ở menu bên dưới:",
+            view=view,
+            ephemeral=True
+        )
 
 async def send_machine_panel(ctx: commands.Context) -> None:
     user_id = str(ctx.author.id)
