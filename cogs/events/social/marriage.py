@@ -466,7 +466,7 @@ class MarriageCog(commands.Cog):
                 elif base_type == "Rồng": pet_buff_str = f"+{pet_level*0.35:.2f}% DTM, -{pet_level*0.35:.2f}% CD, +{pet_level*1}% Task"
                 
             desc += (
-                f"***Promises for loving:***\n"
+                f"**Promises for loving:**\n"
                 f"{formatted_promise}\n"
             )
             

@@ -4,7 +4,7 @@ import discord
 from discord.ext import commands
 
 from .config import SEEDS, STATUS_GROWING, STATUS_READY, STATUS_WITHERED, WATER_BONUS, QUALITY_EMOJIS
-from .farm_db import water_all, harvest_all, calculate_crop_status, get_farm_data, remove_crop
+from .farm_db import water_all, harvest_all, calculate_crop_status, get_farm_data, remove_crop, remove_crops_batch
 from cogs.common.db import fetchval_db, deduct_event_points, add_event_points
 
 
@@ -18,7 +18,7 @@ class FarmView(discord.ui.View):
         self.author = author
         # Dropdown gieo trồng đã được thay thế bằng lệnh kplant
         
-    @discord.ui.button(label="Tưới Nước Tất Cả", emoji="💧", style=discord.ButtonStyle.primary, row=0)
+    @discord.ui.button(label="Tưới Nước Tất Cả", emoji="<:symbol_watering_can:1536295381862715453>", style=discord.ButtonStyle.primary, row=0)
     async def water_btn(self, interaction: discord.Interaction, button: discord.ui.Button):
         if str(interaction.user.id) != self.user_id:
             await interaction.response.send_message("<:symbol_wrong:1536629915598848072> Bạn không thể tương tác với nông trại của người khác!", ephemeral=True)
@@ -77,14 +77,6 @@ class FarmView(discord.ui.View):
         await interaction.response.edit_message(embed=new_embed, view=new_view)
         await interaction.followup.send("\n".join(msg), ephemeral=True)
 
-    @discord.ui.button(label="Cuốc Bỏ", emoji="<:symbol_scythe:1536007681502875669>", style=discord.ButtonStyle.danger, row=1)
-    async def clear_btn(self, interaction: discord.Interaction, button: discord.ui.Button):
-        if str(interaction.user.id) != self.user_id:
-            await interaction.response.send_message("<:symbol_wrong:1536629915598848072> Bạn không thể tương tác với nông trại của người khác!", ephemeral=True)
-            return
-            
-        await interaction.response.send_modal(ClearSlotModal(self.bot, self.user_id, self.author, self))
-
     @discord.ui.button(label="Làm Mới", emoji="<:symbol_reload:1536007679640600648>", style=discord.ButtonStyle.secondary, row=1)
     async def refresh_btn(self, interaction: discord.Interaction, button: discord.ui.Button):
         if str(interaction.user.id) != self.user_id:
@@ -98,40 +90,31 @@ class FarmView(discord.ui.View):
         await interaction.response.edit_message(embed=new_embed, view=new_view)
 
 
-class ClearSlotModal(discord.ui.Modal, title="Cuốc Bỏ Cây Trồng"):
-    slot_input = discord.ui.TextInput(
-        label="Nhập số thứ tự ô đất (VD: 1, 2, 3)",
-        placeholder="Chỉ nhập số nguyên...",
-        min_length=1,
-        max_length=2,
-        required=True
-    )
-    
-    def __init__(self, bot: commands.Bot, user_id: str, author: discord.Member | discord.User, view: FarmView):
-        super().__init__()
+class PickConfirmView(discord.ui.View):
+    def __init__(self, bot: commands.Bot, user_id: str, slot_ids: list[int], author: discord.Member | discord.User):
+        super().__init__(timeout=60)
         self.bot = bot
         self.user_id = user_id
+        self.slot_ids = slot_ids
         self.author = author
-        self.view_obj = view
-        
-    async def on_submit(self, interaction: discord.Interaction):
-        try:
-            slot_id = int(self.slot_input.value.strip())
-        except ValueError:
-            await interaction.response.send_message("<:symbol_wrong:1536629915598848072> Giá trị không hợp lệ! Vui lòng chỉ nhập số.", ephemeral=True)
-            return
+
+    @discord.ui.button(label="Xác nhận cuốc", style=discord.ButtonStyle.danger, emoji="<:symbol_scythe:1536007681502875669>")
+    async def confirm_btn(self, interaction: discord.Interaction, button: discord.ui.Button):
+        if str(interaction.user.id) != self.user_id:
+            return await interaction.response.send_message("<:symbol_wrong:1536629915598848072> Không có quyền!", ephemeral=True)
             
-        ok, msg = await remove_crop(self.bot, self.user_id, str(slot_id))
-        if not ok:
-            await interaction.response.send_message(f"<:symbol_wrong:1536629915598848072> {msg}", ephemeral=True)
-            return
-            
-        new_farm_data = await get_farm_data(self.bot, self.user_id)
-        new_embed = build_farm_embed(self.author, new_farm_data)
+        ok, msg = await remove_crops_batch(self.bot, self.user_id, self.slot_ids)
         
-        new_view = FarmView(self.bot, self.user_id, self.author, new_farm_data)
-        await interaction.response.edit_message(embed=new_embed, view=new_view)
-        await interaction.followup.send(f"<:symbol_right:1536629912515903578> {msg} (Tại Ô {slot_id})", ephemeral=True)
+        if ok:
+            await interaction.response.edit_message(content=f"<:symbol_right:1536629912515903578> {msg}", view=None)
+        else:
+            await interaction.response.edit_message(content=f"<:symbol_wrong:1536629915598848072> {msg}", view=None)
+
+    @discord.ui.button(label="Hủy", style=discord.ButtonStyle.secondary)
+    async def cancel_btn(self, interaction: discord.Interaction, button: discord.ui.Button):
+        if str(interaction.user.id) != self.user_id:
+            return await interaction.response.send_message("<:symbol_wrong:1536629915598848072> Không có quyền!", ephemeral=True)
+        await interaction.response.edit_message(content="Đã hủy thao tác cuốc bỏ cây.", view=None)
 
 
 def build_farm_embed(author: discord.Member | discord.User, farm_data: Dict[str, Any]) -> discord.Embed:

@@ -101,6 +101,48 @@ class IdleFarmCog(commands.Cog):
         ok, msg = await plant_seeds_batch(self.bot, user_id, seed_key, slot_ids)
         await ctx.send(msg)
 
+    @commands.hybrid_command(
+        name="pick",
+        aliases=["cuoc"],
+        description="🌾 Cuốc bỏ cây trồng ở các ô đất chỉ định. VD: lệnh pick 1 2 3",
+    )
+    @check_not_locked()
+    async def pick_cmd(self, ctx: commands.Context, *, slots_str: str) -> None:
+        """Cuốc bỏ cây trồng ở các ô đất chỉ định."""
+        user_id = str(ctx.author.id)
+        prefix = ctx.prefix or ctx.bot.custom_prefix
+
+        import re
+        raw_numbers = re.findall(r'\d+', slots_str)
+        if not raw_numbers:
+            return await ctx.send(
+                f"<:symbol_wrong:1536629915598848072> Bạn chưa nhập số ô đất nào!\n"
+                f"*Cú pháp: `{prefix}pick <ô 1> <ô 2> ...`\n"
+                f"Ví dụ: `{prefix}pick 1 2 3`*"
+            )
+
+        slot_ids = list(set([int(n) for n in raw_numbers]))
+        
+        from .farm_db import get_farm_data
+        farm_data = await get_farm_data(self.bot, user_id)
+        crops = farm_data.get("crops", {})
+        valid_slots = sorted([s for s in slot_ids if str(s) in crops])
+        
+        if not valid_slots:
+            return await ctx.send(
+                f"<:symbol_wrong:1536629915598848072> Các ô bạn chọn đều đang trống hoặc không tồn tại!"
+            )
+            
+        slot_str = ", ".join(map(str, valid_slots))
+        from .farm_ui import PickConfirmView
+        view = PickConfirmView(self.bot, user_id, valid_slots, ctx.author)
+        
+        await ctx.send(
+            f"⚠️ **CẢNH BÁO:** Bạn sắp cuốc bỏ cây trồng tại các **ô {slot_str}**.\n"
+            f"Cây sẽ bị biến mất và không được hoàn lại hạt giống.\n"
+            f"Bạn có chắc chắn muốn cuốc không?",
+            view=view
+        )
 
     @commands.hybrid_command(name="upgrade", aliases=["nangcap", "morong"])
     async def upgrade_cmd(self, ctx: commands.Context) -> None:

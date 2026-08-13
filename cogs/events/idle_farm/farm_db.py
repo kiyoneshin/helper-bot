@@ -620,8 +620,37 @@ async def remove_crop(bot: commands.Bot, user_id: str, slot_id: str) -> Tuple[bo
         
     del crops[slot_id_str]
     await save_farm_data(bot, user_id, farm_data)
-    
     return True, "Đã dọn dẹp ô đất!"
+
+async def remove_crops_batch(bot: commands.Bot, user_id: str, slot_ids: list[int]) -> Tuple[bool, str]:
+    """
+    Cuốc bỏ cây trồng ở nhiều ô đất cùng lúc.
+    """
+    farm_data = await get_farm_data(bot, user_id)
+    crops = (farm_data or {}).get("crops", {})
+    
+    removed_count = 0
+    not_found = []
+    
+    for slot_id in slot_ids:
+        slot_id_str = str(slot_id)
+        if slot_id_str in crops:
+            del crops[slot_id_str]
+            removed_count += 1
+        else:
+            not_found.append(slot_id_str)
+            
+    if removed_count > 0:
+        await save_farm_data(bot, user_id, farm_data)
+        
+    if removed_count == 0:
+        return False, "Không có cây nào ở các ô bạn chọn để cuốc bỏ!"
+        
+    msg = f"Đã cuốc bỏ **{removed_count}** cây."
+    if not_found:
+        msg += f" (Các ô bị bỏ qua do trống/không hợp lệ: {', '.join(not_found)})"
+        
+    return True, msg
 
 async def expand_farm_slot(bot: commands.Bot, user_id: str) -> Tuple[bool, str]:
     """
