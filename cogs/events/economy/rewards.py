@@ -67,7 +67,7 @@ class Rewards(commands.Cog):
         )
         
         if not row:
-            await ctx.send("<:symbol_wrong:1536629915598848072> Đã có lỗi xảy ra khi truy vấn dữ liệu của bạn.")
+            await ctx.send("<:symbol_ban:1537546960003801319> Đã có lỗi xảy ra khi truy vấn dữ liệu của bạn.")
             return
 
         last_daily = row["last_daily"]
@@ -172,7 +172,7 @@ class Rewards(commands.Cog):
         )
         
         if not row:
-            await ctx.send("<:symbol_wrong:1536629915598848072> Đã có lỗi xảy ra khi truy vấn dữ liệu của bạn.")
+            await ctx.send("<:symbol_ban:1537546960003801319> Đã có lỗi xảy ra khi truy vấn dữ liệu của bạn.")
             return
 
         last_weekly = row["last_weekly"]

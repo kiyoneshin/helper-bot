@@ -236,7 +236,7 @@ class TaskCog(commands.Cog):
         quests_data = data["quests"]
         
         embed = discord.Embed(
-            title="🏆 Chuỗi Nhiệm Vụ Khám Phá (Quests)",
+            title="<:symbol_trophy:1537550568665649232> Chuỗi Nhiệm Vụ Khám Phá (Quests)",
             color=0xffaa00,
             description="Hoàn thành các nhiệm vụ dài hạn dưới đây để nhận phần thưởng cực lớn!"
         )
@@ -264,7 +264,7 @@ class TaskCog(commands.Cog):
                     await _add_lootbox_to_inventory(self.bot, str(uid), lb_tier, 1)
                     lb_msg = f" <:gift_00_symbol:1536003307011842099> {TIER_EMOJIS[lb_tier]} {TIER_NAMES[lb_tier]}"
 
-                claimed_messages.append(f"🏆 Đã hoàn thành siêu nhiệm vụ: **{conf['name']}** (+{tdata['reward']:,} điểm{lb_msg})")
+                claimed_messages.append(f"<:symbol_trophy:1537550568665649232> Đã hoàn thành siêu nhiệm vụ: **{conf['name']}** (+{tdata['reward']:,} điểm{lb_msg})")
                 db_changed = True
 
             status = "COMPLETED" if tdata["claimed"] else f"{tdata['progress']}/{tdata['target']}"

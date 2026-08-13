@@ -46,7 +46,7 @@ def get_rules_embed() -> discord.Embed:
             "• Chat đúng chủ đề và mục đích của từng kênh. Không tự ý vào phá room voice hoặc làm phiền không gian riêng của người khác.\n"
             "• Không spam ticket hoặc tự ý mở ticket khi không thực sự cần thiết. Luôn luôn tuân thủ và hợp tác theo lời nhắc nhở/hướng dẫn của Staff.\n\n"
             
-            "**🚨 6. Quy định đặc biệt về Hệ thống Role Độ tuổi:**\n"
+            "**<:symbol_alert:1537546957885542450> 6. Quy định đặc biệt về Hệ thống Role Độ tuổi:**\n"
             "• Khi bạn tự chọn (pick) role liên quan đến độ tuổi của bản thân, **bắt buộc phải chọn đúng số tuổi thật**. Nếu hệ thống hoặc Ban Quản Trị phát hiện bất kỳ hành vi khai gian tuổi nào, tài khoản đó sẽ bị **BAN vĩnh viễn khỏi server ngay lập tức** (Quy định này áp dụng nghiêm túc cho tất cả mọi người, kể cả Staff)."
         ),
         color=0xffb6c1

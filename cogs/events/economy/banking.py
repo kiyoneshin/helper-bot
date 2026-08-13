@@ -72,7 +72,7 @@ class BankingCog(commands.Cog):
         profile = await get_or_create_event_profile(self.bot, uid)
         
         if profile and profile.get("is_locked"):
-            await ctx.send("<:symbol_wrong:1536629915598848072> Tài khoản của bạn đang bị khóa do vỡ nợ, không thể vay thêm!")
+            await ctx.send("<:symbol_ban:1537546960003801319> Tài khoản của bạn đang bị khóa do vỡ nợ, không thể vay thêm!")
             return
 
         total_earned = float(profile.get("total_earned", 0.0)) if profile else 0.0
@@ -91,7 +91,7 @@ class BankingCog(commands.Cog):
             return
             
         if amount > available_loan:
-            await ctx.send(f"<:symbol_wrong:1536629915598848072> {ctx.author.mention} Hạn mức còn lại của bạn chỉ là **{available_loan:,.0f}** điểm.")
+            await ctx.send(f"<:symbol_ban:1537546960003801319> {ctx.author.mention} Hạn mức còn lại của bạn chỉ là **{available_loan:,.0f}** điểm.")
             return
 
         # Thực hiện vay
@@ -236,7 +236,7 @@ class BankingCog(commands.Cog):
             # Gắn còi báo động đòi nợ nếu vừa bị khóa
             if just_locked and isinstance(debt_channel, discord.TextChannel):
                 await debt_channel.send(
-                    f"🚨🚨 **CẢNH BÁO VỠ NỢ** 🚨🚨\n"
+                    f"<:symbol_alert:1537546957885542450><:symbol_alert:1537546957885542450> **CẢNH BÁO VỠ NỢ** <:symbol_alert:1537546957885542450><:symbol_alert:1537546957885542450>\n"
                     f"<@{uid}> đã âm vốn liên tiếp 2 ngày! Ngân hàng đã **SIẾT TÀI SẢN & KHÓA TÀI KHOẢN**.\n"
                     f"Trạng thái Hôn Nhân đã bị hủy bỏ! Yêu cầu sử dụng lệnh `{self.bot.custom_prefix}trano` để thanh toán khoản nợ **{new_debt:,.0f}** ngay lập tức!"
                 )

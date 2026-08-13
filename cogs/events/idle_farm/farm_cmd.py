@@ -138,7 +138,7 @@ class IdleFarmCog(commands.Cog):
         view = PickConfirmView(self.bot, user_id, valid_slots, ctx.author)
         
         await ctx.send(
-            f"⚠️ **CẢNH BÁO:** Bạn sắp cuốc bỏ cây trồng tại các **ô {slot_str}**.\n"
+            f"<:symbol_alert:1537546957885542450> **CẢNH BÁO:** Bạn sắp cuốc bỏ cây trồng tại các **ô {slot_str}**.\n"
             f"Cây sẽ bị biến mất và không được hoàn lại hạt giống.\n"
             f"Bạn có chắc chắn muốn cuốc không?",
             view=view
@@ -207,7 +207,7 @@ class IdleFarmCog(commands.Cog):
         current_slots = len(queue_list)
         if current_slots >= MAX_QUEUE_SLOTS:
             return await ctx.send(
-                f"<:symbol_wrong:1536629915598848072> {ctx.author.mention} Khu chế biến của bạn đã đầy (tối đa {MAX_QUEUE_SLOTS} máy)!\n"
+                f"<:symbol_ban:1537546960003801319> {ctx.author.mention} Khu chế biến của bạn đã đầy (tối đa {MAX_QUEUE_SLOTS} máy)!\n"
                 f"*Vui lòng dùng nút `Phá Dỡ Máy` trong lệnh `{ctx.prefix}machine` để giải phóng slot.*"
             )
         elif current_slots + quantity > MAX_QUEUE_SLOTS:

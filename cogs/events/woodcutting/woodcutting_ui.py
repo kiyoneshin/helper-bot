@@ -75,7 +75,7 @@ class WoodcuttingView(discord.ui.View):
     @discord.ui.button(label="Chặt Cây", emoji="<:button_woodcutting:1536007674674806915>", style=discord.ButtonStyle.success)
     async def chop_btn(self, interaction: discord.Interaction, button: discord.ui.Button):
         if str(interaction.user.id) != self.user_id:
-            await interaction.response.send_message("<:symbol_wrong:1536629915598848072> Khu rừng của người khác, cấm chặt trộm!", ephemeral=True)
+            await interaction.response.send_message("<:symbol_ban:1537546960003801319> Khu rừng của người khác, cấm chặt trộm!", ephemeral=True)
             return
 
         from cogs.common.db import get_active_boosts

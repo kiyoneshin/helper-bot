@@ -155,7 +155,7 @@ def _build_race_track(positions: dict[str, int], finished: Optional[list[str]] =
         name_part = f"{emoji} {label:<6}"
         if pos >= TRACK_LENGTH:
             bar = "=" * TRACK_LENGTH + " 🏁"
-            crown = " 🏆" if (finished and key in finished) else " <:symbol_right:1536629912515903578>"
+            crown = " <:symbol_trophy:1537550568665649232>" if (finished and key in finished) else " <:symbol_right:1536629912515903578>"
             row = f"{name_part}: {bar}{crown}"
         else:
             bar = "=" * pos + "🦆" + "-" * (TRACK_LENGTH - pos)
@@ -317,7 +317,7 @@ class DuckRace(commands.Cog):
         winners_emojis = "".join([DUCK_EMOJI[w] for w in winners])
 
         embed = discord.Embed(
-            title=f"{winners_emojis} {winners_labels} VỀ ĐÍCH NHẤT! 🏆",
+            title=f"{winners_emojis} {winners_labels} VỀ ĐÍCH NHẤT! <:symbol_trophy:1537550568665649232>",
             description=(
                 f"Vịt **{winners_labels}** vừa cán đích trong vinh quang!\n"
                 f"Tổng Pool: **{total_pool:,}** — Thuế nhà cái (5%): **{int(total_pool * 0.05):,}**\n"
@@ -416,7 +416,7 @@ class DuckRace(commands.Cog):
             
             if ex_color != color_key:
                 await ctx.send(
-                    f"⚠️ {ctx.author.mention} Mày đã cược vào {ex_emoji} **{ex_label}** "
+                    f"<:symbol_alert:1537546957885542450> {ctx.author.mention} Mày đã cược vào {ex_emoji} **{ex_label}** "
                     f"({ex_bet:,}) rồi!\n"
                     "Muốn đổi con khác thì `khuybet` để rút về trước đã."
                 )
@@ -588,7 +588,7 @@ class DuckRace(commands.Cog):
             await self._do_lock(0)
         elif action == "race":
             if self.is_racing:
-                await ctx.send("⚠️ Đang có cuộc đua chạy rồi!")
+                await ctx.send("<:symbol_alert:1537546957885542450> Đang có cuộc đua chạy rồi!")
                 return
             await ctx.send("🏁 [Admin] Force khởi tranh...")
             await self._do_race()

@@ -106,7 +106,7 @@ class MiningView(discord.ui.View):
     async def mine_btn(self, interaction: discord.Interaction, button: discord.ui.Button):
         if str(interaction.user.id) != self.user_id:
             await interaction.response.send_message(
-                "<:symbol_wrong:1536629915598848072> Đây không phải khu mỏ của bạn!", ephemeral=True
+                "<:symbol_ban:1537546960003801319> Đây không phải khu mỏ của bạn!", ephemeral=True
             )
             return
 

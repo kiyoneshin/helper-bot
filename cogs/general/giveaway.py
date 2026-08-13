@@ -463,7 +463,7 @@ class GiveawaySession:
         elif view.action == "cancel":
             ask_view = YesNoView()
             if self.prompt_msg:
-                await self.prompt_msg.edit(content="⚠️ Bạn có chắc chắn muốn hủy phiên cài đặt này không?", view=ask_view)
+                await self.prompt_msg.edit(content="<:symbol_alert:1537546957885542450> Bạn có chắc chắn muốn hủy phiên cài đặt này không?", view=ask_view)
             await ask_view.wait()
             if ask_view.value:
                 if self.msg: await self.msg.delete()
@@ -546,7 +546,7 @@ class GiveawayCog(commands.Cog):
 
     async def cog_command_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, commands.MissingPermissions):
-            await ctx.send("<:symbol_wrong:1536629915598848072> Bạn không có quyền sử dụng lệnh này. Chỉ dành cho Admin/Owner!", ephemeral=True)
+            await ctx.send("<:symbol_ban:1537546960003801319> Bạn không có quyền sử dụng lệnh này. Chỉ dành cho Admin/Owner!", ephemeral=True)
         else:
             log.error(f"Lỗi trong GiveawayCog ({ctx.command}): {error}")
 
@@ -794,7 +794,7 @@ class GiveawayCog(commands.Cog):
     async def gaunban_cmd(self, ctx: commands.Context, user: discord.User):
         res = await execute_db(self.bot, "DELETE FROM giveaway_bans WHERE user_id = $1", user.id)
         if res and res.endswith("0"):
-            await ctx.send(f"⚠️ **{user.display_name}** không có trong danh sách đen.")
+            await ctx.send(f"<:symbol_alert:1537546957885542450> **{user.display_name}** không có trong danh sách đen.")
         else:
             await ctx.send(f"<:symbol_right:1536629912515903578> Đã gỡ cấm cho **{user.display_name}**, họ có thể tham gia Giveaway trở lại.")
 
@@ -834,7 +834,7 @@ class GiveawayCog(commands.Cog):
             return
             
         if not msg.embeds:
-            await ctx.send("<:symbol_wrong:1536629915598848072> Tin nhắn không phải là một Giveaway hợp lệ.")
+            await ctx.send("<:symbol_ban:1537546960003801319> Tin nhắn không phải là một Giveaway hợp lệ.")
             return
             
         emb = msg.embeds[0]

@@ -965,13 +965,13 @@ class MultiDice(commands.Cog):
 
         # ── Xây Embed Tổng Kết ───────────────────────────────────────────
         embed = discord.Embed(
-            title="🏆 Xúc Xắc Quần Hùng — Bảng Vàng Phong Thần",
+            title="<:symbol_trophy:1537550568665649232> Xúc Xắc Quần Hùng — Bảng Vàng Phong Thần",
             color=COLOR_WIN,
         )
 
         # Bảng điểm toàn sân
         all_lines: list[str] = []
-        medals = ["🥇", "🥈", "🥉"]
+        medals = ["<:symbol_medal_gold:1537550996664885328>", "<:symbol_medal_silver:1537552840514347048>", "<:symbol_medal_bronze:1537552838412992712>"]
         for i, info in enumerate(ranked):
             d1e = DICE_NUMS.get(info.d1 or 1, "?")
             d2e = DICE_NUMS.get(info.d2 or 1, "?")

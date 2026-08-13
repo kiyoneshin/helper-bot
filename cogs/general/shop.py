@@ -178,7 +178,7 @@ class ShopView(discord.ui.View):
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
         if interaction.user.id != self.author.id:
             await interaction.response.send_message(
-                "<:symbol_wrong:1536629915598848072> Đây không phải cửa hàng của bạn!", ephemeral=True
+                "<:symbol_ban:1537546960003801319> Đây không phải cửa hàng của bạn!", ephemeral=True
             )
             return False
         return True

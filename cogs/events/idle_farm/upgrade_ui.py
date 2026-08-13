@@ -206,7 +206,7 @@ class UpgradeView(discord.ui.View):
     async def _check_owner(self, interaction: discord.Interaction) -> bool:
         if str(interaction.user.id) != self.user_id:
             await interaction.response.send_message(
-                "<:symbol_wrong:1536629915598848072> Bạn không thể tương tác với giao diện của người khác!", ephemeral=True
+                "<:symbol_ban:1537546960003801319> Bạn không thể tương tác với giao diện của người khác!", ephemeral=True
             )
             return False
         return True

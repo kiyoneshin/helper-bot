@@ -21,7 +21,7 @@ class FarmView(discord.ui.View):
     @discord.ui.button(label="Tưới Nước Tất Cả", emoji="<:symbol_watering_can:1536295381862715453>", style=discord.ButtonStyle.primary, row=0)
     async def water_btn(self, interaction: discord.Interaction, button: discord.ui.Button):
         if str(interaction.user.id) != self.user_id:
-            await interaction.response.send_message("<:symbol_wrong:1536629915598848072> Bạn không thể tương tác với nông trại của người khác!", ephemeral=True)
+            await interaction.response.send_message("<:symbol_ban:1537546960003801319> Bạn không thể tương tác với nông trại của người khác!", ephemeral=True)
             return
             
         ok, count = await water_all(self.bot, self.user_id)
@@ -40,7 +40,7 @@ class FarmView(discord.ui.View):
     @discord.ui.button(label="Thu Hoạch", emoji="<:button_harvesting:1536007671445061763>", style=discord.ButtonStyle.success, row=1)
     async def harvest_btn(self, interaction: discord.Interaction, button: discord.ui.Button):
         if str(interaction.user.id) != self.user_id:
-            await interaction.response.send_message("<:symbol_wrong:1536629915598848072> Bạn không thể tương tác với nông trại của người khác!", ephemeral=True)
+            await interaction.response.send_message("<:symbol_ban:1537546960003801319> Bạn không thể tương tác với nông trại của người khác!", ephemeral=True)
             return
             
         ok, report = await harvest_all(self.bot, self.user_id)
@@ -80,7 +80,7 @@ class FarmView(discord.ui.View):
     @discord.ui.button(label="Làm Mới", emoji="<:symbol_reload:1536007679640600648>", style=discord.ButtonStyle.secondary, row=1)
     async def refresh_btn(self, interaction: discord.Interaction, button: discord.ui.Button):
         if str(interaction.user.id) != self.user_id:
-            await interaction.response.send_message("<:symbol_wrong:1536629915598848072> Bạn không thể tương tác với nông trại của người khác!", ephemeral=True)
+            await interaction.response.send_message("<:symbol_ban:1537546960003801319> Bạn không thể tương tác với nông trại của người khác!", ephemeral=True)
             return
             
         new_farm_data = await get_farm_data(self.bot, self.user_id)
@@ -101,7 +101,7 @@ class PickConfirmView(discord.ui.View):
     @discord.ui.button(label="Xác nhận cuốc", style=discord.ButtonStyle.danger, emoji="<:symbol_scythe:1536007681502875669>")
     async def confirm_btn(self, interaction: discord.Interaction, button: discord.ui.Button):
         if str(interaction.user.id) != self.user_id:
-            return await interaction.response.send_message("<:symbol_wrong:1536629915598848072> Không có quyền!", ephemeral=True)
+            return await interaction.response.send_message("<:symbol_ban:1537546960003801319> Không có quyền!", ephemeral=True)
             
         ok, msg = await remove_crops_batch(self.bot, self.user_id, self.slot_ids)
         
@@ -113,7 +113,7 @@ class PickConfirmView(discord.ui.View):
     @discord.ui.button(label="Hủy", style=discord.ButtonStyle.secondary)
     async def cancel_btn(self, interaction: discord.Interaction, button: discord.ui.Button):
         if str(interaction.user.id) != self.user_id:
-            return await interaction.response.send_message("<:symbol_wrong:1536629915598848072> Không có quyền!", ephemeral=True)
+            return await interaction.response.send_message("<:symbol_ban:1537546960003801319> Không có quyền!", ephemeral=True)
         await interaction.response.edit_message(content="Đã hủy thao tác cuốc bỏ cây.", view=None)
 
 

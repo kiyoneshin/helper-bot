@@ -144,7 +144,7 @@ async def _fetch_leaderboard_data(
 # XÂY EMBED LEADERBOARD
 # =============================================================================
 
-RANK_MEDALS = ["🥇", "🥈", "🥉"]
+RANK_MEDALS = ["<:symbol_medal_gold:1537550996664885328>", "<:symbol_medal_silver:1537552840514347048>", "<:symbol_medal_bronze:1537552838412992712>"]
 ROLE_LABELS = {
     "all": "Tất Cả Chức Vụ",
     "owner": "Owner 👑",
@@ -173,7 +173,7 @@ def _build_leaderboard_embed(
     date_range_str = f"{_format_date(dt_start)} — {_format_date(dt_end)}"
 
     embed = discord.Embed(
-        title="🏆 Bảng Xếp Hạng Staff Angelic",
+        title="<:symbol_trophy:1537550568665649232> Bảng Xếp Hạng Staff Angelic",
         description=(
             f"📅 **Khoảng thời gian:** {date_range_str}\n"
             f"🗂️ **Bộ lọc:** {role_label} • 📈 **Xếp theo:** {sort_label}\n"
@@ -629,7 +629,7 @@ class SortSelect(discord.ui.Select):
 class RoleFilterSelect(discord.ui.Select):
     def __init__(self, current_role: str = "all"):
         options = [
-            discord.SelectOption(label="Tất cả chức vụ", description="Hiển thị toàn bộ nhân sự", value="all", emoji="🏆", default=(current_role == "all")),
+            discord.SelectOption(label="Tất cả chức vụ", description="Hiển thị toàn bộ nhân sự", value="all", emoji="<:symbol_trophy:1537550568665649232>", default=(current_role == "all")),
             discord.SelectOption(label="Chỉ hiện Owner", description="Lọc chỉ Chủ sở hữu server", value="owner", emoji="👑", default=(current_role == "owner")),
             discord.SelectOption(label="Chỉ hiện Admin", description="Lọc chỉ Quản trị viên", value="admin", emoji="🛡️", default=(current_role == "admin")),
             discord.SelectOption(label="Chỉ hiện Recep", description="Lọc chỉ Lễ tân chào đón", value="recep", emoji="🌸", default=(current_role == "recep")),

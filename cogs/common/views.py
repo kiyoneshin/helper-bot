@@ -341,7 +341,7 @@ class StaffSelectDropdown(discord.ui.Select):
 
         if not fresh_data:
             await interaction.response.send_message(
-                "⚠️ Không tìm thấy thông tin nhân sự này trong Database! Có thể hồ sơ đã bị xóa.",
+                "<:symbol_alert:1537546957885542450> Không tìm thấy thông tin nhân sự này trong Database! Có thể hồ sơ đã bị xóa.",
                 ephemeral=True
             )
             return
@@ -457,7 +457,7 @@ class ProfileView(BaseStaffView):
         bot: Any = interaction.client
         fresh_data = await _fetch_fresh_user_data(bot, self.target_discord_id)
         if not fresh_data:
-            await interaction.response.send_message("⚠️ Không tìm thấy hồ sơ này trong Database!", ephemeral=True)
+            await interaction.response.send_message("<:symbol_alert:1537546957885542450> Không tìm thấy hồ sơ này trong Database!", ephemeral=True)
             return
 
         photos = fresh_data.get('photos', [])

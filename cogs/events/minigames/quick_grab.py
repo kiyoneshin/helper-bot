@@ -32,7 +32,7 @@ class QuickGrabView(discord.ui.View):
         # Cộng điểm thưởng
         success = await add_event_points(self.bot, str(user_id), points, is_earned=True)
         if success:
-            medal = ["🥇", "🥈", "🥉"][rank - 1]
+            medal = ["<:symbol_medal_gold:1537550996664885328>", "<:symbol_medal_silver:1537552840514347048>", "<:symbol_medal_bronze:1537552838412992712>"][rank - 1]
             await interaction.response.send_message(
                 f"{medal} Chúc mừng! Bạn là người thứ **{rank}** nhặt được quà và nhận **{points} điểm**!", 
                 ephemeral=True
@@ -65,7 +65,7 @@ class QuickGrabView(discord.ui.View):
             
             if self.winners:
                 desc = "**Danh sách 3 chiến thần nhanh tay nhất:**\n\n"
-                medals = ["🥇", "🥈", "🥉"]
+                medals = ["<:symbol_medal_gold:1537550996664885328>", "<:symbol_medal_silver:1537552840514347048>", "<:symbol_medal_bronze:1537552838412992712>"]
                 for i, w in enumerate(self.winners):
                     desc += f"{medals[i]} {w.mention} ── **+{self.rewards[i]} điểm**\n"
                 embed.description = desc

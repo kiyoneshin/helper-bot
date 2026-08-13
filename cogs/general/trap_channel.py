@@ -25,7 +25,7 @@ class TrapChannelCog(commands.Cog):
                 
                 # Thiết kế Embed cảnh báo chuẩn
                 embed = discord.Embed(
-                    title="⚠️ CẢNH BÁO – BAN VĨNH VIỄN NGAY LẬP TỨC ⚠️",
+                    title="<:symbol_alert:1537546957885542450> CẢNH BÁO – BAN VĨNH VIỄN NGAY LẬP TỨC <:symbol_alert:1537546957885542450>",
                     description=(
                         "Bất kỳ tin nhắn nào gửi vào kênh này sẽ dẫn đến một hình phạt **cấm (ban) vĩnh viễn ngay lập tức**.\n"
                         "Không kháng cáo. Không có ngoại lệ.\n\n"

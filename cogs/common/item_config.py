@@ -77,7 +77,7 @@ ITEM_REGISTRY: dict[int, ItemEntry] = {
     15: {
         "id":          15,
         "name":        "Vật Phẩm Tối Cao",
-        "icon":        "🏆",
+        "icon":        "<:symbol_trophy:1537550568665649232>",
         "price":       110000,
         "description": "Nitro / Custom Đặc Quyền.",
         "db_key":      "item_5",

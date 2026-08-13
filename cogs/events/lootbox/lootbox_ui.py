@@ -293,7 +293,7 @@ class LootboxInfoSelect(discord.ui.Select):
 
     async def callback(self, interaction: discord.Interaction):
         if interaction.user.id != self.author_id:
-            await interaction.response.send_message("<:symbol_wrong:1536629915598848072> Đây không phải lượt của bạn!", ephemeral=True)
+            await interaction.response.send_message("<:symbol_ban:1537546960003801319> Đây không phải lượt của bạn!", ephemeral=True)
             return
         tier_id = int(self.values[0])
         embed = build_info_embed(tier_id)

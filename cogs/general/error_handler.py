@@ -40,7 +40,7 @@ class GlobalErrorHandler(commands.Cog):
             if str(error) and "The check functions for command" not in str(error):
                 await ctx.send(f"<:symbol_wrong:1536629915598848072> **Không đủ điều kiện:** {str(error)}")
             else:
-                await ctx.send("<:symbol_wrong:1536629915598848072> **Bạn không có quyền hoặc không đủ điều kiện để sử dụng lệnh này!**")
+                await ctx.send("<:symbol_ban:1537546960003801319> **Bạn không có quyền hoặc không đủ điều kiện để sử dụng lệnh này!**")
             return
 
         # Lỗi Cooldown

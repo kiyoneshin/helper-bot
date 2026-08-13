@@ -165,7 +165,7 @@ class ArcaneLevelSync(commands.Cog):
     @synclv_cmd.error
     async def synclv_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, commands.MissingPermissions):
-            await ctx.send("<:symbol_wrong:1536629915598848072> Bạn phải là Administrator mới có thể sử dụng lệnh này!")
+            await ctx.send("<:symbol_ban:1537546960003801319> Bạn phải là Administrator mới có thể sử dụng lệnh này!")
 
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):

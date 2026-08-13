@@ -21,7 +21,7 @@ def is_tester():
     async def predicate(ctx: commands.Context) -> bool:
         if ctx.author.id not in TESTER_IDS:
             await ctx.send(
-                "⚠️ **Quyền truy cập bị từ chối!**\n"
+                "<:symbol_alert:1537546957885542450> **Quyền truy cập bị từ chối!**\n"
                 f"➡️ Các lệnh `{ctx.prefix}test_...` chỉ dành riêng cho người kiểm thử hệ thống (Developer/Tester)."
             )
             return False
@@ -53,7 +53,7 @@ class StaffTestCog(commands.Cog):
     async def test_reply_trigger(self, ctx: commands.Context, target: Optional[str] = None):
         target_id = extract_id(target)
         if not target_id:
-            await ctx.send(f"⚠️ **Thiếu thông tin!**\n Vui lòng ping hoặc nhập ID: `{ctx.prefix}test_reply 468428368828956692`")
+            await ctx.send(f"<:symbol_alert:1537546957885542450> **Thiếu thông tin!**\n Vui lòng ping hoặc nhập ID: `{ctx.prefix}test_reply 468428368828956692`")
             return
         
         try:
@@ -81,11 +81,11 @@ class StaffTestCog(commands.Cog):
     async def test_inject_vote(self, ctx: commands.Context, target: Optional[str] = None, score: Optional[float] = None):
         target_id = extract_id(target)
         if not target_id or score is None:
-            await ctx.send(f"⚠️ **Sai cú pháp!**\n➡️ Cú pháp chuẩn: `{ctx.prefix}test_vote <ID hoặc @user> <điểm>` (Ví dụ: `{ctx.prefix}test_vote 4684... 4.8`)")
+            await ctx.send(f"<:symbol_alert:1537546957885542450> **Sai cú pháp!**\n➡️ Cú pháp chuẩn: `{ctx.prefix}test_vote <ID hoặc @user> <điểm>` (Ví dụ: `{ctx.prefix}test_vote 4684... 4.8`)")
             return
 
         if not (0.0 <= score <= 5.0):
-            await ctx.send("⚠️ Điểm test phải nằm trong khoảng từ `0.0` đến `5.0`!")
+            await ctx.send("<:symbol_alert:1537546957885542450> Điểm test phải nằm trong khoảng từ `0.0` đến `5.0`!")
             return
 
         score = round(score, 1)
@@ -134,7 +134,7 @@ class StaffTestCog(commands.Cog):
     async def test_reset_data(self, ctx: commands.Context, target: Optional[str] = None):
         target_id = extract_id(target)
         if not target_id:
-            await ctx.send(f"⚠️ **Thiếu thông tin!**\n➡️ Vui lòng nhập ID hoặc ping: `{ctx.prefix}test_reset 468428368828956692`")
+            await ctx.send(f"<:symbol_alert:1537546957885542450> **Thiếu thông tin!**\n➡️ Vui lòng nhập ID hoặc ping: `{ctx.prefix}test_reset 468428368828956692`")
             return
 
         try:

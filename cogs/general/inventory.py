@@ -324,7 +324,7 @@ class SellAllModal(discord.ui.Modal):
 
     def __init__(self, bot: commands.Bot, user_id: str, author: discord.Member | discord.User,
                  category: str, label: str, view: "InventoryView"):
-        super().__init__(title=f"⚠️ Bán Toàn Bộ {label}?")
+        super().__init__(title=f"<:symbol_alert:1537546957885542450> Bán Toàn Bộ {label}?")
         self.bot = bot
         self.user_id = user_id
         self.author = author
@@ -545,7 +545,7 @@ class InventoryView(discord.ui.View):
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
         if interaction.user.id != self.author.id:
             await interaction.response.send_message(
-                "<:symbol_wrong:1536629915598848072> Đây không phải túi đồ của bạn!", ephemeral=True
+                "<:symbol_ban:1537546960003801319> Đây không phải túi đồ của bạn!", ephemeral=True
             )
             return False
         return True
@@ -709,7 +709,7 @@ class UnifiedInventoryCog(commands.Cog):
                 from cogs.events.mining.mining_config import MAX_STAMINA
                 current = await get_and_update_stamina(self.bot, uid)
                 if current >= MAX_STAMINA:
-                    await ctx.send("<:symbol_wrong:1536629915598848072> Thể lực của bạn đã đầy, không cần ăn Salad Cà Chua!", delete_after=5.0)
+                    await ctx.send("<:symbol_ban:1537546960003801319> Thể lực của bạn đã đầy, không cần ăn Salad Cà Chua!", delete_after=5.0)
                     return
                 new_stamina = min(current + 30, MAX_STAMINA)
                 farm_data = await get_farm_data(self.bot, uid)
@@ -760,7 +760,7 @@ class UnifiedInventoryCog(commands.Cog):
             # try:
             #     await target.timeout(timedelta(minutes=1), reason=f"Bị {ctx.author} dùng Búa Gõ 1 Phút")
             # except discord.Forbidden:
-            #     await ctx.send("<:symbol_wrong:1536629915598848072> Bot không đủ quyền timeout người này!")
+            #     await ctx.send("<:symbol_ban:1537546960003801319> Bot không đủ quyền timeout người này!")
             #     return
             await ctx.send(f"🔨 {target.mention} đã bị dán băng keo vào miệng trong 1 phút!")
 
@@ -769,7 +769,7 @@ class UnifiedInventoryCog(commands.Cog):
             # try:
             #     await target.timeout(timedelta(minutes=5), reason=f"Bị {ctx.author} dùng Búa Gõ 5 Phút")
             # except discord.Forbidden:
-            #     await ctx.send("<:symbol_wrong:1536629915598848072> Bot không đủ quyền timeout người này!")
+            #     await ctx.send("<:symbol_ban:1537546960003801319> Bot không đủ quyền timeout người này!")
             #     return
             await ctx.send(f"🔨 {target.mention} đã bị dán băng keo vào miệng trong 5 phút!")
 
@@ -786,7 +786,7 @@ class UnifiedInventoryCog(commands.Cog):
             #     try:
             #         await target.move_to(None)
             #     except discord.Forbidden:
-            #         await ctx.send("<:symbol_wrong:1536629915598848072> Bot không đủ quyền sút người này!")
+            #         await ctx.send("<:symbol_ban:1537546960003801319> Bot không đủ quyền sút người này!")
             #         return
             # else:
             #     await ctx.send(f"<:symbol_wrong:1536629915598848072> {target.mention} không ở trong kênh thoại nào cả!")

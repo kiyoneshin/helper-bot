@@ -49,7 +49,7 @@ class WelcomeCog(commands.Cog):
         """
         # 1. Chốt chặn cho Pylance: Đảm bảo lệnh đang chạy trong Server (Guild) chứ không phải DMs
         if not ctx.guild:
-            await ctx.send("⚠️ Lệnh này chỉ có thể sử dụng bên trong Server!")
+            await ctx.send("<:symbol_alert:1537546957885542450> Lệnh này chỉ có thể sử dụng bên trong Server!")
             return
 
         # 2. Nếu không truyền target, tìm ID test mặc định
@@ -60,14 +60,14 @@ class WelcomeCog(commands.Cog):
                     target = await ctx.guild.fetch_member(self.default_test_id)
                 except discord.NotFound:
                     await ctx.send(
-                        f"⚠️ **Không tìm thấy thành viên có ID `{self.default_test_id}` trong server!**\n"
+                        f"<:symbol_alert:1537546957885542450> **Không tìm thấy thành viên có ID `{self.default_test_id}` trong server!**\n"
                         "➡️ Đang chuyển sang sử dụng tài khoản của bạn để chạy test tạm..."
                     )
                     # Ép kiểu an toàn cho Pylance: Chỉ nhận nếu tác giả thực sự là Member trong guild
                     if isinstance(ctx.author, discord.Member):
                         target = ctx.author
                 except Exception as e:
-                    await ctx.send(f"⚠️ Lỗi khi truy vấn ID test mặc định: {e}")
+                    await ctx.send(f"<:symbol_alert:1537546957885542450> Lỗi khi truy vấn ID test mặc định: {e}")
                     return
 
         # 3. Chốt chặn cuối cùng cho Pylance: Nếu sau các bước trên target vẫn không phải là Member thì dừng

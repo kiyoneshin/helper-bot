@@ -47,7 +47,7 @@ class TopLeaderboardView(discord.ui.View):
                 ORDER BY total_earned DESC 
                 LIMIT 10;
             """
-            title = "🏆 Bảng Xếp Hạng Đua Top Cày Cuốc ໒꒱"
+            title = "<:symbol_trophy:1537550568665649232> Bảng Xếp Hạng Đua Top Cày Cuốc ໒꒱"
             desc_prefix = "Vinh danh Top 10 chiến thần tích lũy điểm cày cuốc:\n\n"
             footer = "Bảng xếp hạng dựa trên tổng điểm cày được (không bị trừ khi mua shop) 🌸"
         else:
@@ -68,7 +68,7 @@ class TopLeaderboardView(discord.ui.View):
         if not rows:
             embed.description = "Bảng xếp hạng hiện đang trống!"
         else:
-            medals = ["🥇", "🥈", "🥉"]
+            medals = ["<:symbol_medal_gold:1537550996664885328>", "<:symbol_medal_silver:1537552840514347048>", "<:symbol_medal_bronze:1537552838412992712>"]
             leaderboard_text = ""
             for idx, row in enumerate(rows):
                 rank_icon = medals[idx] if idx < 3 else f"**#{idx + 1}.**"
@@ -77,7 +77,7 @@ class TopLeaderboardView(discord.ui.View):
                 c_pts = row["points"]
                 
                 if self.current_page == "total":
-                    leaderboard_text += f"{rank_icon} <@{user_id}>\n└ 🏆 Tổng cày: **`{t_pts:,}`** điểm *(Dư: `{c_pts:,}`)*\n\n"
+                    leaderboard_text += f"{rank_icon} <@{user_id}>\n└ <:symbol_trophy:1537550568665649232> Tổng cày: **`{t_pts:,}`** điểm *(Dư: `{c_pts:,}`)*\n\n"
                 else:
                     leaderboard_text += f"{rank_icon} <@{user_id}>\n└ 💰 Số dư: **`{c_pts:,}`** điểm *(Cày được: `{t_pts:,}`)*\n\n"
                     
@@ -144,7 +144,7 @@ class EventStatsCog(commands.Cog):
             inline=True
         )
         embed.add_field(
-            name="🏆 Tổng điểm tích lũy",
+            name="<:symbol_trophy:1537550568665649232> Tổng điểm tích lũy",
             value=f"`{total_earned:,}` điểm",
             inline=True
         )

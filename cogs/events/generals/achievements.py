@@ -21,7 +21,7 @@ class AchCategorySelect(discord.ui.Select):
             )
             for cat_id, name in ACH_CATEGORIES.items()
         ]
-        options.insert(0, discord.SelectOption(label="Bảng Tổng Kết", value="summary", emoji="🏆"))
+        options.insert(0, discord.SelectOption(label="Bảng Tổng Kết", value="summary", emoji="<:symbol_trophy:1537550568665649232>"))
         super().__init__(
             placeholder="Chọn danh mục thành tựu...",
             min_values=1,
@@ -32,7 +32,7 @@ class AchCategorySelect(discord.ui.Select):
 
     async def callback(self, interaction: discord.Interaction):
         if interaction.user.id != self.author.id:
-            return await interaction.response.send_message("<:symbol_wrong:1536629915598848072> Bạn không có quyền sử dụng menu này!", ephemeral=True)
+            return await interaction.response.send_message("<:symbol_ban:1537546960003801319> Bạn không có quyền sử dụng menu này!", ephemeral=True)
             
         category = self.values[0]
         
@@ -86,7 +86,7 @@ class ClaimButton(discord.ui.Button):
         
     async def callback(self, interaction: discord.Interaction):
         if interaction.user.id != self.author.id:
-            return await interaction.response.send_message("<:symbol_wrong:1536629915598848072> Bạn không có quyền!", ephemeral=True)
+            return await interaction.response.send_message("<:symbol_ban:1537546960003801319> Bạn không có quyền!", ephemeral=True)
             
         uid = str(interaction.user.id)
         
@@ -185,7 +185,7 @@ async def build_ach_summary_embed(bot, user, stats: dict, claimed: list) -> disc
     total_claimed = len(claimed)
 
     embed = discord.Embed(
-        description=f"🏆 **{total_claimed}/{total_achievements}**\n\nXem chi tiết thành tựu của từng danh mục thông qua Menu lựa chọn bên dưới.\n\u200b",
+        description=f"<:symbol_trophy:1537550568665649232> **{total_claimed}/{total_achievements}**\n\nXem chi tiết thành tựu của từng danh mục thông qua Menu lựa chọn bên dưới.\n\u200b",
         color=0xffd700
     )
     embed.set_author(name=f"{user.display_name} — Thành Tựu", icon_url=user.display_avatar.url)

@@ -212,7 +212,7 @@ class Lottery(commands.Cog):
             embed = discord.Embed(
                 title="🎉 KẾT QUẢ XỔ SỐ KIẾN THIẾT ANGELIC 🎉",
                 description=(
-                    f"🏆 **CHÚC MỪNG TỶ PHÚ MỚI:** <@{winner_id}>\n\n"
+                    f"<:symbol_trophy:1537550568665649232> **CHÚC MỪNG TỶ PHÚ MỚI:** <@{winner_id}>\n\n"
                     f"💰 **Giải Thưởng:** `{total_prize:,}` points!\n"
                     f"🎟️ **Số vé người này mua:** `{winner_tickets:,}` vé (Tỉ lệ trúng: `{win_rate:.2f}%`)\n\n"
                     f"*(Hũ đã được làm sạch. Chúc các bạn may mắn lần sau!)*"

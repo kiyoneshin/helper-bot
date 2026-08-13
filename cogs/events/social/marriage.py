@@ -198,7 +198,7 @@ class MarryConfirmView(discord.ui.View):
             
             # Double check nếu ai đó kết hôn trong lúc chờ
             if await get_marriage(self.bot, uid1) or await get_marriage(self.bot, uid2):
-                await interaction.followup.send("<:symbol_wrong:1536629915598848072> Một trong hai người đã kết hôn với người khác rồi!", ephemeral=True)
+                await interaction.followup.send("<:symbol_ban:1537546960003801319> Một trong hai người đã kết hôn với người khác rồi!", ephemeral=True)
                 self.stop()
                 return
                 
@@ -251,7 +251,7 @@ class MarryConfirmView(discord.ui.View):
     @discord.ui.button(label="Từ chối/Hủy", style=discord.ButtonStyle.danger, emoji="<:symbol_wrong:1536629915598848072>")
     async def btn_decline(self, interaction: discord.Interaction, button: discord.ui.Button):
         if interaction.user.id not in (self.target.id, self.proposer.id):
-            return await interaction.response.send_message("<:symbol_wrong:1536629915598848072> Xin lỗi, bạn không phải là nhân vật chính.", ephemeral=True)
+            return await interaction.response.send_message("<:symbol_ban:1537546960003801319> Xin lỗi, bạn không phải là nhân vật chính.", ephemeral=True)
             
         await interaction.response.defer()
         
@@ -283,7 +283,7 @@ class PetAdoptConfirmView(discord.ui.View):
     @discord.ui.button(label="Chắc chắn Đổi", style=discord.ButtonStyle.red)
     async def confirm(self, interaction: discord.Interaction, button: discord.ui.Button):
         if interaction.user.id != self.author.id:
-            return await interaction.response.send_message("<:symbol_wrong:1536629915598848072> Bạn không phải là người đưa ra yêu cầu!", ephemeral=True)
+            return await interaction.response.send_message("<:symbol_ban:1537546960003801319> Bạn không phải là người đưa ra yêu cầu!", ephemeral=True)
             
         from cogs.common.db import execute_db
         await execute_db(self.bot, "UPDATE marriages SET pet_type = $1, pet_name = NULL, pet_exp = 0.0 WHERE id = $2", self.new_base_name, self.mar_id)
@@ -297,7 +297,7 @@ class PetAdoptConfirmView(discord.ui.View):
     @discord.ui.button(label="Hủy bỏ", style=discord.ButtonStyle.gray)
     async def cancel(self, interaction: discord.Interaction, button: discord.ui.Button):
         if interaction.user.id != self.author.id:
-            return await interaction.response.send_message("<:symbol_wrong:1536629915598848072> Bạn không phải là người đưa ra yêu cầu!", ephemeral=True)
+            return await interaction.response.send_message("<:symbol_ban:1537546960003801319> Bạn không phải là người đưa ra yêu cầu!", ephemeral=True)
             
         for child in self.children:
             if isinstance(child, (discord.ui.Button, discord.ui.Select)):
@@ -326,7 +326,7 @@ class DivorceConfirmView(discord.ui.View):
     @discord.ui.button(label="Đồng ý Ly Hôn", style=discord.ButtonStyle.success, emoji="<:symbol_heart_breaking:1536296911655673936>")
     async def btn_accept(self, interaction: discord.Interaction, button: discord.ui.Button):
         if interaction.user.id not in (self.proposer.id, self.target_id):
-            return await interaction.response.send_message("<:symbol_wrong:1536629915598848072> Đây không phải chuyện của bạn!", ephemeral=True)
+            return await interaction.response.send_message("<:symbol_ban:1537546960003801319> Đây không phải chuyện của bạn!", ephemeral=True)
             
         await interaction.response.defer()
         
@@ -349,7 +349,7 @@ class DivorceConfirmView(discord.ui.View):
     @discord.ui.button(label="Hủy Bỏ", style=discord.ButtonStyle.danger)
     async def btn_decline(self, interaction: discord.Interaction, button: discord.ui.Button):
         if interaction.user.id not in (self.proposer.id, self.target_id):
-            return await interaction.response.send_message("<:symbol_wrong:1536629915598848072> Đây không phải chuyện của bạn!", ephemeral=True)
+            return await interaction.response.send_message("<:symbol_ban:1537546960003801319> Đây không phải chuyện của bạn!", ephemeral=True)
             
         for child in self.children:
             if getattr(child, 'disabled', None) is not None or isinstance(child, discord.ui.Button):
@@ -548,7 +548,7 @@ class MarriageCog(commands.Cog):
             
         partner_id = mar["user2_id"] if mar["user1_id"] == uid else mar["user1_id"]
         if str(target.id) != partner_id:
-            return await ctx.send("<:symbol_wrong:1536629915598848072> Người đó đâu phải vợ/chồng của bạn mà đòi ly dị? Bạn hãy tag đúng tên người bạn muốn ly hôn nhé!")
+            return await ctx.send("<:symbol_ban:1537546960003801319> Người đó đâu phải vợ/chồng của bạn mà đòi ly dị? Bạn hãy tag đúng tên người bạn muốn ly hôn nhé!")
             
         emb = discord.Embed(
             title="💔 YÊU CẦU LY HÔN",
@@ -625,7 +625,7 @@ class MarriageCog(commands.Cog):
                 return await ctx.send(f"<:symbol_wrong:1536629915598848072> Bạn đang nuôi loài **{base_name}** rồi, không thể nhận nuôi lại!")
             
             view = PetAdoptConfirmView(self.bot, ctx.author, mar["id"], base_name)
-            await ctx.send(f"⚠️ Hai bạn đang nuôi một bé **{mar['pet_type']}**. Nếu bạn nhận nuôi **{base_name}**, thú cưng cũ sẽ ra đi và **Kinh nghiệm thú cưng (Pet <:xp:1535664865308577884>) sẽ bị reset về 0** (Level 1). Bạn có chắc chắn muốn đổi không?", view=view)
+            await ctx.send(f"<:symbol_alert:1537546957885542450> Hai bạn đang nuôi một bé **{mar['pet_type']}**. Nếu bạn nhận nuôi **{base_name}**, thú cưng cũ sẽ ra đi và **Kinh nghiệm thú cưng (Pet <:xp:1535664865308577884>) sẽ bị reset về 0** (Level 1). Bạn có chắc chắn muốn đổi không?", view=view)
         else:
             from cogs.common.db import execute_db
             await execute_db(self.bot, "UPDATE marriages SET pet_type = $1, pet_exp = 0.0 WHERE id = $2", base_name, mar["id"])
@@ -808,7 +808,7 @@ class MarriageCog(commands.Cog):
             
         partner_id = mar["user2_id"] if mar["user1_id"] == uid else mar["user1_id"]
         if str(target.id) != partner_id:
-            return await ctx.send("<:symbol_wrong:1536629915598848072> Quà tặng này chứa chan tình cảm, chỉ dành riêng cho vợ/chồng của bạn thôi!")
+            return await ctx.send("<:symbol_ban:1537546960003801319> Quà tặng này chứa chan tình cảm, chỉ dành riêng cho vợ/chồng của bạn thôi!")
             
         from cogs.common.item_config import get_item_by_id
         item = get_item_by_id(item_id)
@@ -938,7 +938,7 @@ class MarriageCog(commands.Cog):
                 target = ctx.guild.get_member(int(partner_id))
                 
             if not target:
-                return await ctx.send("<:symbol_wrong:1536629915598848072> Vợ/chồng của bạn hiện không có trong server này để nhận hành động!")
+                return await ctx.send("<:symbol_ban:1537546960003801319> Vợ/chồng của bạn hiện không có trong server này để nhận hành động!")
                 
         if target.id == ctx.author.id or target.bot:
             return await ctx.send("<:symbol_wrong:1536629915598848072> Tự kỷ à? Hoặc tha cho con Bot đi!")

@@ -259,7 +259,7 @@ class CrashActiveView(discord.ui.View):
             if user_id in self.cashed_out:
                 already = self.cashed_out[user_id]
                 await interaction.response.send_message(
-                    f"⚠️ Bấm hoài! Đã chốt lời **{already:,}** điểm từ trước rồi cha nội.",
+                    f"<:symbol_alert:1537546957885542450> Bấm hoài! Đã chốt lời **{already:,}** điểm từ trước rồi cha nội.",
                     ephemeral=True,
                 )
                 return
@@ -272,7 +272,7 @@ class CrashActiveView(discord.ui.View):
             ok = await _apply_delta(self.bot, uid, payout)
             if not ok:
                 await interaction.response.send_message(
-                    "<:symbol_wrong:1536629915598848072> Sập nguồn DB khi chốt lời. Kêu Admin cứu!",
+                    "<:symbol_ban:1537546960003801319> Sập nguồn DB khi chốt lời. Kêu Admin cứu!",
                     ephemeral=True,
                 )
                 return
@@ -295,7 +295,7 @@ class CrashActiveView(discord.ui.View):
         profit_display = payout - bet
         if snapshot_mult < 1.0:
             await interaction.response.send_message(
-                f"⚠️ Bạn đã Cắt Lỗ ở hệ số **x{snapshot_mult:.2f}** (Lỗ **{abs(profit_display):,}** điểm). Còn hơn là mất trắng!",
+                f"<:symbol_alert:1537546957885542450> Bạn đã Cắt Lỗ ở hệ số **x{snapshot_mult:.2f}** (Lỗ **{abs(profit_display):,}** điểm). Còn hơn là mất trắng!",
                 ephemeral=True,
             )
         else:
@@ -378,7 +378,7 @@ def _build_flight_embed(
             bet    = players_bets.get(uid, 0)
             profit = payout - bet
             safe_lines.append(f"<@{uid}> <:symbol_right:1536629912515903578> **+{profit:,}**")
-        embed.add_field(name="🏆 Đã Lụm Lúa", value="\n".join(safe_lines), inline=False)
+        embed.add_field(name="<:symbol_trophy:1537550568665649232> Đã Lụm Lúa", value="\n".join(safe_lines), inline=False)
 
     still_flying = [uid for uid in players_bets if uid not in cashed_out]
     if still_flying:
@@ -460,7 +460,7 @@ class CrashGame(commands.Cog):
 
         if channel_id in self.active_games:
             await ctx.send(
-                "⚠️ Kênh này đang có 1 sòng Crash diễn ra rồi!\n"
+                "<:symbol_alert:1537546957885542450> Kênh này đang có 1 sòng Crash diễn ra rồi!\n"
                 "Chờ sòng hiện tại chốt sổ hoặc tạt ngang qua kênh khác nhé.",
                 delete_after=5.0,
             )

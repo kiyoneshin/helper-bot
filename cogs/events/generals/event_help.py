@@ -246,7 +246,7 @@ CMD_DATA: dict[str, dict] = {
     },
     "etop": {
         "name": "Bảng Xếp Hạng",
-        "emoji": "🏆",
+        "emoji": "<:symbol_trophy:1537550568665649232>",
         "short": "Xem Top 10 người chơi có nhiều điểm tích lũy nhất server.",
         "aliases": ["evtop", "eventtop", "eventop"],
         "cooldown": None,
@@ -727,7 +727,7 @@ class HomeView(discord.ui.View):
 
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
         if interaction.user.id != self.author.id:
-            await interaction.response.send_message("<:symbol_wrong:1536629915598848072> Đây không phải cẩm nang của bạn!", ephemeral=True)
+            await interaction.response.send_message("<:symbol_ban:1537546960003801319> Đây không phải cẩm nang của bạn!", ephemeral=True)
             return False
         return True
 
@@ -781,7 +781,7 @@ class CategoryView(discord.ui.View):
 
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
         if interaction.user.id != self.author.id:
-            await interaction.response.send_message("<:symbol_wrong:1536629915598848072> Đây không phải cẩm nang của bạn!", ephemeral=True)
+            await interaction.response.send_message("<:symbol_ban:1537546960003801319> Đây không phải cẩm nang của bạn!", ephemeral=True)
             return False
         return True
 
@@ -859,7 +859,7 @@ class DetailView(discord.ui.View):
 
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
         if interaction.user.id != self.author.id:
-            await interaction.response.send_message("<:symbol_wrong:1536629915598848072> Đây không phải cẩm nang của bạn!", ephemeral=True)
+            await interaction.response.send_message("<:symbol_ban:1537546960003801319> Đây không phải cẩm nang của bạn!", ephemeral=True)
             return False
         return True
 

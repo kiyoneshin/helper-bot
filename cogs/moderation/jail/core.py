@@ -72,7 +72,7 @@ def is_jailed_check():
         )
         if row is None:
             await ctx.send(
-                f"<:symbol_wrong:1536629915598848072> {ctx.author.mention} Mày không phải phạm nhân, đừng có dùng lệnh này!",
+                f"<:symbol_ban:1537546960003801319> {ctx.author.mention} Mày không phải phạm nhân, đừng có dùng lệnh này!",
                 delete_after=5.0,
             )
             return False
@@ -240,7 +240,7 @@ class JailCore(commands.Cog):
             await ctx.send(f"<:symbol_wrong:1536629915598848072> {ctx.author.mention} Bot thì giam cái gì mậk")
             return
         if member.id == ctx.author.id:
-            await ctx.send(f"<:symbol_wrong:1536629915598848072> {ctx.author.mention} Tự giam mình à? Thích làm phạm nhân ghê!")
+            await ctx.send(f"<:symbol_ban:1537546960003801319> {ctx.author.mention} Tự giam mình à? Thích làm phạm nhân ghê!")
             return
         if clean_count <= 0:
             await ctx.send(f"<:symbol_wrong:1536629915598848072> {ctx.author.mention} Số lần dọn phải lớn hơn 0 chứ!")
@@ -253,7 +253,7 @@ class JailCore(commands.Cog):
         )
         if existing:
             await ctx.send(
-                f"⚠️ {ctx.author.mention} {member.mention} đang bóc lịch rồi! "
+                f"<:symbol_alert:1537546957885542450> {ctx.author.mention} {member.mention} đang bóc lịch rồi! "
                 f"Muốn thêm tội thì dùng `{ctx.prefix}choccho`."
             )
             return
@@ -338,14 +338,14 @@ class JailCore(commands.Cog):
                     f"• `{ctx.prefix}lcuoc`: Tung đồng xu 50% giảm 5 án, 50% tăng 10 án (Cooldown: 20s)\n"
                     f"• `{ctx.prefix}lvuotnguc`: 5% thoát ngay lập tức, 95% nhân 3 án và bị bêu rếu (Cooldown: 5 phút)\n\n"
                     f"💸 **Bảo lãnh:** Hãy nhờ bạn bè dùng `{ctx.prefix}baolanh @bạn` để chuộc bạn ra bằng điểm sự kiện!\n\n"
-                    "⚠️ **NỘI QUY:** Mọi tin nhắn chat thường trong này phải kết thúc bằng chữ `gâu` hoặc `ẳng`, nếu không sẽ bị ăn tát!"
+                    "<:symbol_alert:1537546957885542450> **NỘI QUY:** Mọi tin nhắn chat thường trong này phải kết thúc bằng chữ `gâu` hoặc `ẳng`, nếu không sẽ bị ăn tát!"
                 ),
                 color=COLOR_JAIL
             )
             try:
                 await jail_channel.send(
                     content=(
-                        f"🚨 Cửa ngục khép lại! {member.mention} (a.k.a **{dog_name}**) vừa bị tống vào đây.\n"
+                        f"<:symbol_alert:1537546957885542450> Cửa ngục khép lại! {member.mention} (a.k.a **{dog_name}**) vừa bị tống vào đây.\n"
                         f"Lý do: **{reason}**\n"
                         f"Hãy dùng `{ctx.prefix}laudon` **{clean_count}** lần để chuộc lỗi! 🧹"
                     ),
@@ -362,7 +362,7 @@ class JailCore(commands.Cog):
     async def thatu_cmd(self, ctx: commands.Context, member: discord.Member) -> None:
         """Ân xá phạm nhân trước thời hạn."""
         if not await is_jailed(self.bot, str(member.id)):
-            await ctx.send(f"⚠️ {member.mention} không phải phạm nhân.")
+            await ctx.send(f"<:symbol_alert:1537546957885542450> {member.mention} không phải phạm nhân.")
             return
 
         success = await release_member(self.bot, member)
@@ -395,7 +395,7 @@ class JailCore(commands.Cog):
             uid,
         )
         if row is None:
-            await ctx.send(f"<:symbol_wrong:1536629915598848072> {ctx.author.mention} Mày không phải phạm nhân!")
+            await ctx.send(f"<:symbol_ban:1537546960003801319> {ctx.author.mention} Mày không phải phạm nhân!")
             return
 
         current = int(row["clean_count"])
@@ -435,14 +435,14 @@ class JailCore(commands.Cog):
         if isinstance(error, commands.MissingRequiredArgument):
             await ctx.send(f"<:symbol_wrong:1536629915598848072> Thiếu thông tin! Cú pháp: `{ctx.prefix}phattu <@member> <số_lần_dọn> [lý do]`")
         elif isinstance(error, commands.MissingAnyRole):
-            await ctx.send("<:symbol_wrong:1536629915598848072> Mày không đủ quyền! Chỉ có **Owner** và **Admin** mới được dùng.")
+            await ctx.send("<:symbol_ban:1537546960003801319> Mày không đủ quyền! Chỉ có **Owner** và **Admin** mới được dùng.")
         elif isinstance(error, commands.BadArgument):
             await ctx.send("<:symbol_wrong:1536629915598848072> Sai cú pháp! Kiểm tra lại @mention và số lần dọn.")
 
     @thatu_cmd.error
     async def thatu_error(self, ctx: commands.Context, error: Exception) -> None:
         if isinstance(error, commands.MissingAnyRole):
-            await ctx.send("<:symbol_wrong:1536629915598848072> Mày không đủ quyền!")
+            await ctx.send("<:symbol_ban:1537546960003801319> Mày không đủ quyền!")
         elif isinstance(error, commands.BadArgument):
             await ctx.send("<:symbol_wrong:1536629915598848072> Không tìm thấy thành viên đó.")
 

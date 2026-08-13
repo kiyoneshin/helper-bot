@@ -156,7 +156,7 @@ class JailGames(commands.Cog):
             title="🏃 Kế Hoạch Vượt Ngục!",
             description=(
                 f"{ctx.author.mention} đang lên kế hoạch đào tường vượt ngục...\n\n"
-                "⚠️ **Rủi ro cực cao:**\n"
+                "<:symbol_alert:1537546957885542450> **Rủi ro cực cao:**\n"
                 "• 5% — Thoát thành công, trả tự do ngay!\n"
                 f"• 95% — Bị bắt lại, án phạt nhân **×3** ({current} → {current*3})!\n\n"
                 "*Đang thực hiện...*"
@@ -193,7 +193,7 @@ class JailGames(commands.Cog):
             )
 
             embed_result = discord.Embed(
-                title="🚨 BỊ BẮT LẠI! TĂNG GẤP BA ÁN!",
+                title="<:symbol_alert:1537546957885542450> BỊ BẮT LẠI! TĂNG GẤP BA ÁN!",
                 description=(
                     f"😭 {ctx.author.mention} **Bị bảo vệ tóm cổ ngay rào!**\n\n"
                     f"Án phạt nhân **×3**: {current} → **{new_count}** lần lau dọn!\n"

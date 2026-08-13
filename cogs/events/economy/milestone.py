@@ -155,7 +155,7 @@ class MilestoneCog(commands.Cog):
         )
         
         if not row:
-            await ctx.send("<:symbol_wrong:1536629915598848072> Không tìm thấy hồ sơ của bạn trong hệ thống sự kiện!")
+            await ctx.send("<:symbol_ban:1537546960003801319> Không tìm thấy hồ sơ của bạn trong hệ thống sự kiện!")
             return
             
         total_earned = float(row["total_earned"]) if row["total_earned"] else 0.0

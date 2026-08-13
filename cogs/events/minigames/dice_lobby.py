@@ -22,11 +22,11 @@ class DiceLobbyView(discord.ui.View):
     @discord.ui.button(label="Tham Gia Ngay", style=discord.ButtonStyle.success, emoji="<:gambling_dice:1537539887769591828>")
     async def join_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         if self.game_started:
-            await interaction.response.send_message("⚠️ Sảnh đã khóa sổ, chờ ván sau nhé!", ephemeral=True)
+            await interaction.response.send_message("<:symbol_alert:1537546957885542450> Sảnh đã khóa sổ, chờ ván sau nhé!", ephemeral=True)
             return
             
         if any(p.id == interaction.user.id for p in self.players):
-            await interaction.response.send_message("⚠️ Bạn đã ngồi trong sảnh rồi, chờ nhà cái lắc xúc xắc đi!", ephemeral=True)
+            await interaction.response.send_message("<:symbol_alert:1537546957885542450> Bạn đã ngồi trong sảnh rồi, chờ nhà cái lắc xúc xắc đi!", ephemeral=True)
             return
             
         self.players.append(interaction.user)

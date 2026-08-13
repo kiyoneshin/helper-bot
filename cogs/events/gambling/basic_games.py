@@ -158,7 +158,7 @@ class BetConfirmView(discord.ui.View):
 async def _send_confirm(ctx: commands.Context, bet: int, callback_fn) -> None:
     """Gửi embed xác nhận cược all và đợi người dùng phản hồi."""
     embed = discord.Embed(
-        title="⚠️ Xác nhận cược toàn bộ",
+        title="<:symbol_alert:1537546957885542450> Xác nhận cược toàn bộ",
         description=(
             f"{ctx.author.mention} Đầy cả ví ra cược hết!\n\n"
             f"💰 **Số tiền sẽ cược:** **{bet:,.0f}** điểm\n\n"
@@ -467,7 +467,7 @@ class CupsView(discord.ui.View):
 
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
         if interaction.user.id != self.author.id:
-            await interaction.response.send_message("<:symbol_wrong:1536629915598848072> Mày đứng xem thôi, không phải sòng của màk", ephemeral=True)
+            await interaction.response.send_message("<:symbol_ban:1537546960003801319> Mày đứng xem thôi, không phải sòng của màk", ephemeral=True)
             return False
         return True
 
@@ -571,7 +571,7 @@ class RouletteView(discord.ui.View):
 
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
         if interaction.user.id != self.author.id:
-            await interaction.response.send_message("<:symbol_wrong:1536629915598848072> Nín thở ngồi xem thôi, không phải sòng của màk", ephemeral=True)
+            await interaction.response.send_message("<:symbol_ban:1537546960003801319> Nín thở ngồi xem thôi, không phải sòng của màk", ephemeral=True)
             return False
         return True
 

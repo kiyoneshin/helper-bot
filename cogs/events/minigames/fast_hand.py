@@ -158,7 +158,7 @@ async def start_fast_words_game(bot, channel: discord.abc.Messageable, core_cog)
     view.target_id = target_id
     
     embed = discord.Embed(
-        title="🚨 TRUY TÌM BẢO VẬT ANGELIC ໒꒱",
+        title="<:symbol_alert:1537546957885542450> TRUY TÌM BẢO VẬT ANGELIC ໒꒱",
         description=(
             f"Trời đất chuyển vần! Một cơn gió lạ vừa thổi bay bảo vật của server vào đống đổ nát!\n\n"
             f"Hãy tìm ngay: **{target_name} ({target_emoji})**\n\n"

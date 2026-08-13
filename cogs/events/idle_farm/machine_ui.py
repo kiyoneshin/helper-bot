@@ -212,7 +212,7 @@ class RecipeSelect(discord.ui.Select):
             duration_str = _format_duration(recipe["duration_seconds"])
             desc = f"{duration_str} → Bán {price:,} điểm"
             if not can_craft:
-                desc = "⚠️ Chưa đủ nguyên liệu"
+                desc = "<:symbol_alert:1537546957885542450> Chưa đủ nguyên liệu"
 
             options.append(
                 discord.SelectOption(
@@ -233,7 +233,7 @@ class RecipeSelect(discord.ui.Select):
     async def callback(self, interaction: discord.Interaction):
         if str(interaction.user.id) != self.user_id:
             return await interaction.response.send_message(
-                "<:symbol_wrong:1536629915598848072> Đây không phải khu chế biến của bạn!", ephemeral=True
+                "<:symbol_ban:1537546960003801319> Đây không phải khu chế biến của bạn!", ephemeral=True
             )
 
         recipe_id = self.values[0]
@@ -353,7 +353,7 @@ class DemolishSelect(discord.ui.Select):
     async def callback(self, interaction: discord.Interaction):
         if str(interaction.user.id) != self.user_id:
             return await interaction.response.send_message(
-                "<:symbol_wrong:1536629915598848072> Bạn không có quyền thao tác!", ephemeral=True
+                "<:symbol_ban:1537546960003801319> Bạn không có quyền thao tác!", ephemeral=True
             )
             
         slot_id = self.values[0]
@@ -379,7 +379,7 @@ class DemolishSelect(discord.ui.Select):
         )
         
         await interaction.response.send_message(
-            f"⚠️ **CẢNH BÁO:** Bạn sắp phá dỡ **Slot {index}: {machine_name}**.\n"
+            f"<:symbol_alert:1537546957885542450> **CẢNH BÁO:** Bạn sắp phá dỡ **Slot {index}: {machine_name}**.\n"
             f"Bạn sẽ nhận lại 50% nguyên liệu chế tạo máy. Nếu máy đang hoạt động, nguyên liệu chế biến bên trong sẽ **mất hoàn toàn**.\n"
             f"Bạn có chắc chắn muốn phá dỡ không?",
             view=confirm_view,
@@ -513,7 +513,7 @@ class MachineView(discord.ui.View):
     async def _harvest_callback(self, interaction: discord.Interaction):
         if str(interaction.user.id) != self.user_id:
             return await interaction.response.send_message(
-                "<:symbol_wrong:1536629915598848072> Bạn không thể thao tác trên nông trại người khác!", ephemeral=True
+                "<:symbol_ban:1537546960003801319> Bạn không thể thao tác trên nông trại người khác!", ephemeral=True
             )
 
         farm_data = await get_farm_data(self.bot, self.user_id)
@@ -568,7 +568,7 @@ class MachineView(discord.ui.View):
         async def callback(interaction: discord.Interaction):
             if str(interaction.user.id) != self.user_id:
                 return await interaction.response.send_message(
-                    "<:symbol_wrong:1536629915598848072> Bạn không có quyền thao tác!", ephemeral=True
+                    "<:symbol_ban:1537546960003801319> Bạn không có quyền thao tác!", ephemeral=True
                 )
                 
             farm_data = await get_farm_data(self.bot, self.user_id)
@@ -607,7 +607,7 @@ class MachineView(discord.ui.View):
     async def _demolish_callback(self, interaction: discord.Interaction):
         if str(interaction.user.id) != self.user_id:
             return await interaction.response.send_message(
-                "<:symbol_wrong:1536629915598848072> Bạn không có quyền thao tác!", ephemeral=True
+                "<:symbol_ban:1537546960003801319> Bạn không có quyền thao tác!", ephemeral=True
             )
             
         farm_data = await get_farm_data(self.bot, self.user_id)

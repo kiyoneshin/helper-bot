@@ -168,7 +168,7 @@ class LootboxCog(commands.Cog):
             uid,
         )
         if not row:
-            await ctx.send("<:symbol_wrong:1536629915598848072> Không tìm thấy hồ sơ của bạn.", ephemeral=True)
+            await ctx.send("<:symbol_ban:1537546960003801319> Không tìm thấy hồ sơ của bạn.", ephemeral=True)
             return
 
         last_pray = row["last_pray"]

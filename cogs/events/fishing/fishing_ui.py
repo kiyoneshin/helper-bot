@@ -54,7 +54,7 @@ def build_fishing_embed(author: discord.Member | discord.User, stamina: int, far
         description=(
             f"Chào mừng **{author.display_name}** đến với hồ câu!\n"
             f"Mỗi lần quăng cần tốn **{STAMINA_PER_FISH}** thể lực.\n"
-            f"Khi thấy `⚠️ CÁ CẮN CÂU!!`, hãy bấm **nhanh nhất có thể** trong "
+            f"Khi thấy `<:symbol_alert:1537546957885542450> CÁ CẮN CÂU!!`, hãy bấm **nhanh nhất có thể** trong "
             f"**{CATCH_WINDOW_SECONDS:.1f} giây** để không bị trượt!\n"
             f"*(Phản xạ < 2s = ⚡ **Perfect Catch** — x2 cá hiếm!)*\n"
         ),
@@ -142,7 +142,7 @@ class FishingView(discord.ui.View):
     async def cast_btn(self, interaction: discord.Interaction, button: discord.ui.Button):
         if str(interaction.user.id) != self.user_id:
             await interaction.response.send_message(
-                "<:symbol_wrong:1536629915598848072> Đây là cần câu của người khác!", ephemeral=True
+                "<:symbol_ban:1537546960003801319> Đây là cần câu của người khác!", ephemeral=True
             )
             return
 
@@ -179,7 +179,7 @@ class FishingView(discord.ui.View):
         # BƯỚC 5 — Hiện nút giật cần (timeout = 4.5s chống lag)
         catch_view = FishCatchView()
         await interaction.edit_original_response(
-            content="⚠️ **CÁ CẮN CÂU!! BẤM NHANH!!** ⚠️",
+            content="<:symbol_alert:1537546957885542450> **CÁ CẮN CÂU!! BẤM NHANH!!** <:symbol_alert:1537546957885542450>",
             view=catch_view,
         )
 

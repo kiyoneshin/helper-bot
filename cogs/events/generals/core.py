@@ -252,7 +252,7 @@ class EventCoreCog(commands.Cog):
     async def sendfaq_cmd(self, ctx: commands.Context):
         """[ADMIN] Gửi cẩm nang EVENT_FAQ dưới dạng Embed vào kênh quy định."""
         if not self._is_bank_owner(ctx):
-            return await ctx.send("<:symbol_wrong:1536629915598848072> Chỉ có Bank Owner mới được dùng lệnh này!")
+            return await ctx.send("<:symbol_ban:1537546960003801319> Chỉ có Bank Owner mới được dùng lệnh này!")
             
         import os, re
         faq_path = os.path.join(os.getcwd(), "EVENT_FAQ.md")

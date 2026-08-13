@@ -293,7 +293,7 @@ class StaffPhotoEditView(discord.ui.View):
             storage_channel = self.bot.get_channel(STORAGE_CHANNEL_ID) or await self.bot.fetch_channel(STORAGE_CHANNEL_ID)
 
             if not isinstance(storage_channel, discord.TextChannel):
-                await interaction.followup.send("<:symbol_wrong:1536629915598848072> Không thể kết nối tới kênh lưu trữ ảnh! Vui lòng báo Admin kiểm tra lại.", ephemeral=True)
+                await interaction.followup.send("<:symbol_ban:1537546960003801319> Không thể kết nối tới kênh lưu trữ ảnh! Vui lòng báo Admin kiểm tra lại.", ephemeral=True)
                 return
 
             # Chuyển đổi từng ảnh thành file object rồi upload lên kênh lưu trữ cố định
