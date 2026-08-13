@@ -231,8 +231,8 @@ class PermissionsSelect(discord.ui.Select):
             placeholder="🔑 Đổi quyền kênh...",
             row=1,
             options=[
-                discord.SelectOption(label="Khóa",     description="Khóa kênh",                            emoji="🔒", value="lock"),
-                discord.SelectOption(label="Mở khóa",  description="Mở lại kênh",                          emoji="🔓", value="unlock"),
+                discord.SelectOption(label="Khóa",     description="Khóa kênh",                            emoji="<:symbol_locked:1537566880066441296>", value="lock"),
+                discord.SelectOption(label="Mở khóa",  description="Mở lại kênh",                          emoji="<:symbol_unlocked:1537566882180366466>", value="unlock"),
                 discord.SelectOption(label="Ẩn",       description="Ẩn kênh khỏi danh sách",               emoji="👻", value="hide"),
                 discord.SelectOption(label="Hiện",     description="Hiển thị lại kênh",                    emoji="👁️", value="show"),
                 discord.SelectOption(label="Cho phép", description="Cấp quyền vào cho 1 người",            emoji="<:symbol_right:1536629912515903578>",    value="permit"),
@@ -260,7 +260,7 @@ class PermissionsSelect(discord.ui.Select):
             await self.channel.set_permissions(interaction.guild.default_role, overwrite=ow)
             if pool:
                 await _save_user_settings(pool, interaction.user.id, is_locked=(val == "lock"))
-            msg = "🔒 Phòng đã **khóa**!" if val == "lock" else "🔓 Phòng đã **mở khóa**!"
+            msg = "<:symbol_locked:1537566880066441296> Phòng đã **khóa**!" if val == "lock" else "<:symbol_unlocked:1537566882180366466> Phòng đã **mở khóa**!"
             await interaction.response.send_message(msg, ephemeral=True)
 
         elif val in ("hide", "show"):

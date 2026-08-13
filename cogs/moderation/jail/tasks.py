@@ -147,7 +147,7 @@ class JailTasks(commands.Cog):
     async def sua_error(self, ctx: commands.Context, error: Exception) -> None:
         if isinstance(error, commands.CommandOnCooldown):
             await ctx.send(
-                f"⏳ {ctx.author.mention} Nghỉ ngơi cái đã, học nhiều cũng hại não! "
+                f"<:symbol_hour_glass:1537570149215899658> {ctx.author.mention} Nghỉ ngơi cái đã, học nhiều cũng hại não! "
                 f"Còn **{error.retry_after:.1f}s** nữa.",
                 delete_after=6.0,
             )
@@ -178,7 +178,7 @@ class JailTasks(commands.Cog):
                 embed = discord.Embed(
                     title="🦴 Jackpot Xương! Trả Tự Do!",
                     description=(
-                        f"🎉 {ctx.author.mention} Nhặt trúng xương vàng! "
+                        f"<:symbol_confetti:1537570146313306183> {ctx.author.mention} Nhặt trúng xương vàng! "
                         "Chó hài lòng thả cổng — mày được tự do!"
                     ),
                     color=COLOR_FREE,
@@ -221,7 +221,7 @@ class JailTasks(commands.Cog):
     async def nhatxuong_error(self, ctx: commands.Context, error: Exception) -> None:
         if isinstance(error, commands.CommandOnCooldown):
             await ctx.send(
-                f"⏳ {ctx.author.mention} Đừng có tranh xương với chó liên tục! "
+                f"<:symbol_hour_glass:1537570149215899658> {ctx.author.mention} Đừng có tranh xương với chó liên tục! "
                 f"Còn **{error.retry_after:.1f}s** nữa.",
                 delete_after=6.0,
             )

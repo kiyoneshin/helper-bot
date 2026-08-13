@@ -83,7 +83,7 @@ class JailGames(commands.Cog):
             if freed:
                 embed_result = discord.Embed(
                     title=f"🪙 {coin_face} — THẮNG & TỰ DO!",
-                    description=f"🎉 {ctx.author.mention} Ngửa đồng xu! Hoàn thành cải tạo — thả tù ngay!",
+                    description=f"<:symbol_confetti:1537570146313306183> {ctx.author.mention} Ngửa đồng xu! Hoàn thành cải tạo — thả tù ngay!",
                     color=COLOR_FREE,
                 )
             else:
@@ -96,7 +96,7 @@ class JailGames(commands.Cog):
                 embed_result = discord.Embed(
                     title=f"🪙 {coin_face} — THẮNG!",
                     description=(
-                        f"🎉 {ctx.author.mention} Ngửa đồng xu!\n"
+                        f"<:symbol_confetti:1537570146313306183> {ctx.author.mention} Ngửa đồng xu!\n"
                         f"Giảm **5 án** — còn lại **{remaining}** lần."
                     ),
                     color=COLOR_FREE,
@@ -124,7 +124,7 @@ class JailGames(commands.Cog):
     async def lcuoc_error(self, ctx: commands.Context, error: Exception) -> None:
         if isinstance(error, commands.CommandOnCooldown):
             await ctx.send(
-                f"⏳ {ctx.author.mention} Đã cược xong rồi, chưa đến giờ cược tiếp! "
+                f"<:symbol_hour_glass:1537570149215899658> {ctx.author.mention} Đã cược xong rồi, chưa đến giờ cược tiếp! "
                 f"Còn **{error.retry_after:.1f}s** nữa.",
                 delete_after=6.0,
             )
@@ -224,7 +224,7 @@ class JailGames(commands.Cog):
         if isinstance(error, commands.CommandOnCooldown):
             minutes = error.retry_after / 60
             await ctx.send(
-                f"⏳ {ctx.author.mention} Vừa thử vượt ngục rồi! "
+                f"<:symbol_hour_glass:1537570149215899658> {ctx.author.mention} Vừa thử vượt ngục rồi! "
                 f"Còn **{minutes:.1f} phút** nữa mới được thử lại.",
                 delete_after=8.0,
             )

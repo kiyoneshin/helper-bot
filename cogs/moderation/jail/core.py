@@ -310,7 +310,7 @@ class JailCore(commands.Cog):
             log.error(f"Lỗi cập nhật role/nick khi phạt tù {member}: {e}")
 
         embed = discord.Embed(
-            title="🔒 TỐNG GIAM!",
+            title="<:symbol_locked:1537566880066441296> TỐNG GIAM!",
             description=(
                 f"Phạm nhân: {member.mention}\n"
                 f"Người ra lệnh: {ctx.author.mention}\n"
@@ -368,7 +368,7 @@ class JailCore(commands.Cog):
         success = await release_member(self.bot, member)
         if success:
             embed = discord.Embed(
-                title="🔓 ÂN XÁ!",
+                title="<:symbol_unlocked:1537566882180366466> ÂN XÁ!",
                 description=(
                     f"Đã mở khóa còng! {member.mention} được ân xá trước thời hạn.\n"
                     f"Người ban lệnh: {ctx.author.mention}\n"
@@ -406,7 +406,7 @@ class JailCore(commands.Cog):
 
         if freed:
             await ctx.send(
-                f"🎉 Hoàn thành cải tạo! {ctx.author.mention} "
+                f"<:symbol_confetti:1537570146313306183> Hoàn thành cải tạo! {ctx.author.mention} "
                 "đã chà sạch bóng cái chuồng chó này. Trả tự do và khôi phục quyền hạn!"
             )
         else:
@@ -425,7 +425,7 @@ class JailCore(commands.Cog):
         if isinstance(error, commands.CommandOnCooldown):
             if ctx.channel.id == JAIL_CHANNEL_ID:
                 await ctx.send(
-                    f"⏳ {ctx.author.mention} Cứ từ từ, thở cái đã... "
+                    f"<:symbol_hour_glass:1537570149215899658> {ctx.author.mention} Cứ từ từ, thở cái đã... "
                     f"Còn **{error.retry_after:.1f}s** nữa mới được lau tiếp.",
                     delete_after=5.0,
                 )

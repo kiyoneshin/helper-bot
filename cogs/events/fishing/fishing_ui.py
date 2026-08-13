@@ -219,8 +219,8 @@ class FishingView(discord.ui.View):
                 await update_event_stat(self.bot, self.user_id, "legendary_fish", 1)
 
             # Tạo thông báo kết quả
-            prefix = "⚡ **Perfect Catch!** " if is_perfect else "🎉 **Tuyệt vời!** "
-            rare_tag = " 🎉🎉🎉 **CỰC HIẾM!**" if fish_info["rare_rank"] >= 3 else ""
+            prefix = "⚡ **Perfect Catch!** " if is_perfect else "<:symbol_confetti:1537570146313306183> **Tuyệt vời!** "
+            rare_tag = " <:symbol_confetti:1537570146313306183><:symbol_confetti:1537570146313306183><:symbol_confetti:1537570146313306183> **CỰC HIẾM!**" if fish_info["rare_rank"] >= 3 else ""
             result_msg = (
                 f"{prefix}Bạn đã câu được **1x {fish_info['icon']} {fish_info['name']}**!{rare_tag}{lb_msg}\n"
                 f"*(Phản xạ: **{reaction_time}s**)*"

@@ -45,7 +45,7 @@ class WorkCog(commands.Cog):
                 msg = random.choice(funny_waits)
                 
                 emb = discord.Embed(
-                    title="⏳ Cứ từ từ...",
+                    title="<:symbol_hour_glass:1537570149215899658> Cứ từ từ...",
                     description=f"{msg}\n\nQuay lại sau: **{mins} phút {secs} giây** nữa nhé!",
                     color=discord.Color.orange()
                 )
@@ -109,7 +109,7 @@ class WorkCog(commands.Cog):
                             task_reward = 100 * (1.0 + pet_task_bonus)
                             from cogs.common.db import update_intimacy
                             await update_intimacy(self.bot, str(uid), int(task_reward))
-                            story += f"\n\n🎉 **Nhiệm Vụ Cặp Đôi Hoàn Thành!** (+{task_reward:.1f} DTM)"
+                            story += f"\n\n<:symbol_confetti:1537570146313306183> **Nhiệm Vụ Cặp Đôi Hoàn Thành!** (+{task_reward:.1f} DTM)"
                         await execute_db(self.bot, "UPDATE marriages SET couple_task = $1::jsonb WHERE id = $2", json.dumps(task_data), mar["id"] if mar else 0)
             
             # Cộng tiền (is_earned=True để tính vào cả đua top)
@@ -122,7 +122,7 @@ class WorkCog(commands.Cog):
                 story += f"\n✨ *Thú cưng nhận {exp_gained} <:xp:1535664865308577884> vì bạn chăm chỉ làm việc!*"
             
             emb = discord.Embed(
-                title="🎉 Làm việc chăm chỉ (hoặc ăn may)!",
+                title="<:symbol_confetti:1537570146313306183> Làm việc chăm chỉ (hoặc ăn may)!",
                 description=story,
                 color=discord.Color.green()
             )

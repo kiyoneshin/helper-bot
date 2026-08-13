@@ -58,7 +58,7 @@ async def buy_lottery_tickets(
     Returns: (success: bool, message: str)
     """
     if is_locked:
-        return False, "🔒 Sòng đang đóng cửa quay số, chen ngang làm gì!"
+        return False, "<:symbol_locked:1537566880066441296> Sòng đang đóng cửa quay số, chen ngang làm gì!"
 
     if amount <= 0:
         return False, "<:symbol_wrong:1536629915598848072> Mua 0 vé thì trúng gió à? Nhập số đàng hoàng vô!"
@@ -169,7 +169,7 @@ class Lottery(commands.Cog):
         
         if not rows:
             if channel:
-                await channel.send("🎟️ **KỲ QUAY XỔ SỐ HÔM NAY:** Ế chỏng vó, không ai mua vé nên khỏi quay! 😢")
+                await channel.send("<:items_00_lottery_ticket:1537566232897650811> **KỲ QUAY XỔ SỐ HÔM NAY:** Ế chỏng vó, không ai mua vé nên khỏi quay! 😢")
             self.is_locked = False
             return
 
@@ -210,11 +210,11 @@ class Lottery(commands.Cog):
             win_rate = (winner_tickets / total_tickets) * 100
 
             embed = discord.Embed(
-                title="🎉 KẾT QUẢ XỔ SỐ KIẾN THIẾT ANGELIC 🎉",
+                title="<:symbol_confetti:1537570146313306183> KẾT QUẢ XỔ SỐ KIẾN THIẾT ANGELIC <:symbol_confetti:1537570146313306183>",
                 description=(
                     f"<:symbol_trophy:1537550568665649232> **CHÚC MỪNG TỶ PHÚ MỚI:** <@{winner_id}>\n\n"
-                    f"💰 **Giải Thưởng:** `{total_prize:,}` points!\n"
-                    f"🎟️ **Số vé người này mua:** `{winner_tickets:,}` vé (Tỉ lệ trúng: `{win_rate:.2f}%`)\n\n"
+                    f"<:symbol_money_2:1537567535229050970> **Giải Thưởng:** `{total_prize:,}` points!\n"
+                    f"<:items_00_lottery_ticket:1537566232897650811> **Số vé người này mua:** `{winner_tickets:,}` vé (Tỉ lệ trúng: `{win_rate:.2f}%`)\n\n"
                     f"*(Hũ đã được làm sạch. Chúc các bạn may mắn lần sau!)*"
                 ),
                 color=COLOR_GOLD
@@ -263,7 +263,7 @@ class Lottery(commands.Cog):
 
         # 5. Build Embed
         embed = discord.Embed(
-            title="🎟️ Xổ Số Sự Kiện Angelic 🎟️",
+            title="<:items_00_lottery_ticket:1537566232897650811> Xổ Số Sự Kiện Angelic <:items_00_lottery_ticket:1537566232897650811>",
             description=(
                 f"Trò chơi may rủi quốc dân! Mua vé, nín thở và chờ kết quả vào **18:00 (UTC+7)** mỗi ngày.\n"
                 f"*(Giá vé càng nhiều người mua, tổng Hũ càng to do được nhà cái trợ giá thêm 50%!)*"
@@ -276,7 +276,7 @@ class Lottery(commands.Cog):
             inline=True
         )
         embed.add_field(
-            name="💰 Tổng Hũ (Pot)",
+            name="<:symbol_money_2:1537567535229050970> Tổng Hũ (Pot)",
             value=f"**{pot:,}** điểm",
             inline=True
         )
@@ -291,7 +291,7 @@ class Lottery(commands.Cog):
             inline=True
         )
         embed.add_field(
-            name="🎉 Người thắng kỳ trước",
+            name="<:symbol_confetti:1537570146313306183> Người thắng kỳ trước",
             value=last_winner_str,
             inline=False
         )
@@ -311,7 +311,7 @@ class Lottery(commands.Cog):
     async def ban_cmd(self, ctx: commands.Context, amount: int) -> None:
         """Bán vé số lại cho hệ thống (hoàn tiền gốc). Cú pháp: kxoso ban <số_lượng>"""
         if self.is_locked:
-            await ctx.send(f"🔒 {ctx.author.mention} Máy đang xổ mà đòi trả vé à? Chơi dơ vậk", delete_after=5.0)
+            await ctx.send(f"<:symbol_locked:1537566880066441296> {ctx.author.mention} Máy đang xổ mà đòi trả vé à? Chơi dơ vậk", delete_after=5.0)
             return
 
         if amount <= 0:

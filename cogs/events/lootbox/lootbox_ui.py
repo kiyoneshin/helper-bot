@@ -56,13 +56,13 @@ def build_open_result_embed(
         if bonus["type"] == "points":
             embed.add_field(
                 name="✨ Godly Bonus!",
-                value=f"🎉 Nhận thêm **{bonus['value']:,} điểm** sự kiện!",
+                value=f"<:symbol_confetti:1537570146313306183> Nhận thêm **{bonus['value']:,} điểm** sự kiện!",
                 inline=False,
             )
         elif bonus["type"] in ("bm_item", "seed"):
             embed.add_field(
                 name="✨ Godly Bonus!",
-                value=f"🎉 Nhận thêm **{bonus['icon']} {bonus['name']}**!",
+                value=f"<:symbol_confetti:1537570146313306183> Nhận thêm **{bonus['icon']} {bonus['name']}**!",
                 inline=False,
             )
 
@@ -112,7 +112,7 @@ def build_bulk_result_embed(
         if b is None:
             continue
         if b["type"] == "points":
-            bonus_lines.append(f"• **+{b['value']:,} điểm** 💰")
+            bonus_lines.append(f"• **+{b['value']:,} điểm** <:symbol_money_bag:1537567538097954896>")
         else:
             bonus_lines.append(f"• **{b['icon']} {b['name']}**")
     if bonus_lines:
@@ -152,9 +152,9 @@ def build_info_embed(tier_id: int) -> discord.Embed:
 
     price = TIER_PRICES.get(tier_id)
     if price:
-        embed.add_field(name="💰 Giá Mua", value=f"{price:,} điểm (tối đa 1 lần/6h)", inline=True)
+        embed.add_field(name="<:symbol_money_bag:1537567538097954896> Giá Mua", value=f"{price:,} điểm (tối đa 1 lần/6h)", inline=True)
     else:
-        embed.add_field(name="💰 Giá Mua", value="Không thể mua — chỉ earn qua hoạt động", inline=True)
+        embed.add_field(name="<:symbol_money_bag:1537567538097954896> Giá Mua", value="Không thể mua — chỉ earn qua hoạt động", inline=True)
 
     if tier_id == LB_GODLY:
         embed.add_field(

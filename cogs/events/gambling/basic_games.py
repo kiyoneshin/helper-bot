@@ -148,7 +148,7 @@ class BetConfirmView(discord.ui.View):
         if self.message:
             try:
                 await self.message.edit(
-                    content="⏰ Hết giờ xác nhận. Tiền vẫn an toàn trong ví!",
+                    content="<a:symbol_clock:1537570144375541870> Hết giờ xác nhận. Tiền vẫn an toàn trong ví!",
                     embed=None, view=None
                 )
             except discord.HTTPException:
@@ -161,12 +161,12 @@ async def _send_confirm(ctx: commands.Context, bet: int, callback_fn) -> None:
         title="<:symbol_alert:1537546957885542450> Xác nhận cược toàn bộ",
         description=(
             f"{ctx.author.mention} Đầy cả ví ra cược hết!\n\n"
-            f"💰 **Số tiền sẽ cược:** **{bet:,.0f}** điểm\n\n"
+            f"<:symbol_money_bag:1537567538097954896> **Số tiền sẽ cược:** **{bet:,.0f}** điểm\n\n"
             "<:symbol_right:1536629912515903578> Nhấn **Xác nhận** để vào sòng, hoặc <:symbol_wrong:1536629915598848072> **Hủy** để rút lui."
         ),
         color=0xFF8C00,
     )
-    embed.set_footer(text="⏰ Hết 20 giây tự động hủy")
+    embed.set_footer(text="<a:symbol_clock:1537570144375541870> Hết 20 giây tự động hủy")
     view = BetConfirmView(ctx, bet, callback_fn)
     view.message = await ctx.send(embed=embed, view=view)
 
@@ -261,7 +261,7 @@ class BasicGames(commands.Cog):
         embed.add_field(name="🎯 Lựa chọn của bạn", value=your_pick, inline=True)
         embed.add_field(name="🪙 Kết quả đồng xu", value=landed, inline=True)
         embed.add_field(name="\u200b", value="\u200b", inline=True)
-        embed.add_field(name="💰 Tiền cược", value=f"{bet:,}", inline=False)
+        embed.add_field(name="<:symbol_money_bag:1537567538097954896> Tiền cược", value=f"{bet:,}", inline=False)
         embed.add_field(name=f"{outcome_emoji} Kết quả", value=result_line, inline=False)
         embed.add_field(name="<:symbol_credit_card:1536308433693712404> Số dư mới", value=f"{new_balance:,}", inline=False)
         embed.set_footer(text="Angelic Casino • Coinflip 🌸")
@@ -379,7 +379,7 @@ class BasicGames(commands.Cog):
         embed = discord.Embed(title="<:gambling_dice:1537539887769591828> Dice", color=color)
         embed.set_author(name=f"{ctx.author.display_name} — dice", icon_url=ctx.author.display_avatar.url)
         embed.add_field(name="<:gambling_dice:1537539887769591828> Kết quả lắc", value=f"{face_emoji} - {desc}", inline=False)
-        embed.add_field(name="💰 Tiền cược", value=f"{bet:,}", inline=False)
+        embed.add_field(name="<:symbol_money_bag:1537567538097954896> Tiền cược", value=f"{bet:,}", inline=False)
         embed.add_field(name=f"{outcome_emoji} Kết quả", value=result_line, inline=False)
         embed.add_field(name="<:symbol_credit_card:1536308433693712404> Số dư mới", value=f"{new_balance:,}", inline=False)
         embed.set_footer(text="Angelic Casino • Dice 7 🌸")
@@ -434,12 +434,12 @@ class BasicGames(commands.Cog):
                 "Sống sót càng lâu, húp càng đẫm. Dám chơi lớn không? 💥\n\n"
                 "**Hệ số thưởng:**\n"
                 "Lần 1: x1.1\nLần 2: x1.3\nLần 3: x1.8\nLần 4: x2.7\nLần 5: x5\n\n"
-                f"⏳ **Hành động trước:** <t:{end_time}:R>"
+                f"<:symbol_hour_glass:1537570149215899658> **Hành động trước:** <t:{end_time}:R>"
             ),
             color=0x2b2d31,
         )
         embed.set_author(name=f"{ctx.author.display_name} — roulette", icon_url=ctx.author.display_avatar.url)
-        embed.add_field(name="💰 Tiền cược (đang giữ)", value=f"{bet:,}", inline=False)
+        embed.add_field(name="<:symbol_money_bag:1537567538097954896> Tiền cược (đang giữ)", value=f"{bet:,}", inline=False)
         embed.add_field(name="<:symbol_credit_card:1536308433693712404> Số dư hiện tại", value=f"{new_balance:,}", inline=False)
         embed.set_footer(text="Ngâm quá sòng tự động chốt lãi.")
         _lock_user(self.bot, ctx.author.id)
@@ -494,7 +494,7 @@ class CupsView(discord.ui.View):
             new_balance = self.balance + delta
             result_line = f"+{delta:,}  *(x2.3)*"
             color = COLOR_WIN
-            title = "<:gambling_cup:1536019568697409667> Cups — Lụm Lúa! 🎉"
+            title = "<:gambling_cup:1536019568697409667> Cups — Lụm Lúa! <:symbol_confetti:1537570146313306183>"
             outcome_emoji = "<:symbol_right:1536629912515903578>"
         else:
             delta = -self.bet
@@ -511,7 +511,7 @@ class CupsView(discord.ui.View):
             color=color,
         )
         embed.set_author(name=f"{self.author.display_name} — cups", icon_url=self.author.display_avatar.url)
-        embed.add_field(name="💰 Tiền cược", value=f"{self.bet:,}", inline=False)
+        embed.add_field(name="<:symbol_money_bag:1537567538097954896> Tiền cược", value=f"{self.bet:,}", inline=False)
         embed.add_field(name=f"{outcome_emoji} Kết quả", value=result_line, inline=False)
         embed.add_field(name="<:symbol_credit_card:1536308433693712404> Số dư mới", value=f"{new_balance:,}", inline=False)
         embed.set_footer(text="Angelic Casino • Cups 🌸")
@@ -597,7 +597,7 @@ class RouletteView(discord.ui.View):
                 color=COLOR_LOSE,
             )
             embed.set_author(name=f"{self.author.display_name} — roulette", icon_url=self.author.display_avatar.url)
-            embed.add_field(name="💰 Tiền cược", value=f"{self.bet:,}", inline=False)
+            embed.add_field(name="<:symbol_money_bag:1537567538097954896> Tiền cược", value=f"{self.bet:,}", inline=False)
             embed.add_field(name="<:symbol_wrong:1536629915598848072> Kết quả", value=f"-{self.bet:,}  *(Mút trọn) & Bị phạt 50*", inline=False)
             embed.add_field(name="<:symbol_credit_card:1536308433693712404> Số dư mới", value=f"{self.balance:,}", inline=False)
             embed.set_footer(text="Angelic Casino • Cò Quay Tử Thần 🌸")
@@ -627,7 +627,7 @@ class RouletteView(discord.ui.View):
                     f"Bạn đã sống sót qua viên thứ **{self.survived_rounds}**!\n\n"
                     f"👉 **Húp ngay:** {current_win:,}  *(x{current_mult:.2f})*\n"
                     f"👉 **Đánh đổi mạng sống (x{next_mult:.2f}):** {round(self.bet * next_mult):,}\n\n"
-                    f"⏳ **Hành động trước:** <t:{new_end_time}:R>\n"
+                    f"<:symbol_hour_glass:1537570149215899658> **Hành động trước:** <t:{new_end_time}:R>\n"
                     "Muốn **Chốt lãi** ôm tiền về, hay tiếp tục **Bóp cò**?"
                 ),
                 color=COLOR_WIN,
@@ -637,7 +637,7 @@ class RouletteView(discord.ui.View):
             
             await interaction.response.edit_message(embed=embed, view=self)
 
-    @discord.ui.button(label="💰 Chốt lãi", style=discord.ButtonStyle.success, disabled=True, custom_id="cashout_btn")
+    @discord.ui.button(label="<:symbol_money_bag:1537567538097954896> Chốt lãi", style=discord.ButtonStyle.success, disabled=True, custom_id="cashout_btn")
     async def cashout_btn(self, interaction: discord.Interaction, button: discord.ui.Button):
         await self.process_cashout(interaction, auto_cashout=False)
 
@@ -679,7 +679,7 @@ class RouletteView(discord.ui.View):
 
         embed = discord.Embed(title=title, description=desc, color=color)
         embed.set_author(name=f"{self.author.display_name} — roulette", icon_url=self.author.display_avatar.url)
-        embed.add_field(name="💰 Tiền cược", value=f"{self.bet:,}", inline=False)
+        embed.add_field(name="<:symbol_money_bag:1537567538097954896> Tiền cược", value=f"{self.bet:,}", inline=False)
         embed.add_field(name=f"{emo} Kết quả", value=res_str, inline=False)
         embed.add_field(name="<:symbol_credit_card:1536308433693712404> Số dư mới", value=f"{new_balance:,}", inline=False)
         embed.set_footer(text="Angelic Casino • Cò Quay Tử Thần 🌸")

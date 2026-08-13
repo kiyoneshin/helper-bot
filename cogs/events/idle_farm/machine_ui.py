@@ -161,7 +161,7 @@ def build_machine_embed(
                 now = time.time()
                 finish_time = item.get("finish_time", 0)
                 remaining = int(finish_time - now) if finish_time > now else 0
-                lines.append(f"`{num:>2}.` {machine_icon} **{machine_name}**: {ingredients_str} → {output_display} | ⏳ còn **{_format_duration(remaining)}**")
+                lines.append(f"`{num:>2}.` {machine_icon} **{machine_name}**: {ingredients_str} → {output_display} | <:symbol_hour_glass:1537570149215899658> còn **{_format_duration(remaining)}**")
         else:
             lines.append(f"`{num:>2}.` ▫️ *trống*")
 

@@ -139,7 +139,7 @@ def _build_pool_embed(stats: dict[str, int], title: str, color: int, footer: str
             odds_str = "1 ăn **∞** *(chưa ai cược)*"
         lines.append(f"{DUCK_EMOJI[key]} **{label}**: {duck_pool:,} — {odds_str}")
     embed.add_field(
-        name=f"💰 Tổng Pool: {total_pool:,}",
+        name=f"<:symbol_money_2:1537567535229050970> Tổng Pool: {total_pool:,}",
         value="\n".join(lines),
         inline=False,
     )
@@ -364,7 +364,7 @@ class DuckRace(commands.Cog):
             for i in range(0, len(winners_notified), chunk_size):
                 chunk = winners_notified[i : i + chunk_size]
                 payout_embed = discord.Embed(
-                    title=f"💰 Bảng Vàng Thắng Cược — {winners_labels}",
+                    title=f"<:symbol_money_bag:1537567538097954896> Bảng Vàng Thắng Cược — {winners_labels}",
                     description="\n".join(chunk),
                     color=COLOR_WIN,
                 )
@@ -382,7 +382,7 @@ class DuckRace(commands.Cog):
         """Đặt cược vào một chú vịt. Cú pháp: kbetvit <màu> <tiền>"""
         if self.is_locked:
             await ctx.send(
-                f"🔒 {ctx.author.mention} Sổ đã đóng rồi cha nội! "
+                f"<:symbol_locked:1537566880066441296> {ctx.author.mention} Sổ đã đóng rồi cha nội! "
                 "Đợi xong kỳ đua này rồi cược vào kỳ sau nhé."
             )
             return
@@ -497,7 +497,7 @@ class DuckRace(commands.Cog):
         """Hủy cược hiện tại và nhận lại 100% tiền. Cú pháp: khuybet"""
         if self.is_locked:
             await ctx.send(
-                f"🔒 {ctx.author.mention} Hết đường rút rồi — sổ đã đóng!\n"
+                f"<:symbol_locked:1537566880066441296> {ctx.author.mention} Hết đường rút rồi — sổ đã đóng!\n"
                 "Đợi xong kỳ đua xem vận may thế nào đi."
             )
             return
@@ -542,7 +542,7 @@ class DuckRace(commands.Cog):
         )
 
         lock_status = (
-            "🔒 **SỔ ĐÃ ĐÓNG** — đang chờ khởi tranh!"
+            "<:symbol_locked:1537566880066441296> **SỔ ĐÃ ĐÓNG** — đang chờ khởi tranh!"
             if self.is_locked
             else "<:symbol_right:1536629912515903578> Đang nhận cược"
         )

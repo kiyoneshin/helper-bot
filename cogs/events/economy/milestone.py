@@ -109,7 +109,7 @@ class MilestoneCog(commands.Cog):
             elif total_earned >= moc_diem:
                 status = "<:gift_00_symbol:1536003307011842099> Có thể nhận (Gõ knhanqua)"
             else:
-                status = "🔒 Chưa đạt"
+                status = "<:symbol_locked:1537566880066441296> Chưa đạt"
                 
             rewards = []
             if data.get("points"):
@@ -235,7 +235,7 @@ class MilestoneCog(commands.Cog):
                 
         # Build success embed
         embed = discord.Embed(
-            title="🎉 NHẬN THƯỞNG CỘT MỐC THÀNH CÔNG 🎉",
+            title="<:symbol_confetti:1537570146313306183> NHẬN THƯỞNG CỘT MỐC THÀNH CÔNG <:symbol_confetti:1537570146313306183>",
             description=f"Chúc mừng {ctx.author.mention} đã xuất sắc vượt qua các cột mốc mới!\n**Chi tiết phần thưởng:**",
             color=0x57f287
         )

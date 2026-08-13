@@ -103,7 +103,7 @@ class JailInteraction(commands.Cog):
     async def choccho_error(self, ctx: commands.Context, error: Exception) -> None:
         if isinstance(error, commands.CommandOnCooldown):
             await ctx.send(
-                f"⏳ {ctx.author.mention} Chọc nhiều quá rồi! "
+                f"<:symbol_hour_glass:1537570149215899658> {ctx.author.mention} Chọc nhiều quá rồi! "
                 f"Nghỉ **{error.retry_after/60:.1f} phút** rồi tính.",
                 delete_after=6.0,
             )
@@ -137,7 +137,7 @@ class JailInteraction(commands.Cog):
 
         if freed:
             embed = discord.Embed(
-                title="🎉 Lòng Tốt Đã Giải Phóng!",
+                title="<:symbol_confetti:1537570146313306183> Lòng Tốt Đã Giải Phóng!",
                 description=(
                     f"💖 {ctx.author.mention} vứt vào chuồng miếng xương thơm...\n"
                     f"{member.mention} vừa được hoàn thành án hạn — **TỰ DO**!"
@@ -165,7 +165,7 @@ class JailInteraction(commands.Cog):
     async def choan_error(self, ctx: commands.Context, error: Exception) -> None:
         if isinstance(error, commands.CommandOnCooldown):
             await ctx.send(
-                f"⏳ {ctx.author.mention} Vừa cho ăn rồi! "
+                f"<:symbol_hour_glass:1537570149215899658> {ctx.author.mention} Vừa cho ăn rồi! "
                 f"Còn **{error.retry_after:.1f}s** nữa.",
                 delete_after=6.0,
             )
@@ -223,7 +223,7 @@ class JailInteraction(commands.Cog):
                 title="💸 Không Đủ Tiền Bảo Lãnh!",
                 description=(
                     f"{ctx.author.mention} muốn bảo lãnh {member.mention}.\n\n"
-                    f"💰 Chi phí bảo lãnh: **{bail_cost:,}** điểm\n"
+                    f"<:symbol_money_bag:1537567538097954896> Chi phí bảo lãnh: **{bail_cost:,}** điểm\n"
                     f"<:symbol_credit_card:1536308433693712404> Số dư của bạn: **{payer_points:,.0f}** điểm\n\n"
                     f"Thiếu **{bail_cost - payer_points:,.0f}** điểm. Cày thêm đi! 😅"
                 ),
@@ -237,7 +237,7 @@ class JailInteraction(commands.Cog):
             title="💸 Yêu Cầu Bảo Lãnh",
             description=(
                 f"{ctx.author.mention} muốn bảo lãnh cho {member.mention}.\n\n"
-                f"💰 Chi phí bảo lãnh: **{bail_cost:,}** điểm\n"
+                f"<:symbol_money_bag:1537567538097954896> Chi phí bảo lãnh: **{bail_cost:,}** điểm\n"
                 f"<:symbol_credit_card:1536308433693712404> Số dư hiện tại: **{payer_points:,.0f}** điểm\n\n"
                 f"Bạn có chắc chắn muốn bỏ ra số điểm này để bảo lãnh không?"
             ),
@@ -269,7 +269,7 @@ class JailInteraction(commands.Cog):
             title="🕊️ Bảo Lãnh Thành Công!",
             description=(
                 f"💸 {ctx.author.mention} vừa bỏ **{bail_cost:,}** điểm ra bảo lãnh!\n\n"
-                f"🔓 {member.mention} được trả tự do — role và nickname đã khôi phục."
+                f"<:symbol_unlocked:1537566882180366466> {member.mention} được trả tự do — role và nickname đã khôi phục."
             ),
             color=COLOR_FREE,
         )
@@ -280,7 +280,7 @@ class JailInteraction(commands.Cog):
     async def baolanh_error(self, ctx: commands.Context, error: Exception) -> None:
         if isinstance(error, commands.CommandOnCooldown):
             await ctx.send(
-                f"⏳ {ctx.author.mention} Bình tĩnh nào! "
+                f"<:symbol_hour_glass:1537570149215899658> {ctx.author.mention} Bình tĩnh nào! "
                 f"Còn **{error.retry_after:.1f}s** nữa.",
                 delete_after=6.0,
             )

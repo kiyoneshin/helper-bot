@@ -356,7 +356,7 @@ class EventCoreCog(commands.Cog):
         await execute_db(self.bot, sql_batch, val, member_ids)
 
         embed = discord.Embed(
-            title="🎉 Lì Xì Toàn Server Angelic ໒꒱",
+            title="<:symbol_confetti:1537570146313306183> Lì Xì Toàn Server Angelic ໒꒱",
             description=(
                 f"**{ctx.author.display_name}** vừa phát lương cho toàn thể server!\n\n"
                 f"Mỗi thành viên nhận được: **+{_fmt(val)} điểm**\n"

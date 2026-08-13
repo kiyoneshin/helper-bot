@@ -52,7 +52,7 @@ class GlobalErrorHandler(commands.Cog):
             if hours > 0: time_str += f"{hours} giờ "
             if minutes > 0: time_str += f"{minutes} phút "
             time_str += f"{seconds} giây"
-            await ctx.send(f"⏳ Lệnh đang trong thời gian chờ! Vui lòng thử lại sau **{time_str.strip()}**.")
+            await ctx.send(f"<:symbol_hour_glass:1537570149215899658> Lệnh đang trong thời gian chờ! Vui lòng thử lại sau **{time_str.strip()}**.")
             return
 
         # Các lỗi liên quan đến sai tham số hoặc thiếu tham số

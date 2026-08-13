@@ -236,7 +236,7 @@ class MarryConfirmView(discord.ui.View):
             ring_name = ring_info['name'] if ring_info else "Nhẫn Cỏ"
             
             emb = interaction.message.embeds[0] if interaction.message and getattr(interaction.message, "embeds", None) else discord.Embed()
-            emb.title = "🎉 CHÚC MỪNG TÂN LANG TÂN NƯƠNG! 🎉"
+            emb.title = "<:symbol_confetti:1537570146313306183> CHÚC MỪNG TÂN LANG TÂN NƯƠNG! <:symbol_confetti:1537570146313306183>"
             emb.description = f"💖 **{self.proposer.display_name}** và **{self.target.display_name}** đã chính thức về chung một nhà với chiếc **{ring_name}**!"
             emb.color = discord.Color.gold()
             
@@ -292,7 +292,7 @@ class PetAdoptConfirmView(discord.ui.View):
             if isinstance(child, (discord.ui.Button, discord.ui.Select)):
                 child.disabled = True
         prefix = self.bot.custom_prefix
-        await interaction.response.edit_message(content=f"🎉 Bạn đã đổi thú cưng thành công! Chào mừng bé **{self.new_base_name} Sơ Sinh** đến với gia đình! (Kinh nghiệm thú cưng đã reset về 0). Dùng `{prefix}namepet` để đặt tên nhé.", view=self)
+        await interaction.response.edit_message(content=f"<:symbol_confetti:1537570146313306183> Bạn đã đổi thú cưng thành công! Chào mừng bé **{self.new_base_name} Sơ Sinh** đến với gia đình! (Kinh nghiệm thú cưng đã reset về 0). Dùng `{prefix}namepet` để đặt tên nhé.", view=self)
 
     @discord.ui.button(label="Hủy bỏ", style=discord.ButtonStyle.gray)
     async def cancel(self, interaction: discord.Interaction, button: discord.ui.Button):
@@ -629,7 +629,7 @@ class MarriageCog(commands.Cog):
         else:
             from cogs.common.db import execute_db
             await execute_db(self.bot, "UPDATE marriages SET pet_type = $1, pet_exp = 0.0 WHERE id = $2", base_name, mar["id"])
-            await ctx.send(f"🎉 Chúc mừng hai bạn đã nhận nuôi thành công bé **{base_name} Sơ Sinh**! Dùng `{ctx.prefix}namepet` để đặt tên nhé.")
+            await ctx.send(f"<:symbol_confetti:1537570146313306183> Chúc mừng hai bạn đã nhận nuôi thành công bé **{base_name} Sơ Sinh**! Dùng `{ctx.prefix}namepet` để đặt tên nhé.")
 
     @adopt_cmd.error
     async def adopt_cmd_error(self, ctx: commands.Context, error: Exception):
@@ -673,7 +673,7 @@ class MarriageCog(commands.Cog):
         ring_info = get_item_by_id(ring_id)
         ring_name = f"{ring_info['icon']} {ring_info['name']}" if ring_info else f"Nhẫn ID {ring_id}"
         
-        await ctx.send(f"🎉 Chúc mừng! Cuộc hôn nhân của hai bạn vừa được nâng tầm với chiếc **{ring_name}** siêu lấp lánh!")
+        await ctx.send(f"<:symbol_confetti:1537570146313306183> Chúc mừng! Cuộc hôn nhân của hai bạn vừa được nâng tầm với chiếc **{ring_name}** siêu lấp lánh!")
 
     @commands.hybrid_command(name="setimage", aliases=["setanh"])
     async def setimage_cmd(self, ctx: commands.Context, url: str):
@@ -1008,7 +1008,7 @@ class MarriageCog(commands.Cog):
             m, s = divmod(rem, 60)
             h, m = divmod(m, 60)
             wait_str = f"{h}h {m}m {s}s" if h > 0 else f"{m}m {s}s"
-            return await ctx.send(f"⏳ Cứ từ từ thôi! Quấn quýt quá lại nhanh chán. Đợi thêm **{wait_str}** nữa mới được dùng lại hành động này nhé!")
+            return await ctx.send(f"<:symbol_hour_glass:1537570149215899658> Cứ từ từ thôi! Quấn quýt quá lại nhanh chán. Đợi thêm **{wait_str}** nữa mới được dùng lại hành động này nhé!")
             
         reset_msg = ""
         if pet_reset_chance > 0 and random.random() < pet_reset_chance:
@@ -1046,7 +1046,7 @@ class MarriageCog(commands.Cog):
                         task_data["completed"] = True
                         task_reward = 100 * (1.0 + pet_task_bonus)
                         actual_dtm += task_reward
-                        msg += f"\n🎉 **Nhiệm Vụ Cặp Đôi Hoàn Thành!** (+{task_reward:.1f} DTM)"
+                        msg += f"\n<:symbol_confetti:1537570146313306183> **Nhiệm Vụ Cặp Đôi Hoàn Thành!** (+{task_reward:.1f} DTM)"
                     await execute_db(self.bot, "UPDATE marriages SET couple_task = $1::jsonb WHERE id = $2", json.dumps(task_data), mar["id"])
             
             # Pet <:xp:1535664865308577884> gain

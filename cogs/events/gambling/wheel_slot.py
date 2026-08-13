@@ -45,7 +45,7 @@ WHEEL_CONFIG: dict[str, tuple[float, bool, bool, str]] = {
     "🟪": ( 9.00, True,  False, "x9.0 tiền cược — Nổ Hũ Trúng Máng!"),
     "🟩": ( 1.80, True,  False, "x1.8 tiền cược — Húp Nhẹ"),
     "🟥": (-1.00, False, False, "Mút Trọn (Mất 100%)"),
-    "🟨": (-1.00, False, True,  "Mút Trọn + 🎟️ An ủi 1 Vé Xổ Số"),
+    "🟨": (-1.00, False, True,  "Mút Trọn + <:items_00_lottery_ticket:1537566232897650811> An ủi 1 Vé Xổ Số"),
     "🟧": (-0.50, False, False, "Cắt nửa vầng trăng (Mất 50%)"),
     "🟫": (-0.75, False, False, "Đi bụi (Mất 75%)"),
     "🟦": (-0.90, False, False, "Còn đúng cái nịt (Mất 90%)"),
@@ -307,7 +307,7 @@ class WheelSlots(commands.Cog):
             result_value = f"{delta:,}  *({desc})*"
 
         if has_ticket:
-            result_value += "\n🎟️ **+1 Vé Xổ Số** — Chúc mừng! Hãy dùng vé này để tham gia xổ số!"
+            result_value += "\n<:items_00_lottery_ticket:1537566232897650811> **+1 Vé Xổ Số** — Chúc mừng! Hãy dùng vé này để tham gia xổ số!"
 
         # ── Dựng Embed ────────────────────────────────────────────────────
         embed = discord.Embed(
@@ -321,7 +321,7 @@ class WheelSlots(commands.Cog):
         )
 
         # 3 field hàng dọc
-        embed.add_field(name="💰 Tiền cược",       value=f"{bet:,}",         inline=False)
+        embed.add_field(name="<:symbol_money_bag:1537567538097954896> Tiền cược",       value=f"{bet:,}",         inline=False)
         embed.add_field(name=f"{result_emoji} Kết quả", value=result_value,  inline=False)
         embed.add_field(name="<:symbol_credit_card:1536308433693712404> Số dư mới",       value=f"{new_balance:,}", inline=False)
 
@@ -415,7 +415,7 @@ class WheelSlots(commands.Cog):
         )
 
         # 3 Field Hàng Dọc
-        embed.add_field(name="💰 Tiền cược", value=f"{bet:,}", inline=False)
+        embed.add_field(name="<:symbol_money_bag:1537567538097954896> Tiền cược", value=f"{bet:,}", inline=False)
         embed.add_field(name=result_name, value=result_val, inline=False)
         embed.add_field(name="<:symbol_credit_card:1536308433693712404> Số dư mới", value=f"{new_balance:,}", inline=False)
 

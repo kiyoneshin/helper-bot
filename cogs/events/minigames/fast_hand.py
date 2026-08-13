@@ -88,8 +88,8 @@ class FastHandView(discord.ui.View):
         if self.message:
             embed = self.message.embeds[0] if self.message.embeds else discord.Embed()
             embed.color = 0x57f287
-            embed.title = "🎉 TÌM THẤY BẢO VẬT!"
-            embed.description = f"🎉 Chiến thần {interaction.user.mention} đã tìm thấy **{self.target_name}** trong đống đổ nát và nhận **150 điểm**!"
+            embed.title = "<:symbol_confetti:1537570146313306183> TÌM THẤY BẢO VẬT!"
+            embed.description = f"<:symbol_confetti:1537570146313306183> Chiến thần {interaction.user.mention} đã tìm thấy **{self.target_name}** trong đống đổ nát và nhận **150 điểm**!"
             try:
                 await self.message.edit(embed=embed, view=self)
             except discord.HTTPException:
@@ -99,7 +99,7 @@ class FastHandView(discord.ui.View):
         self.core_cog.last_minigame_end = datetime.now(timezone.utc)
         self.core_cog.is_minigame_running = False
         
-        await interaction.response.send_message("🎉 Chúc mừng bạn đã nhanh tay chọn đúng!", ephemeral=True)
+        await interaction.response.send_message("<:symbol_confetti:1537570146313306183> Chúc mừng bạn đã nhanh tay chọn đúng!", ephemeral=True)
         self.stop()
 
     async def on_timeout(self):

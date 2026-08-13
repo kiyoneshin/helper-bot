@@ -237,7 +237,7 @@ ACHIEVEMENTS = {
         "desc": "Tích lũy được 10 Triệu Điểm Sự Kiện.",
         "stat_key": "total_earned",
         "target": 10000000,
-        "reward_title": "💰 Phú Hào",
+        "reward_title": "<:symbol_money_bag:1537567538097954896> Phú Hào",
         "reward_lootbox": (65, 2)
     }
 }

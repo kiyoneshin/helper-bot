@@ -92,7 +92,7 @@ def _generate_market_path(house_edge: float = 0.05) -> list[float]:
     return path
 
 
-class BetModal(discord.ui.Modal, title="💰 Đặt Cược - Quả Bóng Tham Lam"):
+class BetModal(discord.ui.Modal, title="<:symbol_money_bag:1537567538097954896> Đặt Cược - Quả Bóng Tham Lam"):
     bet_input: discord.ui.TextInput = discord.ui.TextInput(
         label="Số tiền cược (vd: 50k, 1.5m, 200000)",
         placeholder="Nhập số tiền...",
@@ -188,7 +188,7 @@ class CrashLobbyView(discord.ui.View):
         self.time_left         = LOBBY_DURATION
 
     @discord.ui.button(
-        label="💰 Đặt Cược",
+        label="<:symbol_money_bag:1537567538097954896> Đặt Cược",
         style=discord.ButtonStyle.primary,
         custom_id="crash_lobby_bet",
     )
@@ -302,7 +302,7 @@ class CrashActiveView(discord.ui.View):
             await interaction.response.send_message(
                 f"<:symbol_right:1536629912515903578> **Chốt lời thành công** nhảy dù kịp ở hệ số **x{snapshot_mult:.2f}**!\n"
                 f"Vốn: **{bet:,}** -> Lụm lúa: **{payout:,}** "
-                f"(+**{profit_display:,}** lãi) 🎉",
+                f"(+**{profit_display:,}** lãi) <:symbol_confetti:1537570146313306183>",
                 ephemeral=True,
             )
 
@@ -321,14 +321,14 @@ def _build_lobby_embed(
     embed = discord.Embed(
         title="🎈 Quả Bóng Tham Lam — Sảnh Chờ",
         description=(
-            "Nhấn **💰 Đặt Cược** để tham gia nhảy dù.\n"
+            "Nhấn **<:symbol_money_bag:1537567538097954896> Đặt Cược** để tham gia nhảy dù.\n"
             "Tiền sẽ bị **trừ ngay** khi đặt mâm thành công.\n"
             "Bóng sẽ bay sau khi sảnh đóng — biết chốt lời đúng lúc thì sống, tham thì chết thảm!\n\n"
             "🏠 **House Edge 5%** — Crash Point tính ngẫu nhiên bao minh bạch."
         ),
         color=COLOR_LOBBY,
     )
-    embed.add_field(name="⏳ Sảnh đóng sau", value=f"**{time_left} giây**", inline=True)
+    embed.add_field(name="<:symbol_hour_glass:1537570149215899658> Sảnh đóng sau", value=f"**{time_left} giây**", inline=True)
     embed.add_field(name="👥 Con bạc tham gia", value=f"**{len(players_bets)}** mạng", inline=True)
 
     if players_bets:
@@ -542,7 +542,7 @@ class CrashGame(commands.Cog):
             closing_embed.color = 0xFF8C00
             closing_view = discord.ui.View()
             disabled_btn  = discord.ui.Button(
-                label="💰 Đặt Cược",
+                label="<:symbol_money_bag:1537567538097954896> Đặt Cược",
                 style=discord.ButtonStyle.primary,
                 disabled=True,
             )

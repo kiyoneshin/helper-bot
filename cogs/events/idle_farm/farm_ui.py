@@ -147,7 +147,7 @@ def build_farm_embed(author: discord.Member | discord.User, farm_data: Dict[str,
     
     for i in range(1, 10): # Từ 1 đến 9
         if i > slots:
-            grid_cells.append(f"[{i}] 🔒")
+            grid_cells.append(f"[{i}] <:symbol_locked:1537566880066441296>")
             continue
             
         slot_key = str(i)

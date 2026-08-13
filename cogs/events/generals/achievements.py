@@ -138,7 +138,7 @@ class ClaimButton(discord.ui.Button):
         )
         await save_farm_data(interaction.client, uid, farm_data)
         
-        msg = f"🎉 Chúc mừng bạn đã hoàn thành **{len(newly_claimed)}** thành tựu!\n\n" + "\n".join(reward_messages)
+        msg = f"<:symbol_confetti:1537570146313306183> Chúc mừng bạn đã hoàn thành **{len(newly_claimed)}** thành tựu!\n\n" + "\n".join(reward_messages)
         
         if self.category == "summary":
             embed = await build_ach_summary_embed(interaction.client, interaction.user, stats, claimed)
@@ -267,7 +267,7 @@ async def build_ach_embed(bot, user, category: str, stats: dict, claimed: list) 
                     status_emoji = "<:gift_00_symbol:1536003307011842099>" # Ready to claim
                     progress_str = f"Sẵn sàng nhận thưởng! ({stat_val}/{ach['target']})"
                 else:
-                    status_emoji = "⏳"
+                    status_emoji = "<:symbol_hour_glass:1537570149215899658>"
                     # Rút gọn số hiển thị nếu quá lớn
                     val_display = f"{stat_val:,.0f}" if isinstance(stat_val, (int, float)) else stat_val
                     target_display = f"{ach['target']:,.0f}"

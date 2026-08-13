@@ -184,7 +184,7 @@ class InviteView(discord.ui.View):
             description=(
                 f"{self.host.mention} đang kéo mồi!\n"
                 f"Cược: **{self.bet:,}**/người *(trừ 5% thuế vào sảnh)*\n\n"
-                "🔒 **Sảnh đã chốt!**\n" if self._done.is_set() else f"⏳ **Chốt kèo:** <t:{self.end_time}:R>\n"
+                "<:symbol_locked:1537566880066441296> **Sảnh đã chốt!**\n" if self._done.is_set() else f"<:symbol_hour_glass:1537570149215899658> **Chốt kèo:** <t:{self.end_time}:R>\n"
                 "Dám vào thì bấm, nhát thì né:"
             ),
             color=COLOR_INFO,
@@ -192,7 +192,7 @@ class InviteView(discord.ui.View):
         lines: list[str] = []
         for m in self.invitees:
             s = self.statuses.get(m.id)
-            icon = "<:symbol_right:1536629912515903578>" if s is True else ("<:symbol_wrong:1536629915598848072>" if s is False else "⏳")
+            icon = "<:symbol_right:1536629912515903578>" if s is True else ("<:symbol_wrong:1536629915598848072>" if s is False else "<:symbol_hour_glass:1537570149215899658>")
             lines.append(f"{icon} {m.mention}")
         embed.add_field(name="Danh Sách Được Kéo Mồi", value="\n".join(lines), inline=False)
         embed.set_footer(text=f"Bỏ chạy coi chừng mất mặt")
@@ -316,7 +316,7 @@ class PublicLobbyView(discord.ui.View):
             description=(
                 f"Mại dô mại dô! Tay nhanh hơn não!\n"
                 f"Cược: **{self.bet:,}**/người *(trừ 5% thuế vào sảnh)*\n\n"
-                "🔒 **Sảnh đã chốt!**" if self._closed.is_set() else f"**Còn {spots} chỗ trống** — Đủ {MAX_PLAYERS} người hoặc đến <t:{self.end_time}:R> thì chốt!"
+                "<:symbol_locked:1537566880066441296> **Sảnh đã chốt!**" if self._closed.is_set() else f"**Còn {spots} chỗ trống** — Đủ {MAX_PLAYERS} người hoặc đến <t:{self.end_time}:R> thì chốt!"
             ),
             color=COLOR_INFO,
         )
@@ -439,7 +439,7 @@ class RollView(discord.ui.View):
         # Người chưa bấm
         for uid in self.player_infos:
             if uid not in shown:
-                lines.append(f"⏳ <@{uid}> ── *Đang chờ bấm nút...*")
+                lines.append(f"<:symbol_hour_glass:1537570149215899658> <@{uid}> ── *Đang chờ bấm nút...*")
 
         rolled_count = len(self.roll_order)
         total_count = len(self.player_infos)
@@ -480,7 +480,7 @@ class RollView(discord.ui.View):
 # VIEW: GIAI ĐOẠN 2.5 — SPECTATOR BETTING (KHÁN GIẢ CÁ CƯỢC)
 # ─────────────────────────────────────────────────────────────────────────────
 
-class SpectatorBetModal(discord.ui.Modal, title="💰 Đặt Cược Khán Đài"):
+class SpectatorBetModal(discord.ui.Modal, title="<:symbol_money_2:1537567535229050970> Đặt Cược Khán Đài"):
     """Modal nhập số tiền cược của khán giả."""
 
     bet_input = discord.ui.TextInput(
@@ -582,11 +582,11 @@ class SpectatorBetView(discord.ui.View):
 
     def build_embed(self) -> discord.Embed:
         embed = discord.Embed(
-            title="🎟️ Khán Đài Đỏ Đen — Ai Thắng Ai Thua?",
+            title="<:items_00_lottery_ticket:1537566232897650811> Khán Đài Đỏ Đen — Ai Thắng Ai Thua?",
             description=(
                 "Người ngoài sàn cũng có thể hốt bạc!\n"
                 "Chọn 1 hoặc nhiều tay chơi bạn nghĩ sẽ thắng, rồi đặt cược vào.\n"
-                + ("🔒 **Đã chốt sổ!**" if self._closed.is_set() else f"⏳ Chốt sổ: <t:{self.end_time}:R>")
+                + ("<:symbol_locked:1537566880066441296> **Đã chốt sổ!**" if self._closed.is_set() else f"<:symbol_hour_glass:1537570149215899658> Chốt sổ: <t:{self.end_time}:R>")
             ),
             color=COLOR_INFO,
         )
@@ -614,7 +614,7 @@ class SpectatorBetView(discord.ui.View):
         )
         if total_spec_pool > 0:
             embed.add_field(
-                name="💰 Tổng Pot Khán Đài",
+                name="<:symbol_money_2:1537567535229050970> Tổng Pot Khán Đài",
                 value=f"**{total_spec_pool:,}** điểm",
                 inline=False,
             )
@@ -987,7 +987,7 @@ class MultiDice(commands.Cog):
         for idx, (info, prize) in enumerate(winners_data):
             m_icon = medals[idx] if idx < len(medals) else f"#{idx+1}"
             win_lines.append(f"{m_icon} <@{info.user_id}> ẵm trọn **+{prize:,}**")
-        embed.add_field(name="🎉 Bảng Vàng Phong Thần", value="\n".join(win_lines), inline=False)
+        embed.add_field(name="<:symbol_confetti:1537570146313306183> Bảng Vàng Phong Thần", value="\n".join(win_lines), inline=False)
 
         # Người thua
         if losers:
@@ -1027,7 +1027,7 @@ class MultiDice(commands.Cog):
                             profit = payout - sum(sb.values())
                             sign = "+" if profit >= 0 else ""
                             spec_lines.append(
-                                f"🎟️ <@{spec_uid}> cược **{bet_on_winner:,}** → nhận **{payout:,}** ({sign}{profit:,})"
+                                f"<:items_00_lottery_ticket:1537566232897650811> <@{spec_uid}> cược **{bet_on_winner:,}** → nhận **{payout:,}** ({sign}{profit:,})"
                             )
                         else:
                             lost = sum(sb.values())
@@ -1043,7 +1043,7 @@ class MultiDice(commands.Cog):
                     spec_header += f" — Odds: **{spec_odds:.2f}x**"
 
                 embed.add_field(
-                    name="🎟️ Khán Đài Đỏ Đen",
+                    name="<:items_00_lottery_ticket:1537566232897650811> Khán Đài Đỏ Đen",
                     value=spec_header + "\n" + "\n".join(spec_lines[:10]),
                     inline=False,
                 )

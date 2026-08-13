@@ -82,6 +82,7 @@ STATIC_VOICE_PERMS = {
         "perms": {
             "is_persistent": True,
             "can_lock": True,
+            "can_hide": True,
         }
     },
 

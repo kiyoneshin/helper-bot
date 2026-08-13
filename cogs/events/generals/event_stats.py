@@ -79,7 +79,7 @@ class TopLeaderboardView(discord.ui.View):
                 if self.current_page == "total":
                     leaderboard_text += f"{rank_icon} <@{user_id}>\n└ <:symbol_trophy:1537550568665649232> Tổng cày: **`{t_pts:,}`** điểm *(Dư: `{c_pts:,}`)*\n\n"
                 else:
-                    leaderboard_text += f"{rank_icon} <@{user_id}>\n└ 💰 Số dư: **`{c_pts:,}`** điểm *(Cày được: `{t_pts:,}`)*\n\n"
+                    leaderboard_text += f"{rank_icon} <@{user_id}>\n└ <:symbol_money_bag:1537567538097954896> Số dư: **`{c_pts:,}`** điểm *(Cày được: `{t_pts:,}`)*\n\n"
                     
             embed.description = desc_prefix + leaderboard_text
             

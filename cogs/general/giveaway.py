@@ -21,7 +21,7 @@ ALLOWED_CHANNELS = [
     1512147779328278559,
     1527590521567056024
 ]
-GA_EMOJI = "🎉"
+GA_EMOJI = "<:symbol_confetti:1537570146313306183>"
 
 def parse_time(time_str: str) -> int:
     matches = re.findall(r'(\d+)([smhd])', time_str.lower())
@@ -319,7 +319,7 @@ class GiveawaySession:
 
     async def _ask_text(self, prompt: str) -> str:
         if self.prompt_msg:
-            await self.prompt_msg.edit(content=f"**⏳ Đang cấu hình...**\n{prompt}", view=None)
+            await self.prompt_msg.edit(content=f"**<:symbol_hour_glass:1537570149215899658> Đang cấu hình...**\n{prompt}", view=None)
         
         while True:
             try:
@@ -338,7 +338,7 @@ class GiveawaySession:
 
     async def _ask_view(self, prompt: str, view: discord.ui.View):
         if self.prompt_msg:
-            await self.prompt_msg.edit(content=f"**⏳ Đang cấu hình...**\n{prompt}", view=view)
+            await self.prompt_msg.edit(content=f"**<:symbol_hour_glass:1537570149215899658> Đang cấu hình...**\n{prompt}", view=view)
         res = await view.wait()
         if res:
             if self.prompt_msg:
@@ -695,7 +695,7 @@ class GiveawayCog(commands.Cog):
                 if winners:
                     for w in winners:
                         await update_task_progress(self.bot, w.id, "giveaway_win", 1)
-                    await msg.reply(f"🎉 Chúc mừng {winner_mentions} đã trúng **{prize}**! (Host: <@{host_id}>)")
+                    await msg.reply(f"<:symbol_confetti:1537570146313306183> Chúc mừng {winner_mentions} đã trúng **{prize}**! (Host: <@{host_id}>)")
                 else:
                     await msg.reply(f"😔 Không có ai tham gia hợp lệ đợt này. (Host: <@{host_id}>)")
                     
@@ -842,7 +842,7 @@ class GiveawayCog(commands.Cog):
         
         # Bóc tách danh sách người đã thắng để loại trừ
         already_won_ids = set()
-        m_winners = re.search(r'🎉 \*\*Người thắng cuộc:\*\* (.+)', desc_str)
+        m_winners = re.search(r'<:symbol_confetti:1537570146313306183> \*\*Người thắng cuộc:\*\* (.+)', desc_str)
         if m_winners:
             mentions = re.findall(r'<@!?(\d+)>', m_winners.group(1))
             already_won_ids = {int(x) for x in mentions}
@@ -871,7 +871,7 @@ class GiveawayCog(commands.Cog):
         winner_mentions = ", ".join(w.mention for w in winners)
         prize = emb.title.replace("[ĐÃ KẾT THÚC] ", "") if emb.title else "Phần thưởng ẩn"
         
-        await msg.reply(f"🎉 **Reroll Kết Quả!** Chúc mừng {winner_mentions} đã may mắn nhận được **{prize}**!")
+        await msg.reply(f"<:symbol_confetti:1537570146313306183> **Reroll Kết Quả!** Chúc mừng {winner_mentions} đã may mắn nhận được **{prize}**!")
         await ctx.send("<:symbol_right:1536629912515903578> Đã reroll thành công!", ephemeral=True)
 
 

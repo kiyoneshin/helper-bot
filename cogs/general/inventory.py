@@ -242,7 +242,7 @@ def _build_farm_embed(
             
     if footer_parts:
         embed.add_field(
-            name="💰 Tổng Giá Trị Ước Tính",
+            name="<:symbol_money_2:1537567535229050970> Tổng Giá Trị Ước Tính",
             value=" | ".join(footer_parts),
             inline=False,
         )

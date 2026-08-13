@@ -87,7 +87,7 @@ class Rewards(commands.Cog):
                 next_timestamp = int(next_daily_time.timestamp())
                 
                 embed = discord.Embed(
-                    title="⏳ Khoan đã!",
+                    title="<:symbol_hour_glass:1537570149215899658> Khoan đã!",
                     description=f"Bạn đã nhận thưởng rồi. Hãy quay lại vào <t:{next_timestamp}:R> nhé!",
                     color=discord.Color.red()
                 )
@@ -190,7 +190,7 @@ class Rewards(commands.Cog):
                 next_timestamp = int(next_weekly_time.timestamp())
                 
                 embed = discord.Embed(
-                    title="⏳ Chưa đến ngày nhận lương!",
+                    title="<:symbol_hour_glass:1537570149215899658> Chưa đến ngày nhận lương!",
                     description=f"Lương tuần của bạn đang được duyệt. Hãy quay lại vào <t:{next_timestamp}:R> nhé!",
                     color=discord.Color.orange()
                 )
@@ -218,7 +218,7 @@ class Rewards(commands.Cog):
         embed = discord.Embed(
             title="💎 Lương Tuần Đã Về!",
             description=(
-                f"🎉 Chúc mừng bạn đã nhận **{total_reward:,}** điểm lương tuần!\n"
+                f"<:symbol_confetti:1537570146313306183> Chúc mừng bạn đã nhận **{total_reward:,}** điểm lương tuần!\n"
                 f"<:gift_00_symbol:1536003307011842099> **Thưởng Thêm:** 2x 📦 Lootbox Common\n"
                 f"Hãy dùng số điểm này thật khôn ngoan tại `{ctx.prefix}shop` hoặc các sòng bài Casino nhé!"
             ),

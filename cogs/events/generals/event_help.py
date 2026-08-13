@@ -195,7 +195,7 @@ CMD_DATA: dict[str, dict] = {
     },
     "xoso": {
         "name": "Xổ Số",
-        "emoji": "🎟️",
+        "emoji": "<:items_00_lottery_ticket:1537566232897650811>",
         "short": "Vé số kiến thiết. Đổi đời sau một đêm.",
         "aliases": ["lottery", "xs"],
         "cooldown": None,

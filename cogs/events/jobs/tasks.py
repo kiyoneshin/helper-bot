@@ -222,7 +222,7 @@ class TaskCog(commands.Cog):
             )
             
         if claimed_messages:
-            embed.add_field(name="🎉 Thưởng Vừa Nhận", value="\n".join(claimed_messages), inline=False)
+            embed.add_field(name="<:symbol_confetti:1537570146313306183> Thưởng Vừa Nhận", value="\n".join(claimed_messages), inline=False)
             
         embed.set_footer(text="Nhiệm vụ ngày reset lúc 00:00 | Nhiệm vụ tuần reset mỗi Thứ 2")
         await ctx.send(embed=embed)
@@ -286,7 +286,7 @@ class TaskCog(commands.Cog):
             )
             
         if claimed_messages:
-            embed.add_field(name="🎉 Thưởng Vừa Nhận", value="\n".join(claimed_messages), inline=False)
+            embed.add_field(name="<:symbol_confetti:1537570146313306183> Thưởng Vừa Nhận", value="\n".join(claimed_messages), inline=False)
             
         await ctx.send(embed=embed)
 

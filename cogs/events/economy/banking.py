@@ -108,7 +108,7 @@ class BankingCog(commands.Cog):
             new_debt = row["debt"]
             embed = discord.Embed(
                 title="🏦 Ngân Hàng Angelic — Giải Ngân",
-                description=f"<:symbol_right:1536629912515903578> Giao dịch vay nợ thành công!\n\n💸 **Số tiền vay:** `{amount:,.0f}` điểm\n💰 **Số dư mới:** `{new_pts:,.0f}` điểm\n📉 **Tổng nợ hiện tại:** `{new_debt:,.0f}` điểm",
+                description=f"<:symbol_right:1536629912515903578> Giao dịch vay nợ thành công!\n\n💸 **Số tiền vay:** `{amount:,.0f}` điểm\n<:symbol_money_2:1537567535229050970> **Số dư mới:** `{new_pts:,.0f}` điểm\n📉 **Tổng nợ hiện tại:** `{new_debt:,.0f}` điểm",
                 color=0x00FF00
             )
             embed.set_footer(text="Lãi suất vay là 1%/ngày. Hãy nhớ ktrano nhé!")
@@ -160,13 +160,13 @@ class BankingCog(commands.Cog):
             new_debt = row["debt"]
             is_locked = row["is_locked"]
             
-            desc = f"<:symbol_right:1536629912515903578> Đã thanh toán nợ thành công!\n\n💸 **Đã trả:** `{amount:,.0f}` điểm\n💰 **Ví còn:** `{new_pts:,.0f}` điểm\n📉 **Nợ còn lại:** `{new_debt:,.0f}` điểm"
+            desc = f"<:symbol_right:1536629912515903578> Đã thanh toán nợ thành công!\n\n💸 **Đã trả:** `{amount:,.0f}` điểm\n<:symbol_money_bag:1537567538097954896> **Ví còn:** `{new_pts:,.0f}` điểm\n📉 **Nợ còn lại:** `{new_debt:,.0f}` điểm"
             
             # Nếu trả nợ giúp (points - debt) >= 0 thì mở khóa (nếu đang bị khóa)
             if (new_pts - new_debt) >= 0:
                 await execute_db(self.bot, "UPDATE event_profiles SET is_locked = FALSE, negative_streak = 0 WHERE discord_id = $1", uid)
                 if is_locked:
-                    desc += "\n\n🔓 **Tài khoản của bạn đã được MỞ KHÓA vì đã thoát khỏi tình trạng âm vốn!**"
+                    desc += "\n\n<:symbol_unlocked:1537566882180366466> **Tài khoản của bạn đã được MỞ KHÓA vì đã thoát khỏi tình trạng âm vốn!**"
 
             embed = discord.Embed(
                 title="🏦 Ngân Hàng Angelic — Trả Nợ",

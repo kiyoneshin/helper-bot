@@ -27,7 +27,7 @@ ITEM_REGISTRY: dict[int, ItemEntry] = {
     0: {
         "id":          0,
         "name":        "Vé Xổ Số",
-        "icon":        "🎟️",
+        "icon":        "<:items_00_lottery_ticket:1537566232897650811>",
         "price":       50,
         "description": "Vé tham gia xổ số hàng ngày. Tối đa 200 vé/người.",
         "db_key":      "lottery_ticket",

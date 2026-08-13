@@ -42,7 +42,7 @@ CMD_DATA: dict[str, dict] = {
     },
     "thatu": {
         "name": "Thả Tù",
-        "emoji": "🔓",
+        "emoji": "<:symbol_unlocked:1537566882180366466>",
         "short": "Thả sớm một thành viên khỏi Chuồng Chó. Chỉ Admin/Owner.",
         "aliases": ["unjail", "free"],
         "cooldown": None,
@@ -134,7 +134,7 @@ CMD_DATA: dict[str, dict] = {
     # ── GIVEAWAY ──────────────────────────────────────────────────────────────
     "ga": {
         "name": "Tạo Giveaway",
-        "emoji": "🎉",
+        "emoji": "<:symbol_confetti:1537570146313306183>",
         "short": "Tạo Giveaway thường bằng menu tương tác.",
         "aliases": [],
         "cooldown": None,
@@ -330,7 +330,7 @@ CATEGORY_DATA: dict[str, dict] = {
         "cogs": ["EventHelpCog", "HelpCog"],
     },
     "Giveaway": {
-        "emoji": "🎉",
+        "emoji": "<:symbol_confetti:1537570146313306183>",
         "desc": "Quản lý và tạo hệ thống phát quà Giveaway.",
         "commands": ["ga", "fga", "gaban", "gaunban", "gabanlist", "gareroll"],
         "cogs": ["GiveawayCog"],

@@ -119,7 +119,7 @@ class BlackMarketCog(commands.Cog):
                 title="🌙 Chợ Đêm Đã Đóng Cửa",
                 description=(
                     "Chợ đêm chỉ hoạt động từ **00:00 đến 02:00 sáng** mỗi ngày.\n\n"
-                    f"⏳ Phiên chợ tiếp theo sẽ mở cửa vào lúc <t:{reset_ts}:F> (tức là **<t:{reset_ts}:R>**).\n"
+                    f"<:symbol_hour_glass:1537570149215899658> Phiên chợ tiếp theo sẽ mở cửa vào lúc <t:{reset_ts}:F> (tức là **<t:{reset_ts}:R>**).\n"
                     "Hãy trở lại sau nhé!"
                 ),
                 color=0x2b2d31,
