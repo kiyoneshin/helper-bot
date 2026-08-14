@@ -198,7 +198,7 @@ class SettingsSelect(discord.ui.Select):
     def __init__(self, channel: discord.VoiceChannel, bot: commands.Bot, owner_id: int):
         self.channel, self.bot, self.owner_id = channel, bot, owner_id
         super().__init__(
-            placeholder="<:symbol_machine:1536297937498275850> Đổi cài đặt kênh...",
+            placeholder="Đổi cài đặt kênh...",
             row=0,
             options=[
                 discord.SelectOption(label="Đổi tên kênh",            description="Đặt tên riêng cho phòng", emoji="✏️", value="rename"),

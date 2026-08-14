@@ -1,6 +1,8 @@
 import random
 import logging
 import asyncio
+import json
+import os
 from typing import Optional
 
 import discord
@@ -13,6 +15,16 @@ log = logging.getLogger("Blackjack")
 COLOR_WIN  = 0x00FF00
 COLOR_LOSE = 0xFF0000
 COLOR_TIE  = 0xFFFF00
+
+EMOJI_FILE = "card_emojis.json"
+CARD_EMOJIS = {}
+
+if os.path.exists(EMOJI_FILE):
+    try:
+        with open(EMOJI_FILE, "r") as f:
+            CARD_EMOJIS = json.load(f)
+    except Exception:
+        pass
 
 class Card:
     def __init__(self, suit: str, value: int):
@@ -40,12 +52,17 @@ def get_card_emoji(bot: commands.Bot, card: Optional[Card], hidden: bool = False
     else:
         emoji_name = f"gambling_cards_{card.suit}_{card.value:02d}"
         
+    # 1. Kiểm tra trong bộ nhớ file JSON (ưu tiên cao nhất vì chính xác 100% ID)
+    if emoji_name in CARD_EMOJIS:
+        return f"<:{emoji_name}:{CARD_EMOJIS[emoji_name]}>"
+        
+    # 2. Nếu chưa có trong file, thử tìm bằng bot.emojis
     emoji = discord.utils.get(bot.emojis, name=emoji_name)
     if emoji:
         return str(emoji)
         
-    # Fallback to emoji format so it either renders or shows the raw name
-    return f"<{emoji_name}:1537799969300287579>" if hidden else f":{emoji_name}:"
+    # Nếu vẫn thất bại, trả về dạng text tạm để người dùng biết là thiếu
+    return f"[:{emoji_name}:]"
 
 def _lock_user(bot: commands.Bot, user_id: int):
     active_players: set = getattr(bot, 'active_players', set())
@@ -246,7 +263,7 @@ class BlackjackGame(commands.Cog):
     @commands.hybrid_command(name="blackjack", aliases=["bj"], description="Chơi Blackjack (Xì Dách) với Nhà cái thông minh")
     async def blackjack_cmd(self, ctx: commands.Context, bet_amount: Optional[str] = None):
         if bet_amount is None:
-            await ctx.send("<:symbol_wrong:1536629915598848072> **Lỗi!** Bạn chưa nhập số tiền cược.\n*Ví dụ:* `/bj 10k` hoặc `!bj all`")
+            await ctx.send("<:symbol_wrong:1536629915598848072> **Lỗi!** Bạn chưa nhập số tiền cược.\n*Ví dụ:* `{prefix}bj 10k` hoặc `{prefix}bj all`")
             return
 
         if await _check_busy(self.bot, ctx):
@@ -303,6 +320,6 @@ class BlackjackGame(commands.Cog):
         embed = view.build_embed(show_dealer=False)
         msg = await ctx.send(embed=embed, view=view)
         view.message = msg
-
+        
 async def setup(bot: commands.Bot):
     await bot.add_cog(BlackjackGame(bot))
