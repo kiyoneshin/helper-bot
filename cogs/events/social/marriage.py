@@ -500,7 +500,7 @@ class MarriageCog(commands.Cog):
                 f"{ctx.author.mention} <a:symbol_star_pink:1537739287947382864> <@{partner_id}>\n"
                 f"💞 **Love Points:** {float(mar['intimacy_points']):,.1f} Pts\n"
                 f"💎 **Married day:** {marry_date_str}\n"
-                f"*** Been married for {days} days\n\n"
+                f"*Been married for {days} days*\n\n"
             )
             
             pet_buff_str = ""
@@ -523,7 +523,7 @@ class MarriageCog(commands.Cog):
                 
                 pet_name_db = mar.get("pet_name")
                 display_name = f"{pet_name_db}" if pet_name_db else f"{base_type}"
-                desc += f"<a:pet_dog:1535998186450194432> **Thú Cưng Chung**: {display_name} {icon} (Lv.{pet_level} - {stage})\n\n"
+                desc += f"**Thú Cưng Chung**: {display_name} {icon}\n (Lv.{pet_level} - {stage})\n\n"
                 
                 if base_type == "Chó": pet_buff_str = f"+{min(pet_level * 1, 50)}% DTM nhận được"
                 elif base_type == "Mèo": pet_buff_str = f"-{min(pet_level * 0.75, 45):.2f}% thời gian hồi chiêu"
