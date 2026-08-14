@@ -805,7 +805,7 @@ class _CommandSelect(discord.ui.Select):
                 ))
 
         super().__init__(
-            placeholder="📖 Chọn lệnh để xem chi tiết...",
+            placeholder="Chọn lệnh để xem chi tiết...",
             options=options,
             min_values=1,
             max_values=1,

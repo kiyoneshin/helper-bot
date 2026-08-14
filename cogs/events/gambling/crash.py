@@ -335,7 +335,7 @@ def _build_lobby_embed(
         lines = [f"<@{uid}> → **{bet:,}** điểm" for uid, bet in players_bets.items()]
         embed.add_field(name="<:symbol_boards:1536007665153474681> Bảng Cược", value="\n".join(lines), inline=False)
 
-    embed.set_footer(text="Angelic Casino • Crash 🚀")
+    embed.set_footer(text="Angelic Casino • Crash")
     return embed
 
 
@@ -557,7 +557,7 @@ class CrashGame(commands.Cog):
                 description="Ế ẩm quá không ai chịu cược. Giải tán sòng!",
                 color=0x808080,
             )
-            empty_embed.set_footer(text="Angelic Casino • Crash 🚀")
+            empty_embed.set_footer(text="Angelic Casino • Crash")
             try:
                 await lobby_msg.edit(embed=empty_embed, view=None)
             except discord.HTTPException:

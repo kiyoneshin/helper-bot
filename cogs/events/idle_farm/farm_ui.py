@@ -220,7 +220,7 @@ def build_farm_embed(author: discord.Member | discord.User, farm_data: Dict[str,
             
         elif status == STATUS_WITHERED:
             grid_cells.append(f"[{i}] 🥀")
-            crop_details.append(f"**Ô {i}**: {seed_icon} {seed_name} — **Đã héo** 🥀")
+            crop_details.append(f"**Ô {i}**: {seed_icon} {seed_name} — **Đã héo**")
             
         else:
             grid_cells.append(f"[{i}] <:symbol_question_mark:1537739280640647178>")

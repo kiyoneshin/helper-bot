@@ -155,7 +155,7 @@ def _build_race_track(positions: dict[str, int], finished: Optional[list[str]] =
         name_part = f"{emoji} {label:<6}"
         if pos >= TRACK_LENGTH:
             bar = "=" * TRACK_LENGTH + " 🏁"
-            crown = " <:symbol_trophy:1537550568665649232>" if (finished and key in finished) else " <:symbol_right:1536629912515903578>"
+            crown = "🏆" if (finished and key in finished) else "✅"
             row = f"{name_part}: {bar}{crown}"
         else:
             bar = "=" * pos + "🦆" + "-" * (TRACK_LENGTH - pos)
