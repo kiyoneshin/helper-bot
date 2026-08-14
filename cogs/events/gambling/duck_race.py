@@ -55,7 +55,7 @@ DUCK_EMOJI: dict[str, str] = {
     "do":   "🔴",
     "xanh": "🔵",
     "vang": "🟡",
-    "hong": "<a:symbol_star_pink:1537739287947382864>",
+    "hong": "💖",
     "yon":  "🦆",
 }
 
