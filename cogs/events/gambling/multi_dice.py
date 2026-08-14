@@ -163,7 +163,7 @@ class InviteView(discord.ui.View):
         bet: int,
         bot: commands.Bot,
     ) -> None:
-        super().__init__(timeout=float(INVITE_TIMEOUT))
+        super().__init__(timeout=60.0))
         self.host = host
         self.invitees = invitees
         self.bet = bet
@@ -299,7 +299,7 @@ class PublicLobbyView(discord.ui.View):
         bet: int,
         bot: commands.Bot,
     ) -> None:
-        super().__init__(timeout=float(LOBBY_TIMEOUT))
+        super().__init__(timeout=60.0))
         self.bet = bet
         self.bot = bot
         self.players: list[discord.Member] = list(initial_players)
@@ -397,7 +397,7 @@ class RollView(discord.ui.View):
     """Giai đoạn 3: Mỗi người bấm nút lắc; animation hiện ra dần."""
 
     def __init__(self, player_infos: dict[int, PlayerInfo]) -> None:
-        super().__init__(timeout=float(ROLL_TIMEOUT + REVEAL_DELAY + 10))
+        super().__init__(timeout=60.0))
         self.player_infos = player_infos
         self.roll_order: list[int] = []  # user_id theo thứ tự bấm
         self.message: Optional[discord.Message] = None
@@ -548,7 +548,7 @@ class SpectatorBetView(discord.ui.View):
         bet: int,
         bot: commands.Bot,
     ) -> None:
-        super().__init__(timeout=float(SPECTATOR_TIMEOUT))
+        super().__init__(timeout=60.0))
         self.final_players = final_players
         self.player_ids: set[int] = {m.id for m in final_players}
         self.player_names: dict[int, str] = {m.id: m.display_name for m in final_players}

@@ -13,7 +13,7 @@ from typing import Any, Optional
 
 class TopLeaderboardView(discord.ui.View):
     def __init__(self, bot: commands.Bot, guild: Optional[discord.Guild], current_page: str = "total"):
-        super().__init__(timeout=60.0)
+        super().__init__(timeout=120.0)
         self.bot = bot
         self.guild = guild
         self.current_page = current_page
@@ -100,6 +100,18 @@ class TopLeaderboardView(discord.ui.View):
         self._update_buttons()
         emb = await self._generate_embed()
         await interaction.response.edit_message(embed=emb, view=self)
+
+
+
+    async def on_timeout(self) -> None:
+        for child in getattr(self, "children", []):
+            if hasattr(child, "disabled"):
+                child.disabled = True
+        try:
+            if hasattr(self, "message") and getattr(self, "message", None):
+                await self.message.edit(view=self)
+        except Exception:
+            pass
 
 
 class EventStatsCog(commands.Cog):

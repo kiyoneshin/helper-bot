@@ -174,13 +174,25 @@ class ChannelSelect(discord.ui.Select):
 
 class ChannelSelectView(discord.ui.View):
     def __init__(self, guild: discord.Guild):
-        super().__init__(timeout=60.0)
+        super().__init__(timeout=120.0)
         self.selected_channel_id: Optional[int] = None
         self.add_item(ChannelSelect(guild))
 
+
+    async def on_timeout(self) -> None:
+        for child in getattr(self, "children", []):
+            if hasattr(child, "disabled"):
+                child.disabled = True
+        try:
+            if hasattr(self, "message") and getattr(self, "message", None):
+                await self.message.edit(view=self)
+        except Exception:
+            pass
+
+
 class ConfirmView(discord.ui.View):
     def __init__(self):
-        super().__init__(timeout=60.0)
+        super().__init__(timeout=120.0)
         self.action = None
 
     @discord.ui.button(label="Xác nhận", style=discord.ButtonStyle.success)
@@ -201,9 +213,21 @@ class ConfirmView(discord.ui.View):
         self.stop()
         await interaction.response.defer()
 
+
+    async def on_timeout(self) -> None:
+        for child in getattr(self, "children", []):
+            if hasattr(child, "disabled"):
+                child.disabled = True
+        try:
+            if hasattr(self, "message") and getattr(self, "message", None):
+                await self.message.edit(view=self)
+        except Exception:
+            pass
+
+
 class EditSelectView(discord.ui.View):
     def __init__(self, is_fga: bool):
-        super().__init__(timeout=60.0)
+        super().__init__(timeout=120.0)
         self.step_idx = -1
         opts = [
             discord.SelectOption(label="1. Thời gian", value="1"),
@@ -229,9 +253,21 @@ class EditSelectView(discord.ui.View):
         self.stop()
         await interaction.response.defer()
 
+
+    async def on_timeout(self) -> None:
+        for child in getattr(self, "children", []):
+            if hasattr(child, "disabled"):
+                child.disabled = True
+        try:
+            if hasattr(self, "message") and getattr(self, "message", None):
+                await self.message.edit(view=self)
+        except Exception:
+            pass
+
+
 class YesNoView(discord.ui.View):
     def __init__(self):
-        super().__init__(timeout=60.0)
+        super().__init__(timeout=120.0)
         self.value = False
 
     @discord.ui.button(label="Có", style=discord.ButtonStyle.danger)
@@ -245,6 +281,18 @@ class YesNoView(discord.ui.View):
         self.value = False
         self.stop()
         await interaction.response.defer()
+
+
+
+    async def on_timeout(self) -> None:
+        for child in getattr(self, "children", []):
+            if hasattr(child, "disabled"):
+                child.disabled = True
+        try:
+            if hasattr(self, "message") and getattr(self, "message", None):
+                await self.message.edit(view=self)
+        except Exception:
+            pass
 
 
 class GiveawaySession:

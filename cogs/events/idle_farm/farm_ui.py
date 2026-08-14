@@ -12,7 +12,7 @@ class FarmView(discord.ui.View):
     """View chính của Nông Trại chứa các nút tương tác."""
     
     def __init__(self, bot: commands.Bot, user_id: str, author: discord.Member | discord.User, farm_data: Dict[str, Any]):
-        super().__init__(timeout=120)
+        super().__init__(timeout=120.0)
         self.bot = bot
         self.user_id = user_id
         self.author = author
@@ -90,9 +90,21 @@ class FarmView(discord.ui.View):
         await interaction.response.edit_message(embed=new_embed, view=new_view)
 
 
+
+    async def on_timeout(self) -> None:
+        for child in getattr(self, "children", []):
+            if hasattr(child, "disabled"):
+                child.disabled = True
+        try:
+            if hasattr(self, "message") and getattr(self, "message", None):
+                await self.message.edit(view=self)
+        except Exception:
+            pass
+
+
 class PickConfirmView(discord.ui.View):
     def __init__(self, bot: commands.Bot, user_id: str, slot_ids: list[int], author: discord.Member | discord.User):
-        super().__init__(timeout=60)
+        super().__init__(timeout=120.0)
         self.bot = bot
         self.user_id = user_id
         self.slot_ids = slot_ids
@@ -115,6 +127,18 @@ class PickConfirmView(discord.ui.View):
         if str(interaction.user.id) != self.user_id:
             return await interaction.response.send_message("<:symbol_ban:1537546960003801319> Không có quyền!", ephemeral=True)
         await interaction.response.edit_message(content="Đã hủy thao tác cuốc bỏ cây.", view=None)
+
+
+
+    async def on_timeout(self) -> None:
+        for child in getattr(self, "children", []):
+            if hasattr(child, "disabled"):
+                child.disabled = True
+        try:
+            if hasattr(self, "message") and getattr(self, "message", None):
+                await self.message.edit(view=self)
+        except Exception:
+            pass
 
 
 def build_farm_embed(author: discord.Member | discord.User, farm_data: Dict[str, Any]) -> discord.Embed:

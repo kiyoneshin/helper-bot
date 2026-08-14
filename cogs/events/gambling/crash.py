@@ -180,7 +180,7 @@ class CrashLobbyView(discord.ui.View):
         players_bets: dict[int, int],
         lobby_message_ref: list,
     ) -> None:
-        super().__init__(timeout=float(LOBBY_DURATION))
+        super().__init__(timeout=60.0)
         self.bot               = bot
         self.players_bets      = players_bets
         self.lobby_message_ref = lobby_message_ref
@@ -223,7 +223,7 @@ class CrashActiveView(discord.ui.View):
         players_bets: dict[int, int],
         cashed_out: dict[int, int],
     ) -> None:
-        super().__init__(timeout=None)
+        super().__init__(timeout=60.0)
         self.bot               = bot
         self.players_bets      = players_bets
         self.cashed_out        = cashed_out
@@ -627,14 +627,10 @@ class CrashGame(commands.Cog):
 
         try:
             await game_message.edit(embed=crash_embed, view=active_view)
-            if game_message.channel.id == 1498711783223853101:
-                await game_message.delete(delay=30.0)
         except discord.HTTPException as exc:
             log.warning("Khong the update Crash Embed cuoi: %s", exc)
             try:
                 msg = await game_message.channel.send(embed=crash_embed)
-                if msg.channel.id == 1498711783223853101:
-                    await msg.delete(delay=30.0)
             except discord.HTTPException:
                 pass
 

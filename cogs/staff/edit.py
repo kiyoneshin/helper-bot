@@ -156,7 +156,7 @@ class EditTagsModal(discord.ui.Modal, title="Chỉnh Sửa Tags Giới Thiệu")
 class StaffPhotoEditView(discord.ui.View):
     # ĐÃ SỬA LỖI PYLANCE: Đổi parent_view từ discord.ui.View thành Any
     def __init__(self, bot: Any, user_data: dict, author_id: int, parent_view: Any):
-        super().__init__(timeout=300)
+        super().__init__(timeout=120.0)
         self.bot = bot
         self.user_data = user_data
         self.author_id = author_id
@@ -349,7 +349,7 @@ class StaffPhotoEditView(discord.ui.View):
 
 class StaffEditView(discord.ui.View):
     def __init__(self, bot: Any, user_data: dict, author_id: int):
-        super().__init__(timeout=300)
+        super().__init__(timeout=120.0)
         self.bot = bot
         self.user_data = dict(user_data)
         self.author_id = author_id

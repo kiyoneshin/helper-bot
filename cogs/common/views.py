@@ -217,7 +217,7 @@ class VoteModal(discord.ui.Modal, title="Đánh Giá Nhân Sự"):
 class BaseStaffView(discord.ui.View):
     """View cơ sở chứa tính năng khóa người dùng và on_timeout chung"""
     def __init__(self, author_id: int, timeout: float = 300):
-        super().__init__(timeout=timeout)
+        super().__init__(timeout=120.0)
         self.author_id = author_id
         self.message: Optional[discord.Message] = None
 

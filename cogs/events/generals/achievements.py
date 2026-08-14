@@ -153,7 +153,7 @@ class ClaimButton(discord.ui.Button):
 
 class AchView(discord.ui.View):
     def __init__(self, author: discord.Member | discord.User, category: str, stats: dict, claimed: list):
-        super().__init__(timeout=120)
+        super().__init__(timeout=120.0)
         
         select = AchCategorySelect(author)
         # Set default value in dropdown based on category
@@ -163,6 +163,18 @@ class AchView(discord.ui.View):
                 
         self.add_item(select)
         self.add_item(ClaimButton(author, category, stats, claimed))
+
+
+
+    async def on_timeout(self) -> None:
+        for child in getattr(self, "children", []):
+            if hasattr(child, "disabled"):
+                child.disabled = True
+        try:
+            if hasattr(self, "message") and getattr(self, "message", None):
+                await self.message.edit(view=self)
+        except Exception:
+            pass
 
 
 async def build_ach_summary_embed(bot, user, stats: dict, claimed: list) -> discord.Embed:

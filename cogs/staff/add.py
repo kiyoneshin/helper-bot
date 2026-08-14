@@ -134,7 +134,7 @@ class AddPhotoAfterRegisterView(discord.ui.View):
     """View đơn giản chứa 1 nút Thêm ảnh mới, xuất hiện ngay sau khi đăng ký thành công."""
 
     def __init__(self, bot: Any, author_id: int):
-        super().__init__(timeout=120)
+        super().__init__(timeout=120.0)
         self.bot = bot
         self.author_id = author_id
         self.message: discord.Message | None = None
@@ -305,7 +305,7 @@ class _OpenRegisterModalView(discord.ui.View):
   Cần thiết vì prefix command không thể gọi send_modal trực tiếp."""
 
     def __init__(self, role_name: str, author_id: int):
-        super().__init__(timeout=120)
+        super().__init__(timeout=120.0)
         self.role_name = role_name
         self.author_id = author_id
         self.message: discord.Message | None = None

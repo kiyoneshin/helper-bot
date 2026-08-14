@@ -106,7 +106,7 @@ class FishCatchView(discord.ui.View):
     """
 
     def __init__(self):
-        super().__init__(timeout=CATCH_WINDOW_SECONDS)
+        super().__init__(timeout=120.0)
         self.caught: bool = False
         self.reaction_time: float = CATCH_WINDOW_SECONDS  # worst-case nếu timeout
         self.start_time: float = time.time()
@@ -130,7 +130,7 @@ class FishingView(discord.ui.View):
     """View chứa nút Câu Cá."""
 
     def __init__(self, bot: commands.Bot, user_id: str, author: discord.Member | discord.User, stamina: int, farm_data: Dict[str, Any], regen_interval: int = 18):
-        super().__init__(timeout=300)
+        super().__init__(timeout=120.0)
         self.bot = bot
         self.user_id = user_id
         self.author = author

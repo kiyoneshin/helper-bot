@@ -146,7 +146,7 @@ def build_upgrade_embed(author: discord.Member | discord.User, farm_data: Dict[s
 
 class UpgradeView(discord.ui.View):
     def __init__(self, bot: commands.Bot, user_id: str, author: discord.Member | discord.User, farm_data: Dict[str, Any]):
-        super().__init__(timeout=120)
+        super().__init__(timeout=120.0)
         self.bot     = bot
         self.user_id = user_id
         self.author  = author
@@ -369,3 +369,15 @@ class UpgradeView(discord.ui.View):
 
         new_name = AXE_NAMES.get(axe_level + 1, f"Lv{axe_level + 1}")
         await self.update_view(interaction, f"Nâng cấp thành công! Rìu mới: **{new_name}**")
+
+
+    async def on_timeout(self) -> None:
+        for child in getattr(self, "children", []):
+            if hasattr(child, "disabled"):
+                child.disabled = True
+        try:
+            if hasattr(self, "message") and getattr(self, "message", None):
+                await self.message.edit(view=self)
+        except Exception:
+            pass
+

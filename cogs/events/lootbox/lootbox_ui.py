@@ -302,7 +302,7 @@ class LootboxInfoSelect(discord.ui.Select):
 
 class LootboxInfoView(discord.ui.View):
     def __init__(self, author_id: int):
-        super().__init__(timeout=120)
+        super().__init__(timeout=120.0)
         self.add_item(LootboxInfoSelect(author_id))
 
     async def on_timeout(self):

@@ -278,7 +278,7 @@ class PermissionsSelect(discord.ui.Select):
             await interaction.response.send_modal(PermitModal(self.channel))
 
         elif val == "reject":
-            v = discord.ui.View(timeout=30); v.add_item(RejectSelect(self.channel))
+            v = discord.ui.View(timeout=120.0); v.add_item(RejectSelect(self.channel))
             await interaction.response.send_message("Chọn người cần đuổi:", view=v, ephemeral=True)
 
         elif val == "transfer":
@@ -286,7 +286,7 @@ class PermissionsSelect(discord.ui.Select):
                 return await interaction.response.send_message("<:symbol_ban:1537546960003801319> Chưa có quyền chuyển chủ phòng!", ephemeral=True)
             if await _check_perm(pool, interaction.guild.id, interaction.user, "is_persistent") if pool else False:
                 return await interaction.response.send_message("<:symbol_wrong:1536629915598848072> Kênh cá nhân (Level 50+) không thể chuyển nhượng!", ephemeral=True)
-            v = discord.ui.View(timeout=30); v.add_item(TransferSelect(self.channel, self.bot))
+            v = discord.ui.View(timeout=120.0); v.add_item(TransferSelect(self.channel, self.bot))
             await interaction.response.send_message("Chọn người nhận quyền chủ:", view=v, ephemeral=True)
 
 # ==============================================================================
@@ -295,7 +295,7 @@ class PermissionsSelect(discord.ui.Select):
 
 class VoiceControlView(discord.ui.View):
     def __init__(self, channel: discord.VoiceChannel, owner_id: int, bot: commands.Bot):
-        super().__init__(timeout=None)
+        super().__init__(timeout=120.0)
         self.channel, self.owner_id, self.bot = channel, owner_id, bot
         self.add_item(SettingsSelect(channel, bot, owner_id))
         self.add_item(PermissionsSelect(channel, bot, owner_id))
@@ -391,6 +391,18 @@ class VoiceControlView(discord.ui.View):
                 await pool.execute("DELETE FROM active_voice_channels WHERE channel_id=$1", self.channel.id)
         except discord.NotFound:
             pass
+
+
+    async def on_timeout(self) -> None:
+        for child in getattr(self, "children", []):
+            if hasattr(child, "disabled"):
+                child.disabled = True
+        try:
+            if hasattr(self, "message") and getattr(self, "message", None):
+                await self.message.edit(view=self)
+        except Exception:
+            pass
+
 
 # ==============================================================================
 # EMBED

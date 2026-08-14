@@ -50,7 +50,7 @@ class FastHandButton(discord.ui.Button):
 
 class FastHandView(discord.ui.View):
     def __init__(self, bot, core_cog, target_id: str, target_name: str):
-        super().__init__(timeout=30.0)
+        super().__init__(timeout=60.0)
         self.bot = bot
         self.core_cog = core_cog
         self.target_id = target_id

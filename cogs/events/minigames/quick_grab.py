@@ -9,7 +9,7 @@ log = logging.getLogger("QuickGrab")
 
 class QuickGrabView(discord.ui.View):
     def __init__(self, bot, core_cog):
-        super().__init__(timeout=30.0)
+        super().__init__(timeout=60.0)
         self.bot = bot
         self.core_cog = core_cog
         self.winners = []  # Danh sách những người đã nhặt

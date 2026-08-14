@@ -205,7 +205,7 @@ async def get_or_create_couple_task(bot, mar: dict) -> dict:
 
 class MarryConfirmView(discord.ui.View):
     def __init__(self, bot, proposer: discord.Member, target: discord.Member, ring_id: int):
-        super().__init__(timeout=120)
+        super().__init__(timeout=120.0)
         self.bot = bot
         self.proposer = proposer
         self.target = target
@@ -304,9 +304,21 @@ class MarryConfirmView(discord.ui.View):
         await interaction.edit_original_response(embed=emb, view=self)
         self.stop()
 
+
+    async def on_timeout(self) -> None:
+        for child in getattr(self, "children", []):
+            if hasattr(child, "disabled"):
+                child.disabled = True
+        try:
+            if hasattr(self, "message") and getattr(self, "message", None):
+                await self.message.edit(view=self)
+        except Exception:
+            pass
+
+
 class PetAdoptConfirmView(discord.ui.View):
     def __init__(self, bot, author, mar_id, new_base_name):
-        super().__init__(timeout=60)
+        super().__init__(timeout=120.0)
         self.bot = bot
         self.author = author
         self.mar_id = mar_id
@@ -337,9 +349,21 @@ class PetAdoptConfirmView(discord.ui.View):
         await interaction.response.edit_message(content="Đã hủy bỏ việc đổi thú cưng. Bé cưng cũ vẫn ở lại với bạn!", view=self)
 
 
+
+    async def on_timeout(self) -> None:
+        for child in getattr(self, "children", []):
+            if hasattr(child, "disabled"):
+                child.disabled = True
+        try:
+            if hasattr(self, "message") and getattr(self, "message", None):
+                await self.message.edit(view=self)
+        except Exception:
+            pass
+
+
 class DivorceConfirmView(discord.ui.View):
     def __init__(self, bot, proposer: discord.Member | discord.User, target_id: int, mar_id: int, user1_id: str, user2_id: str):
-        super().__init__(timeout=120)
+        super().__init__(timeout=120.0)
         self.bot = bot
         self.proposer = proposer
         self.target_id = target_id
@@ -395,6 +419,18 @@ class DivorceConfirmView(discord.ui.View):
         await interaction.response.edit_message(embed=emb, view=self)
         self.stop()
 
+
+
+
+    async def on_timeout(self) -> None:
+        for child in getattr(self, "children", []):
+            if hasattr(child, "disabled"):
+                child.disabled = True
+        try:
+            if hasattr(self, "message") and getattr(self, "message", None):
+                await self.message.edit(view=self)
+        except Exception:
+            pass
 
 
 class MarriageCog(commands.Cog):

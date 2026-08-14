@@ -65,7 +65,7 @@ def build_woodcutting_embed(author: discord.Member | discord.User, stamina: int,
 
 class WoodcuttingView(discord.ui.View):
     def __init__(self, bot: commands.Bot, user_id: str, author: discord.Member | discord.User, stamina: int, farm_data: Dict[str, Any] = None, regen_interval: int = 18):
-        super().__init__(timeout=300)
+        super().__init__(timeout=120.0)
         self.bot = bot
         self.user_id = user_id
         self.author = author
@@ -126,3 +126,15 @@ class WoodcuttingView(discord.ui.View):
             await update_event_stat(self.bot, self.user_id, "rare_wood_chopped", quantity)
         
         await interaction.followup.send(f"<:symbol_00_woodcutting:1536007697491558491> Bạn vung rìu và nhận được: {loot_info['icon']} **{quantity}x {loot_info['name']}**{double_str}!{lb_msg}", ephemeral=True)
+
+
+    async def on_timeout(self) -> None:
+        for child in getattr(self, "children", []):
+            if hasattr(child, "disabled"):
+                child.disabled = True
+        try:
+            if hasattr(self, "message") and getattr(self, "message", None):
+                await self.message.edit(view=self)
+        except Exception:
+            pass
+

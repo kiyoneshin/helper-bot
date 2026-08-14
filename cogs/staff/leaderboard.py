@@ -352,7 +352,7 @@ class DateSelectionView(discord.ui.View):
     """
 
     def __init__(self, leaderboard_view: "LeaderboardView"):
-        super().__init__(timeout=300)
+        super().__init__(timeout=120.0)
         self.leaderboard_view = leaderboard_view
 
         # 4 biến trạng thái HOÀN TOÀN ĐỘC LẬP
@@ -661,7 +661,7 @@ class LeaderboardView(discord.ui.View):
     """View Bảng Xếp Hạng: 2 menu lọc + nút mở panel chọn khoảng ngày 2 bước."""
 
     def __init__(self, dt_start: datetime, dt_end: datetime, current_sort: str = "rating", current_role: str = "all"):
-        super().__init__(timeout=300)
+        super().__init__(timeout=120.0)
         self.message: Optional[discord.Message] = None
         self.dt_start = dt_start
         self.dt_end = dt_end

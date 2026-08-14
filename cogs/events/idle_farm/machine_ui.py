@@ -303,8 +303,20 @@ class RecipeSelect(discord.ui.Select):
 
 class RecipeSelectView(discord.ui.View):
     def __init__(self, select_obj: discord.ui.Select):
-        super().__init__(timeout=60)
+        super().__init__(timeout=120.0)
         self.add_item(select_obj)
+
+
+    async def on_timeout(self) -> None:
+        for child in getattr(self, "children", []):
+            if hasattr(child, "disabled"):
+                child.disabled = True
+        try:
+            if hasattr(self, "message") and getattr(self, "message", None):
+                await self.message.edit(view=self)
+        except Exception:
+            pass
+
 
 # ---------------------------------------------------------------------------
 # SELECT MENU — PHÁ DỠ MÁY (ephemeral)
@@ -388,8 +400,20 @@ class DemolishSelect(discord.ui.Select):
 
 class DemolishSelectView(discord.ui.View):
     def __init__(self, select_obj: discord.ui.Select):
-        super().__init__(timeout=60)
+        super().__init__(timeout=120.0)
         self.add_item(select_obj)
+
+
+    async def on_timeout(self) -> None:
+        for child in getattr(self, "children", []):
+            if hasattr(child, "disabled"):
+                child.disabled = True
+        try:
+            if hasattr(self, "message") and getattr(self, "message", None):
+                await self.message.edit(view=self)
+        except Exception:
+            pass
+
 
 class DemolishConfirmView(discord.ui.View):
     def __init__(
@@ -401,7 +425,7 @@ class DemolishConfirmView(discord.ui.View):
         machine_id: str,
         index: int
     ):
-        super().__init__(timeout=60)
+        super().__init__(timeout=120.0)
         self.bot = bot
         self.user_id = user_id
         self.author = author
@@ -442,6 +466,18 @@ class DemolishConfirmView(discord.ui.View):
         
         await interaction.response.edit_message(content=msg, view=None)
 
+
+    async def on_timeout(self) -> None:
+        for child in getattr(self, "children", []):
+            if hasattr(child, "disabled"):
+                child.disabled = True
+        try:
+            if hasattr(self, "message") and getattr(self, "message", None):
+                await self.message.edit(view=self)
+        except Exception:
+            pass
+
+
 # ---------------------------------------------------------------------------
 # MAIN VIEW — 4 NÚT
 # ---------------------------------------------------------------------------
@@ -454,7 +490,7 @@ class MachineView(discord.ui.View):
         farm_data: Dict[str, Any],
         author: discord.Member | discord.User,
     ):
-        super().__init__(timeout=180)
+        super().__init__(timeout=120.0)
         self.bot = bot
         self.user_id = user_id
         self.author = author
@@ -630,6 +666,18 @@ class MachineView(discord.ui.View):
             view=view,
             ephemeral=True
         )
+
+
+    async def on_timeout(self) -> None:
+        for child in getattr(self, "children", []):
+            if hasattr(child, "disabled"):
+                child.disabled = True
+        try:
+            if hasattr(self, "message") and getattr(self, "message", None):
+                await self.message.edit(view=self)
+        except Exception:
+            pass
+
 
 async def send_machine_panel(ctx: commands.Context) -> None:
     user_id = str(ctx.author.id)

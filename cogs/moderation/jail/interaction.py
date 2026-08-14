@@ -34,7 +34,7 @@ BAIL_PER_COUNT = 500   # mỗi lần lau dọn còn lại = 500 điểm thêm
 
 class BailConfirmView(discord.ui.View):
     def __init__(self, author_id: int):
-        super().__init__(timeout=60.0)
+        super().__init__(timeout=120.0)
         self.author_id = author_id
         self.value = None
 
@@ -55,6 +55,18 @@ class BailConfirmView(discord.ui.View):
         self.value = False
         self.stop()
         await interaction.response.defer()
+
+
+
+    async def on_timeout(self) -> None:
+        for child in getattr(self, "children", []):
+            if hasattr(child, "disabled"):
+                child.disabled = True
+        try:
+            if hasattr(self, "message") and getattr(self, "message", None):
+                await self.message.edit(view=self)
+        except Exception:
+            pass
 
 
 class JailInteraction(commands.Cog):

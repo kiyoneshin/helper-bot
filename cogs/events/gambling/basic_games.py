@@ -115,7 +115,7 @@ class BetConfirmView(discord.ui.View):
     callback_fn: coroutine(ctx, bet) — được gọi khi người chơi xác nhận.
     """
     def __init__(self, ctx: commands.Context, bet: int, callback_fn):
-        super().__init__(timeout=20.0)
+        super().__init__(timeout=60.0)
         self.ctx = ctx
         self.bet = bet
         self.callback_fn = callback_fn
@@ -458,7 +458,7 @@ class BasicGames(commands.Cog):
 
 class CupsView(discord.ui.View):
     def __init__(self, bot: commands.Bot, author: discord.Member | discord.User, bet: int, balance: int):
-        super().__init__(timeout=30.0)
+        super().__init__(timeout=60.0)
         self.bot = bot
         self.author = author
         self.bet = bet
@@ -516,9 +516,6 @@ class CupsView(discord.ui.View):
         embed.add_field(name="<:symbol_credit_card:1536308433693712404> Số dư mới", value=f"{new_balance:,}", inline=False)
         embed.set_footer(text="Angelic Casino • Cups 🌸")
         await interaction.response.edit_message(embed=embed, view=self)
-        if interaction.message and interaction.message.channel.id == 1498711783223853101:
-            if interaction.message:
-                await interaction.message.delete(delay=30.0)
 
     @discord.ui.button(label="1", emoji="<:gambling_cup:1536019568697409667>", style=discord.ButtonStyle.secondary)
     async def cup_1(self, interaction: discord.Interaction, button: discord.ui.Button):
@@ -549,9 +546,6 @@ class CupsView(discord.ui.View):
                 embed.set_author(name=f"{self.author.display_name} — cups", icon_url=self.author.display_avatar.url)
                 embed.set_footer(text="Angelic Casino • Cups 🌸")
                 await self.message.edit(embed=embed, view=self)
-                if self.message.channel.id == 1498711783223853101:
-                    if self.message:
-                        await self.message.delete(delay=30.0)
             except discord.HTTPException:
                 pass
 
@@ -602,9 +596,6 @@ class RouletteView(discord.ui.View):
             embed.add_field(name="<:symbol_credit_card:1536308433693712404> Số dư mới", value=f"{self.balance:,}", inline=False)
             embed.set_footer(text="Angelic Casino • Cò Quay Tử Thần 🌸")
             await interaction.response.edit_message(embed=embed, view=self)
-            if interaction.message and interaction.message.channel.id == 1498711783223853101:
-                if interaction.message:
-                    await interaction.message.delete(delay=30.0)
         else:
             self.survived_rounds += 1
             if self.survived_rounds == 5:
@@ -686,15 +677,9 @@ class RouletteView(discord.ui.View):
 
         if interaction:
             await interaction.response.edit_message(embed=embed, view=self)
-            if interaction.message and interaction.message.channel.id == 1498711783223853101:
-                if interaction.message:
-                    await interaction.message.delete(delay=30.0)
         elif self.message:
             try:
                 await self.message.edit(embed=embed, view=self)
-                if self.message.channel.id == 1498711783223853101:
-                    if self.message:
-                        await self.message.delete(delay=30.0)
             except discord.HTTPException:
                 pass
 
