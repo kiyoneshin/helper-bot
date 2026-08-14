@@ -16,17 +16,64 @@ COLOR_WIN  = 0x00FF00
 COLOR_LOSE = 0xFF0000
 COLOR_TIE  = 0xFFFF00
 
-CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
-ROOT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(CURRENT_DIR)))
-EMOJI_FILE = os.path.join(ROOT_DIR, "card_emojis.json")
-CARD_EMOJIS = {}
-
-if os.path.exists(EMOJI_FILE):
-    try:
-        with open(EMOJI_FILE, "r", encoding="utf-8") as f:
-            CARD_EMOJIS = json.load(f)
-    except Exception as e:
-        log.error(f"Failed to load emojis: {e}")
+CARD_EMOJIS = {
+    "symbol_wrong": "1536629915598848072",
+    "gambling_cards_clubs_01": "1537799002425262180",
+    "gambling_cards_clubs_02": "1537799004254117989",
+    "gambling_cards_clubs_03": "1537799007613485096",
+    "gambling_cards_clubs_04": "1537799010528796772",
+    "gambling_cards_clubs_05": "1537799013267411075",
+    "gambling_cards_clubs_06": "1537799015947833385",
+    "gambling_cards_clubs_07": "1537799017797394484",
+    "gambling_cards_clubs_08": "1537799019659788399",
+    "gambling_cards_clubs_09": "1537799021865869414",
+    "gambling_cards_clubs_10": "1537799024227254313",
+    "gambling_cards_clubs_11": "1537799026026483756",
+    "gambling_cards_clubs_12": "1537799028228755527",
+    "gambling_cards_clubs_13": "1537799030325907606",
+    "gambling_cards_diamonds_01": "1537799032196300800",
+    "gambling_cards_diamonds_02": "1537799034276814989",
+    "gambling_cards_diamonds_03": "1537799035937882193",
+    "gambling_cards_diamonds_04": "1537799037963739256",
+    "gambling_cards_diamonds_05": "1537799049577758843",
+    "gambling_cards_diamonds_06": "1537799052362518630",
+    "gambling_cards_diamonds_07": "1537799054312869940",
+    "gambling_cards_diamonds_08": "1537799056166883430",
+    "gambling_cards_diamonds_09": "1537799058163367936",
+    "gambling_cards_diamonds_10": "1537799060189225050",
+    "gambling_cards_diamonds_11": "1537799062290567291",
+    "gambling_cards_diamonds_12": "1537799064270274641",
+    "gambling_cards_diamonds_13": "1537799066396786688",
+    "gambling_cards_hearts_01": "1537799068418310217",
+    "gambling_cards_hearts_02": "1537799070939353138",
+    "gambling_cards_hearts_03": "1537799073401278527",
+    "gambling_cards_hearts_04": "1537799075154501663",
+    "gambling_cards_hearts_05": "1537799077675401286",
+    "gambling_cards_hearts_06": "1537799079503859804",
+    "gambling_cards_hearts_07": "1537799081231917066",
+    "gambling_cards_hearts_08": "1537799083769602049",
+    "gambling_cards_hearts_09": "1537799085728211006",
+    "gambling_cards_hearts_10": "1537799087519432785",
+    "gambling_cards_hearts_11": "1537799089616322610",
+    "gambling_cards_hearts_12": "1537799091613073480",
+    "gambling_cards_hearts_13": "1537799093756231851",
+    "gambling_cards_spades_01": "1537799095685484606",
+    "gambling_cards_spades_02": "1537799097527042229",
+    "gambling_cards_spades_03": "1537799099330601032",
+    "gambling_cards_spades_04": "1537799101733675139",
+    "gambling_cards_spades_05": "1537799103663046686",
+    "gambling_cards_spades_06": "1537799105961791488",
+    "gambling_cards_spades_07": "1537799108155150396",
+    "gambling_cards_spades_08": "1537799110382460989",
+    "gambling_cards_spades_09": "1537799112395595826",
+    "gambling_cards_spades_10": "1537799114518040586",
+    "gambling_cards_spades_11": "1537799116904472686",
+    "gambling_cards_spades_12": "1537799119127445606",
+    "gambling_cards_spades_13": "1537799121803673736",
+    "gambling_cards_x_basic_01": "1537799969300287579",
+    "gambling_cards_x_basic_02": "1537799972072853554",
+    "gambling_drawing_card": "1537803737421062205"
+}
 
 class Card:
     def __init__(self, suit: str, value: int):
@@ -132,7 +179,7 @@ class BlackjackView(discord.ui.View):
 
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
         if interaction.user.id != self.author.id:
-            await interaction.response.send_message("<:symbol_ban:1537546960003801319> Nín thở ngồi xem thôi, không phải sòng của màk", ephemeral=True)
+            await interaction.response.send_message("<:symbol_ban:1537546960003801319> Nín thở ngồi xem thôi, không phải sòng của m", ephemeral=True)
             return False
         return True
 
@@ -265,7 +312,7 @@ class BlackjackGame(commands.Cog):
     @commands.hybrid_command(name="blackjack", aliases=["bj"], description="Chơi Blackjack (Xì Dách) với Nhà cái thông minh")
     async def blackjack_cmd(self, ctx: commands.Context, bet_amount: Optional[str] = None):
         if bet_amount is None:
-            await ctx.send("<:symbol_wrong:1536629915598848072> **Lỗi!** Bạn chưa nhập số tiền cược.\n*Ví dụ:* `{prefix}bj 10k` hoặc `{prefix}bj all`")
+            await ctx.send(f"<:symbol_wrong:1536629915598848072> **Lỗi!** Bạn chưa nhập số tiền cược.\n*Ví dụ:* `{ctx.clean_prefix}bj 10k` hoặc `{ctx.clean_prefix}bj all`")
             return
 
         if await _check_busy(self.bot, ctx):
