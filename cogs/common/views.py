@@ -47,8 +47,8 @@ def _get_rating_label(user_data: dict) -> str:
     scores = [entry["score"] for entry in normalized.values() if isinstance(entry, dict)]
     if scores:
         avg = round(sum(scores) / len(scores), 1)
-        return f"<a:symbol_star_yellow:1537739289834553385> {avg}/5.0 ({len(scores)} lượt)"
-    return "<a:symbol_star_yellow:1537739289834553385> Chưa có điểm"
+        return f"{avg}/5.0 ({len(scores)} lượt)"
+    return "Chưa có điểm"
 
 
 async def _fetch_fresh_user_data(bot: Any, discord_id: str) -> Optional[dict]:
@@ -97,7 +97,7 @@ def _build_staff_list_embed(role_name: str, staff_records: list) -> discord.Embe
 # MODAL ĐÁNH GIÁ
 # =====================================================================
 
-class VoteModal(discord.ui.Modal, title="<a:symbol_star_yellow:1537739289834553385> Đánh Giá Nhân Sự"):
+class VoteModal(discord.ui.Modal, title="Đánh Giá Nhân Sự"):
     """Form bật lên để người dùng nhập điểm số và bài đánh giá"""
     score_input = discord.ui.TextInput(
         label="Nhập điểm đánh giá (Từ 0 đến 5):",
@@ -266,7 +266,7 @@ class RoleSelectDropdown(discord.ui.Select):
     def __init__(self, author_id: int):
         self.author_id = author_id
         options = [
-            discord.SelectOption(label="Owner", description="Xem danh sách Chủ sở hữu server", emoji="<:lb_06_godly:1535552639834783764>", value="owner"),
+            discord.SelectOption(label="Owner", description="Xem danh sách Chủ sở hữu server", emoji="👑", value="owner"),
             discord.SelectOption(label="Admin", description="Xem danh sách Quản trị viên", emoji="🛡️", value="admin"),
             discord.SelectOption(label="Recep", description="Xem danh sách Lễ tân chào đón", emoji="🌸", value="recep")
         ]
