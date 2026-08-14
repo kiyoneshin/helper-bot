@@ -9,7 +9,7 @@ from cogs.common.db import add_event_points
 log = logging.getLogger("DiceLobby")
 
 # Có thể thay đổi ID emoji động tùy thích
-ROLLING_EMOJI = "<a:Yb_tt_xucxac:1234567890>"
+ROLLING_EMOJI = "<a:Yb_tt_xucxac:1526669924448079955>"
 
 class DiceLobbyView(discord.ui.View):
     def __init__(self):
