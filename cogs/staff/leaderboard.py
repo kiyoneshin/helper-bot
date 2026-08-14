@@ -614,7 +614,7 @@ class DateSelectionView(discord.ui.View):
 class SortSelect(discord.ui.Select):
     def __init__(self, current_sort: str = "rating"):
         options = [
-            discord.SelectOption(label="Xếp theo Điểm Đánh Giá", emoji="<a:symbol_star_yellow:1537739289834553385>", description="Rating cao nhất lên đầu", value="rating", emoji="<a:symbol_star_yellow:1537739289834553385>", default=(current_sort == "rating")),
+            discord.SelectOption(label="Xếp theo Điểm Đánh Giá", emoji="<a:symbol_star_yellow:1537739289834553385>", description="Rating cao nhất lên đầu", value="rating", default=(current_sort == "rating")),
             discord.SelectOption(label="✉️ Xếp theo Tin Nhắn Đã Gửi", description="Gửi nhiều tin nhắn nhất lên đầu", value="messages", emoji="✉️", default=(current_sort == "messages")),
             discord.SelectOption(label="💬 Xếp theo Tin Nhắn Được Phản Hồi", description="Nhận nhiều reply nhất lên đầu", value="replies", emoji="💬", default=(current_sort == "replies")),
         ]
