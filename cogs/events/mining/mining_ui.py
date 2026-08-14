@@ -15,6 +15,8 @@ from .mining_config import (
 )
 from cogs.events.idle_farm.farm_db import get_farm_data, save_farm_data, get_and_update_stamina
 from cogs.common.db import update_event_stat
+from cogs.events.skills.skills_config import MINING_XP
+from cogs.events.skills.skills_db import add_skill_xp, get_skills, get_skill_bonus
 
 
 # ---------------------------------------------------------------------------
@@ -136,8 +138,11 @@ class MiningView(discord.ui.View):
         farm_data["stamina"] = new_stamina
         pickaxe_level = int(farm_data.get("pickaxe_level", 1))
 
-        # 3. Random quặng theo cấp cuốc
-        loot_id, quantity = get_mining_loot(pickaxe_level, boosts)
+        # 3. Lấy skill data để tính bonus
+        skills_data = await get_skills(self.bot, self.user_id)
+
+        # 3. Random quặng theo cấp cuốc + skill bonus
+        loot_id, quantity = get_mining_loot(pickaxe_level, boosts, skills_data)
         loot_info = MINING_LOOT[loot_id]
 
         inventory = farm_data.setdefault("inventory", {})
@@ -157,6 +162,10 @@ class MiningView(discord.ui.View):
         await update_event_stat(self.bot, self.user_id, "mines", quantity)
         await update_event_stat(self.bot, self.user_id, "ore_mined", quantity)
 
+        # Cộng Skill XP theo độ hiếm của quặng vừa đào
+        xp_gained = MINING_XP.get(loot_id, 1) * quantity
+        levelup_info = await add_skill_xp(self.bot, self.user_id, "mining", xp_gained)
+
         # 5. Cập nhật UI
         if new_stamina < stamina_cost:
             button.disabled = True
@@ -164,9 +173,18 @@ class MiningView(discord.ui.View):
         double_str = " **(x2 Cuốc Sắt!)**" if quantity == 2 else ""
         new_embed = build_mining_embed(self.author, new_stamina, farm_data)
         await interaction.response.edit_message(embed=new_embed, view=self)
+
+        levelup_str = ""
+        if levelup_info:
+            from cogs.events.skills.skills_config import SKILLS
+            sname = SKILLS["mining"]["name"]
+            levelup_str = f"\n⬆️ **Kỹ Năng {sname} lên Cấp {levelup_info['new_level']}!**"
+            if levelup_info.get("needs_profession"):
+                levelup_str += f" Hãy dùng `skill mining` để chọn Nghề Nghiệp!"
+
         await interaction.followup.send(
             f"<:symbol_00_mining:1536007694920585356> Bạn vừa đào được **{quantity}x {loot_info['icon']} {loot_info['name']}**!{double_str}{lb_msg}\n"
-            f"*(Thể lực: {new_stamina}/{MAX_STAMINA})*",
+            f"*(Thể lực: {new_stamina}/{MAX_STAMINA} | +{xp_gained} Mining XP)*{levelup_str}",
             ephemeral=True,
         )
 

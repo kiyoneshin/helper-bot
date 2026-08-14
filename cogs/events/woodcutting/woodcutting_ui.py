@@ -10,6 +10,8 @@ from cogs.events.idle_farm.farm_db import get_farm_data, save_farm_data, get_and
 from cogs.events.mining.mining_config import MAX_STAMINA
 from cogs.events.mining.mining_ui import _mins_to_full
 from cogs.common.db import update_event_stat
+from cogs.events.skills.skills_config import CHOPPING_XP
+from cogs.events.skills.skills_db import add_skill_xp, get_skills, has_profession
 
 def _stamina_bar(stamina: int, bar_len: int = 10) -> str:
     filled = round(stamina / MAX_STAMINA * bar_len)
@@ -80,9 +82,13 @@ class WoodcuttingView(discord.ui.View):
 
         from cogs.common.db import get_active_boosts
         boosts = await get_active_boosts(self.bot, self.user_id)
+        skills_data = await get_skills(self.bot, self.user_id)
         stamina_cost = STAMINA_PER_CHOP
         if "stamina_discount" in boosts:
             stamina_cost = max(1, stamina_cost - int(boosts["stamina_discount"]["value"]))
+        # Gatherer profession: giảm thêm 1 thể lực
+        if has_profession(skills_data, "chopping", "gatherer"):
+            stamina_cost = max(1, stamina_cost - 1)
             
         current_stamina = await get_and_update_stamina(self.bot, self.user_id)
         if current_stamina < stamina_cost:
@@ -97,7 +103,7 @@ class WoodcuttingView(discord.ui.View):
         farm_data["stamina"] = new_stamina
         axe_level = int(farm_data.get("axe_level", 1))
 
-        loot_id, quantity = get_woodcutting_loot(axe_level, boosts)
+        loot_id, quantity = get_woodcutting_loot(axe_level, boosts, skills_data)
         loot_info = WOODCUTTING_LOOT[loot_id]
 
         inventory = farm_data.setdefault("inventory", {})
@@ -115,17 +121,33 @@ class WoodcuttingView(discord.ui.View):
 
         await save_farm_data(self.bot, self.user_id, farm_data)
 
+        # Skill XP
+        xp_gained = CHOPPING_XP.get(loot_id, 1) * quantity
+        levelup_info = await add_skill_xp(self.bot, self.user_id, "chopping", xp_gained)
+
         self.chop_btn.disabled = (new_stamina < stamina_cost)
         double_str = " **(x2 Rìu Sắt!)**" if quantity == 2 else ""
         new_embed = build_woodcutting_embed(self.author, new_stamina, farm_data, self.regen_interval)
         await interaction.response.edit_message(embed=new_embed, view=self)
-        
+
+        levelup_str = ""
+        if levelup_info:
+            from cogs.events.skills.skills_config import SKILLS
+            sname = SKILLS["chopping"]["name"]
+            levelup_str = f"\n⬆️ **Kỹ Năng {sname} lên Cấp {levelup_info['new_level']}!**"
+            if levelup_info.get("needs_profession"):
+                levelup_str += " Hãy dùng `skill chopping` để chọn Nghề Nghiệp!"
+
         await update_event_stat(self.bot, self.user_id, "works", 1)
         await update_event_stat(self.bot, self.user_id, "wood_chopped", quantity)
-        if loot_info.get("name") in ["Gỗ Sồi (Hiếm)", "Gỗ Gụ (Cực Hiếm)", "Gỗ Thần Trầm Hương (Huyền Thoại)"] or "rare" in loot_id or "epic" in loot_id or "legendary" in loot_id:
+        if loot_info.get("name") in ["Gỗ Sồi (Hiếm)", "Gỗ Gụ (Cực Hiếm)"] or "rare" in loot_id or "epic" in loot_id:
             await update_event_stat(self.bot, self.user_id, "rare_wood_chopped", quantity)
-        
-        await interaction.followup.send(f"<:symbol_00_woodcutting:1536007697491558491> Bạn vung rìu và nhận được: {loot_info['icon']} **{quantity}x {loot_info['name']}**{double_str}!{lb_msg}", ephemeral=True)
+
+        await interaction.followup.send(
+            f"<:symbol_00_woodcutting:1536007697491558491> Bạn vung rìu và nhận được: {loot_info['icon']} **{quantity}x {loot_info['name']}**{double_str}!{lb_msg}\n"
+            f"*(+{xp_gained} Chopping XP)*{levelup_str}",
+            ephemeral=True
+        )
 
 
     async def on_timeout(self) -> None:

@@ -233,6 +233,11 @@ async def init_all_tables(bot: Any) -> bool:
                     ALTER TABLE event_profiles ADD COLUMN IF NOT EXISTS lb_buy_cooldown JSONB DEFAULT '{}'::jsonb;
                 ''')
 
+                # ── HỆ THỐNG SKILLS ─────────────────────────────────────────────
+                await conn.execute('''
+                    ALTER TABLE event_profiles ADD COLUMN IF NOT EXISTS skills JSONB DEFAULT '{}'::jsonb;
+                ''')
+
             except Exception as e:
                 log.error(f"Lỗi ALTER TABLE event_profiles hoặc khởi tạo MARRIAGES: {e}", exc_info=True)
 

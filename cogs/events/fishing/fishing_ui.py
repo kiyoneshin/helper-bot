@@ -18,13 +18,15 @@ from discord.ext import commands
 from typing import Any, Dict
 
 from .fishing_config import (
-    STAMINA_PER_FISH, CATCH_WINDOW_SECONDS,
+    STAMINA_PER_FISH, CATCH_WINDOW_SECONDS, PERFECT_CATCH_THRESHOLD,
     WAIT_MIN_SECONDS, WAIT_MAX_SECONDS,
     FISH_LOOT, get_fishing_loot, get_fishing_display_weights
 )
 from cogs.events.idle_farm.farm_db import get_farm_data, save_farm_data, get_and_update_stamina
 from cogs.events.mining.mining_config import MAX_STAMINA
 from cogs.common.db import update_event_stat
+from cogs.events.skills.skills_config import FISHING_XP_BY_RANK
+from cogs.events.skills.skills_db import add_skill_xp, get_skills, has_profession
 
 
 # ---------------------------------------------------------------------------
@@ -168,9 +170,27 @@ class FishingView(discord.ui.View):
             await interaction.followup.send(f"<:symbol_wrong:1536629915598848072> Bạn đã **kiệt sức**! Hãy đợi thể lực hồi phục.\n*(Hồi đầy sau: {_mins_to_full(current_stamina, self.regen_interval)})*", ephemeral=True)
             return
 
+        # Lấy skills data để áp dụng bonus
+        skills_data = await get_skills(self.bot, self.user_id)
+
         farm_data = await get_farm_data(self.bot, self.user_id)
         farm_data["stamina"] = current_stamina - stamina_cost
         await save_farm_data(self.bot, self.user_id, farm_data)
+
+        # Trapper profession: mở rộng cửa sổ Perfect Catch
+        effective_perfect_threshold = PERFECT_CATCH_THRESHOLD if not hasattr(self, '_perfect_threshold') else self._perfect_threshold
+        from .fishing_config import PERFECT_CATCH_THRESHOLD
+        extra_window = 0.0
+        if has_profession(skills_data, "fishing", "trapper"):
+            extra_window += 1.5
+        if has_profession(skills_data, "fishing", "luremaster"):
+            extra_window += 0.5  # Luremaster bổ sung thêm khi đã có Trapper
+        effective_perfect_threshold = PERFECT_CATCH_THRESHOLD + extra_window
+
+        # Luremaster profession: mở rộng cửa sổ bắt cá
+        effective_catch_window = CATCH_WINDOW_SECONDS
+        if has_profession(skills_data, "fishing", "luremaster"):
+            effective_catch_window += 2.0
 
         # BƯỚC 4 — Chờ cá "cắn câu" (2–5 giây ngẫu nhiên)
         wait_time = random.uniform(WAIT_MIN_SECONDS, WAIT_MAX_SECONDS)
@@ -197,7 +217,7 @@ class FishingView(discord.ui.View):
             # RNG theo rod_level + reaction_time + boosts
             from cogs.common.db import get_active_boosts
             boosts = await get_active_boosts(self.bot, self.user_id)
-            fish_id, is_perfect = get_fishing_loot(rod_level, reaction_time, boosts)
+            fish_id, is_perfect = get_fishing_loot(rod_level, reaction_time, boosts, skills_data)
             fish_info = FISH_LOOT[fish_id]
 
             # 4. Lưu DB (cập nhật lootbox nếu có)
@@ -218,13 +238,24 @@ class FishingView(discord.ui.View):
             if fish_info.get("rare_rank", 0) >= 3:
                 await update_event_stat(self.bot, self.user_id, "legendary_fish", 1)
 
+            # Skill XP theo rare_rank
+            xp_gained = FISHING_XP_BY_RANK.get(fish_info.get("rare_rank", 0), 1)
+            levelup_info = await add_skill_xp(self.bot, self.user_id, "fishing", xp_gained)
+
             # Tạo thông báo kết quả
             prefix = "**Perfect Catch!** " if is_perfect else "<:symbol_confetti:1537570146313306183> **Tuyệt vời!** "
             rare_tag = " <:symbol_confetti:1537570146313306183><:symbol_confetti:1537570146313306183><:symbol_confetti:1537570146313306183> **CỰC HIẾM!**" if fish_info["rare_rank"] >= 3 else ""
             result_msg = (
                 f"{prefix}Bạn đã câu được **1x {fish_info['icon']} {fish_info['name']}**!{rare_tag}{lb_msg}\n"
-                f"*(Phản xạ: **{reaction_time}s**)*"
+                f"*(Phản xạ: **{reaction_time}s** | +{xp_gained} Fishing XP)*"
             )
+
+            if levelup_info:
+                from cogs.events.skills.skills_config import SKILLS
+                sname = SKILLS["fishing"]["name"]
+                result_msg += f"\n⬆️ **Kỹ Năng {sname} lên Cấp {levelup_info['new_level']}!**"
+                if levelup_info.get("needs_profession"):
+                    result_msg += " Hãy dùng `skill fishing` để chọn Nghề Nghiệp!"
 
             self.cast_btn.disabled = (new_stamina < stamina_cost)
             new_embed = build_fishing_embed(self.author, new_stamina, farm_data, self.regen_interval)

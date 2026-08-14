@@ -64,33 +64,59 @@ def get_mining_display_weights(pickaxe_level: int) -> dict[str, int]:
     return dict(zip(_LOOT_KEYS, weights))
 
 
-def get_mining_loot(pickaxe_level: int, food_boosts: dict = None) -> Tuple[str, int]:
+def get_mining_loot(pickaxe_level: int, food_boosts: dict = None, skills_data: dict = None) -> Tuple[str, int]:
     """
-    Random loot dựa theo cấp Cuốc.
+    Random loot dựa theo cấp Cuốc + Skill Mining passive bonus.
     Trả về (item_id, số_lượng).
     - Lv3 (Cuốc Sắt): 15% cơ hội nhận x2 quặng.
     - Lv4 (Cuốc Vàng): 20% cơ hội nhận x2 quặng.
+    - Miner profession: luôn +1 quặng.
+    - Prospector profession: +20% tỉ lệ quặng hiếm.
+    - Skill level: mỗi cấp Mining dịch chuyển 2% weight từ stone sang ore hiếm.
     """
     if food_boosts is None: food_boosts = {}
+    if skills_data is None: skills_data = {}
+
     weights = list(_WEIGHTS_BY_LEVEL.get(pickaxe_level, _WEIGHTS_BY_LEVEL[1]))
-    
-    # Cộng dồn tỉ lệ rare ore (từ copper, iron, gold, diamond)
+
+    # --- Skill per-level passive: Mỗi cấp Mining shift 2% từ stone sang rare ore ---
+    from cogs.events.skills.skills_db import get_skill_bonus, has_profession
+    mining_level = skills_data.get("mining", {}).get("level", 0)
+    rare_shift = min(mining_level * 2.0, 30.0)  # Tối đa shift 30%
+
+    if rare_shift > 0:
+        # Trừ từ stone (index 0), phân phối đều cho copper/iron/gold/diamond (index 2-5)
+        max_reduce = weights[0] * (rare_shift / 100)
+        per_rare = max_reduce / 4
+        weights[0] = max(weights[0] - int(max_reduce), 5)
+        for i in range(2, len(weights)):
+            weights[i] = int(weights[i] + per_rare)
+
+    # --- Food boosts ---
     rare_bonus = float(food_boosts.get("rare_ore", {}).get("value", 0))
     all_bonus = float(food_boosts.get("all_boost", {}).get("value", 0))
-    total_bonus = rare_bonus + all_bonus
-    
-    if total_bonus > 0:
-        # _LOOT_KEYS = ["stone", "coal", "copper_ore", "iron_ore", "gold_ore", "diamond"]
-        # Tăng trọng số của ore (từ index 2 trở đi)
+    total_food_bonus = rare_bonus + all_bonus
+    if total_food_bonus > 0:
         for i in range(2, len(weights)):
-            weights[i] += int(weights[i] * total_bonus)
-            
+            weights[i] += int(weights[i] * total_food_bonus)
+
+    # --- Prospector profession: +20% tỉ lệ quặng hiếm ---
+    if has_profession(skills_data, "mining", "prospector"):
+        for i in range(2, len(weights)):
+            weights[i] = int(weights[i] * 1.20)
+
     item_id: str = random.choices(_LOOT_KEYS, weights=weights, k=1)[0]
 
+    # --- Tính số lượng ---
     quantity = 1
     if pickaxe_level >= 4 and random.random() < 0.20:
-        quantity = 2  # Cuốc Vàng: 20% x2
+        quantity = 2
     elif pickaxe_level >= 3 and random.random() < 0.15:
-        quantity = 2  # Cuốc Sắt: 15% x2
+        quantity = 2
+
+    # --- Miner profession: luôn +1 ore ---
+    if has_profession(skills_data, "mining", "miner"):
+        quantity += 1
 
     return item_id, quantity
+

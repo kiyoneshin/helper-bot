@@ -52,27 +52,52 @@ def get_woodcutting_display_weights(axe_level: int) -> dict[str, int]:
     weights = _WEIGHTS_BY_LEVEL.get(axe_level, _WEIGHTS_BY_LEVEL[1])
     return dict(zip(_LOOT_KEYS, weights))
 
-def get_woodcutting_loot(axe_level: int, food_boosts: dict = None) -> tuple[str, int]:
+def get_woodcutting_loot(axe_level: int, food_boosts: dict = None, skills_data: dict = None) -> tuple[str, int]:
     if food_boosts is None: food_boosts = {}
-    
+    if skills_data is None: skills_data = {}
+
     weights = list(_WEIGHTS_BY_LEVEL.get(axe_level, _WEIGHTS_BY_LEVEL[1]))
-    
-    # Cộng dồn tỉ lệ rare wood
+
+    # --- Skill per-level: Mỗi cấp Chopping shift 2.5% từ twigs sang rare wood ---
+    from cogs.events.skills.skills_db import has_profession
+    chopping_level = skills_data.get("chopping", {}).get("level", 0)
+    rare_shift = min(chopping_level * 2.5, 40.0)
+    if rare_shift > 0:
+        max_reduce = weights[0] * (rare_shift / 100)
+        per_rare = max_reduce / 3
+        weights[0] = max(weights[0] - int(max_reduce), 5)
+        for i in range(2, len(weights)):
+            weights[i] = int(weights[i] + per_rare)
+
+    # --- Food boosts ---
     rare_bonus = float(food_boosts.get("rare_wood", {}).get("value", 0))
     all_bonus = float(food_boosts.get("all_boost", {}).get("value", 0))
     total_bonus = rare_bonus + all_bonus
-    
     if total_bonus > 0:
-        # Giả sử _LOOT_KEYS = ["twigs", "wood", "hardwood", "pine_resin", "sap"]
-        # hardwood là rare wood, ta tăng trọng số của nó lên (weights[2])
         if len(weights) > 2:
             weights[2] += int(weights[2] * total_bonus)
-            
+
+    # --- Lumberjack profession: +20% gỗ hiếm ---
+    if has_profession(skills_data, "chopping", "lumberjack"):
+        for i in range(2, len(weights)):
+            weights[i] = int(weights[i] * 1.20)
+
     chosen = random.choices(_LOOT_KEYS, weights=weights, k=1)[0]
     qty = 1
-    # Rìu Sắt Lv3: 20% nhân đôi Twigs/Wood; Rìu Vàng Lv4: 25%
+
+    # Double chance theo cấp rìu
     if axe_level >= 4 and chosen in ["twigs", "wood"] and random.random() < 0.25:
         qty = 2
     elif axe_level == 3 and chosen in ["twigs", "wood"] and random.random() < 0.20:
         qty = 2
+
+    # --- Forester profession: +1 gỗ ---
+    if has_profession(skills_data, "chopping", "forester"):
+        qty += 1
+
+    # --- Botanist profession: +1 gỗ bổ sung (cộng thêm với Forester) ---
+    if has_profession(skills_data, "chopping", "botanist"):
+        qty += 1
+
     return chosen, qty
+

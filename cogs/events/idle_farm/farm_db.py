@@ -171,7 +171,7 @@ async def save_farm_data(bot: commands.Bot, user_id: str, farm_data: Dict[str, A
     except Exception as e:
         log.error(f"Lỗi khi save_farm_data cho {user_id}: {e}")
 
-def calculate_crop_status(crop_data: Dict[str, Any], slot_id: str | None = None, crops: Dict[str, Any] | None = None) -> Tuple[str, int]:
+def calculate_crop_status(crop_data: Dict[str, Any], slot_id: str | None = None, crops: Dict[str, Any] | None = None, skill_grow_reduction: float = 0.0) -> Tuple[str, int]:
     """
     Tính toán trạng thái cây trồng (sync).
     Trả về (Trạng Thái, Thời Gian Còn Lại/Quá Hạn tính bằng giây).
@@ -225,8 +225,15 @@ def calculate_crop_status(crop_data: Dict[str, Any], slot_id: str | None = None,
             
             if has_star_neighbor:
                 required_time -= int(required_time * 0.20)
-            
+
+        # Farming Skill: Mỗi cấp giảm 1% thời gian cây chín (tối đa 10%)
+        # Agriculturist profession: giảm thêm 10%
+        if skill_grow_reduction and skill_grow_reduction > 0:
+            capped = min(skill_grow_reduction, 0.20)  # tối đa 20% giảm
+            required_time = max(60, int(required_time * (1.0 - capped)))
+
         if elapsed_time < required_time:
+
             remaining = required_time - elapsed_time
             return config.STATUS_GROWING, remaining
             
@@ -523,8 +530,23 @@ async def harvest_all(bot: commands.Bot, user_id: str) -> Tuple[bool, Dict[str, 
     total_harvested = sum(harvest_report.values())
     if total_harvested > 0:
         await update_event_stat(bot, user_id, "crops", total_harvested)
-        
+
+        # Farming Skill XP — tính theo loại hạt giống thu hoạch
+        try:
+            from cogs.events.skills.skills_config import FARMING_XP
+            from cogs.events.skills.skills_db import add_skill_xp
+            total_farm_xp = 0
+            for item_id, qty in harvest_report.items():
+                # item_id dạng "wheat_normal", "tomato_gold"...
+                seed_id = item_id.rsplit("_", 1)[0] if "_" in item_id else item_id
+                total_farm_xp += FARMING_XP.get(seed_id, 3) * qty
+            if total_farm_xp > 0:
+                await add_skill_xp(bot, user_id, "farming", total_farm_xp)
+        except Exception:
+            pass
+
     return True, {"harvested": harvest_report, "withered": withered_count}
+
 
 async def sell_inventory(bot: commands.Bot, user_id: str, category: str) -> int:
     """
