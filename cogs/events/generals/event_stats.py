@@ -131,7 +131,7 @@ class EventStatsCog(commands.Cog):
         elif p2w < 1.75:
             rank = "Đại Gia Tầm Trung 🌸"
         else:
-            rank = "Chúa Tể P2W 👑"
+            rank = "Chúa Tể P2W <:lb_06_godly:1535552639834783764>"
 
         embed = discord.Embed(
             title=f"<:symbol_credit_card:1536308433693712404> Ví Sự Kiện Angelic — {target.display_name}",
@@ -139,7 +139,7 @@ class EventStatsCog(commands.Cog):
             color=0xffb6c1
         )
         embed.add_field(
-            name="🪙 Số dư hiện tại",
+            name="<a:symbol_spinning_coin:1537739282452586536> Số dư hiện tại",
             value=f"`{points:,}` điểm",
             inline=True
         )
@@ -159,12 +159,12 @@ class EventStatsCog(commands.Cog):
         
         if debt > 0:
             embed.add_field(
-                name="💸 Nợ ngân hàng",
+                name="<:symbol_money_2:1537567535229050970> Nợ ngân hàng",
                 value=f"`{debt:,.0f}` điểm",
                 inline=False
             )
         embed.add_field(
-            name="🏦 Hạn mức vay",
+            name="<:symbol_bank:1537739277138530324> Hạn mức vay",
             value=f"`{max_loan:,.0f}` điểm",
             inline=True if debt == 0 else False
         )

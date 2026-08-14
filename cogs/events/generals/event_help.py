@@ -33,7 +33,7 @@ CMD_DATA: dict[str, dict] = {
     },
     "shop": {
         "name": "Cửa Hàng",
-        "emoji": "🛒",
+        "emoji": "<:icon_08_shop:1536025530728587384>",
         "short": "Xem danh sách vật phẩm trong cửa hàng.",
         "aliases": ["cuahang", "store"],
         "cooldown": None,
@@ -43,7 +43,7 @@ CMD_DATA: dict[str, dict] = {
     },
     "buy": {
         "name": "Mua Hàng",
-        "emoji": "🛍️",
+        "emoji": "<:icon_08_shop:1536025530728587384>",
         "short": "Mua vật phẩm từ cửa hàng.",
         "aliases": ["mua"],
         "cooldown": None,
@@ -54,7 +54,7 @@ CMD_DATA: dict[str, dict] = {
     # ── CASINO ────────────────────────────────────────────────────────────────
     "coinflip": {
         "name": "Coinflip",
-        "emoji": "🪙",
+        "emoji": "<a:symbol_spinning_coin:1537739282452586536>",
         "short": "Tung đồng xu H/T. Thắng x1.9, đứng xu Jackpot x5.0.",
         "aliases": ["cf"],
         "cooldown": None,
@@ -94,7 +94,7 @@ CMD_DATA: dict[str, dict] = {
     },
     "adopt": {
         "name": "Nhận Nuôi",
-        "emoji": "🐾",
+        "emoji": "<a:pet_dog:1535998186450194432>",
         "short": "Nhận nuôi thú cưng để tăng hiệu ứng tương tác.",
         "aliases": [],
         "cooldown": 0,
@@ -104,7 +104,7 @@ CMD_DATA: dict[str, dict] = {
     },
     "namepet": {
         "name": "Đặt Tên Thú",
-        "emoji": "🏷️",
+        "emoji": "<:icon_05_bm:1536017187243032736>",
         "short": "Đặt hoặc đổi tên riêng cho Thú cưng chung của hai bạn.",
         "aliases": [],
         "cooldown": 0,
@@ -255,7 +255,7 @@ CMD_DATA: dict[str, dict] = {
     },
     "shop": {
         "name": "Cửa Hàng",
-        "emoji": "🛒",
+        "emoji": "<:icon_08_shop:1536025530728587384>",
         "short": "Xem các vật phẩm có thể mua bằng điểm sự kiện.",
         "aliases": ["cuahang", "store"],
         "cooldown": None,
@@ -275,7 +275,7 @@ CMD_DATA: dict[str, dict] = {
     },
     "vayno": {
         "name": "Vay Nợ",
-        "emoji": "🏦",
+        "emoji": "<:symbol_bank:1537739277138530324>",
         "short": "Vay tiền từ ngân hàng dựa trên 50% điểm tích lũy của bạn.",
         "aliases": ["vay", "loan"],
         "cooldown": None,
@@ -296,7 +296,7 @@ CMD_DATA: dict[str, dict] = {
     },
     "plant": {
         "name": "Gieo Hạt Giống",
-        "emoji": "🌱",
+        "emoji": "<:symbol_plant:1536007706958237828>",
         "short": "Gieo hạt giống vào các ô đất chỉ định, hỗ trợ nhiều ô cùng lúc.",
         "aliases": ["gieo", "trong"],
         "cooldown": None,
@@ -331,7 +331,7 @@ CMD_DATA: dict[str, dict] = {
     # ── HỆ THỐNG TÌNH YÊU ──────────────────────────────────────────────────────
     "marry": {
         "name": "Kết Hôn",
-        "emoji": "💍",
+        "emoji": "<:icon_02_ring:1536017180951318528>",
         "short": "Cầu hôn một người để chính thức thành vợ chồng.",
         "aliases": ["kethon"],
         "cooldown": None,
@@ -381,7 +381,7 @@ CMD_DATA: dict[str, dict] = {
     },
     "upgradering": {
         "name": "Nâng Cấp Nhẫn",
-        "emoji": "✨",
+        "emoji": "<a:symbol_star_yellow:1537739289834553385>",
         "short": "Đổi sang Nhẫn cấp cao hơn để nhận thêm buff DTM và giảm Cooldown.",
         "aliases": ["nangcapnhan"],
         "cooldown": None,
@@ -420,9 +420,9 @@ CMD_DATA: dict[str, dict] = {
         "note": (
             "Bao gồm các lệnh sau (có thể dùng tên tiếng Anh hoặc alias tiếng Việt):\n"
             "- 🤜 **Bạo lực:** `{prefix}slap` (tat), `{prefix}punch` (dam), `{prefix}bite` (can), `{prefix}tickle` (choclet)\n"
-            "- 💖 **Nhẹ nhàng:** `{prefix}poke` (choc), `{prefix}pat` (xoadau), `{prefix}saylove` (noiyeu, iuem, iuanh)\n"
+            "- <a:symbol_star_pink:1537739287947382864> **Nhẹ nhàng:** `{prefix}poke` (choc), `{prefix}pat` (xoadau), `{prefix}saylove` (noiyeu, iuem, iuanh)\n"
             "- 🤗 **Ôm ấp:** `{prefix}hug` (om), `{prefix}cuddle` (auyem), `{prefix}snuggle` (nung, nũng)\n"
-            "- 💋 **Thân mật:** `{prefix}kiss` (hon, hun), `{prefix}lick` (liem), `{prefix}nom` (mam, cắn yêu), `{prefix}fuck`, `{prefix}dutdit` (seg)\n"
+            "- <a:symbol_star_pink:1537739287947382864> **Thân mật:** `{prefix}kiss` (hon, hun), `{prefix}lick` (liem), `{prefix}nom` (mam, cắn yêu), `{prefix}fuck`, `{prefix}dutdit` (seg)\n"
             "*(Lưu ý: Thời gian hồi chiêu và lượng DTM nhận được tùy thuộc vào độ 'thân mật' của hành động và cấp bậc Nhẫn cưới của bạn)*"
         ),
     },
@@ -468,7 +468,7 @@ CMD_DATA: dict[str, dict] = {
     },
     "boost": {
         "name": "Hiệu Ứng",
-        "emoji": "✨",
+        "emoji": "<a:symbol_star_yellow:1537739289834553385>",
         "short": "Kiểm tra các hiệu ứng (Boost) đang kích hoạt.",
         "aliases": ["boosts"],
         "cooldown": None,
@@ -498,7 +498,7 @@ CMD_DATA: dict[str, dict] = {
     },
     "work": {
         "name": "Làm Việc",
-        "emoji": "💼",
+        "emoji": "<:icon_07_inventory:1535664855300710422>",
         "short": "Gõ phím đi làm nhận lương. Có tỉ lệ gặp boss/trúng mánh.",
         "aliases": ["w"],
         "cooldown": "5p",
@@ -548,7 +548,7 @@ CMD_DATA: dict[str, dict] = {
     },
     "lb": {
         "name": "Lootbox",
-        "emoji": "📦",
+        "emoji": "<:lootbox:1535664857276489749>",
         "short": "Hệ thống hộp quà may mắn rớt từ hoạt động.",
         "aliases": ["lootbox"],
         "cooldown": None,
@@ -577,7 +577,7 @@ CATEGORY_DATA: dict[str, dict] = {
         "cogs": ["BasicGames", "CrashGame", "DuckRace", "Lottery", "MultiDice", "VietnamGames", "WheelSlots"],
     },
     "Kinh Tế & Kho Đồ": {
-        "emoji": "🛒",
+        "emoji": "<:icon_08_shop:1536025530728587384>",
         "desc": "Quản lý điểm, túi đồ, cửa hàng, cột mốc và ngân hàng.",
         "commands": ["inv", "use", "buy", "daily", "weekly", "point", "etop", "milestone", "shop", "black_market", "ebuy", "vayno", "trano", "lb", "pray"],
         "cogs": ["InventoryCog", "ShopCog", "EventShopCog", "Rewards", "MilestoneCog", "BlackMarketCog", "BankingCog", "LootboxCog"],
@@ -589,14 +589,14 @@ CATEGORY_DATA: dict[str, dict] = {
         "cogs": ["TasksCog", "WorkCog"],
     },
     "Ecosystem": {
-        "emoji": "🌿",
+        "emoji": "<:symbol_plant:1536007706958237828>",
         "title": "Hệ Sinh Thái (Ecosystem)",
         "desc": "Khu vực sinh thái tự nhiên. Bạn có thể trồng trọt, khai thác tài nguyên và chế biến chúng.",
         "commands": ["farm", "plant", "upgrade", "machine", "craft", "mine", "fish", "chop", "recipe", "cook", "boost"],
         "cogs": ["IdleFarmCog", "Mining", "Fishing", "Woodcutting", "Recipes", "CookingCog"],
     },
     "Hệ Thống Tình Yêu": {
-        "emoji": "💖",
+        "emoji": "<a:symbol_star_pink:1537739287947382864>",
         "desc": "Kết hôn, cày điểm thân mật và tương tác cùng người thương.",
         "commands": ["marry", "divorce", "coupletask", "gift", "promise", "setimage", "adopt", "pet", "namepet", "upgradering", "actions"],
         "cogs": ["MarriageCog"],
@@ -689,7 +689,7 @@ def build_detail_embed(cmd_key: str, prefix: str = "{prefix}") -> discord.Embed:
 
     if cmd.get("examples"):
         embed.add_field(
-            name="💡 Ví dụ",
+            name="<:symbol_light_bulb:1537739278765924422> Ví dụ",
             value="\n".join(f"`{e.replace('{prefix}', prefix)}`" for e in cmd["examples"]),
             inline=False,
         )

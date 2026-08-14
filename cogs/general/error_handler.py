@@ -28,7 +28,7 @@ class GlobalErrorHandler(commands.Cog):
 
         # Lỗi yêu cầu Owner
         if isinstance(error, commands.NotOwner):
-            return await ctx.send("👑 **Giới Hạn:** Lệnh này chỉ dành cho chủ sở hữu Bot (Owner)!")
+            return await ctx.send("<:lb_06_godly:1535552639834783764> **Giới Hạn:** Lệnh này chỉ dành cho chủ sở hữu Bot (Owner)!")
 
         # Lỗi yêu cầu chạy trong server (không dùng được trong DM)
         if isinstance(error, commands.NoPrivateMessage):

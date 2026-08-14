@@ -426,7 +426,7 @@ class EventCoreCog(commands.Cog):
             await ctx.send("Số điểm cần thu hồi phải lớn hơn 0!", ephemeral=True)
             return
 
-        msg = await ctx.send("🔄 Đang quét danh sách thành viên và thu hồi điểm, vui lòng chờ...")
+        msg = await ctx.send("Đang quét danh sách thành viên và thu hồi điểm, vui lòng chờ...")
         
         valid_members = [m for m in ctx.guild.members if not m.bot]
         member_ids = [str(m.id) for m in valid_members]
@@ -439,7 +439,7 @@ class EventCoreCog(commands.Cog):
         await execute_db(self.bot, sql_batch_take, val, member_ids)
 
         embed = discord.Embed(
-            title="🌪️ Thu Hồi Điểm Toàn Server Angelic ໒꒱",
+            title="Thu Hồi Điểm Toàn Server Angelic ໒꒱",
             description=(
                 f"**{ctx.author.display_name}** vừa thực hiện thu hồi điểm của toàn thể server!\n\n"
                 f"Mỗi thành viên bị trừ: **-{_fmt(val)} điểm** *(tối đa về 0)*\n"

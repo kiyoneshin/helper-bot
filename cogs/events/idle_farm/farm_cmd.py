@@ -46,7 +46,7 @@ class IdleFarmCog(commands.Cog):
     @commands.hybrid_command(
         name="plant",
         aliases=["gieo", "trong"],
-        description="🌱 Gieo hạt giống vào các ô đất chỉ định. VD: lệnh plant wheat 1 2 3",
+        description="<:symbol_plant:1536007706958237828> Gieo hạt giống vào các ô đất chỉ định. VD: lệnh plant wheat 1 2 3",
     )
     @check_not_locked()
     async def plant_cmd(self, ctx: commands.Context, seed_type: str, *, slots_str: str) -> None:
@@ -104,7 +104,7 @@ class IdleFarmCog(commands.Cog):
     @commands.hybrid_command(
         name="pick",
         aliases=["cuoc"],
-        description="🌾 Cuốc bỏ cây trồng ở các ô đất chỉ định. VD: lệnh pick 1 2 3",
+        description="<:farm_00_wheat:1535940025080881152> Cuốc bỏ cây trồng ở các ô đất chỉ định. VD: lệnh pick 1 2 3",
     )
     @check_not_locked()
     async def pick_cmd(self, ctx: commands.Context, *, slots_str: str) -> None:
@@ -257,7 +257,7 @@ class IdleFarmCog(commands.Cog):
         await save_farm_data(self.bot, user_id, farm_data)
 
         await ctx.send(
-            f"🏗️ {ctx.author.mention} Đã xây thành công **{quantity}x {machine['icon']} {machine['name']}**!\n"
+            f"<:symbol_machine:1536297937498275850> {ctx.author.mention} Đã xây thành công **{quantity}x {machine['icon']} {machine['name']}**!\n"
             f"*Dùng `{ctx.prefix}machine` để xem máy mới trong nhà và bắt đầu chế biến.*"
         )
 

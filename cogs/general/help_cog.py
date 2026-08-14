@@ -54,7 +54,7 @@ CMD_DATA: dict[str, dict] = {
     },
     "baolanh": {
         "name": "Bảo Lãnh",
-        "emoji": "💸",
+        "emoji": "<:symbol_money_2:1537567535229050970>",
         "short": "Trả tiền bảo lãnh để chuộc một tù nhân về.",
         "aliases": ["bail", "bl"],
         "cooldown": None,
@@ -176,7 +176,7 @@ CMD_DATA: dict[str, dict] = {
     },
     "gareroll": {
         "name": "Quay Lại Giveaway",
-        "emoji": "🔄",
+        "emoji": "<:symbol_reload:1536007679640600648>",
         "short": "Quay lại ngẫu nhiên để chọn người thắng mới.",
         "aliases": ["garr"],
         "cooldown": None,
@@ -304,7 +304,7 @@ CATEGORY_DATA: dict[str, dict] = {
         "cogs": ["StaffUI", "Leaderboard", "EditProfile", "AddProfile"],
     },
     "Quản Trị Hệ Thống": {
-        "emoji": "⚙️",
+        "emoji": "<:symbol_machine:1536297937498275850>",
         "desc": "Công cụ đồng bộ, backup và kiểm tra hệ thống.",
         "commands": ["checkdb", "renewdb", "backup", "synclv", "test_welcome"],
         "cogs": ["StaffUI", "BackupCog", "ArcaneLevel", "WelcomeCog"],
@@ -402,7 +402,7 @@ def build_detail_embed(cmd_key: str, prefix: str = 'k') -> discord.Embed:
     embed.add_field(name="\u200b", value="\u200b", inline=False)
     embed.add_field(name="📝 Cú pháp", value=f"`{cmd['usage'].replace('{prefix}', prefix)}`", inline=False)
     if cmd.get("examples"):
-        embed.add_field(name="💡 Ví dụ", value="\n".join(f"`{e.replace('{prefix}', prefix)}`" for e in cmd["examples"]), inline=False)
+        embed.add_field(name="<:symbol_light_bulb:1537739278765924422> Ví dụ", value="\n".join(f"`{e.replace('{prefix}', prefix)}`" for e in cmd["examples"]), inline=False)
     if cmd.get("note"):
         embed.add_field(name="ℹ️ Ghi chú", value=cmd["note"].replace("{prefix}", prefix), inline=False)
     embed.set_footer(text="Nhấn Quay Lại để về danh sách lệnh")

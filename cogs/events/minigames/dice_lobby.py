@@ -164,7 +164,7 @@ async def start_dice_lobby_game(bot, channel: discord.abc.Messageable, core_cog)
         points_to_add = 0
         # Check thưởng nhân phẩm vô cực
         if r["is_perfect"]:
-            line += " 🌟 *[Nhân Phẩm Vô Cực +50đ]*"
+            line += " <a:symbol_star_yellow:1537739289834553385> *[Nhân Phẩm Vô Cực +50đ]*"
             points_to_add += 50
             
         # Check Winner Takes All

@@ -39,9 +39,9 @@ WEEKLY_TASKS = {
 # (Quest thì gán sẵn cho mọi user, chung 1 mốc)
 # ==========================================
 QUESTS = {
-    "q1": {"name": "🌟 Đế Vương May Mắn", "desc": "Chiến thắng 5 lần Giveaway.", "action": "giveaway_win", "target": 5, "reward_fixed": 5000, "lb_reward_tier": 63, "lb_reward_chance": 100},
+    "q1": {"name": "<a:symbol_star_yellow:1537739289834553385> Đế Vương May Mắn", "desc": "Chiến thắng 5 lần Giveaway.", "action": "giveaway_win", "target": 5, "reward_fixed": 5000, "lb_reward_tier": 63, "lb_reward_chance": 100},
     "q2": {"name": "<:symbol_money_bag:1537567538097954896> Thần Bài Angelic", "desc": "Tham gia 500 ván cờ bạc (bất kỳ).", "action": "gamble_any", "target": 500, "reward_fixed": 10000, "lb_reward_tier": 63, "lb_reward_chance": 100},
-    "q3": {"name": "👑 Tám Xuyên Lục Địa", "desc": "Đạt 20 lần Lên cấp (Arcane).", "action": "arcane_lvup", "target": 20, "reward_fixed": 8000, "lb_reward_tier": 63, "lb_reward_chance": 100},
-    "q4": {"name": "🌾 Lão Nông Tỷ Phú", "desc": "Thu hoạch 200 vụ mùa.", "action": "farm", "target": 200, "reward_fixed": 7000, "lb_reward_tier": 63, "lb_reward_chance": 100},
+    "q3": {"name": "<:lb_06_godly:1535552639834783764> Tám Xuyên Lục Địa", "desc": "Đạt 20 lần Lên cấp (Arcane).", "action": "arcane_lvup", "target": 20, "reward_fixed": 8000, "lb_reward_tier": 63, "lb_reward_chance": 100},
+    "q4": {"name": "<:farm_00_wheat:1535940025080881152> Lão Nông Tỷ Phú", "desc": "Thu hoạch 200 vụ mùa.", "action": "farm", "target": 200, "reward_fixed": 7000, "lb_reward_tier": 63, "lb_reward_chance": 100},
     "q5": {"name": "🏃 Máy Cày Bền Bỉ", "desc": "Sử dụng lệnh kwork 100 lần.", "action": "work", "target": 100, "reward_fixed": 8000, "lb_reward_tier": 63, "lb_reward_chance": 100},
 }

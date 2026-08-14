@@ -120,7 +120,7 @@ class JailEvents(commands.Cog):
             try:
                 clean_count = int(row["clean_count"])
                 await jail_channel.send(
-                    f"🔄 {member.mention} **(a.k.a {dog_name})** vừa quay lại server!\n"
+                    f"<:symbol_reload:1536007679640600648> {member.mention} **(a.k.a {dog_name})** vừa quay lại server!\n"
                     f"Nhưng còn **{clean_count}** lần lau dọn chưa xong — trốn không thoát đâu! 🐕",
                 )
             except discord.HTTPException:

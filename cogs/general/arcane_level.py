@@ -116,7 +116,7 @@ class ArcaneLevelSync(commands.Cog):
         # Regex bóc tách số từ chuỗi cũ 'đã lên level *<số>*' và mới 'thu thập được <số> viên kẹo'
         level_regex = re.compile(r'(?:đã lên level|thu thập được)[^\d]+(\d+)', re.IGNORECASE)
 
-        await ctx.send("🔄 Đang bắt đầu quét lịch sử từ kênh Arcane... Quá trình này có thể mất vài phút.")
+        await ctx.send("<:symbol_reload:1536007679640600648> Đang bắt đầu quét lịch sử từ kênh Arcane... Quá trình này có thể mất vài phút.")
 
         # channel.history(limit=None) quét từ MỚI nhất về CŨ nhất theo mặc định
         async for message in channel.history(limit=None):

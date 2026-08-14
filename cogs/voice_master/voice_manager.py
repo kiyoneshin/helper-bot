@@ -188,7 +188,7 @@ class TransferSelect(discord.ui.UserSelect):
         if pool:
             await pool.execute("UPDATE active_voice_channels SET owner_id=$1 WHERE channel_id=$2",
                                new_owner.id, self.channel.id)
-        await interaction.response.send_message(f"👑 Đã chuyển quyền chủ cho **{new_owner.display_name}**!", ephemeral=True)
+        await interaction.response.send_message(f"<:lb_06_godly:1535552639834783764> Đã chuyển quyền chủ cho **{new_owner.display_name}**!", ephemeral=True)
 
 # ==============================================================================
 # DROPDOWN MENUS
@@ -198,7 +198,7 @@ class SettingsSelect(discord.ui.Select):
     def __init__(self, channel: discord.VoiceChannel, bot: commands.Bot, owner_id: int):
         self.channel, self.bot, self.owner_id = channel, bot, owner_id
         super().__init__(
-            placeholder="⚙️ Đổi cài đặt kênh...",
+            placeholder="<:symbol_machine:1536297937498275850> Đổi cài đặt kênh...",
             row=0,
             options=[
                 discord.SelectOption(label="Đổi tên kênh",            description="Đặt tên riêng cho phòng", emoji="✏️", value="rename"),
@@ -238,7 +238,7 @@ class PermissionsSelect(discord.ui.Select):
                 discord.SelectOption(label="Cho phép", description="Cấp quyền vào cho 1 người",            emoji="<:symbol_right:1536629912515903578>",    value="permit"),
                 discord.SelectOption(label="Từ chối",  description="Đuổi và cấm người dùng vào kênh",      emoji="🥾", value="reject"),
                 discord.SelectOption(label="Mời",      description="Cấp quyền mà không đuổi",              emoji="📨", value="invite"),
-                discord.SelectOption(label="Chuyển",   description="Chuyển quyền chủ phòng",               emoji="👑", value="transfer"),
+                discord.SelectOption(label="Chuyển",   description="Chuyển quyền chủ phòng",               emoji="<:lb_06_godly:1535552639834783764>", value="transfer"),
             ]
         )
 
@@ -369,7 +369,7 @@ class VoiceControlView(discord.ui.View):
                            claimer.id, self.channel.id)
 
         embed = discord.Embed(
-            title="👑 Quyền chủ phòng đã được chuyển!",
+            title="<:lb_06_godly:1535552639834783764> Quyền chủ phòng đã được chuyển!",
             description=f"**{claimer.display_name}** đã nhận quyền.",
             color=0xF1C40F
         )
@@ -398,7 +398,7 @@ class VoiceControlView(discord.ui.View):
 
 def _build_control_embed(channel: discord.VoiceChannel, owner: discord.Member) -> discord.Embed:
     embed = discord.Embed(
-        title="⚙️ Chào mừng đến kênh thoại tạm thời của bạn!",
+        title="<:symbol_machine:1536297937498275850> Chào mừng đến kênh thoại tạm thời của bạn!",
         description=(
             "Điều khiển kênh bằng **menu bên dưới**.\n"
             "• **Đổi cài đặt**: Đổi tên & giới hạn người.\n"

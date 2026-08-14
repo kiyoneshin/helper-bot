@@ -37,7 +37,7 @@ def get_slot_price(current_slots: int) -> int:
 
 # Hệ thống phẩm chất
 QUALITY_MULTIPLIERS = {"normal": 1.0, "silver": 1.25, "gold": 1.5, "iridium": 2.0}
-QUALITY_EMOJIS = {"normal": "", "silver": "<:symbol_medal_silver:1537552840514347048>", "gold": "<:symbol_medal_gold:1537550996664885328>", "iridium": "🌟"}
+QUALITY_EMOJIS = {"normal": "", "silver": "<:symbol_medal_silver:1537552840514347048>", "gold": "<:symbol_medal_gold:1537550996664885328>", "iridium": "<a:symbol_star_yellow:1537739289834553385>"}
 
 SEEDS: Dict[str, SeedConfig] = {
     "wheat": {

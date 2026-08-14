@@ -147,7 +147,7 @@ async def _fetch_leaderboard_data(
 RANK_MEDALS = ["<:symbol_medal_gold:1537550996664885328>", "<:symbol_medal_silver:1537552840514347048>", "<:symbol_medal_bronze:1537552838412992712>"]
 ROLE_LABELS = {
     "all": "Tất Cả Chức Vụ",
-    "owner": "Owner 👑",
+    "owner": "Owner <:lb_06_godly:1535552639834783764>",
     "admin": "Admin 🛡️",
     "recep": "Recep 🌸",
     "supporter": "Supporter 💜",
@@ -175,7 +175,7 @@ def _build_leaderboard_embed(
     embed = discord.Embed(
         title="<:symbol_trophy:1537550568665649232> Bảng Xếp Hạng Staff Angelic",
         description=(
-            f"📅 **Khoảng thời gian:** {date_range_str}\n"
+            f"<:symbol_boards:1536007665153474681> **Khoảng thời gian:** {date_range_str}\n"
             f"🗂️ **Bộ lọc:** {role_label} • 📈 **Xếp theo:** {sort_label}\n"
             f"――――――――――――――――――――"
         ),
@@ -205,7 +205,7 @@ def _build_leaderboard_embed(
             name=f"{medal} #{rank_num} — {name}",
             value=(
                 f"• **Chức vụ:** `{role}` • <@{discord_id}>\n"
-                f"• ⭐ **Điểm TB:** `{rating:.1f}/5.0` • **Tin nhắn:** `{msg_count}` • **Reply:** `{replies}`"
+                f"• <a:symbol_star_yellow:1537739289834553385> **Điểm TB:** `{rating:.1f}/5.0` • **Tin nhắn:** `{msg_count}` • **Reply:** `{replies}`"
             ),
             inline=False,
         )
@@ -335,13 +335,20 @@ class EndDayModal(discord.ui.Modal, title="Nhập Ngày Kết Thúc"):
 # =============================================================================
 
 class DateSelectionView(discord.ui.View):
-    """
-    Panel chọn khoảng ngày trên MỘT màn hình duy nhất, gồm:
-      - Row 0: Dropdown chọn Tháng Bắt Đầu  (độc lập)
-      - Row 1: Dropdown chọn Tháng Kết Thúc (độc lập)
-      - Row 2: [ Chọn Ngày Bắt Đầu] [ Chọn Ngày Kết Thúc] [ Áp Dụng Bộ Lọc]
-
-    Gửi dạng ephemeral. Sau khi áp dụng thành công sẽ tự xóa.
+    """
+
+    Panel chọn khoảng ngày trên MỘT màn hình duy nhất, gồm:
+
+      - Row 0: Dropdown chọn Tháng Bắt Đầu  (độc lập)
+
+      - Row 1: Dropdown chọn Tháng Kết Thúc (độc lập)
+
+      - Row 2: [ Chọn Ngày Bắt Đầu] [ Chọn Ngày Kết Thúc] [ Áp Dụng Bộ Lọc]
+
+
+
+    Gửi dạng ephemeral. Sau khi áp dụng thành công sẽ tự xóa.
+
     """
 
     def __init__(self, leaderboard_view: "LeaderboardView"):
@@ -366,7 +373,7 @@ class DateSelectionView(discord.ui.View):
 
         # ── ROW 0: Dropdown Tháng Bắt Đầu ─────────────────────────────
         start_sel = discord.ui.Select(
-            placeholder="📅 Chọn Tháng Bắt Đầu...",
+            placeholder="<:symbol_boards:1536007665153474681> Chọn Tháng Bắt Đầu...",
             min_values=1, max_values=1,
             options=_generate_month_options(),
             row=0,
@@ -376,7 +383,7 @@ class DateSelectionView(discord.ui.View):
 
         # ── ROW 1: Dropdown Tháng Kết Thúc ────────────────────────────
         end_sel = discord.ui.Select(
-            placeholder="📅 Chọn Tháng Kết Thúc...",
+            placeholder="<:symbol_boards:1536007665153474681> Chọn Tháng Kết Thúc...",
             min_values=1, max_values=1,
             options=_generate_month_options(),
             row=1,
@@ -386,7 +393,7 @@ class DateSelectionView(discord.ui.View):
 
         # ── ROW 2: Nút 1 — Chọn Ngày Bắt Đầu ─────────────────────────
         btn_start_day = discord.ui.Button(
-            label="📅 Chọn Ngày Bắt Đầu",
+            label="<:symbol_boards:1536007665153474681> Chọn Ngày Bắt Đầu",
             style=discord.ButtonStyle.secondary,
             row=2,
         )
@@ -395,7 +402,7 @@ class DateSelectionView(discord.ui.View):
 
         # ── ROW 2: Nút 2 — Chọn Ngày Kết Thúc ────────────────────────
         btn_end_day = discord.ui.Button(
-            label="📅 Chọn Ngày Kết Thúc",
+            label="<:symbol_boards:1536007665153474681> Chọn Ngày Kết Thúc",
             style=discord.ButtonStyle.secondary,
             row=2,
         )
@@ -436,7 +443,7 @@ class DateSelectionView(discord.ui.View):
         lines = [
             "🗂️ **Hướng dẫn:**",
             "1️⃣ Chọn **Tháng Bắt Đầu** và **Tháng Kết Thúc** ở menu phía trên.",
-            "2️⃣ Bấm **📅 Chọn Ngày Bắt Đầu** / **📅 Chọn Ngày Kết Thúc** để nhập ngày.",
+            "2️⃣ Bấm **<:symbol_boards:1536007665153474681> Chọn Ngày Bắt Đầu** / **<:symbol_boards:1536007665153474681> Chọn Ngày Kết Thúc** để nhập ngày.",
             "3️⃣ Bấm **🔎 Áp Dụng Bộ Lọc** khi đã điền đủ 4 trường.",
             "",
             "――――――――――――――――――――",
@@ -445,7 +452,7 @@ class DateSelectionView(discord.ui.View):
         ]
 
         embed = discord.Embed(
-            title="📅 Chọn Khoảng Thời Gian Bảng Xếp Hạng",
+            title="<:symbol_boards:1536007665153474681> Chọn Khoảng Thời Gian Bảng Xếp Hạng",
             description="\n".join(lines),
             color=0xffb6c1,
         )
@@ -607,7 +614,7 @@ class DateSelectionView(discord.ui.View):
 class SortSelect(discord.ui.Select):
     def __init__(self, current_sort: str = "rating"):
         options = [
-            discord.SelectOption(label="⭐ Xếp theo Điểm Đánh Giá", description="Rating cao nhất lên đầu", value="rating", emoji="⭐", default=(current_sort == "rating")),
+            discord.SelectOption(label="<a:symbol_star_yellow:1537739289834553385> Xếp theo Điểm Đánh Giá", description="Rating cao nhất lên đầu", value="rating", emoji="<a:symbol_star_yellow:1537739289834553385>", default=(current_sort == "rating")),
             discord.SelectOption(label="✉️ Xếp theo Tin Nhắn Đã Gửi", description="Gửi nhiều tin nhắn nhất lên đầu", value="messages", emoji="✉️", default=(current_sort == "messages")),
             discord.SelectOption(label="💬 Xếp theo Tin Nhắn Được Phản Hồi", description="Nhận nhiều reply nhất lên đầu", value="replies", emoji="💬", default=(current_sort == "replies")),
         ]
@@ -630,7 +637,7 @@ class RoleFilterSelect(discord.ui.Select):
     def __init__(self, current_role: str = "all"):
         options = [
             discord.SelectOption(label="Tất cả chức vụ", description="Hiển thị toàn bộ nhân sự", value="all", emoji="<:symbol_trophy:1537550568665649232>", default=(current_role == "all")),
-            discord.SelectOption(label="Chỉ hiện Owner", description="Lọc chỉ Chủ sở hữu server", value="owner", emoji="👑", default=(current_role == "owner")),
+            discord.SelectOption(label="Chỉ hiện Owner", description="Lọc chỉ Chủ sở hữu server", value="owner", emoji="<:lb_06_godly:1535552639834783764>", default=(current_role == "owner")),
             discord.SelectOption(label="Chỉ hiện Admin", description="Lọc chỉ Quản trị viên", value="admin", emoji="🛡️", default=(current_role == "admin")),
             discord.SelectOption(label="Chỉ hiện Recep", description="Lọc chỉ Lễ tân chào đón", value="recep", emoji="🌸", default=(current_role == "recep")),
             discord.SelectOption(label="Chỉ hiện Supporter", description="Lọc chỉ Supporter", value="supporter", emoji="💜", default=(current_role == "supporter")),

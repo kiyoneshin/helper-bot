@@ -170,7 +170,7 @@ class TaskCog(commands.Cog):
             idx += 1
             
         if not daily_text: daily_text = "Không có nhiệm vụ ngày."
-        embed.add_field(name="📅 Nhiệm Vụ Hằng Ngày", value=daily_text, inline=False)
+        embed.add_field(name="<:symbol_boards:1536007665153474681> Nhiệm Vụ Hằng Ngày", value=daily_text, inline=False)
         
         # --- Hiển thị Weekly ---
         weekly_text = ""
@@ -198,7 +198,7 @@ class TaskCog(commands.Cog):
                     await _add_lootbox_to_inventory(self.bot, str(uid), lb_tier, 1)
                     lb_msg = f" <:gift_00_symbol:1536003307011842099> {TIER_EMOJIS[lb_tier]} {TIER_NAMES[lb_tier]}"
                     
-                claimed_messages.append(f"🌟 Đã nhận thưởng nhiệm vụ tuần #{idx} (+{tdata['reward']:,} điểm{pet_msg}{lb_msg})")
+                claimed_messages.append(f"<a:symbol_star_yellow:1537739289834553385> Đã nhận thưởng nhiệm vụ tuần #{idx} (+{tdata['reward']:,} điểm{pet_msg}{lb_msg})")
                 db_changed = True
 
             status = "COMPLETED" if tdata["claimed"] else f"{tdata['progress']}/{tdata['target']}"
@@ -211,7 +211,7 @@ class TaskCog(commands.Cog):
             idx += 1
 
         if not weekly_text: weekly_text = "Không có nhiệm vụ tuần."
-        embed.add_field(name="🗓️ Nhiệm Vụ Tuần", value=weekly_text, inline=False)
+        embed.add_field(name="<:symbol_boards:1536007665153474681> Nhiệm Vụ Tuần", value=weekly_text, inline=False)
 
         # Cập nhật db nếu có claim
         if db_changed:

@@ -98,7 +98,7 @@ class StaffUICog(commands.Cog):
             if not records:
                 await ctx.send(
                     "<:symbol_wrong:1536629915598848072> **Không tìm thấy nhân sự này trong Database!**\n"
-                    "❓ Vui lòng kiểm tra lại chính xác ID hoặc ping lại."
+                    "<:symbol_question_mark:1537739280640647178> Vui lòng kiểm tra lại chính xác ID hoặc ping lại."
                 )
                 return
 
@@ -108,7 +108,7 @@ class StaffUICog(commands.Cog):
 
             if not votes_dict:
                 await ctx.send(
-                    f"💖 Hồ sơ của **{name}** hiện tại **chưa có bài đánh giá nào** từ cộng đồng!"
+                    f"<a:symbol_star_pink:1537739287947382864> Hồ sơ của **{name}** hiện tại **chưa có bài đánh giá nào** từ cộng đồng!"
                 )
                 return
 
@@ -122,9 +122,9 @@ class StaffUICog(commands.Cog):
                     score = 0.0
                 review = entry.get("review") or "Không có nội dung"
                 if voter_id.startswith("old_"):
-                    review_lines.append(f"*Ẩn danh* **{score} ⭐**, {review}")
+                    review_lines.append(f"*Ẩn danh* **{score} <a:symbol_star_yellow:1537739289834553385>**, {review}")
                 else:
-                    review_lines.append(f"<@{voter_id}> **{score} ⭐**, {review}")
+                    review_lines.append(f"<@{voter_id}> **{score} <a:symbol_star_yellow:1537739289834553385>**, {review}")
 
             try:
                 avg_rating = round(float(row.get('rating', 0.0)), 1)
@@ -132,7 +132,7 @@ class StaffUICog(commands.Cog):
                 avg_rating = 0.0
 
             description = (
-                f"Điểm trung bình: **⭐ {avg_rating}/5.0** ({len(votes_dict)} lượt đánh giá)\n\n"
+                f"Điểm trung bình: **<a:symbol_star_yellow:1537739289834553385> {avg_rating}/5.0** ({len(votes_dict)} lượt đánh giá)\n\n"
                 + "\n".join(review_lines)
             )
 
@@ -189,7 +189,7 @@ class StaffUICog(commands.Cog):
             for staff_name, staff_id, score, review in my_reviews:
                 embed.add_field(
                     name=f"Đánh giá {staff_name}",
-                    value=f"• **Staff:** <@{staff_id}>\n• **Điểm số:** {score} ⭐\n• **Nhận xét:** {review}",
+                    value=f"• **Staff:** <@{staff_id}>\n• **Điểm số:** {score} <a:symbol_star_yellow:1537739289834553385>\n• **Nhận xét:** {review}",
                     inline=False
                 )
 

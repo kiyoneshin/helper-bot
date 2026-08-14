@@ -116,7 +116,7 @@ async def start_mvp_tribute_game(bot, channel: discord.abc.Messageable, core_cog
             congrats_list.append(m.author)
             
             try:
-                await m.add_reaction("💖")
+                await m.add_reaction("<a:symbol_star_pink:1537739287947382864>")
             except discord.HTTPException:
                 pass
                 

@@ -320,11 +320,11 @@ class AchievementCog(commands.Cog):
             uid
         )
         
-        current_title = row["title"] or "👑 Kẻ Lang Thang"
+        current_title = row["title"] or "<:lb_06_godly:1535552639834783764> Kẻ Lang Thang"
         titles = json.loads(row["unlocked_titles"]) if isinstance(row["unlocked_titles"], str) else (row["unlocked_titles"] or [])
         
-        if "👑 Kẻ Lang Thang" not in titles:
-            titles.insert(0, "👑 Kẻ Lang Thang")
+        if "<:lb_06_godly:1535552639834783764> Kẻ Lang Thang" not in titles:
+            titles.insert(0, "<:lb_06_godly:1535552639834783764> Kẻ Lang Thang")
             
         if action and action.lower() in ["use", "equip", "dung", "xai"]:
             if not arg:
@@ -356,7 +356,7 @@ class AchievementCog(commands.Cog):
                 lines.append(f"• {t}")
                 
         embed = discord.Embed(
-            title="👑 Bộ Sưu Tập Danh Hiệu",
+            title="<:lb_06_godly:1535552639834783764> Bộ Sưu Tập Danh Hiệu",
             description="Dùng `ktitle use <tên>` để trang bị.\n\n" + "\n".join(lines),
             color=0xffd700
         )

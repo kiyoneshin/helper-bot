@@ -32,7 +32,7 @@ def _make_filename() -> str:
 def _make_backup_embed(now: datetime, file_size_mb: float, is_auto: bool) -> discord.Embed:
     tag = "AUTO" if is_auto else "MANUAL"
     embed = discord.Embed(
-        title=f"📦 [{tag}] Sao Lưu Toàn Bộ Database Thành Công",
+        title=f"<:lootbox:1535664857276489749> [{tag}] Sao Lưu Toàn Bộ Database Thành Công",
         description=(
             f"Sao lưu dữ liệu {'định kỳ' if is_auto else 'thủ công'} "
             f"ngày **{now.strftime('%d/%m/%Y')}** hoàn tất!\n\n"

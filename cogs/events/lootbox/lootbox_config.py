@@ -305,7 +305,7 @@ def roll_godly_bonus() -> Optional[dict]:
     """
     roll = random.random()
     if roll < 0.05:
-        return {"type": "seed", "item_id": 12, "name": "Hạt Giống Ngôi Sao", "icon": "⭐"}
+        return {"type": "seed", "item_id": 12, "name": "Hạt Giống Ngôi Sao", "icon": "<a:symbol_star_yellow:1537739289834553385>"}
     elif roll < 0.15:
         chosen_id = random.choice([26, 27])
         names = {26: "Thẻ Miễn Nhiễm", 27: "Thẻ Đặc Xá"}

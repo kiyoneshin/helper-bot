@@ -139,7 +139,7 @@ class BlackMarketCog(commands.Cog):
             description=(
                 "Chợ Đêm chỉ mở mỗi ngày với **3 vật phẩm ngẫu nhiên** và số lượng cực hạn.\n"
                 f"Sẽ đóng cửa sau **<t:{close_ts}:R>**.\n\n"
-                f"💡 Mua nhanh: `{ctx.prefix}ebuy <mã số> [số lượng]`\n"
+                f"<:symbol_light_bulb:1537739278765924422> Mua nhanh: `{ctx.prefix}ebuy <mã số> [số lượng]`\n"
                 f"<:icon_07_inventory:1535664855300710422> Xài item: `{ctx.prefix}use <mã số> [@mục tiêu]`\n\u200b"
             ),
             color=0x2b2d31,

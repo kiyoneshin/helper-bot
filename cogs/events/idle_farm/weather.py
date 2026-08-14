@@ -68,7 +68,7 @@ WEATHER_TYPES = {
     },
     "magic_rain": {
         "name": "Mưa Phép Thuật",
-        "emoji": "✨",
+        "emoji": "<a:symbol_star_yellow:1537739289834553385>",
         "desc": "Tăng x2 sản lượng và tỉ lệ rớt đồ hiếm x2.0!",
         "growth_time_modifier": 1.0,
         "yield_modifier": 2,

@@ -337,7 +337,7 @@ class JailCore(commands.Cog):
                     "<:gambling_dice:1537539887769591828> **Sinh tử (Cờ bạc & Liều mạng):**\n"
                     f"• `{ctx.prefix}lcuoc`: Tung đồng xu 50% giảm 5 án, 50% tăng 10 án (Cooldown: 20s)\n"
                     f"• `{ctx.prefix}lvuotnguc`: 5% thoát ngay lập tức, 95% nhân 3 án và bị bêu rếu (Cooldown: 5 phút)\n\n"
-                    f"💸 **Bảo lãnh:** Hãy nhờ bạn bè dùng `{ctx.prefix}baolanh @bạn` để chuộc bạn ra bằng điểm sự kiện!\n\n"
+                    f"<:symbol_money_2:1537567535229050970> **Bảo lãnh:** Hãy nhờ bạn bè dùng `{ctx.prefix}baolanh @bạn` để chuộc bạn ra bằng điểm sự kiện!\n\n"
                     "<:symbol_alert:1537546957885542450> **NỘI QUY:** Mọi tin nhắn chat thường trong này phải kết thúc bằng chữ `gâu` hoặc `ẳng`, nếu không sẽ bị ăn tát!"
                 ),
                 color=COLOR_JAIL

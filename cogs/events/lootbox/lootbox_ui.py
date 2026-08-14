@@ -163,7 +163,7 @@ def build_info_embed(tier_id: int) -> discord.Embed:
             inline=False,
         )
 
-    embed.set_footer(text="💡 Luck từ kpray tăng tỉ lệ drop và tỉ lệ rank cao hơn.")
+    embed.set_footer(text="<:symbol_light_bulb:1537739278765924422> Luck từ kpray tăng tỉ lệ drop và tỉ lệ rank cao hơn.")
     return embed
 
 
@@ -202,7 +202,7 @@ def build_history_embed(
             rank_sum += rank * qty
             rank_total_items += qty
             if item_id not in item_tally:
-                item_tally[item_id] = (d.get("name", item_id), d.get("icon", "📦"), 0)
+                item_tally[item_id] = (d.get("name", item_id), d.get("icon", "<:lootbox:1535664857276489749>"), 0)
             name, icon, old_qty = item_tally[item_id]
             item_tally[item_id] = (name, icon, old_qty + qty)
 

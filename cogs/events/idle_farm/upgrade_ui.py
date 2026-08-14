@@ -43,7 +43,7 @@ _ALL_UPGRADE_ITEMS: Dict[str, dict] = {
 
 def build_upgrade_embed(author: discord.Member | discord.User, farm_data: Dict[str, Any], points: float) -> discord.Embed:
     embed = discord.Embed(
-        title="🔧 Nâng Cấp Trang Trại",
+        title="<:symbol_gear:1536007677468082266> Nâng Cấp Trang Trại",
         color=0x3498db,
     )
 

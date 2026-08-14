@@ -94,7 +94,7 @@ class WorkCog(commands.Cog):
             if is_coop:
                 amount = int(amount * 1.2 * ring_work_bonus)
                 bonus_str = f" (Nhẫn x{ring_work_bonus})" if ring_work_bonus > 1.0 else ""
-                story = event["text"].format(amount=f"**{amount:,}**") + f"\n\n💕 **CO-OP BONUS!** Vợ/chồng của bạn <@{partner_id}> đã xắn tay vào làm chung! Cả hai nhận được x1.2 phần thưởng{bonus_str}!"
+                story = event["text"].format(amount=f"**{amount:,}**") + f"\n\n<a:symbol_star_pink:1537739287947382864> **CO-OP BONUS!** Vợ/chồng của bạn <@{partner_id}> đã xắn tay vào làm chung! Cả hai nhận được x1.2 phần thưởng{bonus_str}!"
                 await add_event_points(self.bot, str(partner_id), float(amount), is_earned=True)
                 
                 # Check Task
@@ -123,7 +123,7 @@ class WorkCog(commands.Cog):
             if mar and mar.get("pet_type"):
                 exp_gained = 40 if is_coop else 20
                 await execute_db(self.bot, "UPDATE marriages SET pet_exp = pet_exp + $1 WHERE id = $2", float(exp_gained), mar["id"] if mar else 0)
-                story += f"\n✨ *Thú cưng nhận {exp_gained} <:xp:1535664865308577884> vì bạn chăm chỉ làm việc!*"
+                story += f"\n<a:symbol_star_yellow:1537739289834553385> *Thú cưng nhận {exp_gained} <:xp:1535664865308577884> vì bạn chăm chỉ làm việc!*"
             
             emb = discord.Embed(
                 title="<:symbol_confetti:1537570146313306183> Làm việc chăm chỉ (hoặc ăn may)!",
@@ -156,7 +156,7 @@ class WorkCog(commands.Cog):
                     except Exception:
                         pass
                     
-                story = event["text"].format(amount=f"**{reduced_amount:,}**") + f"\n\n💔 **ĐỒNG CAM CỘNG KHỔ!** Bạn và vợ/chồng <@{partner_id}> cùng gánh họa! Mỗi người bị trừ **{reduced_amount:,}** (đã giảm 20% thiệt hại) và **Làm Mới Thời Gian Hồi Lệnh Làm Việc** cho cả hai!"
+                story = event["text"].format(amount=f"**{reduced_amount:,}**") + f"\n\n<:symbol_heart_breaking:1536296911655673936> **ĐỒNG CAM CỘNG KHỔ!** Bạn và vợ/chồng <@{partner_id}> cùng gánh họa! Mỗi người bị trừ **{reduced_amount:,}** (đã giảm 20% thiệt hại) và **Làm Mới Thời Gian Hồi Lệnh Làm Việc** cho cả hai!"
             else:
                 ok = await deduct_event_points(self.bot, str(uid), float(amount))
                 if not ok:
@@ -165,7 +165,7 @@ class WorkCog(commands.Cog):
                     story += "\n\n*(Ví bạn cháy sạch không còn một cắc, phá sản rồi cưng!)*"
             
             emb = discord.Embed(
-                title="💥 Tai nạn nghề nghiệp!",
+                title="<:symbol_demolish:1537466095412314192> Tai nạn nghề nghiệp!",
                 description=story,
                 color=discord.Color.red()
             )

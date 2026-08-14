@@ -137,7 +137,7 @@ def build_machine_embed(
             slot_id, item = queue_list[i]
             machine_id = item.get("machine_id", "")
             machine = MACHINES.get(machine_id, {})
-            machine_icon = machine.get("icon", "⚙️")
+            machine_icon = machine.get("icon", "<:symbol_machine:1536297937498275850>")
             machine_name = machine.get("name", machine_id)
             status = item.get("status", "idle")
             
@@ -336,7 +336,7 @@ class DemolishSelect(discord.ui.Select):
                     label=label,
                     value=slot_id,
                     description=desc,
-                    emoji=machine.get("icon", "⚙️")
+                    emoji=machine.get("icon", "<:symbol_machine:1536297937498275850>")
                 )
             )
 
@@ -344,7 +344,7 @@ class DemolishSelect(discord.ui.Select):
             options.append(discord.SelectOption(label="Không có máy nào", value="none"))
 
         super().__init__(
-            placeholder="🔨 Chọn máy để phá dỡ...",
+            placeholder="<:symbol_demolish:1537466095412314192> Chọn máy để phá dỡ...",
             min_values=1,
             max_values=1,
             options=options[:25],
@@ -409,7 +409,7 @@ class DemolishConfirmView(discord.ui.View):
         self.machine_id = machine_id
         self.index = index
 
-    @discord.ui.button(label="Đồng Ý Phá", style=discord.ButtonStyle.danger, emoji="💥")
+    @discord.ui.button(label="Đồng Ý Phá", style=discord.ButtonStyle.danger, emoji="<:symbol_demolish:1537466095412314192>")
     async def confirm_btn(self, interaction: discord.Interaction, button: discord.ui.Button):
         if str(interaction.user.id) != self.user_id:
             return await interaction.response.send_message("Không có quyền!", ephemeral=True)
@@ -436,7 +436,7 @@ class DemolishConfirmView(discord.ui.View):
         
         refund_str = "\n".join([f"• {r}" for r in refunds])
         msg = (
-            f"💥 Đã phá dỡ thành công **Slot {self.index}: {machine.get('name', self.machine_id)}**.\n"
+            f"<:symbol_demolish:1537466095412314192> Đã phá dỡ thành công **Slot {self.index}: {machine.get('name', self.machine_id)}**.\n"
             f"**Nguyên liệu thu hồi:**\n{refund_str}"
         )
         

@@ -63,18 +63,18 @@ ACTIONS = {
     ]},
     
     "hug":    {"tier": 2, "msg": [
-        "{author} ôm chầm lấy {partner} thật ấm áp ❤️",
-        "{author} vòng tay ôm {partner} từ phía sau 💖",
-        "{author} lao vào lòng {partner} ôm thật chặt 💕"
+        "{author} ôm chầm lấy {partner} thật ấm áp <a:symbol_star_pink:1537739287947382864>",
+        "{author} vòng tay ôm {partner} từ phía sau <a:symbol_star_pink:1537739287947382864>",
+        "{author} lao vào lòng {partner} ôm thật chặt <a:symbol_star_pink:1537739287947382864>"
     ,
-        "{author} ôm ấp {partner} vỗ về những mỏi mệt 💖"
+        "{author} ôm ấp {partner} vỗ về những mỏi mệt <a:symbol_star_pink:1537739287947382864>"
     ]},
     "cuddle": {"tier": 2, "msg": [
-        "{author} rúc vào lòng {partner} làm nũng ❤️",
-        "{author} âu yếm {partner} thật tình cảm 💖",
-        "{author} và {partner} đang nằm ôm nhau thủ thỉ 💖"
+        "{author} rúc vào lòng {partner} làm nũng <a:symbol_star_pink:1537739287947382864>",
+        "{author} âu yếm {partner} thật tình cảm <a:symbol_star_pink:1537739287947382864>",
+        "{author} và {partner} đang nằm ôm nhau thủ thỉ <a:symbol_star_pink:1537739287947382864>"
     ,
-        "{author} và {partner} rúc vào nhau sưởi ấm trong ngày lạnh 💕"
+        "{author} và {partner} rúc vào nhau sưởi ấm trong ngày lạnh <a:symbol_star_pink:1537739287947382864>"
     ]},
     "nom":    {"tier": 2, "msg": [
         "{author} gặm gặm {partner} như một chiếc bánh ngọt 🧁",
@@ -82,18 +82,18 @@ ACTIONS = {
         "{author} nhai nhai {partner} vì quá đáng yêu!"
     ]},
     "snuggle":{"tier": 2, "msg": [
-        "{author} cuộn tròn bên cạnh {partner} 💖",
-        "{author} cọ cọ vào người {partner} nũng nịu 💕",
-        "{author} rúc đầu vào cổ {partner} hít hà ❤️"
+        "{author} cuộn tròn bên cạnh {partner} <a:symbol_star_pink:1537739287947382864>",
+        "{author} cọ cọ vào người {partner} nũng nịu <a:symbol_star_pink:1537739287947382864>",
+        "{author} rúc đầu vào cổ {partner} hít hà <a:symbol_star_pink:1537739287947382864>"
     ]},
     
     "kiss":   {"tier": 3, "msg": [
-        "{author} trao cho {partner} một nụ hôn nồng cháy 💋",
-        "{author} nhón chân lên hôn chụt vào môi {partner} 💋",
-        "{author} và {partner} đang chìm đắm trong nụ hôn ngọt ngào 💕"
+        "{author} trao cho {partner} một nụ hôn nồng cháy <a:symbol_star_pink:1537739287947382864>",
+        "{author} nhón chân lên hôn chụt vào môi {partner} <a:symbol_star_pink:1537739287947382864>",
+        "{author} và {partner} đang chìm đắm trong nụ hôn ngọt ngào <a:symbol_star_pink:1537739287947382864>"
     ,
-        "{author} đè {partner} ra hôn ngấu nghiến không cho thở 💋",
-        "{author} hôn nhẹ lên trán {partner} đầy trân trọng 💖"
+        "{author} đè {partner} ra hôn ngấu nghiến không cho thở <a:symbol_star_pink:1537739287947382864>",
+        "{author} hôn nhẹ lên trán {partner} đầy trân trọng <a:symbol_star_pink:1537739287947382864>"
     ]},
     "lick":   {"tier": 3, "msg": [
         "{author} liếm láp {partner} như một chú cún con <a:pet_dog:1535998186450194432>",
@@ -103,12 +103,12 @@ ACTIONS = {
     "nom":    {"tier": 2, "msg": [
         "{author} cắn yêu một phát vào má {partner} 😋",
         "{author} nhay nhay cắn nhẹ vào tai {partner} ~",
-        "{author} ngoạm nhẹ vào tay {partner} nũng nịu 🐾"
+        "{author} ngoạm nhẹ vào tay {partner} nũng nịu <a:pet_dog:1535998186450194432>"
     ]},
     "saylove":{"tier": 3, "msg": [
-        "{author} thì thầm: 'Yêu {partner} nhiều lắm luôn á' 💕",
-        "{author} nhìn sâu vào mắt {partner}: 'Mình thuộc về nhau nhé' 💖",
-        "{author} hét lớn: '{partner} ƠI ANH/EM YÊU EM/ANH NHẤT TRÊN ĐỜI!' ❤️"
+        "{author} thì thầm: 'Yêu {partner} nhiều lắm luôn á' <a:symbol_star_pink:1537739287947382864>",
+        "{author} nhìn sâu vào mắt {partner}: 'Mình thuộc về nhau nhé' <a:symbol_star_pink:1537739287947382864>",
+        "{author} hét lớn: '{partner} ƠI ANH/EM YÊU EM/ANH NHẤT TRÊN ĐỜI!' <a:symbol_star_pink:1537739287947382864>"
     ]},
     
     "fuck":   {"tier": 4, "msg": [
@@ -269,7 +269,7 @@ class MarryConfirmView(discord.ui.View):
             
             emb = interaction.message.embeds[0] if interaction.message and getattr(interaction.message, "embeds", None) else discord.Embed()
             emb.title = "<:symbol_confetti:1537570146313306183> CHÚC MỪNG TÂN LANG TÂN NƯƠNG! <:symbol_confetti:1537570146313306183>"
-            emb.description = f"💖 **{self.proposer.display_name}** và **{self.target.display_name}** đã chính thức về chung một nhà với chiếc **{ring_name}**!"
+            emb.description = f"<a:symbol_star_pink:1537739287947382864> **{self.proposer.display_name}** và **{self.target.display_name}** đã chính thức về chung một nhà với chiếc **{ring_name}**!"
             emb.color = discord.Color.gold()
             
             await interaction.edit_original_response(embed=emb, view=self)
@@ -443,7 +443,7 @@ class MarriageCog(commands.Cog):
                     for i, line in enumerate(ptext_lines):
                         if line.strip():
                             if i == 0:
-                                formatted_promise += f"💖 **{p_name}**: {line.strip()}\n"
+                                formatted_promise += f"<a:symbol_star_pink:1537739287947382864> **{p_name}**: {line.strip()}\n"
                             else:
                                 formatted_promise += f"    {line.strip()}\n"
                 else:
@@ -460,8 +460,8 @@ class MarriageCog(commands.Cog):
             ring_buff_str = ", ".join(ring_buff_texts) if ring_buff_texts else "Không có"
             
             desc = (
-                f"💖 **So Sweet** 💖\n\n"
-                f"{ctx.author.mention} 💖 <@{partner_id}>\n"
+                f"<a:symbol_star_pink:1537739287947382864> **So Sweet** <a:symbol_star_pink:1537739287947382864>\n\n"
+                f"{ctx.author.mention} <a:symbol_star_pink:1537739287947382864> <@{partner_id}>\n"
                 f"💞 **Love Points:** {float(mar['intimacy_points']):,.1f} Pts\n"
                 f"💎 **Married day:** {marry_date_str}\n"
                 f"*** Been married for {days} days\n\n"
@@ -473,21 +473,21 @@ class MarriageCog(commands.Cog):
                 if pet_exp < 1000:
                     stage = "Sơ Sinh 🐣"
                 elif pet_exp < 5000:
-                    stage = "Trưởng Thành 🐾"
+                    stage = "Trưởng Thành <a:pet_dog:1535998186450194432>"
                 else:
-                    stage = "Thần Thú 🌟"
+                    stage = "Thần Thú <a:symbol_star_yellow:1537739289834553385>"
                     
                 icon_map = {
                     "Chó": "<a:pet_dog:1535998186450194432>", "Mèo": "<a:pet_cat:1535998182029398046>", "Cáo": "<a:pet_fox:1535998196747210872>", "Sói": "<a:pet_wolf:1536004924708749404>", 
                     "Cánh Cụt": "<a:pet_penguin:1535998208587595966>", "Thỏ": "<a:pet_bunny:1535998178115977347>", "Gấu": "<a:pet_panda:1535998202900123729>", "Rồng": "<a:pet_dragon:1535998194163523615>"
                 }
                 base_type = mar["pet_type"]
-                icon = icon_map.get(base_type, "🐾")
+                icon = icon_map.get(base_type, "<a:pet_dog:1535998186450194432>")
                 pet_level = int(pet_exp / 200) + 1
                 
                 pet_name_db = mar.get("pet_name")
                 display_name = f"{pet_name_db}" if pet_name_db else f"{base_type}"
-                desc += f"🐾 **Thú Cưng Chung**: {display_name} {icon} (Lv.{pet_level} - {stage})\n\n"
+                desc += f"<a:pet_dog:1535998186450194432> **Thú Cưng Chung**: {display_name} {icon} (Lv.{pet_level} - {stage})\n\n"
                 
                 if base_type == "Chó": pet_buff_str = f"+{min(pet_level * 1, 50)}% DTM nhận được"
                 elif base_type == "Mèo": pet_buff_str = f"-{min(pet_level * 0.75, 45):.2f}% thời gian hồi chiêu"
@@ -503,9 +503,9 @@ class MarriageCog(commands.Cog):
             )
             
             desc += f"🔰 **Hiệu Ứng (Buffs):**\n"
-            desc += f"💍 **Nhẫn:** {ring_buff_str}\n"
+            desc += f"<:icon_02_ring:1536017180951318528> **Nhẫn:** {ring_buff_str}\n"
             if mar.get("pet_type"):
-                desc += f"🐾 **Pet:** {pet_buff_str}\n"
+                desc += f"<a:pet_dog:1535998186450194432> **Pet:** {pet_buff_str}\n"
             
             emb = discord.Embed(description=desc, color=discord.Color.from_rgb(255, 182, 193))
             emb.set_author(name="And after that... They live happily ever after~")
@@ -527,7 +527,7 @@ class MarriageCog(commands.Cog):
                 emb.set_thumbnail(url=ctx.author.display_avatar.url)
             
             now_str = (discord.utils.utcnow() + datetime.timedelta(hours=7)).strftime("%H:%M")
-            emb.set_footer(text=f"💖 Happily ever after~ 💖 - Today at {now_str}")
+            emb.set_footer(text=f"<a:symbol_star_pink:1537739287947382864> Happily ever after~ <a:symbol_star_pink:1537739287947382864> - Today at {now_str}")
             
             return await ctx.send(embed=emb)
             
@@ -552,11 +552,11 @@ class MarriageCog(commands.Cog):
             return await ctx.send(f"<:symbol_wrong:1536629915598848072> Bạn không có chiếc nhẫn này trong túi đồ! Dùng `{ctx.prefix}shop` để mua nhé.")
             
         ring_info = get_item_by_id(ring_id)
-        ring_name = f"{ring_info['icon']} {ring_info['name']}" if ring_info else "🌿 Nhẫn Cỏ"
+        ring_name = f"{ring_info['icon']} {ring_info['name']}" if ring_info else "<:symbol_plant:1536007706958237828> Nhẫn Cỏ"
         
         emb = discord.Embed(
-            title="💍 LỜI CẦU HÔN TỪ TRÁI TIM!",
-            description=f"💖 {target.mention} ơi!\n**{ctx.author.display_name}** đang quỳ một chân và đưa ra chiếc **{ring_name}** để cầu hôn bạn!\nBạn có đồng ý đi cùng người ấy đến cuối con đường không?",
+            title="<:icon_02_ring:1536017180951318528> LỜI CẦU HÔN TỪ TRÁI TIM!",
+            description=f"<a:symbol_star_pink:1537739287947382864> {target.mention} ơi!\n**{ctx.author.display_name}** đang quỳ một chân và đưa ra chiếc **{ring_name}** để cầu hôn bạn!\nBạn có đồng ý đi cùng người ấy đến cuối con đường không?",
             color=discord.Color.pink()
         )
         if not isinstance(ctx.author, discord.Member):
@@ -741,15 +741,15 @@ class MarriageCog(commands.Cog):
         if pet_exp < 1000:
             stage = "Sơ Sinh 🐣"
         elif pet_exp < 5000:
-            stage = "Trưởng Thành 🐾"
+            stage = "Trưởng Thành <a:pet_dog:1535998186450194432>"
         else:
-            stage = "Thần Thú 🌟"
+            stage = "Thần Thú <a:symbol_star_yellow:1537739289834553385>"
             
         icon_map = {
             "Chó": "<a:pet_dog:1535998186450194432>", "Mèo": "<a:pet_cat:1535998182029398046>", "Cáo": "<a:pet_fox:1535998196747210872>", "Sói": "<a:pet_wolf:1536004924708749404>", 
             "Cánh Cụt": "<a:pet_penguin:1535998208587595966>", "Thỏ": "<a:pet_bunny:1535998178115977347>", "Gấu": "<a:pet_panda:1535998202900123729>", "Rồng": "<a:pet_dragon:1535998194163523615>"
         }
-        icon = icon_map.get(base_type, "🐾")
+        icon = icon_map.get(base_type, "<a:pet_dog:1535998186450194432>")
         
         display_name = f"{pet_name_db}" if pet_name_db else f"{base_type}"
         pet_level = int(pet_exp / 200) + 1
@@ -800,12 +800,12 @@ class MarriageCog(commands.Cog):
             f"**Loài:** {base_type}\n"
             f"**Trạng Thái:** {stage}\n"
             f"**Cấp Độ:** Lv.{pet_level}  *(<:xp:1535664865308577884>: {current_exp_in_level:.1f}/200)*\n\n"
-            f"🌟 **Kỹ Năng Độc Quyền:** `{skill_name}`\n"
+            f"<a:symbol_star_yellow:1537739289834553385> **Kỹ Năng Độc Quyền:** `{skill_name}`\n"
             f"-> {skill_desc}\n\n"
             f"*(Nhận <:xp:1535664865308577884> thú cưng bằng cách tương tác, làm nhiệm vụ hoặc đi làm `{ctx.prefix}work`)*"
         )
         
-        emb = discord.Embed(title="🐾 Hồ Sơ Thú Cưng", description=desc, color=discord.Color.gold())
+        emb = discord.Embed(title="<a:pet_dog:1535998186450194432> Hồ Sơ Thú Cưng", description=desc, color=discord.Color.gold())
         await ctx.send(embed=emb)
 
     @commands.hybrid_command(name="namepet")
@@ -884,13 +884,13 @@ class MarriageCog(commands.Cog):
         exp_gain = dtm_gain * 2
         if pet_type:
             await execute_db(self.bot, "UPDATE marriages SET pet_exp = pet_exp + $1 WHERE id = $2", exp_gain, mar["id"])
-            exp_msg = f"\n✨ *Thú cưng nhận {exp_gain:.1f} <:xp:1535664865308577884>*"
+            exp_msg = f"\n<a:symbol_star_yellow:1537739289834553385> *Thú cưng nhận {exp_gain:.1f} <:xp:1535664865308577884>*"
         else:
             exp_msg = ""
             
         emb = discord.Embed(
             title="<:gift_00_symbol:1536003307011842099> Tặng Quà Thành Công!",
-            description=f"**{ctx.author.display_name}** vừa tặng **{item['icon']} {item['name']}** cho **{target.display_name}**!\nTình cảm của hai bạn tăng thêm `{dtm_gain:.1f} DTM` 💖\n\n_{item['description']}_{exp_msg}",
+            description=f"**{ctx.author.display_name}** vừa tặng **{item['icon']} {item['name']}** cho **{target.display_name}**!\nTình cảm của hai bạn tăng thêm `{dtm_gain:.1f} DTM` <a:symbol_star_pink:1537739287947382864>\n\n_{item['description']}_{exp_msg}",
             color=discord.Color.brand_red()
         )
         await ctx.send(embed=emb)
@@ -1055,7 +1055,7 @@ class MarriageCog(commands.Cog):
             if pet_type:
                 gained_exp = base_dtm * 2
                 await execute_db(self.bot, "UPDATE marriages SET pet_exp = pet_exp + $1 WHERE id = $2", gained_exp, mar["id"])
-                msg += f"\n✨ *Thú cưng nhận {gained_exp:.1f} <:xp:1535664865308577884>*"
+                msg += f"\n<a:symbol_star_yellow:1537739289834553385> *Thú cưng nhận {gained_exp:.1f} <:xp:1535664865308577884>*"
             
         msg += reset_msg + crit_msg
         
@@ -1066,10 +1066,10 @@ class MarriageCog(commands.Cog):
         emb = discord.Embed(description=msg, color=discord.Color.pink())
         
         footer_text = []
-        if buffs["dtm_bonus"] > 0: footer_text.append(f"💍 Nhẫn: +{int(buffs['dtm_bonus']*100)}% DTM")
-        if buffs["cd_reduction"] > 0: footer_text.append(f"💍 Nhẫn: -{int(buffs['cd_reduction']*100)}% CD")
-        if pet_dtm_bonus > 0: footer_text.append(f"🐾 Pet: +{pet_dtm_bonus*100:.1f}% DTM")
-        if pet_cd_reduction > 0: footer_text.append(f"🐾 Pet: -{pet_cd_reduction*100:.1f}% CD")
+        if buffs["dtm_bonus"] > 0: footer_text.append(f"<:icon_02_ring:1536017180951318528> Nhẫn: +{int(buffs['dtm_bonus']*100)}% DTM")
+        if buffs["cd_reduction"] > 0: footer_text.append(f"<:icon_02_ring:1536017180951318528> Nhẫn: -{int(buffs['cd_reduction']*100)}% CD")
+        if pet_dtm_bonus > 0: footer_text.append(f"<a:pet_dog:1535998186450194432> Pet: +{pet_dtm_bonus*100:.1f}% DTM")
+        if pet_cd_reduction > 0: footer_text.append(f"<a:pet_dog:1535998186450194432> Pet: -{pet_cd_reduction*100:.1f}% CD")
         if footer_text:
             emb.set_footer(text=" | ".join(footer_text))
         
@@ -1088,9 +1088,9 @@ class MarriageCog(commands.Cog):
             color=discord.Color.pink()
         )
         embed.add_field(name=f"🤜 Bạo lực", value=f"`{ctx.prefix}slap` (tat), `{ctx.prefix}punch` (dam), `{ctx.prefix}bite` (can), `{ctx.prefix}tickle` (choclet)", inline=False)
-        embed.add_field(name=f"💖 Nhẹ nhàng", value=f"`{ctx.prefix}poke` (choc), `{ctx.prefix}pat` (xoadau), `{ctx.prefix}saylove` (noiyeu, iuem, iuanh)", inline=False)
+        embed.add_field(name=f"<a:symbol_star_pink:1537739287947382864> Nhẹ nhàng", value=f"`{ctx.prefix}poke` (choc), `{ctx.prefix}pat` (xoadau), `{ctx.prefix}saylove` (noiyeu, iuem, iuanh)", inline=False)
         embed.add_field(name=f"🤗 Ôm ấp", value=f"`{ctx.prefix}hug` (om), `{ctx.prefix}cuddle` (auyem), `{ctx.prefix}snuggle` (nung, nũng)", inline=False)
-        embed.add_field(name=f"💋 Thân mật", value=f"`{ctx.prefix}kiss` (hon, hun), `{ctx.prefix}lick` (liem), `{ctx.prefix}nom` (mam, cắn yêu), `{ctx.prefix}fuck`, `{ctx.prefix}dutdit` (seg)", inline=False)
+        embed.add_field(name=f"<a:symbol_star_pink:1537739287947382864> Thân mật", value=f"`{ctx.prefix}kiss` (hon, hun), `{ctx.prefix}lick` (liem), `{ctx.prefix}nom` (mam, cắn yêu), `{ctx.prefix}fuck`, `{ctx.prefix}dutdit` (seg)", inline=False)
         embed.set_footer(text="Ghi chú: Lệnh có thể dùng bằng cách tag người khác hoặc reply tin nhắn của họ.")
         await ctx.send(embed=embed)
 

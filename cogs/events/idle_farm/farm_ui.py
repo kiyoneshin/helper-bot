@@ -26,7 +26,7 @@ class FarmView(discord.ui.View):
             
         ok, count = await water_all(self.bot, self.user_id)
         if count == 0:
-            await interaction.response.send_message("💦 Không có cây nào đang trong giai đoạn phát triển cần tưới!", ephemeral=True)
+            await interaction.response.send_message("<:symbol_watering_can:1536295381862715453> Không có cây nào đang trong giai đoạn phát triển cần tưới!", ephemeral=True)
             return
             
         new_farm_data = await get_farm_data(self.bot, self.user_id)
@@ -35,7 +35,7 @@ class FarmView(discord.ui.View):
         new_view = FarmView(self.bot, self.user_id, self.author, new_farm_data)
         
         await interaction.response.edit_message(embed=new_embed, view=new_view)
-        await interaction.followup.send(f"💦 Đã tưới nước cho **{count}** cây! (Thời gian sinh trưởng giảm {int(WATER_BONUS * 100)}%)", ephemeral=True)
+        await interaction.followup.send(f"<:symbol_watering_can:1536295381862715453> Đã tưới nước cho **{count}** cây! (Thời gian sinh trưởng giảm {int(WATER_BONUS * 100)}%)", ephemeral=True)
         
     @discord.ui.button(label="Thu Hoạch", emoji="<:button_harvesting:1536007671445061763>", style=discord.ButtonStyle.success, row=1)
     async def harvest_btn(self, interaction: discord.Interaction, button: discord.ui.Button):
@@ -48,7 +48,7 @@ class FarmView(discord.ui.View):
         withered = report.get("withered", 0)
         
         if not harvested and withered == 0:
-            await interaction.response.send_message("🧺 Không có cây nào sẵn sàng để thu hoạch hoặc bị héo!", ephemeral=True)
+            await interaction.response.send_message("<:icon_03_farm_field:1536017183216369815> Không có cây nào sẵn sàng để thu hoạch hoặc bị héo!", ephemeral=True)
             return
             
         new_farm_data = await get_farm_data(self.bot, self.user_id)
@@ -160,7 +160,7 @@ def build_farm_embed(author: discord.Member | discord.User, farm_data: Dict[str,
         seed_info = SEEDS.get(seed_id)
         
         if not seed_info:
-            grid_cells.append(f"[{i}] ❓")
+            grid_cells.append(f"[{i}] <:symbol_question_mark:1537739280640647178>")
             continue
             
         status, remaining = calculate_crop_status(crop, slot_key, crops)
@@ -194,9 +194,9 @@ def build_farm_embed(author: discord.Member | discord.User, farm_data: Dict[str,
             progress = elapsed / req_time if req_time > 0 else 1.0
             
             if progress < 0.3:
-                icon = "🌱"
+                icon = "<:symbol_plant:1536007706958237828>"
             elif progress < 0.8:
-                icon = "🌿"
+                icon = "<:symbol_plant:1536007706958237828>"
             else:
                 icon = seed_icon
                 
@@ -210,20 +210,20 @@ def build_farm_embed(author: discord.Member | discord.User, farm_data: Dict[str,
             else:
                 time_str = f"{mins}m {secs}s"
                 
-            water_status = "💧" if watered else "🏜️"
-            bonus_str = " (🌟 Cộng Hưởng)" if has_star else ""
+            water_status = "<:symbol_watering_can:1536295381862715453>" if watered else "🏜️"
+            bonus_str = " (<a:symbol_star_yellow:1537739289834553385> Cộng Hưởng)" if has_star else ""
             crop_details.append(f"**Ô {i}**: {seed_icon} {seed_name} — Còn {time_str} {water_status}{bonus_str}")
             
         elif status == STATUS_READY:
-            grid_cells.append(f"[{i}] 🧺")
-            crop_details.append(f"**Ô {i}**: {seed_icon} {seed_name} — **Sẵn sàng** 🧺")
+            grid_cells.append(f"[{i}] <:icon_03_farm_field:1536017183216369815>")
+            crop_details.append(f"**Ô {i}**: {seed_icon} {seed_name} — **Sẵn sàng** <:icon_03_farm_field:1536017183216369815>")
             
         elif status == STATUS_WITHERED:
             grid_cells.append(f"[{i}] 🥀")
             crop_details.append(f"**Ô {i}**: {seed_icon} {seed_name} — **Đã héo** 🥀")
             
         else:
-            grid_cells.append(f"[{i}] ❓")
+            grid_cells.append(f"[{i}] <:symbol_question_mark:1537739280640647178>")
             
     # Render Ma Trận
     matrix_str = f"**{grid_cells[0]}** | **{grid_cells[1]}** | **{grid_cells[2]}**\n"

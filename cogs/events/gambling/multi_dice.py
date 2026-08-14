@@ -663,7 +663,7 @@ class SpectatorBetView(discord.ui.View):
             self.locked_spectators.discard(uid)
 
         await interaction.response.send_message(
-            f"♻️ {interaction.user.mention} Rút hết cược, hoàn **{total_refund:,}** vào ví!",
+            f"<:symbol_reload:1536007679640600648> {interaction.user.mention} Rút hết cược, hoàn **{total_refund:,}** vào ví!",
             delete_after=5.0,
         )
 
@@ -1031,11 +1031,11 @@ class MultiDice(commands.Cog):
                             )
                         else:
                             lost = sum(sb.values())
-                            spec_lines.append(f"💸 <@{spec_uid}> cược lệch — mất trọn **{lost:,}**")
+                            spec_lines.append(f"<:symbol_money_2:1537567535229050970> <@{spec_uid}> cược lệch — mất trọn **{lost:,}**")
                 else:
                     for spec_uid, sb in spectator_bets.items():
                         lost = sum(sb.values())
-                        spec_lines.append(f"💸 <@{spec_uid}> cược lệch — mất trọn **{lost:,}**")
+                        spec_lines.append(f"<:symbol_money_2:1537567535229050970> <@{spec_uid}> cược lệch — mất trọn **{lost:,}**")
                     spec_odds = 0.0
 
                 spec_header = f"Tổng Pot Khán Đài: **{total_spec_pool:,}** — Thuế (5%): **{spec_tax:,}**"

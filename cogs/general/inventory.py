@@ -44,12 +44,12 @@ def _build_regular_embed(
     Định dạng: [ID] Icon Tên vật phẩm (xQTY) — Mô tả
     """
     CATEGORY_META = {
-        "event":       ("<:icon_08_shop:1536025530728587384> Vật phẩm Sự kiện",       0x9b59b6, f"💡 Sử dụng: `{{prefix}}use <id>`"),
-        "blackmarket": ("<:icon_05_bm:1536017187243032736> Vật phẩm Chợ đen",        0x2b2d31, f"💡 Sử dụng: `{{prefix}}use <id>`"),
-        "ring":        ("<:icon_02_ring:1536017180951318528> Nhẫn Cưới & Trang sức",  0xff69b4, f"💡 Dùng `{prefix}marry` hoặc `{prefix}upgrade_ring`"),
-        "gift":        ("<:gift_00_symbol:1536003307011842099> Quà Tặng",                0xf1c40f, f"💡 Dùng `{prefix}gift` để tặng"),
-        "lootbox":     ("<:lootbox:1535664857276489749> Hộp Quà Lootbox",         0x3498db, f"💡 Dùng `{prefix}lb open <tier>` để mở"),
-        "farm":        ("<:icon_04_seed:1536017185057546242> Hạt giống",               0x2ecc71, f"💡 Mua thêm hạt giống tại `{prefix}shop`"),
+        "event":       ("<:icon_08_shop:1536025530728587384> Vật phẩm Sự kiện",       0x9b59b6, f"<:symbol_light_bulb:1537739278765924422> Sử dụng: `{{prefix}}use <id>`"),
+        "blackmarket": ("<:icon_05_bm:1536017187243032736> Vật phẩm Chợ đen",        0x2b2d31, f"<:symbol_light_bulb:1537739278765924422> Sử dụng: `{{prefix}}use <id>`"),
+        "ring":        ("<:icon_02_ring:1536017180951318528> Nhẫn Cưới & Trang sức",  0xff69b4, f"<:symbol_light_bulb:1537739278765924422> Dùng `{prefix}marry` hoặc `{prefix}upgrade_ring`"),
+        "gift":        ("<:gift_00_symbol:1536003307011842099> Quà Tặng",                0xf1c40f, f"<:symbol_light_bulb:1537739278765924422> Dùng `{prefix}gift` để tặng"),
+        "lootbox":     ("<:lootbox:1535664857276489749> Hộp Quà Lootbox",         0x3498db, f"<:symbol_light_bulb:1537739278765924422> Dùng `{prefix}lb open <tier>` để mở"),
+        "farm":        ("<:icon_04_seed:1536017185057546242> Hạt giống",               0x2ecc71, f"<:symbol_light_bulb:1537739278765924422> Mua thêm hạt giống tại `{prefix}shop`"),
     }
     title, color, footer = CATEGORY_META.get(category, ("<:icon_07_inventory:1535664855300710422> Túi đồ", 0x7289da, ""))
 
@@ -139,7 +139,7 @@ def _build_farm_embed(
     inventory = farm_data.get("inventory", {})
     if not inventory:
         embed.description = "*Kho đồ trống. Hãy đi trồng trọt, câu cá hoặc đào mỏ nhé!*"
-        embed.set_footer(text="💡 Dùng các nút bên dưới để bán vật phẩm.")
+        embed.set_footer(text="<:symbol_light_bulb:1537739278765924422> Dùng các nút bên dưới để bán vật phẩm.")
         return embed
 
     seed_lines, crop_lines, ore_lines, wood_lines, fish_lines, artisan_lines = [], [], [], [], [], []
@@ -169,7 +169,7 @@ def _build_farm_embed(
             fish = FISH_LOOT[item_id]
             price = fish.get("price", 0)
             total_fish_worth += price * count
-            rare = "⭐" if fish.get("rare_rank", 0) >= 3 else ""
+            rare = "<a:symbol_star_yellow:1537739289834553385>" if fish.get("rare_rank", 0) >= 3 else ""
             fish_lines.append(
                 f"• `[{item_id}]` {fish['icon']} {rare}**{fish['name']}** (x{count})"
                 f" — {price:,} điểm/cái"
@@ -247,7 +247,7 @@ def _build_farm_embed(
             inline=False,
         )
 
-    embed.set_footer(text="💡 Dùng các nút bên dưới để bán vật phẩm.")
+    embed.set_footer(text="<:symbol_light_bulb:1537739278765924422> Dùng các nút bên dưới để bán vật phẩm.")
     return embed
 
 
@@ -275,7 +275,7 @@ class SellItemModal(discord.ui.Modal):
     )
 
     def __init__(self, bot: commands.Bot, user_id: str, view: "InventoryView"):
-        super().__init__(title="🏷️ Bán Vật Phẩm Nông Trại")
+        super().__init__(title="<:icon_05_bm:1536017187243032736> Bán Vật Phẩm Nông Trại")
         self.bot = bot
         self.user_id = user_id
         self._view = view
@@ -485,7 +485,7 @@ class InventoryView(discord.ui.View):
 
         # Khai báo sẵn 4 nút bán (ẩn khi không ở tab farm)
         self.btn_sell_item = discord.ui.Button(
-            label="Bán theo Loại & Số lượng", emoji="🏷️",
+            label="Bán theo Loại & Số lượng", emoji="<:icon_05_bm:1536017187243032736>",
             style=discord.ButtonStyle.primary, row=1,
         )
         self.btn_sell_crops = discord.ui.Button(
@@ -626,7 +626,7 @@ class UnifiedInventoryCog(commands.Cog):
     @commands.hybrid_command(
         name="use",
         aliases=["dung", "xai"],
-        description="✨ Dùng vật phẩm theo ID số. Cú pháp: use <id> [@mục tiêu]",
+        description="<a:symbol_star_yellow:1537739289834553385> Dùng vật phẩm theo ID số. Cú pháp: use <id> [@mục tiêu]",
     )
     async def use_cmd(
         self,
@@ -732,7 +732,7 @@ class UnifiedInventoryCog(commands.Cog):
         target_display = target.mention if target else "bản thân"
         embed = discord.Embed(
             description=(
-                f"✨ {ctx.author.mention} vừa sử dụng **{item['icon']} {item['name']}**"
+                f"<a:symbol_star_yellow:1537739289834553385> {ctx.author.mention} vừa sử dụng **{item['icon']} {item['name']}**"
                 f" lên {target_display}!"
             ),
             color=0x57f287,
@@ -762,7 +762,7 @@ class UnifiedInventoryCog(commands.Cog):
             # except discord.Forbidden:
             #     await ctx.send("<:symbol_ban:1537546960003801319> Bot không đủ quyền timeout người này!")
             #     return
-            await ctx.send(f"🔨 {target.mention} đã bị dán băng keo vào miệng trong 1 phút!")
+            await ctx.send(f"<:symbol_demolish:1537466095412314192> {target.mention} đã bị dán băng keo vào miệng trong 1 phút!")
 
         elif db_key == "timeout_5m":
             assert isinstance(target, discord.Member)
@@ -771,7 +771,7 @@ class UnifiedInventoryCog(commands.Cog):
             # except discord.Forbidden:
             #     await ctx.send("<:symbol_ban:1537546960003801319> Bot không đủ quyền timeout người này!")
             #     return
-            await ctx.send(f"🔨 {target.mention} đã bị dán băng keo vào miệng trong 5 phút!")
+            await ctx.send(f"<:symbol_demolish:1537466095412314192> {target.mention} đã bị dán băng keo vào miệng trong 5 phút!")
 
         elif db_key == "ghost_ping_card":
             assert isinstance(target, discord.Member)
@@ -796,7 +796,7 @@ class UnifiedInventoryCog(commands.Cog):
         elif db_key == "fake_ban_card":
             assert isinstance(target, discord.Member)
             fake_embed = discord.Embed(
-                title="🔨 THÔNG BÁO BAN!",
+                title="<:symbol_demolish:1537466095412314192> THÔNG BÁO BAN!",
                 description=f"**{target.mention}** đã bị cấm vĩnh viễn khỏi máy chủ.\n**Lý do:** Vi phạm nội quy cực kỳ nghiêm trọng.",
                 color=0xFF0000
             )

@@ -1,16 +1,29 @@
-"""
-wheel_slot.py — Cog Vòng Quay May Mắn (Wheel of Fortune)
-=========================================================
-Lệnh: kwheel <tien_cuoc>
-
-Vòng quay gồm 16 ô theo tỷ lệ:
-   Tím      (1 ô,  6.25%) → x9.0  (+800%)
-   Xanh lá  (1 ô,  6.25%) → x1.8  (+80%)
-   Đỏ       (1 ô,  6.25%) → -100%
-   Vàng     (1 ô,  6.25%) → -100% + 1 Vé Xổ Số
-   Cam      (4 ô, 25.00%) → -50%
-   Nâu      (4 ô, 25.00%) → -75%
-   Xanh dương (4 ô, 25.00%) → -90%
+"""
+
+wheel_slot.py — Cog Vòng Quay May Mắn (Wheel of Fortune)
+
+=========================================================
+
+Lệnh: kwheel <tien_cuoc>
+
+
+
+Vòng quay gồm 16 ô theo tỷ lệ:
+
+   Tím      (1 ô,  6.25%) → x9.0  (+800%)
+
+   Xanh lá  (1 ô,  6.25%) → x1.8  (+80%)
+
+   Đỏ       (1 ô,  6.25%) → -100%
+
+   Vàng     (1 ô,  6.25%) → -100% + 1 Vé Xổ Số
+
+   Cam      (4 ô, 25.00%) → -50%
+
+   Nâu      (4 ô, 25.00%) → -75%
+
+   Xanh dương (4 ô, 25.00%) → -90%
+
   """
 
 import random
@@ -135,15 +148,24 @@ def _parse_bet(raw: str, balance: int) -> tuple[Optional[int], Optional[str], bo
 # ─────────────────────────────────────────────────────────────────────────────
 
 def _render_wheel(stop_idx: int) -> str:
-    """
-    Render lưới 7×8 từ mảng BASE_WHEEL cố định với chỉ số dừng `stop_idx`.
-
-    Thuật toán Slice Rotation:
-    1. display_wheel = BASE_WHEEL[stop_idx:] + BASE_WHEEL[:stop_idx]
-       → display_wheel[0] luôn là ô kết quả (nằm ngay dưới mũi tên ).
-    2. Điền 16 emoji theo thứ tự TRACK vào lưới 7×7.
-    3. Ô trung tâm (3,3) = ⬜, ô trống = ⬛.
-    4. Thêm dòng mũi tên "⬛ ⬛ ⬛  ⬛ ⬛ ⬛" lên đầu.
+    """
+
+    Render lưới 7×8 từ mảng BASE_WHEEL cố định với chỉ số dừng `stop_idx`.
+
+
+
+    Thuật toán Slice Rotation:
+
+    1. display_wheel = BASE_WHEEL[stop_idx:] + BASE_WHEEL[:stop_idx]
+
+       → display_wheel[0] luôn là ô kết quả (nằm ngay dưới mũi tên ).
+
+    2. Điền 16 emoji theo thứ tự TRACK vào lưới 7×7.
+
+    3. Ô trung tâm (3,3) = ⬜, ô trống = ⬛.
+
+    4. Thêm dòng mũi tên "⬛ ⬛ ⬛  ⬛ ⬛ ⬛" lên đầu.
+
     """
     # Bước 1 — Xoay mảng cố định bằng slice, không shuffle
     arranged: list[str] = BASE_WHEEL[stop_idx:] + BASE_WHEEL[:stop_idx]
@@ -170,7 +192,7 @@ def _render_wheel(stop_idx: int) -> str:
 # THUẬT TOÁN MÁY XẺNG (SLOTS)
 # ─────────────────────────────────────────────────────────────────────────────
 
-SLOT_SYMBOLS = ["💎", "💯", "🍀", "<:gift_00_symbol:1536003307011842099>", "✨"]
+SLOT_SYMBOLS = ["💎", "💯", "🍀", "<:gift_00_symbol:1536003307011842099>", "<a:symbol_star_yellow:1537739289834553385>"]
 
 def _generate_slots() -> list[str]:
     """Sinh mảng 5 emoji cho trò chơi Slots dựa trên tỉ lệ Hạng Giải."""
@@ -204,15 +226,15 @@ def _evaluate_slots(slots_list: list[str]) -> tuple[float, str]:
     max_count = counts[max_sym]
     
     if max_count == 5:
-        payouts = {"💎": 25.0, "💯": 20.0, "🍀": 18.0, "<:gift_00_symbol:1536003307011842099>": 16.0, "✨": 15.0}
+        payouts = {"💎": 25.0, "💯": 20.0, "🍀": 18.0, "<:gift_00_symbol:1536003307011842099>": 16.0, "<a:symbol_star_yellow:1537739289834553385>": 15.0}
         mult = payouts[max_sym]
         return mult, f"x{mult:.1f} - JACKPOT 5 {max_sym}! Đổi đời rồiiii!"
     elif max_count == 4:
-        payouts = {"💎": 5.0, "💯": 4.5, "🍀": 4.0, "<:gift_00_symbol:1536003307011842099>": 3.5, "✨": 3.0}
+        payouts = {"💎": 5.0, "💯": 4.5, "🍀": 4.0, "<:gift_00_symbol:1536003307011842099>": 3.5, "<a:symbol_star_yellow:1537739289834553385>": 3.0}
         mult = payouts[max_sym]
         return mult, f"x{mult:.1f} - Lụm 4 {max_sym}!"
     elif max_count == 3:
-        payouts = {"💎": 1.8, "💯": 1.6, "🍀": 1.5, "<:gift_00_symbol:1536003307011842099>": 1.3, "✨": 1.2}
+        payouts = {"💎": 1.8, "💯": 1.6, "🍀": 1.5, "<:gift_00_symbol:1536003307011842099>": 1.3, "<a:symbol_star_yellow:1537739289834553385>": 1.2}
         mult = payouts[max_sym]
         return mult, f"x{mult:.1f} - Vớt vát 3 {max_sym}!"
     else:
@@ -296,7 +318,7 @@ class WheelSlots(commands.Cog):
             embed_color = COLOR_LOSE
 
         if is_win:
-            result_emoji = "🌟" if winning_emoji == "🟪" else "🟢"
+            result_emoji = "<a:symbol_star_yellow:1537739289834553385>" if winning_emoji == "🟪" else "🟢"
         else:
             result_emoji = "🔴"
 
@@ -393,7 +415,7 @@ class WheelSlots(commands.Cog):
         
         if mult >= 15.0:
             embed_color = COLOR_SPECIAL
-            result_name = "🌟 Kết quả"
+            result_name = "<a:symbol_star_yellow:1537739289834553385> Kết quả"
             result_val = f"+{delta:,}  *({desc})*"
         elif mult > 0:
             embed_color = COLOR_WIN

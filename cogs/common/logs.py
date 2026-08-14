@@ -122,7 +122,7 @@ def build_log_edit_tags(
 ) -> discord.Embed:
     """Chỉnh Sửa Tags (kset → Sửa Tags)"""
     embed = discord.Embed(
-        title="🏷️ Nhật Ký: Cập Nhật Tags",
+        title="<:icon_05_bm:1536017187243032736> Nhật Ký: Cập Nhật Tags",
         color=COLOR_EDIT,
     )
     embed.add_field(name="Thao tác", value="Sửa danh sách Tags", inline=True)
@@ -172,7 +172,7 @@ def build_log_vote(
     """Gửi Mới / Cập Nhật Đánh Giá (Vote)"""
     action_str = "Chỉnh sửa đánh giá cũ" if is_update else "Gửi đánh giá mới"
     embed = discord.Embed(
-        title="⭐ Nhật Ký: Đánh Giá Staff",
+        title="<a:symbol_star_yellow:1537739289834553385> Nhật Ký: Đánh Giá Staff",
         color=COLOR_EDIT,
     )
     embed.add_field(name="Thao tác", value=action_str, inline=True)
@@ -181,9 +181,9 @@ def build_log_vote(
     embed.add_field(name="Nhân sự được đánh giá", value=f"<@{target_id}> ({target_name})", inline=False)
 
     if is_update and old_score is not None:
-        rating_str = f"⭐ {old_score} ➔ {new_score} / 5.0"
+        rating_str = f"<a:symbol_star_yellow:1537739289834553385> {old_score} ➔ {new_score} / 5.0"
     else:
-        rating_str = f"⭐ {new_score} / 5.0"
+        rating_str = f"<a:symbol_star_yellow:1537739289834553385> {new_score} / 5.0"
     embed.add_field(name="Mức điểm (Rating)", value=rating_str, inline=True)
     embed.add_field(name="Nội dung nhận xét", value=review_text, inline=False)
     embed.set_footer(text=f"Hệ thống log tự động • {_now_str()} UTC+7")

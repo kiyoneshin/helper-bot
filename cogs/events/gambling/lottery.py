@@ -281,7 +281,7 @@ class Lottery(commands.Cog):
             inline=True
         )
         embed.add_field(
-            name="🕒 Kỳ quay tiếp theo",
+            name="<a:symbol_clock:1537570144375541870> Kỳ quay tiếp theo",
             value=f"<t:{draw_timestamp}:R>",
             inline=False
         )
@@ -338,7 +338,7 @@ class Lottery(commands.Cog):
         await add_event_points(self.bot, uid, refund, is_earned=False)
 
         await ctx.send(
-            f"♻️ {ctx.author.mention} Bán lúa non à? Sòng thu hồi **{amount:,}** vé, hoàn lại **{refund:,}** điểm.\n"
+            f"<:symbol_reload:1536007679640600648> {ctx.author.mention} Bán lúa non à? Sòng thu hồi **{amount:,}** vé, hoàn lại **{refund:,}** điểm.\n"
             f"Giờ chỉ còn **{current_tickets - amount:,}** vé thôi nhé!",
             delete_after=5.0
         )

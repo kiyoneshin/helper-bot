@@ -59,7 +59,7 @@ class JailGames(commands.Cog):
 
         # Thông báo đang tung
         embed_toss = discord.Embed(
-            title="🪙 Đồng Xu Sinh Tử!",
+            title="<a:symbol_spinning_coin:1537739282452586536> Đồng Xu Sinh Tử!",
             description=(
                 f"{ctx.author.mention} run run tung đồng xu...\n\n"
                 f"**Thắng:** Giảm **5 án** (còn {max(0, current-5)})\n"
@@ -82,7 +82,7 @@ class JailGames(commands.Cog):
 
             if freed:
                 embed_result = discord.Embed(
-                    title=f"🪙 {coin_face} — THẮNG & TỰ DO!",
+                    title=f"<a:symbol_spinning_coin:1537739282452586536> {coin_face} — THẮNG & TỰ DO!",
                     description=f"<:symbol_confetti:1537570146313306183> {ctx.author.mention} Ngửa đồng xu! Hoàn thành cải tạo — thả tù ngay!",
                     color=COLOR_FREE,
                 )
@@ -94,7 +94,7 @@ class JailGames(commands.Cog):
                 )
                 remaining = int(new_row["clean_count"]) if new_row else 0
                 embed_result = discord.Embed(
-                    title=f"🪙 {coin_face} — THẮNG!",
+                    title=f"<a:symbol_spinning_coin:1537739282452586536> {coin_face} — THẮNG!",
                     description=(
                         f"<:symbol_confetti:1537570146313306183> {ctx.author.mention} Ngửa đồng xu!\n"
                         f"Giảm **5 án** — còn lại **{remaining}** lần."
@@ -104,7 +104,7 @@ class JailGames(commands.Cog):
         else:
             new_count = await add_penalty(self.bot, uid, 10)
             embed_result = discord.Embed(
-                title=f"🪙 {coin_face} — THUA!",
+                title=f"<a:symbol_spinning_coin:1537739282452586536> {coin_face} — THUA!",
                 description=(
                     f"💀 {ctx.author.mention} Đen đủi! Sấp đồng xu!\n"
                     f"Tăng **10 án** — giờ còn **{new_count}** lần lau dọn. Chơi dao thì đứt tay! 🩸"
@@ -171,7 +171,7 @@ class JailGames(commands.Cog):
             if isinstance(ctx.author, discord.Member):
                 await release_member(self.bot, ctx.author)
             embed_result = discord.Embed(
-                title="🎊 VƯỢT NGỤC THÀNH CÔNG!",
+                title="<:symbol_confetti:1537570146313306183> VƯỢT NGỤC THÀNH CÔNG!",
                 description=(
                     f"🏃💨 {ctx.author.mention} **LỌT RÀO!**\n\n"
                     "Không ai ngăn được màk Tự do hoàn toàn — role và nickname đã khôi phục!\n"

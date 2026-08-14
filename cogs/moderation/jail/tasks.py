@@ -94,7 +94,7 @@ class JailTasks(commands.Cog):
             user_answer = int(msg.content.strip())
         except asyncio.TimeoutError:
             await ctx.send(
-                f"⌛ {ctx.author.mention} Hết giờ rồi! Học dốt vừa thôi! Thử lại sau.",
+                f"<:symbol_hour_glass:1537570149215899658> {ctx.author.mention} Hết giờ rồi! Học dốt vừa thôi! Thử lại sau.",
                 delete_after=8.0,
             )
             return
@@ -108,7 +108,7 @@ class JailTasks(commands.Cog):
 
             if freed:
                 embed_ok = discord.Embed(
-                    title="🎓 Thiên Tài! Trả Tự Do!",
+                    title="<:achievements:1535664842977976400> Thiên Tài! Trả Tự Do!",
                     description=f"<:symbol_right:1536629912515903578> {ctx.author.mention} Đúng! Đáp án là **{answer}**.\nHoàn thành cải tạo — thả tù ngay!",
                     color=COLOR_FREE,
                 )

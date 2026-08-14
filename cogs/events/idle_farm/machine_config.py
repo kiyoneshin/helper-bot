@@ -81,7 +81,7 @@ RECIPES: Dict[str, RecipeConfig] = {
         "output_qty": 1,
         "duration_seconds": 12 * 60 * 60,  # 12h
         "sell_price": 50000,
-        "description": "Ngôi Sao 🌟 x1 → Linh Tửu x1 (12 tiếng)",
+        "description": "Ngôi Sao <a:symbol_star_yellow:1537739289834553385> x1 → Linh Tửu x1 (12 tiếng)",
     },
 
     # --- PRESERVES JAR ---

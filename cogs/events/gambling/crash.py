@@ -161,7 +161,7 @@ class BetModal(discord.ui.Modal, title="<:symbol_money_bag:1537567538097954896> 
 
         await interaction.response.send_message(
             f"<:symbol_right:1536629912515903578> **Ghi nhận!** Bạn đã xuống xác **{bet:,}** điểm.\n"
-            "Tiền đã được nhà cái giữ. Chờ bóng bay nhé! 🚀",
+            "Tiền đã được nhà cái giữ. Chờ bóng bay nhé!",
             ephemeral=True,
         )
 
@@ -421,7 +421,7 @@ def _build_crash_embed(
                     f"<@{uid}> • Vốn **{bet:,}** → Còn **{payout:,}** (Cắt lỗ **{abs(profit):,}**)"
                 )
         embed.add_field(
-            name="🏅 Bảng Vàng — Nhảy Dù Kịp",
+            name="<:achievements:1535664842977976400> Bảng Vàng — Nhảy Dù Kịp",
             value="\n".join(gold_lines),
             inline=False,
         )

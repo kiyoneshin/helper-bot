@@ -123,8 +123,8 @@ class StaffTestCog(commands.Cog):
             )
 
             await ctx.send(
-                f"💖 **[TEST SUCCESS]** Đã bơm điểm ảo **{score} ⭐** cho **{row['display_name']}** với ID `{fake_tester_id}`!\n"
-                f"➡️ Điểm trung bình mới cập nhật: **⭐ {new_avg}/5.0** ({len(scores)} lượt)"
+                f"<a:symbol_star_pink:1537739287947382864> **[TEST SUCCESS]** Đã bơm điểm ảo **{score} <a:symbol_star_yellow:1537739289834553385>** cho **{row['display_name']}** với ID `{fake_tester_id}`!\n"
+                f"➡️ Điểm trung bình mới cập nhật: **<a:symbol_star_yellow:1537739289834553385> {new_avg}/5.0** ({len(scores)} lượt)"
             )
         except Exception as e:
             await ctx.send(f"Lỗi khi bơm điểm test: {e}")
@@ -178,7 +178,7 @@ class StaffTestCog(commands.Cog):
 
             await ctx.send(
                 f"🧹 **[TEST CLEANUP]** Đã lọc và xóa **{removed_count} lượt vote ảo** khỏi hồ sơ của **{row['display_name']}**!\n"
-                f"➡️ Điểm trung bình thực tế còn lại: **⭐ {new_avg}/5.0** ({len(scores)} lượt thực)"
+                f"➡️ Điểm trung bình thực tế còn lại: **<a:symbol_star_yellow:1537739289834553385> {new_avg}/5.0** ({len(scores)} lượt thực)"
             )
         except Exception as e:
             await ctx.send(f"Lỗi khi dọn điểm test: {e}")

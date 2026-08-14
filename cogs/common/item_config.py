@@ -67,7 +67,7 @@ ITEM_REGISTRY: dict[int, ItemEntry] = {
     14: {
         "id":          14,
         "name":        "Role Biểu Tượng Vĩnh Viễn",
-        "icon":        "👑",
+        "icon":        "<:lb_06_godly:1535552639834783764>",
         "price":       70000,
         "description": "Nhận role biểu tượng vĩnh viễn (Giới hạn: 5 slot).",
         "db_key":      "item_4",
@@ -87,7 +87,7 @@ ITEM_REGISTRY: dict[int, ItemEntry] = {
     16: {
         "id":          16,
         "name":        "Thẻ Tăng Vận",
-        "icon":        "✨",
+        "icon":        "<a:symbol_star_yellow:1537739289834553385>",
         "price":       None,
         "description": "Tăng 50% tỉ lệ drop lootbox từ fish/mine/chop và tăng tỉ lệ rank cao khi mở hộp trong 30 phút.",
         "db_key":      "boost_card",
@@ -107,7 +107,7 @@ ITEM_REGISTRY: dict[int, ItemEntry] = {
     22: {
         "id":          22,
         "name":        "Búa Gõ 1 Phút",
-        "icon":        "🔨",
+        "icon":        "<:symbol_demolish:1537466095412314192>",
         "price":       3000,
         "description": "Timeout mục tiêu 1 phút (cấm chat/voice).",
         "db_key":      "timeout_1m",
@@ -147,7 +147,7 @@ ITEM_REGISTRY: dict[int, ItemEntry] = {
     26: {
         "id":          26,
         "name":        "Búa Gõ 5 Phút",
-        "icon":        "🔨",
+        "icon":        "<:symbol_demolish:1537466095412314192>",
         "price":       10000,
         "description": "Timeout mục tiêu 5 phút (cấm chat/voice).",
         "db_key":      "timeout_5m",
@@ -397,7 +397,7 @@ ITEM_REGISTRY: dict[int, ItemEntry] = {
     51: {
         "id":          51,
         "name":        "Hạt Giống Lúa Mì",
-        "icon":        "🌾",
+        "icon":        "<:farm_00_wheat:1535940025080881152>",
         "price":       100,
         "description": "Cây cơ bản, thu hoạch sau 30 phút.",
         "db_key":      "seed_wheat",
@@ -457,7 +457,7 @@ ITEM_REGISTRY: dict[int, ItemEntry] = {
     57: {
         "id":          57,
         "name":        "Hạt Giống Ngôi Sao",
-        "icon":        "⭐",
+        "icon":        "<a:symbol_star_yellow:1537739289834553385>",
         "price":       2000,
         "description": "Cây hiếm với phần thưởng ngẫu nhiên, thu hoạch sau 24 tiếng.",
         "db_key":      "seed_star",

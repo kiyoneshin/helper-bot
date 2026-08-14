@@ -55,7 +55,7 @@ DUCK_EMOJI: dict[str, str] = {
     "do":   "🔴",
     "xanh": "🔵",
     "vang": "🟡",
-    "hong": "💖",
+    "hong": "<a:symbol_star_pink:1537739287947382864>",
     "yon":  "🦆",
 }
 
@@ -524,7 +524,7 @@ class DuckRace(commands.Cog):
         await _apply_delta(self.bot, uid, bet_amount)
 
         await ctx.send(
-            f"♻️ {ctx.author.mention} Đã hủy kèo vào {duck_emoji} **{duck_label}**!\n"
+            f"<:symbol_reload:1536007679640600648> {ctx.author.mention} Đã hủy kèo vào {duck_emoji} **{duck_label}**!\n"
             f"Hoàn lại **{bet_amount:,}** về ví. Suy nghĩ kỹ trước khi cược lần sau nhé! 😄"
         )
 

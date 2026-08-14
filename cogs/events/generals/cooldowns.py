@@ -170,7 +170,7 @@ class CooldownsCog(commands.Cog):
                 machine_str = f"--/{total_machines}"
             elif total_ready > 0:
                 machine_ready = True
-                machine_str = f"{total_ready}/{total_machines} 🧺"
+                machine_str = f"{total_ready}/{total_machines} <:icon_03_farm_field:1536017183216369815>"
             else:
                 machine_ready = False
                 earliest = min((item.get("finish_time", 0) for _, item in machine_queue if item.get("status") == "processing"), default=0)
@@ -209,7 +209,7 @@ class CooldownsCog(commands.Cog):
             farm_str = f"--/{total_slots}"
         elif total_ready > 0:
             farm_ready = True
-            farm_str = f"{total_ready}/{total_slots} 🧺"
+            farm_str = f"{total_ready}/{total_slots} <:icon_03_farm_field:1536017183216369815>"
         else:
             farm_ready = False
             farm_str = f"0/{total_slots} ({format_timedelta(timedelta(seconds=earliest_crop))})"
@@ -220,7 +220,7 @@ class CooldownsCog(commands.Cog):
             _format_cd(machine_ready, "machine / craft", machine_str),
         ]
         
-        embed.add_field(name="✨ Progress", value="\n".join(progress_lines), inline=False)
+        embed.add_field(name="<a:symbol_star_yellow:1537739289834553385> Progress", value="\n".join(progress_lines), inline=False)
         
         # -------------------------------------------------------------
         # 3. ACTIONS

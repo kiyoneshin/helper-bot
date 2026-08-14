@@ -61,7 +61,7 @@ def build_embed(user_data: dict, member: Optional[discord.Member] = None, photo_
     role_name = user_data.get('role', 'staff')
 
     embed = discord.Embed(
-        title=f"✨ {display_name} ✨",
+        title=f"<a:symbol_star_yellow:1537739289834553385> {display_name} <a:symbol_star_yellow:1537739289834553385>",
         color=0xffb6c1
     )
 

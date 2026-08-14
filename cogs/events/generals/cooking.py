@@ -145,7 +145,7 @@ class CookingCog(commands.Cog):
         
         now = time.time()
         
-        embed = discord.Embed(title="✨ Danh sách Hiệu Ứng (Boosts)", color=0xFFD700)
+        embed = discord.Embed(title="<a:symbol_star_yellow:1537739289834553385> Danh sách Hiệu Ứng (Boosts)", color=0xFFD700)
         
         from cogs.common.item_config import ITEM_REGISTRY
 
@@ -163,7 +163,7 @@ class CookingCog(commands.Cog):
         }
         
         # P2W
-        embed.add_field(name="👑 Đặc Quyền P2W", value=f"Hệ số nhân: **x{p2w}** điểm.", inline=False)
+        embed.add_field(name="<:lb_06_godly:1535552639834783764> Đặc Quyền P2W", value=f"Hệ số nhân: **x{p2w}** điểm.", inline=False)
         active_count = 1
         for b_key, b_data in boosts.items():
             expires_at = b_data.get("expires_at", 0)
@@ -178,7 +178,7 @@ class CookingCog(commands.Cog):
                     meta = ITEM_REGISTRY[item_id]
                     name = f"{meta['icon']} {meta['name']} ({b_key})"
                 else:
-                    name = f"🔧 Hiệu ứng chưa rõ ({b_key})"
+                    name = f"<:symbol_gear:1536007677468082266> Hiệu ứng chưa rõ ({b_key})"
                 
                 if b_key == "stamina_regen":
                     desc = f"+ {int(b_val*100)}% Tốc độ hồi thể lực. Hết hạn: {time_left}"
@@ -214,7 +214,7 @@ class CookingCog(commands.Cog):
             
             buffs = RING_BUFFS.get(ring_id, {"dtm_bonus": 0.0, "cd_reduction": 0.0, "work_bonus": 1.0})
             if buffs["cd_reduction"] > 0 or buffs["dtm_bonus"] > 0:
-                ring_icon, ring_name = "💍", "Nhẫn Cưới"
+                ring_icon, ring_name = "<:icon_02_ring:1536017180951318528>", "Nhẫn Cưới"
                 if ring_id and ring_id in ITEM_REGISTRY:
                     ring_meta = ITEM_REGISTRY[ring_id]
                     ring_icon = ring_meta["icon"]
@@ -237,7 +237,7 @@ class CookingCog(commands.Cog):
                     pet_cd = pet_level * 0.0035
             
             if pet_cd > 0 or pet_dtm > 0:
-                embed.add_field(name="🐾 Thú Cưng", value=f"- Giảm Cooldown: **{pet_cd*100:.1f}%**\n- Tăng DTM: **{pet_dtm*100:.1f}%**", inline=False)
+                embed.add_field(name="<a:pet_dog:1535998186450194432> Thú Cưng", value=f"- Giảm Cooldown: **{pet_cd*100:.1f}%**\n- Tăng DTM: **{pet_dtm*100:.1f}%**", inline=False)
                 active_count += 1
                 
         if active_count == 0:

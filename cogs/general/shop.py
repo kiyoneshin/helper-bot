@@ -56,7 +56,7 @@ def build_shop_embed(category: str, author: discord.Member | discord.User, prefi
         "gift":        ("<:gift_00_symbol:1536003307011842099> Quà Tặng",                0xff69b4),
         "lootbox":     ("<:lootbox:1535664857276489749> Cửa Hàng Lootbox",        0x3498db),
     }
-    title, color = CATEGORY_META.get(category, ("🛒 Cửa Hàng", 0x7289da))
+    title, color = CATEGORY_META.get(category, ("<:icon_08_shop:1536025530728587384> Cửa Hàng", 0x7289da))
 
     embed = discord.Embed(title=title, color=color)
     embed.set_author(name=author.display_name, icon_url=author.display_avatar.url)
@@ -89,9 +89,9 @@ def build_shop_embed(category: str, author: discord.Member | discord.User, prefi
         embed.description = "*Không có vật phẩm nào để mua ở mục này.*"
 
     if category == "blackmarket":
-        embed.set_footer(text=f"💡 Lưu ý: Cửa hàng này chỉ để xem. Bạn chỉ có thể mua bằng lệnh {prefix}ebuy khi Chợ Đêm mở ({prefix}choden)!")
+        embed.set_footer(text=f"<:symbol_light_bulb:1537739278765924422> Lưu ý: Cửa hàng này chỉ để xem. Bạn chỉ có thể mua bằng lệnh {prefix}ebuy khi Chợ Đêm mở ({prefix}choden)!")
     else:
-        embed.set_footer(text=f"💡 Hướng dẫn: Dùng lệnh {prefix}buy <id> [số_lượng] để mua vật phẩm.")
+        embed.set_footer(text=f"<:symbol_light_bulb:1537739278765924422> Hướng dẫn: Dùng lệnh {prefix}buy <id> [số_lượng] để mua vật phẩm.")
     return embed
 
 
@@ -292,7 +292,7 @@ async def _buy_event_item(
                 f"Yêu cầu của bạn đã được ghi nhận. Ban Quản Trị sẽ sớm liên hệ."
             )
             await ctx.channel.send(
-                f"👑 Chúc mừng {ctx.author.mention} vừa đổi thành công **{item['name']}** "
+                f"<:lb_06_godly:1535552639834783764> Chúc mừng {ctx.author.mention} vừa đổi thành công **{item['name']}** "
                 f"(với giá {total:,} điểm)! Hãy chờ Admin trao giải nhé!"
             )
         else:
@@ -387,7 +387,7 @@ class ShopCog(commands.Cog):
     @commands.hybrid_command(
         name="shop",
         aliases=["cuahang", "store"],
-        description="🛒 Xem cửa hàng vật phẩm. Mở nhanh tab: shop [farm/bm/ring/gift]",
+        description="<:icon_08_shop:1536025530728587384> Xem cửa hàng vật phẩm. Mở nhanh tab: shop [farm/bm/ring/gift]",
     )
     async def shop_cmd(self, ctx: commands.Context, tab: Optional[str] = None) -> None:
         """Mở cửa hàng tổng hợp bằng Dropdown UI."""
@@ -408,7 +408,7 @@ class ShopCog(commands.Cog):
     @commands.hybrid_command(
         name="buy",
         aliases=["mua"],
-        description="🛒 Mua vật phẩm theo ID. Cú pháp: buy <id> [số_lượng]",
+        description="<:icon_08_shop:1536025530728587384> Mua vật phẩm theo ID. Cú pháp: buy <id> [số_lượng]",
     )
     async def buy_cmd(self, ctx: commands.Context, item_id: int, amount: int = 1) -> None:
         """Mua vật phẩm theo ID số trong ITEM_REGISTRY."""

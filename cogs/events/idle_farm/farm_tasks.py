@@ -52,7 +52,7 @@ class FarmTasksCog(commands.Cog):
                         if isinstance(channel, discord.TextChannel | discord.Thread | discord.VoiceChannel):
                             try:
                                 await channel.send(
-                                    f"⚡ <@{user_id}> Thể lực của bạn đã hồi đầy **{MAX_STAMINA}/{MAX_STAMINA}**! Đã đến lúc trở lại làm việc rồi đó~ 🌟"
+                                    f"⚡ <@{user_id}> Thể lực của bạn đã hồi đầy **{MAX_STAMINA}/{MAX_STAMINA}**! Đã đến lúc trở lại làm việc rồi đó~ <a:symbol_star_yellow:1537739289834553385>"
                                 )
                                 # Đánh dấu đã ping, tránh ping liên tục
                                 await execute_db(

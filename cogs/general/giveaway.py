@@ -268,7 +268,7 @@ class GiveawaySession:
     async def start(self):
         emb = self._build_preview_embed()
         self.msg = await self.ctx.send(embed=emb)
-        self.prompt_msg = await self.ctx.send("🔄 Đang khởi tạo...")
+        self.prompt_msg = await self.ctx.send("<:symbol_reload:1536007679640600648> Đang khởi tạo...")
         
         try:
             if self.is_fga:

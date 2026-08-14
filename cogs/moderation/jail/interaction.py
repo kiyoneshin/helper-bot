@@ -139,7 +139,7 @@ class JailInteraction(commands.Cog):
             embed = discord.Embed(
                 title="<:symbol_confetti:1537570146313306183> Lòng Tốt Đã Giải Phóng!",
                 description=(
-                    f"💖 {ctx.author.mention} vứt vào chuồng miếng xương thơm...\n"
+                    f"<a:symbol_star_pink:1537739287947382864> {ctx.author.mention} vứt vào chuồng miếng xương thơm...\n"
                     f"{member.mention} vừa được hoàn thành án hạn — **TỰ DO**!"
                 ),
                 color=COLOR_FREE,
@@ -154,7 +154,7 @@ class JailInteraction(commands.Cog):
             embed = discord.Embed(
                 title="🍖 Cho Cún Ăn Vặt!",
                 description=(
-                    f"💖 {ctx.author.mention} tốt bụng cho {member.mention} ăn!\n"
+                    f"<a:symbol_star_pink:1537739287947382864> {ctx.author.mention} tốt bụng cho {member.mention} ăn!\n"
                     f"Giảm **1 án** — còn lại **{remaining}** lần lau dọn nữa."
                 ),
                 color=COLOR_FREE,
@@ -220,7 +220,7 @@ class JailInteraction(commands.Cog):
 
         if payer_points < bail_cost:
             embed_fail = discord.Embed(
-                title="💸 Không Đủ Tiền Bảo Lãnh!",
+                title="<:symbol_money_2:1537567535229050970> Không Đủ Tiền Bảo Lãnh!",
                 description=(
                     f"{ctx.author.mention} muốn bảo lãnh {member.mention}.\n\n"
                     f"<:symbol_money_bag:1537567538097954896> Chi phí bảo lãnh: **{bail_cost:,}** điểm\n"
@@ -234,7 +234,7 @@ class JailInteraction(commands.Cog):
 
         view = BailConfirmView(ctx.author.id)
         embed_ask = discord.Embed(
-            title="💸 Yêu Cầu Bảo Lãnh",
+            title="<:symbol_money_2:1537567535229050970> Yêu Cầu Bảo Lãnh",
             description=(
                 f"{ctx.author.mention} muốn bảo lãnh cho {member.mention}.\n\n"
                 f"<:symbol_money_bag:1537567538097954896> Chi phí bảo lãnh: **{bail_cost:,}** điểm\n"
@@ -268,7 +268,7 @@ class JailInteraction(commands.Cog):
         embed = discord.Embed(
             title="🕊️ Bảo Lãnh Thành Công!",
             description=(
-                f"💸 {ctx.author.mention} vừa bỏ **{bail_cost:,}** điểm ra bảo lãnh!\n\n"
+                f"<:symbol_money_2:1537567535229050970> {ctx.author.mention} vừa bỏ **{bail_cost:,}** điểm ra bảo lãnh!\n\n"
                 f"<:symbol_unlocked:1537566882180366466> {member.mention} được trả tự do — role và nickname đã khôi phục."
             ),
             color=COLOR_FREE,

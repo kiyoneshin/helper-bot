@@ -47,8 +47,8 @@ def _get_rating_label(user_data: dict) -> str:
     scores = [entry["score"] for entry in normalized.values() if isinstance(entry, dict)]
     if scores:
         avg = round(sum(scores) / len(scores), 1)
-        return f"⭐ {avg}/5.0 ({len(scores)} lượt)"
-    return "⭐ Chưa có điểm"
+        return f"<a:symbol_star_yellow:1537739289834553385> {avg}/5.0 ({len(scores)} lượt)"
+    return "<a:symbol_star_yellow:1537739289834553385> Chưa có điểm"
 
 
 async def _fetch_fresh_user_data(bot: Any, discord_id: str) -> Optional[dict]:
@@ -97,7 +97,7 @@ def _build_staff_list_embed(role_name: str, staff_records: list) -> discord.Embe
 # MODAL ĐÁNH GIÁ
 # =====================================================================
 
-class VoteModal(discord.ui.Modal, title="🌟 Đánh Giá Nhân Sự"):
+class VoteModal(discord.ui.Modal, title="<a:symbol_star_yellow:1537739289834553385> Đánh Giá Nhân Sự"):
     """Form bật lên để người dùng nhập điểm số và bài đánh giá"""
     score_input = discord.ui.TextInput(
         label="Nhập điểm đánh giá (Từ 0 đến 5):",
@@ -188,9 +188,9 @@ class VoteModal(discord.ui.Modal, title="🌟 Đánh Giá Nhân Sự"):
             await interaction.message.edit(embed=embed, view=self.profile_view)
 
         confirm_msg = (
-            f"✏️ **Đã cập nhật bài đánh giá của bạn thành công!** (Điểm mới: **{val} ⭐**)"
+            f"✏️ **Đã cập nhật bài đánh giá của bạn thành công!** (Điểm mới: **{val} <a:symbol_star_yellow:1537739289834553385>**)"
             if is_update else
-            f"💖 **Cảm ơn bạn!** Đã ghi nhận điểm đánh giá **{val} ⭐** và cập nhật lên hệ thống!"
+            f"<a:symbol_star_pink:1537739287947382864> **Cảm ơn bạn!** Đã ghi nhận điểm đánh giá **{val} <a:symbol_star_yellow:1537739289834553385>** và cập nhật lên hệ thống!"
         )
         await interaction.response.send_message(confirm_msg, ephemeral=True)
 
@@ -266,7 +266,7 @@ class RoleSelectDropdown(discord.ui.Select):
     def __init__(self, author_id: int):
         self.author_id = author_id
         options = [
-            discord.SelectOption(label="Owner", description="Xem danh sách Chủ sở hữu server", emoji="👑", value="owner"),
+            discord.SelectOption(label="Owner", description="Xem danh sách Chủ sở hữu server", emoji="<:lb_06_godly:1535552639834783764>", value="owner"),
             discord.SelectOption(label="Admin", description="Xem danh sách Quản trị viên", emoji="🛡️", value="admin"),
             discord.SelectOption(label="Recep", description="Xem danh sách Lễ tân chào đón", emoji="🌸", value="recep")
         ]
@@ -327,7 +327,7 @@ class StaffSelectDropdown(discord.ui.Select):
                 label=name[:100],  # Discord giới hạn 100 ký tự
                 description=f"Xem hồ sơ của {name}"[:100],
                 value=doc_id,
-                emoji="✨"
+                emoji="<a:symbol_star_yellow:1537739289834553385>"
             ))
 
         super().__init__(placeholder="👤 Chọn nhân sự muốn xem hồ sơ...", min_values=1, max_values=1, options=options)
@@ -479,7 +479,7 @@ class ProfileView(BaseStaffView):
     # NÚT HIỂN THỊ ĐIỂM (khóa, chỉ đọc)
     # ------------------------------------------------------------------
 
-    @discord.ui.button(label="⭐ Chưa có điểm", style=discord.ButtonStyle.secondary, disabled=True, row=0)
+    @discord.ui.button(label="<a:symbol_star_yellow:1537739289834553385> Chưa có điểm", style=discord.ButtonStyle.secondary, disabled=True, row=0)
     async def rating_display_btn(self, interaction: discord.Interaction, button: discord.ui.Button):
         pass  # Nút khóa, không có hành động
 
@@ -487,7 +487,7 @@ class ProfileView(BaseStaffView):
     # NÚT ĐÁNH GIÁ
     # ------------------------------------------------------------------
 
-    @discord.ui.button(label="🌟 Đánh giá", style=discord.ButtonStyle.success, row=0)
+    @discord.ui.button(label="<a:symbol_star_yellow:1537739289834553385> Đánh giá", style=discord.ButtonStyle.success, row=0)
     async def vote_btn(self, interaction: discord.Interaction, button: discord.ui.Button):
         voter_id = str(interaction.user.id)
         target_id = self.target_discord_id
