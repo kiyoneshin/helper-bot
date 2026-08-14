@@ -166,7 +166,7 @@ async def _send_confirm(ctx: commands.Context, bet: int, callback_fn) -> None:
         ),
         color=0xFF8C00,
     )
-    embed.set_footer(text="<a:symbol_clock:1537570144375541870> Hết 20 giây tự động hủy")
+    embed.set_footer(text="🕒 Hết 20 giây tự động hủy")
     view = BetConfirmView(ctx, bet, callback_fn)
     view.message = await ctx.send(embed=embed, view=view)
 
@@ -637,7 +637,7 @@ class RouletteView(discord.ui.View):
             
             await interaction.response.edit_message(embed=embed, view=self)
 
-    @discord.ui.button(label="<:symbol_money_bag:1537567538097954896> Chốt lãi", style=discord.ButtonStyle.success, disabled=True, custom_id="cashout_btn")
+    @discord.ui.button(label="Chốt lãi", emoji="<:symbol_money_bag:1537567538097954896>", style=discord.ButtonStyle.success, disabled=True, custom_id="cashout_btn")
     async def cashout_btn(self, interaction: discord.Interaction, button: discord.ui.Button):
         await self.process_cashout(interaction, auto_cashout=False)
 

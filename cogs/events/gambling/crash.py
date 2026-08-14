@@ -188,7 +188,7 @@ class CrashLobbyView(discord.ui.View):
         self.time_left         = LOBBY_DURATION
 
     @discord.ui.button(
-        label="<:symbol_money_bag:1537567538097954896> Đặt Cược",
+        label="Đặt Cược", emoji="<:symbol_money_bag:1537567538097954896>",
         style=discord.ButtonStyle.primary,
         custom_id="crash_lobby_bet",
     )
@@ -542,7 +542,7 @@ class CrashGame(commands.Cog):
             closing_embed.color = 0xFF8C00
             closing_view = discord.ui.View()
             disabled_btn  = discord.ui.Button(
-                label="<:symbol_money_bag:1537567538097954896> Đặt Cược",
+                label="Đặt Cược", emoji="<:symbol_money_bag:1537567538097954896>",
                 style=discord.ButtonStyle.primary,
                 disabled=True,
             )

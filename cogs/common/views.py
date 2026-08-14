@@ -479,7 +479,7 @@ class ProfileView(BaseStaffView):
     # NÚT HIỂN THỊ ĐIỂM (khóa, chỉ đọc)
     # ------------------------------------------------------------------
 
-    @discord.ui.button(label="<a:symbol_star_yellow:1537739289834553385> Chưa có điểm", style=discord.ButtonStyle.secondary, disabled=True, row=0)
+    @discord.ui.button(label="Chưa có điểm", emoji="<a:symbol_star_yellow:1537739289834553385>", style=discord.ButtonStyle.secondary, disabled=True, row=0)
     async def rating_display_btn(self, interaction: discord.Interaction, button: discord.ui.Button):
         pass  # Nút khóa, không có hành động
 
@@ -487,7 +487,7 @@ class ProfileView(BaseStaffView):
     # NÚT ĐÁNH GIÁ
     # ------------------------------------------------------------------
 
-    @discord.ui.button(label="<a:symbol_star_yellow:1537739289834553385> Đánh giá", style=discord.ButtonStyle.success, row=0)
+    @discord.ui.button(label="Đánh giá", emoji="<a:symbol_star_yellow:1537739289834553385>", style=discord.ButtonStyle.success, row=0)
     async def vote_btn(self, interaction: discord.Interaction, button: discord.ui.Button):
         voter_id = str(interaction.user.id)
         target_id = self.target_discord_id

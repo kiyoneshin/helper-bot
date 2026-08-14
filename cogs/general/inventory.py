@@ -139,7 +139,7 @@ def _build_farm_embed(
     inventory = farm_data.get("inventory", {})
     if not inventory:
         embed.description = "*Kho đồ trống. Hãy đi trồng trọt, câu cá hoặc đào mỏ nhé!*"
-        embed.set_footer(text="<:symbol_light_bulb:1537739278765924422> Dùng các nút bên dưới để bán vật phẩm.")
+        embed.set_footer(text="💡 Dùng các nút bên dưới để bán vật phẩm.")
         return embed
 
     seed_lines, crop_lines, ore_lines, wood_lines, fish_lines, artisan_lines = [], [], [], [], [], []
@@ -247,7 +247,7 @@ def _build_farm_embed(
             inline=False,
         )
 
-    embed.set_footer(text="<:symbol_light_bulb:1537739278765924422> Dùng các nút bên dưới để bán vật phẩm.")
+    embed.set_footer(text="💡 Dùng các nút bên dưới để bán vật phẩm.")
     return embed
 
 

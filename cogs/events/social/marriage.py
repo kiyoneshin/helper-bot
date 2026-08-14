@@ -527,7 +527,7 @@ class MarriageCog(commands.Cog):
                 emb.set_thumbnail(url=ctx.author.display_avatar.url)
             
             now_str = (discord.utils.utcnow() + datetime.timedelta(hours=7)).strftime("%H:%M")
-            emb.set_footer(text=f"<a:symbol_star_pink:1537739287947382864> Happily ever after~ <a:symbol_star_pink:1537739287947382864> - Today at {now_str}")
+            emb.set_footer(text=f"💕 Happily ever after~ 💕 - Today at {now_str}")
             
             return await ctx.send(embed=emb)
             

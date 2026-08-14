@@ -163,7 +163,7 @@ def build_info_embed(tier_id: int) -> discord.Embed:
             inline=False,
         )
 
-    embed.set_footer(text="<:symbol_light_bulb:1537739278765924422> Luck từ kpray tăng tỉ lệ drop và tỉ lệ rank cao hơn.")
+    embed.set_footer(text="💡 Luck từ kpray tăng tỉ lệ drop và tỉ lệ rank cao hơn.")
     return embed
 
 

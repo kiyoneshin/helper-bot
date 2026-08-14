@@ -89,9 +89,9 @@ def build_shop_embed(category: str, author: discord.Member | discord.User, prefi
         embed.description = "*Không có vật phẩm nào để mua ở mục này.*"
 
     if category == "blackmarket":
-        embed.set_footer(text=f"<:symbol_light_bulb:1537739278765924422> Lưu ý: Cửa hàng này chỉ để xem. Bạn chỉ có thể mua bằng lệnh {prefix}ebuy khi Chợ Đêm mở ({prefix}choden)!")
+        embed.set_footer(text=f"💡 Lưu ý: Cửa hàng này chỉ để xem. Bạn chỉ có thể mua bằng lệnh {prefix}ebuy khi Chợ Đêm mở ({prefix}choden)!")
     else:
-        embed.set_footer(text=f"<:symbol_light_bulb:1537739278765924422> Hướng dẫn: Dùng lệnh {prefix}buy <id> [số_lượng] để mua vật phẩm.")
+        embed.set_footer(text=f"💡 Hướng dẫn: Dùng lệnh {prefix}buy <id> [số_lượng] để mua vật phẩm.")
     return embed
 
 
