@@ -44,13 +44,8 @@ def get_card_emoji(bot: commands.Bot, card: Optional[Card], hidden: bool = False
     if emoji:
         return str(emoji)
         
-    # Fallback
-    if hidden or card is None:
-        return "🎴"
-    suit_sym = {"spades": "♠", "hearts": "♥", "clubs": "♣", "diamonds": "♦"}
-    val_map = {1: "A", 11: "J", 12: "Q", 13: "K"}
-    v = val_map.get(card.value, str(card.value))
-    return f"`{v}{suit_sym[card.suit]}`"
+    # Fallback to emoji format so it either renders or shows the raw name
+    return f"<{emoji_name}:1537799969300287579>" if hidden else f":{emoji_name}:"
 
 def _lock_user(bot: commands.Bot, user_id: int):
     active_players: set = getattr(bot, 'active_players', set())
@@ -249,7 +244,11 @@ class BlackjackGame(commands.Cog):
         self.bot = bot
 
     @commands.hybrid_command(name="blackjack", aliases=["bj"], description="Chơi Blackjack (Xì Dách) với Nhà cái thông minh")
-    async def blackjack_cmd(self, ctx: commands.Context, bet_amount: str):
+    async def blackjack_cmd(self, ctx: commands.Context, bet_amount: Optional[str] = None):
+        if bet_amount is None:
+            await ctx.send("<:symbol_wrong:1536629915598848072> **Lỗi!** Bạn chưa nhập số tiền cược.\n*Ví dụ:* `/bj 10k` hoặc `!bj all`")
+            return
+
         if await _check_busy(self.bot, ctx):
             return
 
