@@ -261,6 +261,16 @@ async def init_all_tables(bot: Any) -> bool:
                 );
             ''')
             
+            # Bảng lưu trữ lịch sử gift code
+            await conn.execute('''
+                CREATE TABLE IF NOT EXISTS gift_codes_history (
+                    discord_id VARCHAR NOT NULL,
+                    code_name VARCHAR NOT NULL,
+                    used_at TIMESTAMP WITH TIME ZONE DEFAULT (CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Ho_Chi_Minh'),
+                    PRIMARY KEY (discord_id, code_name)
+                );
+            ''')
+            
             # Bảng cấu hình bot (dành cho prefix, thiết lập chung)
             await conn.execute('''
                 CREATE TABLE IF NOT EXISTS bot_configs (
