@@ -64,7 +64,7 @@ async def start_dice_lobby_game(bot, channel: discord.abc.Messageable, core_cog)
             "Một sảnh cờ bạc siêu tốc vừa được mở ra! Hãy nhanh tay đăng ký để thử vận may!\n\n"
             "<:symbol_hour_glass:1537570149215899658> **Thời gian gom phòng:** 60 giây (hoặc khi đủ 10 người)\n"
             "<:gift_00_symbol:1536003307011842099> **Luật chơi:** Winner Takes All — Người đổ ra tổng điểm cao nhất ăn trọn **100 điểm thưởng**!\n"
-            "🌟 **Đặc biệt:** Ai đổ ra bộ đôi hoàn hảo (1-1 hoặc 6-6) sẽ được thưởng nóng thêm **+ 50 điểm Nhân Phẩm Vô Cực**!"
+            "**Đặc biệt:** Ai đổ ra bộ 1-1 hoặc 6-6 sẽ được thưởng nóng thêm **+ 50 điểm Nhân Phẩm Vô Cực**!"
         ),
         color=0xf1c40f
     )
@@ -93,7 +93,7 @@ async def start_dice_lobby_game(bot, channel: discord.abc.Messageable, core_cog)
     
     # Xử lý trường hợp sảnh trống
     if len(view.players) == 0:
-        embed.description = "💨 Sảnh đóng cửa vì không có ai tham gia!"
+        embed.description = "Sảnh đóng cửa vì không có ai tham gia!"
         embed.color = 0x2f3136
         for item in view.children:
             if isinstance(item, discord.ui.Button):
@@ -180,7 +180,7 @@ async def start_dice_lobby_game(bot, channel: discord.abc.Messageable, core_cog)
         
     embed.set_field_at(0, name=f"👥 Danh sách tham gia ({len(view.players)}/10)", value="\n".join(result_lines), inline=False)
     embed.add_field(
-        name="👑 CHÚA TỂ NHÂN PHẨM", 
+        name="CHÚA TỂ NHÂN PHẨM", 
         value=f"Vinh danh {winner['user'].mention} đã thắng áp đảo với **{max_total} điểm** và ẵm trọn giải thưởng!", 
         inline=False
     )

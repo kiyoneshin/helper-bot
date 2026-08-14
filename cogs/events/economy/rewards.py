@@ -219,7 +219,7 @@ class Rewards(commands.Cog):
             title="💎 Lương Tuần Đã Về!",
             description=(
                 f"<:symbol_confetti:1537570146313306183> Chúc mừng bạn đã nhận **{total_reward:,}** điểm lương tuần!\n"
-                f"<:gift_00_symbol:1536003307011842099> **Thưởng Thêm:** 2x 📦 Lootbox Common\n"
+                f"<:gift_00_symbol:1536003307011842099> **Thưởng Thêm:** 2x <:lb_01_common:1535552629092913172>\n"
                 f"Hãy dùng số điểm này thật khôn ngoan tại `{ctx.prefix}shop` hoặc các sòng bài Casino nhé!"
             ),
             color=0xFFD700  # Màu vàng

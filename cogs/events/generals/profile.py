@@ -100,7 +100,7 @@ class ProfileCog(commands.Cog, name="Profile"):
         
         # Tạo Embed với màu sắc ngẫu nhiên hoặc màu đặc trưng
         embed = discord.Embed(
-            title=f"📜 Căn Cước Công Dân — {target_member.display_name}",
+            title=f"Căn Cước Công Dân — {target_member.display_name}",
             description="*Hồ sơ thám hiểm và thành tích trong thế giới Angelic.*",
         )
         embed.set_thumbnail(url=target_member.display_avatar.url)
@@ -109,7 +109,7 @@ class ProfileCog(commands.Cog, name="Profile"):
         from cogs.common.item_config import ITEM_REGISTRY
         from cogs.common.db import get_marriage
         
-        marry_status = "💔 Độc thân vui tính"
+        marry_status = "<:symbol_heart_breaking:1536296911655673936> Độc thân vui tính"
         if data.get("marry_to"):
             mar = await get_marriage(self.bot, str(target_member.id))
             ring_icon = "💍"

@@ -115,7 +115,7 @@ class FastHandView(discord.ui.View):
         # Hết giờ không ai tìm thấy
         if self.message:
             embed = self.message.embeds[0] if self.message.embeds else discord.Embed()
-            embed.description = "💨 Bảo vật đã tan biến vào hư không! Hẹn các chiến thần ở lần đánh úp sau."
+            embed.description = "Bảo vật đã tan biến vào hư không! Hẹn các chiến thần ở lần đánh úp sau."
             try:
                 await self.message.edit(embed=embed, view=self)
             except discord.HTTPException:

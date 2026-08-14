@@ -992,10 +992,10 @@ class MultiDice(commands.Cog):
         # Người thua
         if losers:
             lose_lines = [
-                f"💀 <@{info.user_id}> cúng sạch **{bet:,}**" for info in losers
+                f"<@{info.user_id}> cúng sạch **{bet:,}**" for info in losers
             ]
             embed.add_field(
-                name="😭 Cột Trụ Sòng Bạc — Mút Trọn",
+                name="Cột Trụ Sòng Bạc — Mút Trọn",
                 value="\n".join(lose_lines),
                 inline=False,
             )
@@ -1050,7 +1050,7 @@ class MultiDice(commands.Cog):
 
         # Thuế nhà cái
         embed.add_field(
-            name="🏦 Nhà Cái Đã Cắn",
+            name="Nhà Cái Đã Cắn",
             value=(
                 f"Thuế vào sảnh (5%/người): **{entry_tax:,}**\n"
                 f"Thuế thưởng (5% quỹ): **{winner_tax:,}**\n"

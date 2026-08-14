@@ -24,9 +24,9 @@ from cogs.common.db import (
 
 log = logging.getLogger("BasicGames")
 
-COLOR_WIN     = 0x00FF00   # 🟢 Thắng / Sống sót
-COLOR_LOSE    = 0xFF0000   # 🔴 Thua / Tử trận
-COLOR_JACKPOT = 0xFFD700   # 🌟 Jackpot / Side / Đứng xu
+COLOR_WIN     = 0x00FF00   # Thắng / Sống sót
+COLOR_LOSE    = 0xFF0000   # Thua / Tử trận
+COLOR_JACKPOT = 0xFFD700   # Jackpot / Side / Đứng xu
 
 # =============================================================================
 # HỆ THỐNG KHÓA HÀNH ĐỘNG (COMMAND LOCK)
@@ -140,7 +140,7 @@ class BetConfirmView(discord.ui.View):
     async def cancel_btn(self, interaction: discord.Interaction, button: discord.ui.Button):
         self.stop()
         await interaction.response.edit_message(
-            content="🚫 Đã hủy cược. Tiền vẫn ở trong ví, chưa bị mất!",
+            content="<:symbol_wrong:1536629915598848072> Đã hủy cược. Tiền vẫn ở trong ví, chưa bị mất!",
             embed=None, view=None
         )
 
@@ -237,7 +237,7 @@ class BasicGames(commands.Cog):
             payout = round(bet * 5.0)
             delta = payout - bet
             color = COLOR_JACKPOT
-            title = "🌟 Coinflip — Đứng Xu Jackpot! 🌟"
+            title = "<:symbol_confetti:1537570146313306183> Coinflip — Đứng Xu Jackpot! <:symbol_confetti:1537570146313306183>"
             outcome_emoji = "<:gambling_sidecoin:1536290493800120380>"
             result_line = f"+{delta:,}  *(x5.0)*"
 
@@ -250,7 +250,7 @@ class BasicGames(commands.Cog):
         face_map = {"h": "<:gambling_headscoin:1536019591191330837> NGỬA", "t": "<:gambling_tailscoin:1536019595838758922> SẤP"}
         your_pick = face_map[choice]
         if outcome == "side":
-            landed = "🟡 ĐỨNG"
+            landed = "ĐỨNG"
         elif outcome == "win":
             landed = face_map[choice]
         else:
@@ -258,8 +258,8 @@ class BasicGames(commands.Cog):
 
         embed = discord.Embed(title=title, color=color)
         embed.set_author(name=f"{ctx.author.display_name} — coinflip", icon_url=ctx.author.display_avatar.url)
-        embed.add_field(name="🎯 Lựa chọn của bạn", value=your_pick, inline=True)
-        embed.add_field(name="🪙 Kết quả đồng xu", value=landed, inline=True)
+        embed.add_field(name="Lựa chọn của bạn", value=your_pick, inline=True)
+        embed.add_field(name="Kết quả đồng xu", value=landed, inline=True)
         embed.add_field(name="\u200b", value="\u200b", inline=True)
         embed.add_field(name="<:symbol_money_bag:1537567538097954896> Tiền cược", value=f"{bet:,}", inline=False)
         embed.add_field(name=f"{outcome_emoji} Kết quả", value=result_line, inline=False)
@@ -431,7 +431,7 @@ class BasicGames(commands.Cog):
             title="<a:gambling_00_russian_roulette:1536019552889077860> Cò Quay Tử Thần",
             description=(
                 "Ổ đạn 6 buồng, chỉ có 1 viên đạn thật. Bóp cò là không có đường lui.\n\n"
-                "Sống sót càng lâu, húp càng đẫm. Dám chơi lớn không? 💥\n\n"
+                "Sống sót càng lâu, húp càng đẫm. Dám chơi lớn không?\n\n"
                 "**Hệ số thưởng:**\n"
                 "Lần 1: x1.1\nLần 2: x1.3\nLần 3: x1.8\nLần 4: x2.7\nLần 5: x5\n\n"
                 f"<:symbol_hour_glass:1537570149215899658> **Hành động trước:** <t:{end_time}:R>"
@@ -502,7 +502,7 @@ class CupsView(discord.ui.View):
             new_balance = self.balance + delta
             result_line = f"-{self.bet:,}  *(Mút trọn)*"
             color = COLOR_LOSE
-            title = "<:gambling_cup:1536019568697409667> Cups — Bị Lùa! 😢"
+            title = "<:gambling_cup:1536019568697409667> Cups — Bị Lùa!"
             outcome_emoji = "<:symbol_wrong:1536629915598848072>"
 
         embed = discord.Embed(
@@ -592,8 +592,8 @@ class RouletteView(discord.ui.View):
             _unlock_user(self.bot, self.author.id)
             
             embed = discord.Embed(
-                title="<a:gambling_00_russian_roulette:1536019552889077860> Cò Quay Tử Thần — Đăng Xuất! 💀",
-                description="***PANG!*** 💥\n\nNằm mẹ nó rồi!\nSòng bạc tịch thu cược và cắn thêm **50** điểm vì làm bẩn sàn. 💀",
+                title="<a:gambling_00_russian_roulette:1536019552889077860> Cò Quay Tử Thần — Đăng Xuất!",
+                description="***PANG!*** \n\nNằm mẹ nó rồi!\nSòng bạc tịch thu cược và cắn thêm **50** điểm vì làm bẩn sàn. 💀",
                 color=COLOR_LOSE,
             )
             embed.set_author(name=f"{self.author.display_name} — roulette", icon_url=self.author.display_avatar.url)
@@ -623,10 +623,10 @@ class RouletteView(discord.ui.View):
             embed = discord.Embed(
                 title=f"<a:gambling_00_russian_roulette:1536019552889077860> Cò Quay Tử Thần — Sống Sót Lần {self.survived_rounds}!",
                 description=(
-                    "*lách cách...* Phew! 😮‍💨\n\n"
+                    "*lách cách...* Phew!\n\n"
                     f"Bạn đã sống sót qua viên thứ **{self.survived_rounds}**!\n\n"
-                    f"👉 **Húp ngay:** {current_win:,}  *(x{current_mult:.2f})*\n"
-                    f"👉 **Đánh đổi mạng sống (x{next_mult:.2f}):** {round(self.bet * next_mult):,}\n\n"
+                    f"**Húp ngay:** {current_win:,}  *(x{current_mult:.2f})*\n"
+                    f"**Đánh đổi mạng sống (x{next_mult:.2f}):** {round(self.bet * next_mult):,}\n\n"
                     f"<:symbol_hour_glass:1537570149215899658> **Hành động trước:** <t:{new_end_time}:R>\n"
                     "Muốn **Chốt lãi** ôm tiền về, hay tiếp tục **Bóp cò**?"
                 ),

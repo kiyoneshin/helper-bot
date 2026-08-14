@@ -77,7 +77,7 @@ class StaffUICog(commands.Cog):
             cnt_recep   = sum(1 for r in sorted_records if r['role'].lower().strip() == 'recep')
             summary     = f"(owner: {cnt_owner} | admin: {cnt_admin} | recep: {cnt_recep})"
 
-            await ctx.send(f"**📋 Database Profiles — {total} bản ghi {summary}**\n{table}")
+            await ctx.send(f"**Database Profiles — {total} bản ghi {summary}**\n{table}")
         except Exception as e:
             await ctx.send(f"Lỗi truy vấn Database: {e}")
 
@@ -140,7 +140,7 @@ class StaffUICog(commands.Cog):
                 description = description[:4090] + "..."
 
             embed = discord.Embed(
-                title=f"📋 Danh Sách Đánh Giá Của {name}",
+                title=f"Danh Sách Đánh Giá Của {name}",
                 description=description,
                 color=0xffb6c1
             )
@@ -181,7 +181,7 @@ class StaffUICog(commands.Cog):
                 return
 
             embed = discord.Embed(
-                title=f"📋 Lịch Sử Đánh Giá Của {ctx.author.display_name}",
+                title=f"Lịch Sử Đánh Giá Của {ctx.author.display_name}",
                 description=f"Dưới đây là danh sách các bài đánh giá bạn đã viết cho Staff:\n**Tổng số bài đánh giá:** {len(my_reviews)}",
                 color=0xffb6c1
             )

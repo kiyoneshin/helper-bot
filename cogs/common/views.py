@@ -87,7 +87,7 @@ def _build_staff_list_embed(role_name: str, staff_records: list) -> discord.Embe
         list_text += f"**{idx}. {name}** (<@{doc_id}>)\n"
     list_text += "\n⬇️ *Vui lòng chọn tên nhân sự từ menu thả xuống bên dưới để xem hồ sơ chi tiết và ảnh!*"
     return discord.Embed(
-        title=f"📋 Danh sách {role_name.upper()}",
+        title=f"Danh sách {role_name.upper()}",
         description=list_text,
         color=0xffb6c1
     )
@@ -281,7 +281,7 @@ class RoleSelectDropdown(discord.ui.Select):
 
         if not records:
             empty_embed = discord.Embed(
-                title=f"📋 Danh sách {selected_role.upper()}",
+                title=f"Danh sách {selected_role.upper()}",
                 description=f"🌸 Hiện tại chưa có nhân sự nào giữ vị trí **{selected_role.upper()}** trong server.\n\n*Admin có thể sử dụng lệnh `{bot.custom_prefix}add` hoặc kiểm tra lại bằng lệnh `{bot.custom_prefix}checkdb`.*",
                 color=0xffb6c1
             )
@@ -530,7 +530,7 @@ class ProfileView(BaseStaffView):
 
         if not fresh_records:
             empty_embed = discord.Embed(
-                title=f"📋 Danh sách {self.role_name.upper()}",
+                title=f"Danh sách {self.role_name.upper()}",
                 description=f"🌸 Hiện tại không còn nhân sự nào ở vị trí **{self.role_name.upper()}**.",
                 color=0xffb6c1
             )

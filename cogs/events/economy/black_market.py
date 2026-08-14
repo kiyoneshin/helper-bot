@@ -116,7 +116,7 @@ class BlackMarketCog(commands.Cog):
             next_open = (now_vn + timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
             reset_ts = int(next_open.timestamp())
             embed = discord.Embed(
-                title="🌙 Chợ Đêm Đã Đóng Cửa",
+                title="Chợ Đêm Đã Đóng Cửa",
                 description=(
                     "Chợ đêm chỉ hoạt động từ **00:00 đến 02:00 sáng** mỗi ngày.\n\n"
                     f"<:symbol_hour_glass:1537570149215899658> Phiên chợ tiếp theo sẽ mở cửa vào lúc <t:{reset_ts}:F> (tức là **<t:{reset_ts}:R>**).\n"
@@ -135,7 +135,7 @@ class BlackMarketCog(commands.Cog):
         close_ts = int(close_time.timestamp())
 
         embed = discord.Embed(
-            title="🌙 Chợ Đêm Angelic — Hàng Hiếm Độc Quyền",
+            title="Chợ Đêm Angelic — Hàng Hiếm Độc Quyền",
             description=(
                 "Chợ Đêm chỉ mở mỗi ngày với **3 vật phẩm ngẫu nhiên** và số lượng cực hạn.\n"
                 f"Sẽ đóng cửa sau **<t:{close_ts}:R>**.\n\n"
@@ -159,7 +159,7 @@ class BlackMarketCog(commands.Cog):
 
             stock_text = f"**{stock}** chiếc" if stock > 0 else "~~Cháy hàng~~"
             embed.add_field(
-                name=f"🛒 Mã số `[{slot_id}]` — {icon} {name}",
+                name=f"Mã số `[{slot_id}]` — {icon} {name}",
                 value=f"Giá: **{price:,}** điểm | Còn lại: {stock_text}\n*{desc}*",
                 inline=False,
             )
@@ -257,7 +257,7 @@ class BlackMarketCog(commands.Cog):
 
         # 6. Thông báo thành công
         await ctx.send(
-            f"🛒 Mua thành công **{quantity}x {item_name}** với giá **{total_price:,}** điểm. "
+            f"Mua thành công **{quantity}x {item_name}** với giá **{total_price:,}** điểm. "
             f"Hãy dùng `{ctx.prefix}use {slot_id}` để xài!"
         )
 

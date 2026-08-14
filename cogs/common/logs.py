@@ -56,7 +56,7 @@ def build_log_add(
 ) -> discord.Embed:
     """Thêm Mới Hồ Sơ (kadd)"""
     embed = discord.Embed(
-        title="📋 Nhật Ký: Đăng Ký Hồ Sơ Mới",
+        title="Nhật Ký: Đăng Ký Hồ Sơ Mới",
         color=COLOR_ADD,
     )
     embed.add_field(name="Thao tác", value="Đăng ký Staff", inline=True)

@@ -261,10 +261,10 @@ class MarryConfirmView(discord.ui.View):
         emb = interaction.message.embeds[0] if interaction.message and getattr(interaction.message, "embeds", None) else discord.Embed()
         
         if interaction.user.id == self.target.id:
-            emb.title = "💔 LỜI CẦU HÔN BỊ TỪ CHỐI..."
+            emb.title = "LỜI CẦU HÔN BỊ TỪ CHỐI..."
             emb.description = f"Rất tiếc, **{self.target.display_name}** đã từ chối lời cầu hôn của **{self.proposer.display_name}**."
         else:
-            emb.title = "💔 LỜI CẦU HÔN BỊ HỦY..."
+            emb.title = "LỜI CẦU HÔN BỊ HỦY..."
             emb.description = f"**{self.proposer.display_name}** đã rút lại lời cầu hôn với **{self.target.display_name}**."
             
         emb.color = discord.Color.dark_grey()
@@ -339,7 +339,7 @@ class DivorceConfirmView(discord.ui.View):
                 child.disabled = True # type: ignore
                 
         emb = interaction.message.embeds[0] if interaction.message and getattr(interaction.message, "embeds", None) else discord.Embed()
-        emb.title = "💔 ĐÃ LY HÔN"
+        emb.title = "ĐÃ LY HÔN"
         emb.description = f"Đơn ly hôn đã được xác nhận bởi **{interaction.user.display_name}**. Đường ai nấy đi, tình nghĩa đôi mình từ nay chấm dứt."
         emb.color = discord.Color.dark_grey()
         
@@ -415,7 +415,7 @@ class MarriageCog(commands.Cog):
                             else:
                                 formatted_promise += f"    {line.strip()}\n"
                 else:
-                    formatted_promise += f"💔 **{p_name}**: chưa có lời thề non hẹn biển nào...\n"
+                    formatted_promise += f"<:symbol_heart_breaking:1536296911655673936> **{p_name}**: chưa có lời thề non hẹn biển nào...\n"
                 
             marry_date_str = mar['marry_date'].strftime('%d/%m/%Y')
             
@@ -551,7 +551,7 @@ class MarriageCog(commands.Cog):
             return await ctx.send("<:symbol_ban:1537546960003801319> Người đó đâu phải vợ/chồng của bạn mà đòi ly dị? Bạn hãy tag đúng tên người bạn muốn ly hôn nhé!")
             
         emb = discord.Embed(
-            title="💔 YÊU CẦU LY HÔN",
+            title="YÊU CẦU LY HÔN",
             description=f"**{ctx.author.display_name}** đang muốn ly hôn với **{target.display_name}**.\n\nCả hai đều có thể bấm **Đồng ý** để chính thức kết thúc, hoặc bấm **Từ chối/Hủy** để giữ lại cuộc hôn nhân này.",
             color=discord.Color.dark_grey()
         )
@@ -1245,7 +1245,7 @@ class MarriageCog(commands.Cog):
                         await pool.execute("UPDATE event_profiles SET marry_to = NULL WHERE discord_id = $1", row["user2_id"])
                         
                         if isinstance(channel, discord.TextChannel):
-                            await channel.send(f"💔 **Tình cảm nhạt phai...**\nDo quá thờ ơ lơ lạnh, <@{row['user1_id']}> và <@{row['user2_id']}> đã chính thức ly hôn bởi hệ thống.")
+                            await channel.send(f"<:symbol_heart_breaking:1536296911655673936> **Tình cảm nhạt phai...**\nDo quá thờ ơ lơ lạnh, <@{row['user1_id']}> và <@{row['user2_id']}> đã chính thức ly hôn bởi hệ thống.")
                     else:
                         # Trừ điểm
                         await pool.execute("UPDATE marriages SET intimacy_points = $1 WHERE id = $2", new_dtm, row["id"])

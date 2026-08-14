@@ -21,7 +21,7 @@ ACHIEVEMENTS = {
         "desc": "Chặt được 100 Khúc Gỗ các loại.",
         "stat_key": "wood_chopped",
         "target": 100,
-        "reward_title": "🌲 Lâm Tặc Tập Sự",
+        "reward_title": "Lâm Tặc Tập Sự",
         "reward_lootbox": (61, 2) # (Lootbox ID, Số lượng) -> 60 là Common
     },
     "eco_wood_2": {
@@ -31,7 +31,7 @@ ACHIEVEMENTS = {
         "desc": "Chặt được 1,000 Khúc Gỗ các loại.",
         "stat_key": "wood_chopped",
         "target": 1000,
-        "reward_title": "<:symbol_00_woodcutting:1536007697491558491> Vua Phá Rừng",
+        "reward_title": "Vua Phá Rừng",
         "reward_lootbox": (63, 2) # 62 là Rare
     },
     "eco_rare_wood": {
@@ -41,7 +41,7 @@ ACHIEVEMENTS = {
         "desc": "Chặt được 50 Gỗ Hiếm (Rare Wood trở lên).",
         "stat_key": "rare_wood_chopped",
         "target": 50,
-        "reward_title": "✨ Bàn Tay Vàng",
+        "reward_title": "Bàn Tay Vàng",
         "reward_lootbox": (64, 1) # 63 là Epic
     },
     "eco_mine_1": {
@@ -51,7 +51,7 @@ ACHIEVEMENTS = {
         "desc": "Đào được 200 Quặng các loại.",
         "stat_key": "ore_mined",
         "target": 200,
-        "reward_title": "<:symbol_00_mining:1536007694920585356> Thợ Mỏ Chăm Chỉ",
+        "reward_title": "Thợ Mỏ Chăm Chỉ",
         "reward_lootbox": (61, 3)
     },
     "eco_mine_2": {
@@ -61,7 +61,7 @@ ACHIEVEMENTS = {
         "desc": "Đào được 2,000 Quặng các loại.",
         "stat_key": "ore_mined",
         "target": 2000,
-        "reward_title": "💎 Chúa Tể Lòng Đất",
+        "reward_title": "Chúa Tể Lòng Đất",
         "reward_lootbox": (65, 1) # 64 là Legendary
     },
     "eco_fish_1": {
@@ -71,7 +71,7 @@ ACHIEVEMENTS = {
         "desc": "Câu được 150 con cá.",
         "stat_key": "fish_caught",
         "target": 150,
-        "reward_title": "🎣 Cần Thủ Ao Làng",
+        "reward_title": "Cần Thủ Ao Làng",
         "reward_lootbox": (62, 2) # 61 là Uncommon
     },
     "eco_fish_legend": {
@@ -81,7 +81,7 @@ ACHIEVEMENTS = {
         "desc": "Câu được 10 Cá Huyền Thoại.",
         "stat_key": "legendary_fish",
         "target": 10,
-        "reward_title": "🦈 Huyền Thoại Biển Sâu",
+        "reward_title": "Huyền Thoại Biển Sâu",
         "reward_lootbox": (65, 1)
     },
     "eco_farm_1": {
@@ -91,7 +91,7 @@ ACHIEVEMENTS = {
         "desc": "Thu hoạch 500 nông sản.",
         "stat_key": "crops",
         "target": 500,
-        "reward_title": "🌻 Nông Dân Chăm Chỉ",
+        "reward_title": "Nông Dân Chăm Chỉ",
         "reward_lootbox": (62, 3)
     },
     "eco_farm_giant": {
@@ -101,7 +101,7 @@ ACHIEVEMENTS = {
         "desc": "Thu hoạch 10 Cây Khổng Lồ.",
         "stat_key": "giant_crops",
         "target": 10,
-        "reward_title": "🧬 Chuyên Gia Đột Biến",
+        "reward_title": "Chuyên Gia Đột Biến",
         "reward_lootbox": (64, 2)
     },
 
@@ -113,7 +113,7 @@ ACHIEVEMENTS = {
         "desc": "Chơi Casino 100 lần (Bất kỳ trò nào).",
         "stat_key": "casino_played",
         "target": 100,
-        "reward_title": "<a:gambling_slot_machine_pixel:1536322200838340628> Con Bạc Tân Binh",
+        "reward_title": "Con Bạc Tân Binh",
         "reward_lootbox": (61, 2)
     },
     "casino_play_2": {
@@ -123,7 +123,7 @@ ACHIEVEMENTS = {
         "desc": "Chơi Casino 1,000 lần.",
         "stat_key": "casino_played",
         "target": 1000,
-        "reward_title": "🃏 Ma Cờ Bạc",
+        "reward_title": "Ma Cờ Bạc",
         "reward_lootbox": (63, 2)
     },
     "casino_win_1": {
@@ -133,7 +133,7 @@ ACHIEVEMENTS = {
         "desc": "Thắng Casino 500 lần.",
         "stat_key": "casino_wins",
         "target": 500,
-        "reward_title": "🃏 Thần Bài Xuất Thế",
+        "reward_title": "Thần Bài Xuất Thế",
         "reward_lootbox": (64, 1)
     },
     "casino_crash": {
@@ -143,7 +143,7 @@ ACHIEVEMENTS = {
         "desc": "Ăn Crash với hệ số x10 trở lên 5 lần.",
         "stat_key": "crash_x10",
         "target": 5,
-        "reward_title": "🚀 Phi Hành Gia Liều Lĩnh",
+        "reward_title": "Phi Hành Gia Liều Lĩnh",
         "reward_lootbox": (64, 1)
     },
     "casino_baucua": {
@@ -153,7 +153,7 @@ ACHIEVEMENTS = {
         "desc": "Thắng Bầu Cua 50 lần.",
         "stat_key": "baucua_wins",
         "target": 50,
-        "reward_title": "🦀 Trùm Sòng Bầu Cua",
+        "reward_title": "Trùm Sòng Bầu Cua",
         "reward_lootbox": (62, 3)
     },
 
@@ -165,7 +165,7 @@ ACHIEVEMENTS = {
         "desc": "Đạt 1,000 Điểm Thân Mật (Intimacy).",
         "stat_key": "intimacy",
         "target": 1000,
-        "reward_title": "💕 Kẻ Đang Yêu",
+        "reward_title": "Kẻ Đang Yêu",
         "reward_lootbox": (62, 2)
     },
     "love_marry_2": {
@@ -175,7 +175,7 @@ ACHIEVEMENTS = {
         "desc": "Đạt 10,000 Điểm Thân Mật.",
         "stat_key": "intimacy",
         "target": 10000,
-        "reward_title": "💞 Uyên Ương Liền Cánh",
+        "reward_title": "Uyên Ương Liền Cánh",
         "reward_lootbox": (64, 2)
     },
     "love_pet": {
@@ -185,7 +185,7 @@ ACHIEVEMENTS = {
         "desc": "Nâng cấp Thú cưng tình yêu lên Level 20.",
         "stat_key": "pet_level",
         "target": 20,
-        "reward_title": "🐾 Con Sen Chính Hiệu",
+        "reward_title": "Con Sen Chính Hiệu",
         "reward_lootbox": (63, 2)
     },
     "love_ring": {
@@ -194,8 +194,8 @@ ACHIEVEMENTS = {
         "name": "Đại Gia Si Tình",
         "desc": "Sở hữu Nhẫn Cưới Tối Thượng (Cấp Max).",
         "stat_key": "ring_level",
-        "target": 10, # Cấp 10
-        "reward_title": "💍 Đại Gia Si Tình",
+        "target": 10, 
+        "reward_title": "Đại Gia Si Tình",
         "reward_lootbox": (65, 1)
     },
 
@@ -207,7 +207,7 @@ ACHIEVEMENTS = {
         "desc": "Hoàn thành 100 Nhiệm vụ (Quests).",
         "stat_key": "quests",
         "target": 100,
-        "reward_title": "📜 Kẻ Đánh Thuê",
+        "reward_title": "Kẻ Đánh Thuê",
         "reward_lootbox": (63, 2)
     },
     "gen_jail": {
@@ -217,7 +217,7 @@ ACHIEVEMENTS = {
         "desc": "Bị tống vào chuồng chó 50 lần.",
         "stat_key": "jails",
         "target": 50,
-        "reward_title": "⛓️ Tù Nhân Lương Tâm",
+        "reward_title": "Tù Nhân Lương Tâm",
         "reward_lootbox": (61, 5)
     },
     "gen_work": {
@@ -227,7 +227,7 @@ ACHIEVEMENTS = {
         "desc": "Làm việc (Work) 500 lần.",
         "stat_key": "works",
         "target": 500,
-        "reward_title": "👷 Công Nhân Gương Mẫu",
+        "reward_title": "Công Nhân Gương Mẫu",
         "reward_lootbox": (62, 3)
     },
     "gen_rich": {
@@ -237,7 +237,7 @@ ACHIEVEMENTS = {
         "desc": "Tích lũy được 10 Triệu Điểm Sự Kiện.",
         "stat_key": "total_earned",
         "target": 10000000,
-        "reward_title": "<:symbol_money_bag:1537567538097954896> Phú Hào",
+        "reward_title": "Phú Hào",
         "reward_lootbox": (65, 2)
     }
 }

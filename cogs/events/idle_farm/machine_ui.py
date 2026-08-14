@@ -121,7 +121,7 @@ def build_machine_embed(
 
     header = (
         f"👤 **{author.display_name}** | "
-        f"📋 Slot đang dùng: **{num_active}/{MAX_QUEUE_SLOTS}**"
+        f"<:symbol_boards:1536007665153474681> Slot đang dùng: **{num_active}/{MAX_QUEUE_SLOTS}**"
     )
     if ready_count:
         header += f"\n🧺 **{ready_count}** thành phẩm đang chờ thu hoạch! Nhấn nút **Thu Hoạch** nhé."
@@ -166,7 +166,7 @@ def build_machine_embed(
             lines.append(f"`{num:>2}.` ▫️ *trống*")
 
     embed.add_field(
-        name="📋 Danh Sách Máy (Slots)",
+        name="<:symbol_boards:1536007665153474681> Danh Sách Máy (Slots)",
         value="\n".join(lines),
         inline=False,
     )
@@ -224,7 +224,7 @@ class RecipeSelect(discord.ui.Select):
             )
 
         super().__init__(
-            placeholder=f"📋 Chọn công thức cho {machine['name']}...",
+            placeholder=f"Chọn công thức cho {machine['name']}...",
             min_values=1,
             max_values=1,
             options=options[:25],

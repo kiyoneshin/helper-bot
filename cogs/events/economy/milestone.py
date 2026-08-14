@@ -42,10 +42,10 @@ EVENT_MILESTONES = {
     5000: {"name": "Khởi Động", "points": 0, "items": {"timeout_1m": 1}, "tickets": 10},
     12000: {"name": "Nông Dân Chăm Chỉ", "points": 0, "items": {"item_1": 1, "shield_card": 1}, "tickets": 0},
     25000: {"name": "Lươn Lẹo Bậc Trung", "points": 1500, "items": {"disconnect_card": 1}, "tickets": 0},
-    40000: {"name": "Tinh Anh Server", "points": 0, "items": {"fake_ban_card": 1}, "title": "🛡️ Đội Cào Phím", "tickets": 0},
+    40000: {"name": "Tinh Anh Server", "points": 0, "items": {"fake_ban_card": 1}, "title": "Đội Cào Phím", "tickets": 0},
     60000: {"name": "Bàn Tay Đen Tối", "points": 3000, "items": {"thief_card": 1, "ghost_ping_card": 1}, "tickets": 0},
-    75000: {"name": "Tuyệt Đỉnh F2P", "points": 10000, "items": {}, "title": "🌟 Tuyệt Đỉnh F2P", "tickets": 0},
-    100000: {"name": "Chúa Tể Sự Kiện", "points": 0, "items": {"jail_card": 2}, "title": "🌌 Chúa Tể Sự Kiện", "tickets": 0},
+    75000: {"name": "Tuyệt Đỉnh F2P", "points": 10000, "items": {}, "title": "Tuyệt Đỉnh F2P", "tickets": 0},
+    100000: {"name": "Chúa Tể Sự Kiện", "points": 0, "items": {"jail_card": 2}, "title": "Chúa Tể Sự Kiện", "tickets": 0},
 }
 
 

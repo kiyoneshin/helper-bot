@@ -352,7 +352,7 @@ CMD_DATA: dict[str, dict] = {
     },
     "divorce": {
         "name": "Ly Hôn",
-        "emoji": "💔",
+        "emoji": "<:symbol_heart_breaking:1536296911655673936>",
         "short": "Đơn phương ly hôn người hiện tại.",
         "aliases": ["lydi", "lyhon"],
         "cooldown": None,
@@ -362,7 +362,7 @@ CMD_DATA: dict[str, dict] = {
     },
     "cooldowns": {
         "name": "Bảng Hồi Chiêu",
-        "emoji": "⏱️",
+        "emoji": "<a:symbol_clock:1537570144375541870>",
         "short": "Xem thời gian hồi chiêu của tất cả các lệnh.",
         "aliases": ["cd", "rd"],
         "cooldown": None,
@@ -412,7 +412,7 @@ CMD_DATA: dict[str, dict] = {
     },
     "coupletask": {
         "name": "Nhiệm Vụ Đôi",
-        "emoji": "📋",
+        "emoji": "<:symbol_boards:1536007665153474681>",
         "short": "Nhận 1 nhiệm vụ ngẫu nhiên chung cho cả 2 người. Hoàn thành để lấy +100 DTM.",
         "aliases": [],
         "cooldown": "1 lần/ngày",
@@ -449,7 +449,7 @@ CMD_DATA: dict[str, dict] = {
     },
     "ebuy": {
         "name": "Mua Chợ Đen",
-        "emoji": "🛍️",
+        "emoji": "<:icon_05_bm:1536017187243032736>",
         "short": "Mua vật phẩm trực tiếp từ Chợ Đen.",
         "aliases": ["muadem", "bmbuy"],
         "cooldown": None,
@@ -459,7 +459,7 @@ CMD_DATA: dict[str, dict] = {
     },
     "recipe": {
         "name": "Công Thức",
-        "emoji": "🛠️",
+        "emoji": "<:symbol_00_crafting:1536007686389235733>",
         "short": "Xem bách khoa toàn thư công thức nâng cấp & máy móc.",
         "aliases": ["recipes"],
         "cooldown": None,
@@ -489,7 +489,7 @@ CMD_DATA: dict[str, dict] = {
     },
     "task": {
         "name": "Nhiệm Vụ Hàng Ngày",
-        "emoji": "📋",
+        "emoji": "<:symbol_boards:1536007665153474681>",
         "short": "Hoàn thành các nhiệm vụ nhỏ mỗi ngày để lấy phần thưởng.",
         "aliases": ["tasks", "nhiemvu"],
         "cooldown": None,
@@ -594,7 +594,7 @@ CATEGORY_DATA: dict[str, dict] = {
         "cogs": ["InventoryCog", "ShopCog", "EventShopCog", "Rewards", "MilestoneCog", "BlackMarketCog", "BankingCog", "LootboxCog"],
     },
     "Nhiệm Vụ & Công Việc": {
-        "emoji": "📋",
+        "emoji": "<:symbol_boards:1536007665153474681>",
         "desc": "Hệ thống nhiệm vụ, công việc để cày cuốc.",
         "commands": ["task", "quest", "work"],
         "cogs": ["TasksCog", "WorkCog"],
@@ -625,7 +625,7 @@ def build_home_embed(bot: commands.Bot, author: discord.Member | discord.User) -
             "Chào mừng bạn đến với hệ thống sự kiện Angelic!\n\n"
             "Tham gia Casino để thử vận may, Khu Sinh Thái để cày an toàn, "
             "hoặc mua sắm tại Cửa Hàng để đổi phần quà.\n\n"
-            "**📋 Chọn danh mục bên dưới để xem chi tiết:**"
+            "**Chọn danh mục bên dưới để xem chi tiết:**"
         ),
         color=COLOR_THEME,
     )

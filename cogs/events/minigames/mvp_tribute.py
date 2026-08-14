@@ -56,15 +56,15 @@ async def start_mvp_tribute_game(bot, channel: discord.abc.Messageable, core_cog
     # GIAI ĐOẠN 2: THÔNG BÁO VINH DANH & KHỞI ĐỘNG (30 GIÂY)
     # =================================================================
     embed = discord.Embed(
-        title="🌟 VINH DANH MVP CHAT — 10 PHÚT QUA!",
+        title="VINH DANH MVP CHAT — 10 PHÚT QUA!",
         description=(
             f"Xin được vinh danh chiến thần {mvp_user.mention} — người đã năng nổ buôn chuyện nhiệt huyết nhất trong 10 phút vừa qua!\n\n"
             f"<:symbol_hour_glass:1537570149215899658> **Thử thách chớp nhoáng (30 giây):**\n"
             f"Tất cả thành viên đang online hãy nhanh tay gõ chính xác cú pháp dưới đây lên kênh chat:\n"
-            f"👉 `tui iu {mvp_user.mention}` (Nhớ tag đúng tài khoản của MVP nhé!)\n\n"
+            f"`tui iu {mvp_user.mention}` (Nhớ tag đúng tài khoản của MVP nhé!)\n\n"
             f"<:gift_00_symbol:1536003307011842099> **Phần thưởng:**\n"
             f"• Ai gõ đúng và nhanh sẽ được cộng ngay **+50 điểm** sự kiện!\n"
-            f"• 👑 **Đặc quyền MVP:** Không cần gõ, ngồi mát ăn bát vàng! Nhận ngay 10% hoa hồng (+5 điểm) từ mỗi câu chúc của mọi người! 🌸"
+            f"• **Đặc quyền:** Không cần gõ, ngồi mát ăn bát vàng! Nhận ngay 10% hoa hồng (+5 điểm) từ mỗi câu chúc của mọi người! 🌸"
         ),
         color=0xff80df
     )

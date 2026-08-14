@@ -221,13 +221,13 @@ class DuckRace(commands.Cog):
 
         if total_pool == 0:
             await channel.send(
-                "🛑 **ĐÃ ĐÓNG SỔ ĐẶT CƯỢC!** Giải đua vịt sẽ bắt đầu sau 5 phút...\n"
+                "<:symbol_alert:1537546957885542450> **ĐÃ ĐÓNG SỔ ĐẶT CƯỢC!** Giải đua vịt sẽ bắt đầu sau 5 phút...\n"
                 "*(Không ai thèm cược — đua cho vui thôi à!)*"
             )
         else:
             embed = _build_pool_embed(
                 stats,
-                title="🛑 ĐÃ ĐÓNG SỔ ĐẶT CƯỢC!",
+                title="ĐÃ ĐÓNG SỔ ĐẶT CƯỢC!",
                 color=COLOR_LOCK,
                 footer="Giải đua vịt sẽ bắt đầu sau 5 phút... Không thể đặt hoặc hủy cược nữa!",
             )
@@ -236,7 +236,7 @@ class DuckRace(commands.Cog):
                 "5 phút nữa các tay đua lông vũ sẽ xuất phát. Hồi hộp chưa? 🦆"
             )
             await channel.send(
-                "🛑 **ĐÃ ĐÓNG SỔ ĐẶT CƯỢC!** Giải đua vịt sẽ bắt đầu sau 5 phút...",
+                "<:symbol_alert:1537546957885542450> **ĐÃ ĐÓNG SỔ ĐẶT CƯỢC!** Giải đua vịt sẽ bắt đầu sau 5 phút...",
                 embed=embed,
             )
 
@@ -254,8 +254,8 @@ class DuckRace(commands.Cog):
         all_bets = await query_db(self.bot, "SELECT discord_id, duck_color, bet_amount FROM duck_bets")
 
         await channel.send(
-            "🏁 **KHỞI TRANH ĐƯỜNG ĐUA!** Các tay đua lông vũ đã sẵn sàng!\n"
-            "Ai cược ai bây giờ chỉ biết nín thở mà chờ... 🦆💨"
+            "**KHỞI TRANH ĐƯỜNG ĐUA!** Các tay đua lông vũ đã sẵn sàng!\n"
+            "Ai cược ai bây giờ chỉ biết nín thở mà chờ..."
         )
         await asyncio.sleep(2)
 
@@ -328,7 +328,7 @@ class DuckRace(commands.Cog):
 
         if total_winner_pool == 0:
             embed.add_field(
-                name="😭 Không ai cược phe này",
+                name="Không ai cược phe này",
                 value="Quỹ thưởng không chia được — tiền bay về trời!",
                 inline=False,
             )

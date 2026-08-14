@@ -202,9 +202,9 @@ class LootboxCog(commands.Cog):
         filled_dots = bar_filled // dots
         bar = "🟡" * filled_dots + "⚫" * (10 - filled_dots)
         embed = discord.Embed(
-            title="🙏 Cầu Nguyện Thành Công!",
+            title="Cầu Nguyện Thành Công!",
             description=(
-                f"✨ **+1 Luck** — Tổng: **{new_luck}** / {LUCK_MAX_CAP}\n"
+                f"**+1 Luck** — Tổng: **{new_luck}** / {LUCK_MAX_CAP}\n"
                 f"`{bar}` {new_luck}/{LUCK_MAX_CAP}\n\n"
                 f"*Luck tăng tỉ lệ drop lootbox từ fish/mine/chop và tỉ lệ nhận đồ hiếm khi mở hộp.*\n"
                 f"*Có thể cầu nguyện lại sau **{PRAY_COOLDOWN_MINUTES} phút**.*"
@@ -285,7 +285,7 @@ class LootboxCog(commands.Cog):
         emoji = TIER_EMOJIS[tier_id]
         embed_opening = discord.Embed(
             title=f"Đang mở {qty}x {TIER_NAMES[tier_id]}...",
-            description=f"{emoji} **Rương đang được mở...**✨",
+            description=f"{emoji} **Rương đang được mở...**",
             color=TIER_COLORS[tier_id]
         )
         embed_opening.set_image(url="https://cdn.discordapp.com/emojis/1535664849017774080.gif")
@@ -393,7 +393,7 @@ class LootboxCog(commands.Cog):
                 uid,
             )
             embed = discord.Embed(
-                title="📋 Tổng Lịch Sử Mở Lootbox",
+                title="Tổng Lịch Sử Mở Lootbox",
                 color=0x7289da,
             )
             embed.set_author(name=ctx.author.display_name, icon_url=ctx.author.display_avatar.url)
@@ -404,7 +404,7 @@ class LootboxCog(commands.Cog):
                 for r in rows:
                     tid = r["tier_id"]
                     name = TIER_NAMES.get(tid, f"#{tid}")
-                    emoji = TIER_EMOJIS.get(tid, "📦")
+                    emoji = TIER_EMOJIS.get(tid, "<:icon_01_chest:1536017178615091311>")
                     lines.append(f"{emoji} **{name}**: {r['total']} hộp ({r['sessions']} phiên)")
                 embed.description = "\n".join(lines)
             embed.set_footer(text="Dùng {prefix}lb history <tier> để xem chi tiết từng loại.")

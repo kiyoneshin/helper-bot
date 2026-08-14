@@ -333,7 +333,7 @@ def _build_lobby_embed(
 
     if players_bets:
         lines = [f"<@{uid}> → **{bet:,}** điểm" for uid, bet in players_bets.items()]
-        embed.add_field(name="📋 Bảng Cược", value="\n".join(lines), inline=False)
+        embed.add_field(name="<:symbol_boards:1536007665153474681> Bảng Cược", value="\n".join(lines), inline=False)
 
     embed.set_footer(text="Angelic Casino • Crash 🚀")
     return embed
@@ -363,11 +363,11 @@ def _build_flight_embed(
         color = COLOR_FLIGHT
 
     embed = discord.Embed(
-        title=f"🚀 Bóng Đang Bay... {icon}",
+        title=f"Bóng Đang Bay... {icon}",
         description=(
             f"## x{current_multiplier:.2f}\n"
             f"`{bar_filled}`\n\n"
-            "Nhấn **📉 CẮT LỖ / CHỐT LỜI 📈** để bỏ túi an toàn!"
+            "Nhấn **CẮT LỖ / CHỐT LỜI** để bỏ túi an toàn!"
         ),
         color=color,
     )
@@ -382,9 +382,9 @@ def _build_flight_embed(
 
     still_flying = [uid for uid in players_bets if uid not in cashed_out]
     if still_flying:
-        embed.add_field(name="🎈 Còn Đang Bay", value="\n".join(f"<@{uid}>" for uid in still_flying), inline=False)
+        embed.add_field(name="Còn Đang Bay", value="\n".join(f"<@{uid}>" for uid in still_flying), inline=False)
 
-    embed.set_footer(text="Angelic Casino • Crash 🚀  |  Chốt lúc nào là do cái đầu của bạn!")
+    embed.set_footer(text="Angelic Casino • Crash  |  Chốt lúc nào là do cái đầu của bạn!")
     return embed
 
 
@@ -394,9 +394,9 @@ def _build_crash_embed(
     cashed_out: dict[int, int],
 ) -> discord.Embed:
     if crash_point < 1.00:
-        title = "📉 BÙM! CHÁY TÀI KHOẢN📉"
+        title = "BÙM! CHÁY TÀI KHOẢN"
     else:
-        title = "💥 BÙM! BÓNG ĐÃ NỔ 💥"
+        title = "BÙM! BÓNG ĐÃ NỔ"
 
     embed = discord.Embed(
         title=title,
@@ -427,23 +427,23 @@ def _build_crash_embed(
         )
     else:
         embed.add_field(
-            name="🏅 Bảng Vàng",
-            value="*Đứt bóng toàn tập! Nhà cái mút trọn sòng!* 🏦",
+            name="Bảng Vàng",
+            value="*Đứt bóng toàn tập! Nhà cái mút trọn sòng!*",
             inline=False,
         )
 
     losers = {uid: bet for uid, bet in players_bets.items() if uid not in cashed_out}
     if losers:
         loser_lines = [
-            f"<@{uid}> • Mất trắng **{bet:,}** điểm 💸" for uid, bet in losers.items()
+            f"<@{uid}> • Mất trắng **{bet:,}** điểm" for uid, bet in losers.items()
         ]
         embed.add_field(
-            name="⚰️ Cột Trụ Sòng Bạc — Tham Lam Chết Chìm",
+            name="Cột Trụ Sòng Bạc — Tham Lam Chết Chìm",
             value="\n".join(loser_lines),
             inline=False,
         )
 
-    embed.set_footer(text="Angelic Casino • Crash 🚀  |  Tham thì thâm!")
+    embed.set_footer(text="Angelic Casino • Crash |  Tham thì thâm!")
     return embed
 
 
@@ -538,7 +538,7 @@ class CrashGame(commands.Cog):
 
         try:
             closing_embed = _build_lobby_embed(players_bets, 0)
-            closing_embed.title = "🎈 Sảnh Đã Đóng — Bóng Chuẩn Bị Bak"
+            closing_embed.title = "Sảnh Đã Đóng — Bóng Chuẩn Bị Bak"
             closing_embed.color = 0xFF8C00
             closing_view = discord.ui.View()
             disabled_btn  = discord.ui.Button(
@@ -553,7 +553,7 @@ class CrashGame(commands.Cog):
 
         if not players_bets:
             empty_embed = discord.Embed(
-                title="🎈 Quả Bóng Tham Lam",
+                title="Quả Bóng Tham Lam",
                 description="Ế ẩm quá không ai chịu cược. Giải tán sòng!",
                 color=0x808080,
             )

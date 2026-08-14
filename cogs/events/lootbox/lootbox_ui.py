@@ -116,7 +116,7 @@ def build_bulk_result_embed(
         else:
             bonus_lines.append(f"• **{b['icon']} {b['name']}**")
     if bonus_lines:
-        embed.add_field(name="✨ Godly Bonus", value="\n".join(bonus_lines), inline=False)
+        embed.add_field(name="Godly Bonus", value="\n".join(bonus_lines), inline=False)
 
     embed.set_footer(text=f"Tổng {count} hộp đã mở.")
     return embed
@@ -240,7 +240,7 @@ def build_history_embed(
         history_lines.append(f"**#{i+1}** [{opened_at}] ×{count}: {summary}")
 
     embed.add_field(
-        name="📋 5 Lần Gần Nhất",
+        name="<:symbol_boards:1536007665153474681> 5 Lần Gần Nhất",
         value="\n".join(history_lines) or "*(trống)*",
         inline=False,
     )

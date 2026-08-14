@@ -22,7 +22,7 @@ CMD_DATA: dict[str, dict] = {
     # ── MODERATION ────────────────────────────────────────────────────────────
     "menu": {
         "name": "Hồ Sơ Nhân Sự",
-        "emoji": "📋",
+        "emoji": "<:symbol_boards:1536007665153474681>",
         "short": "Mở Menu tương tác để quản lý hồ sơ nhân sự (BQT).",
         "aliases": ["staff", "bqt"],
         "cooldown": None,
@@ -244,7 +244,7 @@ CMD_DATA: dict[str, dict] = {
     },
     "renewdb": {
         "name": "Đồng Bộ DB",
-        "emoji": "🔄",
+        "emoji": "<:symbol_reload:1536007679640600648>",
         "short": "Đồng bộ và làm sạch Database với Server Discord thực tế.",
         "aliases": ["syncdb", "refreshdb"],
         "cooldown": None,
@@ -306,7 +306,7 @@ CMD_DATA: dict[str, dict] = {
 
 CATEGORY_DATA: dict[str, dict] = {
     "Quản Trị Nhân Sự": {
-        "emoji": "📋",
+        "emoji": "<:symbol_boards:1536007665153474681>",
         "desc": "Quản lý nhân sự và hồ sơ thành viên BQT.",
         "commands": ["menu", "add", "set", "rule", "top", "feedback", "myreviews"],
         "cogs": ["StaffUI", "Leaderboard", "EditProfile", "AddProfile"],
@@ -344,11 +344,11 @@ CATEGORY_DATA: dict[str, dict] = {
 
 def build_home_embed(bot: commands.Bot, author: discord.Member | discord.User, prefix: str = 'k') -> discord.Embed:
     embed = discord.Embed(
-        title=f"🛡️ Trung Tâm Hỗ Trợ — {author.display_name}",
+        title=f"Trung Tâm Hỗ Trợ — {author.display_name}",
         description=(
             "Chào mừng! Đây là bảng điều khiển lệnh quản trị và hệ thống.\n\n"
             f"Để xem lệnh **sự kiện**, hãy dùng `{prefix}ehelp`.\n\n"
-            "**📋 Chọn danh mục bên dưới để xem chi tiết:**"
+            "**Chọn danh mục bên dưới để xem chi tiết:**"
         ),
         color=COLOR_THEME,
     )
@@ -390,7 +390,7 @@ def build_category_embed(cat_name: str, prefix: str = 'k') -> discord.Embed:
                 value=cmd["short"],
                 inline=False,
             )
-    embed.set_footer(text="Nhấn 🏠 Trang Chủ để quay về")
+    embed.set_footer(text="Nhấn Trang Chủ để quay về")
     return embed
 
 
@@ -413,7 +413,7 @@ def build_detail_embed(cmd_key: str, prefix: str = 'k') -> discord.Embed:
         embed.add_field(name="💡 Ví dụ", value="\n".join(f"`{e.replace('{prefix}', prefix)}`" for e in cmd["examples"]), inline=False)
     if cmd.get("note"):
         embed.add_field(name="ℹ️ Ghi chú", value=cmd["note"].replace("{prefix}", prefix), inline=False)
-    embed.set_footer(text="Nhấn ◀ Quay Lại để về danh sách lệnh")
+    embed.set_footer(text="Nhấn Quay Lại để về danh sách lệnh")
     return embed
 
 
@@ -509,7 +509,7 @@ class _CommandSelect(discord.ui.Select):
                     value=key,
                     description=cmd["short"][:50],
                 ))
-        super().__init__(placeholder="📖 Chọn lệnh để xem chi tiết...", options=options)
+        super().__init__(placeholder="Chọn lệnh để xem chi tiết...", options=options)
 
     async def callback(self, interaction: discord.Interaction):
         embed = build_detail_embed(self.values[0])
@@ -520,7 +520,7 @@ class _CommandSelect(discord.ui.Select):
 
 class _HomeButton(discord.ui.Button):
     def __init__(self):
-        super().__init__(label="🏠 Trang Chủ", style=discord.ButtonStyle.secondary, row=1)
+        super().__init__(label="Trang Chủ", style=discord.ButtonStyle.secondary, row=1)
 
     async def callback(self, interaction: discord.Interaction):
         view: CategoryView = self.view  # type: ignore
@@ -558,7 +558,7 @@ class DetailView(discord.ui.View):
 
 class _BackButton(discord.ui.Button):
     def __init__(self):
-        super().__init__(label="◀ Quay Lại", style=discord.ButtonStyle.primary, row=0)
+        super().__init__(label="Quay Lại", style=discord.ButtonStyle.primary, row=0)
 
     async def callback(self, interaction: discord.Interaction):
         view: DetailView = self.view  # type: ignore
@@ -570,7 +570,7 @@ class _BackButton(discord.ui.Button):
 
 class _HomeButton2(discord.ui.Button):
     def __init__(self):
-        super().__init__(label="🏠 Trang Chủ", style=discord.ButtonStyle.secondary, row=0)
+        super().__init__(label="Trang Chủ", style=discord.ButtonStyle.secondary, row=0)
 
     async def callback(self, interaction: discord.Interaction):
         view: DetailView = self.view  # type: ignore
