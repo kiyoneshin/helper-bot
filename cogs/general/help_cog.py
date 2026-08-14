@@ -497,9 +497,10 @@ class _CommandSelect(discord.ui.Select):
             cmd = CMD_DATA.get(key)
             if cmd:
                 options.append(discord.SelectOption(
-                    label=f"{cmd['emoji']} {cmd['name']}"[:25],
+                    label=cmd['name'][:25],
                     value=key,
                     description=cmd["short"][:50],
+                    emoji=cmd['emoji']
                 ))
         super().__init__(placeholder="Chọn lệnh để xem chi tiết...", options=options)
 

@@ -1102,10 +1102,10 @@ class MarriageCog(commands.Cog):
         emb = discord.Embed(description=msg, color=discord.Color.pink())
         
         footer_text = []
-        if buffs["dtm_bonus"] > 0: footer_text.append(f"<:icon_02_ring:1536017180951318528> Nhẫn: +{int(buffs['dtm_bonus']*100)}% DTM")
-        if buffs["cd_reduction"] > 0: footer_text.append(f"<:icon_02_ring:1536017180951318528> Nhẫn: -{int(buffs['cd_reduction']*100)}% CD")
-        if pet_dtm_bonus > 0: footer_text.append(f"<a:pet_dog:1535998186450194432> Pet: +{pet_dtm_bonus*100:.1f}% DTM")
-        if pet_cd_reduction > 0: footer_text.append(f"<a:pet_dog:1535998186450194432> Pet: -{pet_cd_reduction*100:.1f}% CD")
+        if buffs["dtm_bonus"] > 0: footer_text.append(f"💍 Nhẫn: +{int(buffs['dtm_bonus']*100)}% DTM")
+        if buffs["cd_reduction"] > 0: footer_text.append(f"💍 Nhẫn: -{int(buffs['cd_reduction']*100)}% CD")
+        if pet_dtm_bonus > 0: footer_text.append(f"🐶 Pet: +{pet_dtm_bonus*100:.1f}% DTM")
+        if pet_cd_reduction > 0: footer_text.append(f"🐶 Pet: -{pet_cd_reduction*100:.1f}% CD")
         if footer_text:
             emb.set_footer(text=" | ".join(footer_text))
         

@@ -797,11 +797,11 @@ class _CommandSelect(discord.ui.Select):
         for key in cat.get("commands", []):
             cmd = CMD_DATA.get(key)
             if cmd:
-                label = f"{cmd['emoji']} {cmd['name']}"
                 options.append(discord.SelectOption(
-                    label=label[:25],
+                    label=cmd['name'][:25],
                     value=key,
                     description=cmd["short"][:50],
+                    emoji=cmd['emoji']
                 ))
 
         super().__init__(
