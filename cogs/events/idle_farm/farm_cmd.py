@@ -46,7 +46,7 @@ class IdleFarmCog(commands.Cog):
     @commands.hybrid_command(
         name="plant",
         aliases=["gieo", "trong"],
-        description="<:symbol_plant:1536007706958237828> Gieo hạt giống vào các ô đất chỉ định. VD: lệnh plant wheat 1 2 3",
+        description="🌱 Gieo hạt giống vào ô đất. VD: plant wheat 1 2",
     )
     @check_not_locked()
     async def plant_cmd(self, ctx: commands.Context, seed_type: str, *, slots_str: str) -> None:
@@ -104,7 +104,7 @@ class IdleFarmCog(commands.Cog):
     @commands.hybrid_command(
         name="pick",
         aliases=["cuoc"],
-        description="<:farm_00_wheat:1535940025080881152> Cuốc bỏ cây trồng ở các ô đất chỉ định. VD: lệnh pick 1 2 3",
+        description="⛏️ Cuốc bỏ cây trồng ở ô đất chỉ định. VD: pick 1 2",
     )
     @check_not_locked()
     async def pick_cmd(self, ctx: commands.Context, *, slots_str: str) -> None:

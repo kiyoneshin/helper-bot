@@ -96,3 +96,6 @@ STATIC_VOICE_PERMS = {
         }
     },
 }
+
+async def setup(bot):
+    pass
