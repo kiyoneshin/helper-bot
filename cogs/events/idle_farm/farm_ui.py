@@ -257,7 +257,15 @@ def build_farm_embed(author: discord.Member | discord.User, farm_data: Dict[str,
     embed.add_field(name="Mảnh Đất Của Bạn", value=matrix_str, inline=False)
     
     if crop_details:
-        embed.add_field(name="Chi tiết sinh trưởng", value="\n".join(crop_details), inline=False)
+        joined_details = "\n".join(crop_details)
+        if len(joined_details) <= 1024:
+            embed.add_field(name="Chi tiết sinh trưởng", value=joined_details, inline=False)
+        else:
+            mid = (len(crop_details) + 1) // 2
+            part1 = "\n".join(crop_details[:mid])
+            part2 = "\n".join(crop_details[mid:])
+            embed.add_field(name="Chi tiết sinh trưởng (1/2)", value=part1, inline=False)
+            embed.add_field(name="Chi tiết sinh trưởng (2/2)", value=part2, inline=False)
         
     embed.set_thumbnail(url="https://cdn.discordapp.com/emojis/1535660951791997071.gif")
     embed.set_footer(text="Dùng menu bên dưới để mua hạt giống hoặc tương tác với cây trồng.")
