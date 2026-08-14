@@ -16,15 +16,17 @@ COLOR_WIN  = 0x00FF00
 COLOR_LOSE = 0xFF0000
 COLOR_TIE  = 0xFFFF00
 
-EMOJI_FILE = "card_emojis.json"
+CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+ROOT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(CURRENT_DIR)))
+EMOJI_FILE = os.path.join(ROOT_DIR, "card_emojis.json")
 CARD_EMOJIS = {}
 
 if os.path.exists(EMOJI_FILE):
     try:
-        with open(EMOJI_FILE, "r") as f:
+        with open(EMOJI_FILE, "r", encoding="utf-8") as f:
             CARD_EMOJIS = json.load(f)
-    except Exception:
-        pass
+    except Exception as e:
+        log.error(f"Failed to load emojis: {e}")
 
 class Card:
     def __init__(self, suit: str, value: int):
