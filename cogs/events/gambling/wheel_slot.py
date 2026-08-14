@@ -1,16 +1,16 @@
-"""
-wheel_slot.py — Cog Vòng Quay May Mắn (Wheel of Fortune)
-=========================================================
-Lệnh: kwheel <tien_cuoc>
-
-Vòng quay gồm 16 ô theo tỷ lệ:
-  🟪 Tím      (1 ô,  6.25%) → x9.0  (+800%)
-  🟩 Xanh lá  (1 ô,  6.25%) → x1.8  (+80%)
-  🟥 Đỏ       (1 ô,  6.25%) → -100%
-  🟨 Vàng     (1 ô,  6.25%) → -100% + 1 Vé Xổ Số
-  🟧 Cam      (4 ô, 25.00%) → -50%
-  🟫 Nâu      (4 ô, 25.00%) → -75%
-  🟦 Xanh dương (4 ô, 25.00%) → -90%
+"""
+wheel_slot.py — Cog Vòng Quay May Mắn (Wheel of Fortune)
+=========================================================
+Lệnh: kwheel <tien_cuoc>
+
+Vòng quay gồm 16 ô theo tỷ lệ:
+   Tím      (1 ô,  6.25%) → x9.0  (+800%)
+   Xanh lá  (1 ô,  6.25%) → x1.8  (+80%)
+   Đỏ       (1 ô,  6.25%) → -100%
+   Vàng     (1 ô,  6.25%) → -100% + 1 Vé Xổ Số
+   Cam      (4 ô, 25.00%) → -50%
+   Nâu      (4 ô, 25.00%) → -75%
+   Xanh dương (4 ô, 25.00%) → -90%
   """
 
 import random
@@ -32,9 +32,9 @@ log = logging.getLogger("WheelSlots")
 # ─────────────────────────────────────────────────────────────────────────────
 # HẰNG SỐ MÀU SẮC EMBED
 # ─────────────────────────────────────────────────────────────────────────────
-COLOR_WIN     = 0x00FF00   # 🟢 Thắng
-COLOR_LOSE    = 0xFF0000   # 🔴 Thua
-COLOR_SPECIAL = 0xFFD700   # 🌟 Tím / Vàng đặc biệt
+COLOR_WIN     = 0x00FF00   #  Thắng
+COLOR_LOSE    = 0xFF0000   #  Thua
+COLOR_SPECIAL = 0xFFD700   #  Tím / Vàng đặc biệt
 
 # ─────────────────────────────────────────────────────────────────────────────
 # CẤU HÌNH VÒNG QUAY
@@ -135,15 +135,15 @@ def _parse_bet(raw: str, balance: int) -> tuple[Optional[int], Optional[str], bo
 # ─────────────────────────────────────────────────────────────────────────────
 
 def _render_wheel(stop_idx: int) -> str:
-    """
-    Render lưới 7×8 từ mảng BASE_WHEEL cố định với chỉ số dừng `stop_idx`.
-
-    Thuật toán Slice Rotation:
-    1. display_wheel = BASE_WHEEL[stop_idx:] + BASE_WHEEL[:stop_idx]
-       → display_wheel[0] luôn là ô kết quả (nằm ngay dưới mũi tên 🔻).
-    2. Điền 16 emoji theo thứ tự TRACK vào lưới 7×7.
-    3. Ô trung tâm (3,3) = ⬜, ô trống = ⬛.
-    4. Thêm dòng mũi tên "⬛ ⬛ ⬛ 🔻 ⬛ ⬛ ⬛" lên đầu.
+    """
+    Render lưới 7×8 từ mảng BASE_WHEEL cố định với chỉ số dừng `stop_idx`.
+
+    Thuật toán Slice Rotation:
+    1. display_wheel = BASE_WHEEL[stop_idx:] + BASE_WHEEL[:stop_idx]
+       → display_wheel[0] luôn là ô kết quả (nằm ngay dưới mũi tên ).
+    2. Điền 16 emoji theo thứ tự TRACK vào lưới 7×7.
+    3. Ô trung tâm (3,3) = ⬜, ô trống = ⬛.
+    4. Thêm dòng mũi tên "⬛ ⬛ ⬛  ⬛ ⬛ ⬛" lên đầu.
     """
     # Bước 1 — Xoay mảng cố định bằng slice, không shuffle
     arranged: list[str] = BASE_WHEEL[stop_idx:] + BASE_WHEEL[:stop_idx]
@@ -388,7 +388,7 @@ class WheelSlots(commands.Cog):
         new_balance = balance + delta
 
         # ── Xây dựng Giao diện Embed ─────────────────────────────────────
-        # Mô tả hiển thị (RPG Style): ◖ 💎 ✨ 💯 💯 💎 ◗
+        # Mô tả hiển thị (RPG Style): ◖      ◗
         slots_display = f"◖ {' '.join(slots)} ◗"
         
         if mult >= 15.0:

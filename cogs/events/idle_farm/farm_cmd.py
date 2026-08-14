@@ -171,7 +171,7 @@ class IdleFarmCog(commands.Cog):
     @commands.hybrid_command(name="craft", aliases=["chebien2", "bophuong"])
     @check_not_locked()
     async def craft_cmd(self, ctx: commands.Context, machine_id_str: str, quantity: int = 1) -> discord.Message | None:
-        """⚙ Chế tạo máy mới. VD: kcraft 61 2 (61 = Keg)"""
+        """ Chế tạo máy mới. VD: kcraft 61 2 (61 = Keg)"""
         from .farm_db import get_farm_data, save_farm_data
         from .machine_config import MACHINE_BY_ID, MACHINES
         from .machine_ui import _get_queue_list, MAX_QUEUE_SLOTS, _get_item_display_name

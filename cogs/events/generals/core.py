@@ -233,7 +233,7 @@ class EventCoreCog(commands.Cog):
 
         if total_members_rewarded > 0:
             log.info(
-                f"🎙️ [Voice Scanner] Đã phát tổng {_fmt(total_points_distributed)} điểm "
+                f"[Voice Scanner] Đã phát tổng {_fmt(total_points_distributed)} điểm "
                 f"cho {total_members_rewarded} thành viên đang treo voice hợp lệ."
             )
 
@@ -314,7 +314,7 @@ class EventCoreCog(commands.Cog):
         
         if success:
             embed = discord.Embed(
-                title="🏦 Ngân Hàng Sự Kiện Angelic",
+                title="Ngân Hàng Sự Kiện Angelic",
                 description=f"Đã chuyển thành công **{_fmt(val)} điểm** vào tài khoản của {target.mention}!",
                 color=0x57f287
             )
@@ -400,7 +400,7 @@ class EventCoreCog(commands.Cog):
 
         if res is not None:
             embed = discord.Embed(
-                title="⚖️ Ngân Hàng Sự Kiện Angelic — Tịch Thu",
+                title="Ngân Hàng Sự Kiện Angelic — Tịch Thu",
                 description=f"Đã rút **{_fmt(val)} điểm** từ tài khoản của {target.mention}!\n*(Số dư được chạm đáy ở mức 0 điểm)*",
                 color=0xed4245  # Màu đỏ cảnh báo / xử phạt
             )

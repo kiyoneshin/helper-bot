@@ -8,7 +8,7 @@ log = logging.getLogger("StaffEmbeds")
 def get_main_embed() -> discord.Embed:
     """Tạo Embed chào mừng gọn gàng ở trang đầu tiên của Menu BQT"""
     embed = discord.Embed(
-        title="🏠 Chào mừng đến với Angelic ໒꒱",
+        title="Chào mừng đến với Angelic ໒꒱",
         description=(
             "Tiếng chuông nhà thờ khẽ ngân vang, cánh cổng thiên đường đã mở rộng chào đón bạn! ଘ(੭ˊᵕˋ)੭\n"
             "Hãy biến nơi đây thành mái nhà bình yên để cùng trò chuyện, chơi game, chữa lành và lưu giữ những kỷ niệm đẹp nhé.\n\n"

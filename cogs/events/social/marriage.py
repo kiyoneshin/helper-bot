@@ -171,6 +171,38 @@ RING_BUFFS = {
     40: {"dtm_bonus": 0.5, "cd_reduction": 0.4, "work_bonus": 1.5},
 }
 
+async def get_or_create_couple_task(bot, mar: dict) -> dict:
+    task_str = mar.get("couple_task")
+    task_data = json.loads(task_str) if (task_str and isinstance(task_str, str)) else (task_str or {})
+    today_str = (discord.utils.utcnow() + datetime.timedelta(hours=7)).strftime("%Y-%m-%d")
+    
+    if task_data.get("date") != today_str:
+        COUPLE_TASKS = [
+            {"type": "hug", "target": 3, "desc": "ôm nhau 3 lần"},
+            {"type": "kiss", "target": 3, "desc": "hôn nhau 3 lần"},
+            {"type": "work", "target": 2, "desc": "làm việc chung 2 lần"},
+            {"type": "poke", "target": 5, "desc": "chọc ghẹo nhau 5 lần"},
+            {"type": "pat", "target": 5, "desc": "xoa đầu nhau 5 lần"},
+            {"type": "cuddle", "target": 3, "desc": "âu yếm nhau 3 lần"},
+            {"type": "snuggle", "target": 3, "desc": "rúc vào lòng nhau 3 lần"},
+            {"type": "nom", "target": 3, "desc": "cắn yêu nhau 3 lần"},
+            {"type": "lick", "target": 3, "desc": "liếm má nhau 3 lần"},
+            {"type": "saylove", "target": 2, "desc": "tỏ tình với nhau 2 lần"},
+            {"type": "tickle", "target": 5, "desc": "thọc léc nhau 5 lần"},
+        ]
+        task = random.choice(COUPLE_TASKS)
+        task_data = {
+            "date": today_str,
+            "type": task["type"],
+            "target": task["target"],
+            "desc": task["desc"],
+            "progress": 0,
+            "completed": False
+        }
+        await execute_db(bot, "UPDATE marriages SET couple_task = $1::jsonb WHERE id = $2", json.dumps(task_data), mar["id"])
+    return task_data
+
+
 class MarryConfirmView(discord.ui.View):
     def __init__(self, bot, proposer: discord.Member, target: discord.Member, ring_id: int):
         super().__init__(timeout=120)
@@ -877,34 +909,7 @@ class MarriageCog(commands.Cog):
         if not mar:
             return await ctx.send("<:symbol_wrong:1536629915598848072> Đã kết hôn đâu mà đòi làm nhiệm vụ chung?")
             
-        task_str = mar.get("couple_task")
-        task_data = json.loads(task_str) if (task_str and isinstance(task_str, str)) else (task_str or {})
-        today_str = discord.utils.utcnow().strftime("%Y-%m-%d")
-        
-        if task_data.get("date") != today_str:
-            COUPLE_TASKS = [
-                {"type": "hug", "target": 3, "desc": "ôm nhau 3 lần"},
-                {"type": "kiss", "target": 3, "desc": "hôn nhau 3 lần"},
-                {"type": "work", "target": 2, "desc": "làm việc chung 2 lần"},
-                {"type": "poke", "target": 5, "desc": "chọc ghẹo nhau 5 lần"},
-                {"type": "pat", "target": 5, "desc": "xoa đầu nhau 5 lần"},
-                {"type": "cuddle", "target": 3, "desc": "âu yếm nhau 3 lần"},
-                {"type": "snuggle", "target": 3, "desc": "rúc vào lòng nhau 3 lần"},
-                {"type": "nom", "target": 3, "desc": "cắn yêu nhau 3 lần"},
-                {"type": "lick", "target": 3, "desc": "liếm má nhau 3 lần"},
-                {"type": "saylove", "target": 2, "desc": "tỏ tình với nhau 2 lần"},
-                {"type": "tickle", "target": 5, "desc": "thọc léc nhau 5 lần"},
-            ]
-            task = random.choice(COUPLE_TASKS)
-            task_data = {
-                "date": today_str,
-                "type": task["type"],
-                "target": task["target"],
-                "desc": task["desc"],
-                "progress": 0,
-                "completed": False
-            }
-            await execute_db(self.bot, "UPDATE marriages SET couple_task = $1::jsonb WHERE id = $2", json.dumps(task_data), mar["id"])
+        task_data = await get_or_create_couple_task(self.bot, mar)
             
         if task_data["completed"]:
             return await ctx.send("<:symbol_right:1536629912515903578> Hai bạn đã hoàn thành nhiệm vụ của ngày hôm nay rồi! Hãy quay lại vào ngày mai nhé.")
@@ -1036,18 +1041,15 @@ class MarriageCog(commands.Cog):
             msg = random.choice(act["msg"]).format(author=ctx.author.display_name, partner=target.mention) + f" `(+{actual_dtm:.1f} DTM)`"
             
             # Tiên quyết: Chỉ update task nếu thành công (không fail)
-            task_str = mar.get("couple_task")
-            if task_str:
-                task_data = json.loads(task_str) if isinstance(task_str, str) else task_str
-                today_str = discord.utils.utcnow().strftime("%Y-%m-%d")
-                if task_data.get("date") == today_str and task_data.get("type") == action and not task_data.get("completed"):
-                    task_data["progress"] = task_data.get("progress", 0) + 1
-                    if task_data["progress"] >= task_data["target"]:
-                        task_data["completed"] = True
-                        task_reward = 100 * (1.0 + pet_task_bonus)
-                        actual_dtm += task_reward
-                        msg += f"\n<:symbol_confetti:1537570146313306183> **Nhiệm Vụ Cặp Đôi Hoàn Thành!** (+{task_reward:.1f} DTM)"
-                    await execute_db(self.bot, "UPDATE marriages SET couple_task = $1::jsonb WHERE id = $2", json.dumps(task_data), mar["id"])
+            task_data = await get_or_create_couple_task(self.bot, mar)
+            if task_data.get("type") == action and not task_data.get("completed"):
+                task_data["progress"] = task_data.get("progress", 0) + 1
+                if task_data["progress"] >= task_data["target"]:
+                    task_data["completed"] = True
+                    task_reward = 100 * (1.0 + pet_task_bonus)
+                    actual_dtm += task_reward
+                    msg += f"\n<:symbol_confetti:1537570146313306183> **Nhiệm Vụ Cặp Đôi Hoàn Thành!** (+{task_reward:.1f} DTM)"
+                await execute_db(self.bot, "UPDATE marriages SET couple_task = $1::jsonb WHERE id = $2", json.dumps(task_data), mar["id"])
             
             # Pet <:xp:1535664865308577884> gain
             if pet_type:
@@ -1218,7 +1220,7 @@ class MarriageCog(commands.Cog):
     # ---------------------------------------------------------
     # BACKGROUND TASK: ANTI GHOSTING
     # ---------------------------------------------------------
-    @tasks.loop(hours=24)
+    @tasks.loop(time=datetime.time(hour=0, minute=0, tzinfo=datetime.timezone(datetime.timedelta(hours=7))))
     async def anti_ghosting_loop(self):
         """Trừ DTM nếu không tương tác > 3 ngày, xóa DB nếu DTM <= 0."""
         # Chạy lúc 00:00 hoặc mỗi 24h tùy config, tạm thời loop mỗi 24h

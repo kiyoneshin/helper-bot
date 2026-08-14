@@ -114,17 +114,17 @@ def build_machine_embed(
     ready_count = sum(1 for _, item in queue_list if item.get("status") == "done")
 
     embed = discord.Embed(
-        title="🏭 Khu Chế Biến Nông Sản",
+        title="Khu Chế Biến Nông Sản",
         color=0xe67e22,
     )
     embed.set_thumbnail(url="https://cdn.discordapp.com/emojis/1535660945752326154.gif")
 
     header = (
-        f"👤 **{author.display_name}** | "
+        f"**{author.display_name}** | "
         f"<:symbol_boards:1536007665153474681> Slot đang dùng: **{num_active}/{MAX_QUEUE_SLOTS}**"
     )
     if ready_count:
-        header += f"\n🧺 **{ready_count}** thành phẩm đang chờ thu hoạch! Nhấn nút **Thu Hoạch** nhé."
+        header += f"\n **{ready_count}** thành phẩm đang chờ thu hoạch! Nhấn nút **Thu Hoạch** nhé."
     else:
         header += "\n*Dùng lệnh `kcraft <id>` để xây thêm máy vào các slot trống.*"
     embed.description = header
@@ -292,8 +292,8 @@ class RecipeSelect(discord.ui.Select):
 
         output_info = ARTISAN_GOODS.get(recipe["output_id"], {})
         await interaction.response.send_message(
-            f"⚙️ Bắt đầu chế biến: {recipe['icon']} **{recipe['name']}**\n"
-            f"⌛ Hoàn thành sau **{_format_duration(recipe['duration_seconds'])}** → {output_info.get('icon','')} **{output_info.get('name','')}**",
+            f"Bắt đầu chế biến: {recipe['icon']} **{recipe['name']}**\n"
+            f"<:symbol_hour_glass:1537570149215899658> Hoàn thành sau **{_format_duration(recipe['duration_seconds'])}** → {output_info.get('icon','')} **{output_info.get('name','')}**",
             ephemeral=True,
         )
 
@@ -469,7 +469,7 @@ class MachineView(discord.ui.View):
         btn_harvest = discord.ui.Button(
             label="Thu Hoạch",
             style=discord.ButtonStyle.success if ready_count > 0 else discord.ButtonStyle.secondary,
-            emoji="🧺",
+            emoji="<:button_gathering:1536007669301776486>",
             custom_id="btn_harvest",
             disabled=(ready_count == 0),
             row=0,
@@ -554,7 +554,7 @@ class MachineView(discord.ui.View):
         for out_id, qty in harvested_items.items():
             info = ARTISAN_GOODS.get(out_id, {})
             lines.append(f"**{qty}x** {info.get('icon', '')} {info.get('name', out_id)}")
-        msg = "🧺 Thu hoạch thành công:\n" + "\n".join(lines)
+        msg = "Thu hoạch thành công:\n" + "\n".join(lines)
 
         await interaction.response.send_message(msg, ephemeral=True)
 

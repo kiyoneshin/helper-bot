@@ -118,7 +118,7 @@ class TaskCog(commands.Cog):
         weekly_tasks = data["weekly_tasks"].get("tasks", {})
         
         embed = discord.Embed(
-            title="📜 Bảng Nhiệm Vụ (Task Board)",
+            title="Bảng Nhiệm Vụ (Task Board)",
             color=0x2b2d31,
             description="Hoàn thành các nhiệm vụ dưới đây để nhận điểm thưởng. Bot sẽ tự động trao thưởng nếu nhiệm vụ hoàn thành khi bạn gõ lệnh này."
         )

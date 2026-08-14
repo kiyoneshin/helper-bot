@@ -335,13 +335,13 @@ class EndDayModal(discord.ui.Modal, title="Nhập Ngày Kết Thúc"):
 # =============================================================================
 
 class DateSelectionView(discord.ui.View):
-    """
-    Panel chọn khoảng ngày trên MỘT màn hình duy nhất, gồm:
-      - Row 0: Dropdown chọn Tháng Bắt Đầu  (độc lập)
-      - Row 1: Dropdown chọn Tháng Kết Thúc (độc lập)
-      - Row 2: [📅 Chọn Ngày Bắt Đầu] [📅 Chọn Ngày Kết Thúc] [🔎 Áp Dụng Bộ Lọc]
-
-    Gửi dạng ephemeral. Sau khi áp dụng thành công sẽ tự xóa.
+    """
+    Panel chọn khoảng ngày trên MỘT màn hình duy nhất, gồm:
+      - Row 0: Dropdown chọn Tháng Bắt Đầu  (độc lập)
+      - Row 1: Dropdown chọn Tháng Kết Thúc (độc lập)
+      - Row 2: [ Chọn Ngày Bắt Đầu] [ Chọn Ngày Kết Thúc] [ Áp Dụng Bộ Lọc]
+
+    Gửi dạng ephemeral. Sau khi áp dụng thành công sẽ tự xóa.
     """
 
     def __init__(self, leaderboard_view: "LeaderboardView"):

@@ -38,8 +38,8 @@ def _format_cd(is_ready: bool, label: str, duration_str: str = "") -> str:
             return f"<:symbol_right:1536629912515903578> — **{label}** ({duration_str})"
         return f"<:symbol_right:1536629912515903578> — **{label}**"
     if duration_str:
-        return f"🕒 — **{label}** ({duration_str})"
-    return f"🕒 — **{label}**"
+        return f"<a:symbol_clock:1537570144375541870> — **{label}** ({duration_str})"
+    return f"<a:symbol_clock:1537570144375541870> — **{label}**"
 
 class CooldownsCog(commands.Cog):
     """⏱ Bảng hiển thị thời gian hồi chiêu của các lệnh."""
@@ -138,7 +138,7 @@ class CooldownsCog(commands.Cog):
         embed.add_field(name="<:gift_00_symbol:1536003307011842099> Rewards", value="\n".join(rewards_lines), inline=False)
         
         # -------------------------------------------------------------
-        # 2. PROGRESS (✨ Tiến độ)
+        # 2. PROGRESS
         # -------------------------------------------------------------
         farm_data = await get_farm_data(self.bot, user_id)
         from cogs.events.mining.mining_config import MAX_STAMINA
@@ -223,7 +223,7 @@ class CooldownsCog(commands.Cog):
         embed.add_field(name="✨ Progress", value="\n".join(progress_lines), inline=False)
         
         # -------------------------------------------------------------
-        # 3. ACTIONS (💞 Tương tác cặp đôi)
+        # 3. ACTIONS
         # -------------------------------------------------------------
         marriage_cog = self.bot.get_cog("MarriageCog")
         actions_lines = []

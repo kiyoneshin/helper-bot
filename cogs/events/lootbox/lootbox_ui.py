@@ -55,13 +55,13 @@ def build_open_result_embed(
     if bonus:
         if bonus["type"] == "points":
             embed.add_field(
-                name="✨ Godly Bonus!",
+                name="Godly Bonus!",
                 value=f"<:symbol_confetti:1537570146313306183> Nhận thêm **{bonus['value']:,} điểm** sự kiện!",
                 inline=False,
             )
         elif bonus["type"] in ("bm_item", "seed"):
             embed.add_field(
-                name="✨ Godly Bonus!",
+                name="Godly Bonus!",
                 value=f"<:symbol_confetti:1537570146313306183> Nhận thêm **{bonus['icon']} {bonus['name']}**!",
                 inline=False,
             )
@@ -158,7 +158,7 @@ def build_info_embed(tier_id: int) -> discord.Embed:
 
     if tier_id == LB_GODLY:
         embed.add_field(
-            name="✨ Godly Bonus",
+            name="Godly Bonus",
             value="30% điểm event (1k-5k) | 10% thẻ BM | 5% Hạt Giống Ngôi Sao",
             inline=False,
         )

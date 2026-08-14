@@ -552,7 +552,7 @@ class ProfileView(BaseStaffView):
     # NÚT VỀ TRANG CHỦ
     # ------------------------------------------------------------------
 
-    @discord.ui.button(label="🏠 Trang Chủ", style=discord.ButtonStyle.danger, row=1)
+    @discord.ui.button(label="Trang Chủ", style=discord.ButtonStyle.danger, row=1)
     async def back_to_home(self, interaction: discord.Interaction, button: discord.ui.Button):
         new_view = MainView(self.author_id)
         new_view.message = interaction.message

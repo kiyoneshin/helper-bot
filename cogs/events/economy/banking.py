@@ -8,7 +8,7 @@ Phạt vỡ nợ: Khóa lệnh nếu số dư hiện tại - tổng nợ < 0 li�
 import discord
 from discord.ext import commands, tasks
 import logging
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timezone, timedelta, time
 
 from cogs.common.db import (
     execute_db,
@@ -177,7 +177,7 @@ class BankingCog(commands.Cog):
         else:
             await ctx.send("<:symbol_wrong:1536629915598848072> Đã có lỗi xảy ra khi trả nợ.")
 
-    @tasks.loop(hours=24)
+    @tasks.loop(time=time(hour=0, minute=0, tzinfo=timezone(timedelta(hours=7))))
     async def daily_interest_loop(self):
         """
         Quét mỗi ngày 1 lần.

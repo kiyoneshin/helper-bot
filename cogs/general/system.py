@@ -8,7 +8,7 @@ import discord
 from discord.ext import commands
 
 class SystemCog(commands.Cog, name="System"):
-    """⚙ Lệnh Hệ Thống (Ping, Reload)"""
+    """ Lệnh Hệ Thống (Ping, Reload)"""
     def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
 

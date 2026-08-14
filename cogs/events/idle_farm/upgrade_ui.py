@@ -28,12 +28,12 @@ from cogs.events.idle_farm.machine_config import ARTISAN_GOODS
 _ALL_UPGRADE_ITEMS: Dict[str, dict] = {
     **MINING_LOOT, **FISH_LOOT, **WOODCUTTING_LOOT,
     # Artisan Goods (Phôi kim loại, sản phẩm chế biến)
-    "copper_bar":    {"name": "Phôi Đồng",    "icon": "🔶"},
-    "iron_bar":      {"name": "Phôi Sắt",     "icon": "⬜"},
-    "gold_bar":      {"name": "Phôi Vàng",    "icon": "🌟"},
-    "pine_resin":    {"name": "Nhựa Thông",   "icon": "🫙"},
-    "stingray":      {"name": "Cá Đuối",      "icon": "🦈"},
-    "legendary_fish":{"name": "Cá Huyền Thoại","icon": "🐉"},
+    "copper_bar":    {"name": "Phôi Đồng",    "icon": "<:machine_05_bronze_bar:1535647172840919143>"},
+    "iron_bar":      {"name": "Phôi Sắt",     "icon": "<:machine_06_iron_bar:1535647174925352980>"},
+    "gold_bar":      {"name": "Phôi Vàng",    "icon": "<:machine_07_gold_bar:1535647177186086984>"},
+    "pine_resin":    {"name": "Nhựa Thông",   "icon": "<:wood_03_resin:1535654323231522857>"},
+    "stingray":      {"name": "Cá Đuối",      "icon": "<:fish_06_stingray:1535649344156467260>"},
+    "legendary_fish":{"name": "Cá Huyền Thoại","icon": "<:fish_07_legendary:1535649346421395526>"},
 }
 
 

@@ -1,14 +1,3 @@
-"""
-event_help.py — Hệ Thống Trợ Giúp Sự Kiện 3 Tầng (kehelp)
-============================================================
-Kiến trúc:
-  Tầng 1 - Home     : Danh sách danh mục (Dropdown → Tầng 2)
-  Tầng 2 - Category : Danh sách lệnh trong danh mục (Dropdown → Tầng 3 | Button → Tầng 1)
-  Tầng 3 - Detail   : Chi tiết lệnh (Button ◀ → Tầng 2 | Button 🏠 → Tầng 1)
-
-Dữ liệu trung tâm: CMD_DATA + CATEGORY_DATA
-"""
-
 from __future__ import annotations
 
 import discord
@@ -834,7 +823,7 @@ class _HomeButton(discord.ui.Button):
     """Nút quay về trang chủ."""
 
     def __init__(self):
-        super().__init__(label="🏠 Trang Chủ", style=discord.ButtonStyle.secondary, row=1)
+        super().__init__(label="Trang Chủ", style=discord.ButtonStyle.secondary, row=1)
 
     async def callback(self, interaction: discord.Interaction):
         view: CategoryView = self.view  # type: ignore
@@ -891,7 +880,7 @@ class _HomeButton2(discord.ui.Button):
     """Nút về trang chủ từ tầng 3."""
 
     def __init__(self):
-        super().__init__(label="🏠 Trang Chủ", style=discord.ButtonStyle.secondary, row=0)
+        super().__init__(label="Trang Chủ", style=discord.ButtonStyle.secondary, row=0)
 
     async def callback(self, interaction: discord.Interaction):
         view: DetailView = self.view  # type: ignore

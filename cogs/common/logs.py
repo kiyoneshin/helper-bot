@@ -12,10 +12,10 @@ LOG_CHANNEL_ID = 1527697681978495027
 UTC7 = timezone(timedelta(hours=7))
 
 # ── Màu sắc chuẩn ─────────────────────────────────────────────────────
-COLOR_ADD    = 0x2ecc71   # 🟢 Xanh lá    — Thêm mới hồ sơ
-COLOR_EDIT   = 0xf1c40f   # 🟡 Vàng       — Chỉnh sửa hồ sơ / Đánh giá
-COLOR_SYNC   = 0x3498db   # 🔵 Xanh dương — Đồng bộ biệt danh
-COLOR_DELETE = 0xe74c3c   # 🔴 Đỏ         — Xóa / Rời server
+COLOR_ADD    = 0x2ecc71   #  Xanh lá    — Thêm mới hồ sơ
+COLOR_EDIT   = 0xf1c40f   #  Vàng       — Chỉnh sửa hồ sơ / Đánh giá
+COLOR_SYNC   = 0x3498db   #  Xanh dương — Đồng bộ biệt danh
+COLOR_DELETE = 0xe74c3c   #  Đỏ         — Xóa / Rời server
 
 
 # =============================================================================

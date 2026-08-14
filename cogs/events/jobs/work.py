@@ -98,12 +98,16 @@ class WorkCog(commands.Cog):
                 await add_event_points(self.bot, str(partner_id), float(amount), is_earned=True)
                 
                 # Check Task
-                task_str = mar.get("couple_task") if mar else None
-                if task_str:
-                    task_data = json.loads(task_str) if isinstance(task_str, str) else task_str
-                    today_str = discord.utils.utcnow().strftime("%Y-%m-%d")
-                    if task_data.get("date") == today_str and task_data.get("type") == "work" and not task_data.get("completed"):
-                        task_data["progress"] = task_data.get("progress", 0) + 1
+                task_data = None
+                if mar:
+                    try:
+                        from cogs.events.social.marriage import get_or_create_couple_task
+                        task_data = await get_or_create_couple_task(self.bot, mar)
+                    except Exception:
+                        pass
+
+                if task_data and task_data.get("type") == "work" and not task_data.get("completed"):
+                    task_data["progress"] = task_data.get("progress", 0) + 1
                         if task_data["progress"] >= task_data["target"]:
                             task_data["completed"] = True
                             task_reward = 100 * (1.0 + pet_task_bonus)

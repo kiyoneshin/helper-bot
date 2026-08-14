@@ -1,11 +1,3 @@
-"""
-help_cog.py — Hệ Thống Trợ Giúp Chung 3 Tầng (khelp)
-=======================================================
-Tầng 1 - Home     : Danh sách danh mục (Dropdown → Tầng 2)
-Tầng 2 - Category : Danh sách lệnh (Dropdown → Tầng 3 | Button 🏠 → Tầng 1)
-Tầng 3 - Detail   : Chi tiết lệnh (Button ◀ → Tầng 2 | Button 🏠 → Tầng 1)
-"""
-
 from __future__ import annotations
 
 import discord

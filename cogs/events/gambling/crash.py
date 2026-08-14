@@ -324,7 +324,7 @@ def _build_lobby_embed(
             "Nhấn **<:symbol_money_bag:1537567538097954896> Đặt Cược** để tham gia nhảy dù.\n"
             "Tiền sẽ bị **trừ ngay** khi đặt mâm thành công.\n"
             "Bóng sẽ bay sau khi sảnh đóng — biết chốt lời đúng lúc thì sống, tham thì chết thảm!\n\n"
-            "🏠 **House Edge 5%** — Crash Point tính ngẫu nhiên bao minh bạch."
+            "**House Edge 5%** — Crash Point tính ngẫu nhiên bao minh bạch."
         ),
         color=COLOR_LOBBY,
     )
