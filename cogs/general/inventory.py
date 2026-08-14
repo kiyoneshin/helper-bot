@@ -197,17 +197,27 @@ def _build_farm_embed(
                     f"• `[{item_id}]` {wood['icon']} **{wood['name']}** (x{count})"
                     f" — {price:,} điểm/cái"
                 )
-            # Farm crops
             elif seed_id in SEEDS:
                 seed_info = SEEDS.get(seed_id)
                 if seed_info:
                     emoji = QUALITY_EMOJIS.get(quality, "")
                     multiplier = QUALITY_MULTIPLIERS.get(quality, 1.0)
-                    worth = int(seed_info["reward_min"] * multiplier)
-                    total_crops_worth += worth * count
+                    reward_min = seed_info.get("reward_min", 0)
+                    reward_max = seed_info.get("reward_max", reward_min)
+                    
+                    min_worth = int(reward_min * multiplier)
+                    max_worth = int(reward_max * multiplier)
+                    
+                    total_crops_worth += min_worth * count  # Tính theo giá trị tối thiểu
+                    
+                    if min_worth != max_worth:
+                        price_str = f"{min_worth:,} - {max_worth:,}"
+                    else:
+                        price_str = f"{min_worth:,}"
+                        
                     crop_lines.append(
                         f"• `[{item_id}]` {seed_info['icon']} **{seed_info['name']}**"
-                        f" {emoji} (x{count}) — {worth:,} điểm/cái"
+                        f" {emoji} (x{count}) — {price_str} điểm/cái"
                     )
 
     desc_parts: list[str] = []

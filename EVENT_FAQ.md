@@ -69,9 +69,15 @@ __**HƯỚNG DẪN VÀ CÁC CÂU HỎI THƯỜNG ĐƯỢC HỎI VỀ SỰ KIỆN
 ### Phần 3: Hệ Sinh Thái Kinh Tế (Cày Điểm)
 
 **Q11: Làm sao để nhận điểm miễn phí hàng ngày?**
-**A:** Đừng quên dùng lệnh `{prefix}daily` mỗi ngày để nhận thưởng. Chuỗi ngày liên tiếp (streak) càng dài, thưởng càng cao! Ngoài ra, nếu chăm chỉ thì mỗi tuần bạn có thể nhận quà khủng với lệnh `{prefix}weekly`.
+**A:** Đừng quên dùng lệnh `{prefix}daily` mỗi ngày để nhận thưởng. Chuỗi ngày liên tiếp (streak) càng dài, thưởng càng cao! Ngoài ra, nếu chăm chỉ thì mỗi tuần bạn có thể nhận quà khủng với lệnh `{prefix}weekly`. Nếu Admin phát quà qua Giftcode, bạn có thể dùng lệnh `{prefix}code <mã>` để nhận điểm và vật phẩm!
 
-**Q12: Hệ thống Nhiệm Vụ và Làm Việc hoạt động ra sao?**
+**Q12: Hệ thống Kỹ Năng (Skills) là gì?**
+**A:** Hệ thống Kỹ Năng mô phỏng game Stardew Valley. Khi bạn tham gia hoạt động Khu Sinh Thái (Nông trại, Câu cá, Đào mỏ, Chặt cây), bạn sẽ nhận được Kinh nghiệm Kỹ Năng (XP). Cấp kỹ năng (Lv1 đến Lv10) giúp tăng hiệu quả hoạt động:
+- **Lv.5**: Mở khóa chọn Nhánh Nghề Nghiệp cấp 1 (Profession).
+- **Lv.10**: Mở khóa chọn Nhánh Nghề Nghiệp cấp 2 (Tùy thuộc vào nhánh đã chọn ở Lv5).
+Dùng lệnh `{prefix}skill` để xem tiến độ và chọn nghề. Mỗi nghề sẽ cho bạn lợi ích đặc biệt (ví dụ: Tăng giá bán, x2 nguyên liệu, tăng tỉ lệ rơi đồ hiếm). Nếu chọn sai, bạn có thể dùng `{prefix}skill reset <tên_kỹ_năng>` với giá 25,000 điểm.
+
+**Q13: Hệ thống Nhiệm Vụ và Làm Việc hoạt động ra sao?**
 **A:** Đây là nguồn thu nhập cơ bản nhất:
 - Lệnh `{prefix}work` (đi làm): Có thể xài mỗi 5 phút, trả lương ngẫu nhiên. Có lúc sẽ gặp sếp thưởng lớn hoặc bị phạt.
 - Lệnh `{prefix}task` (nhiệm vụ ngày & tuần): Nhận các nhiệm vụ hàng ngày (ví dụ: câu cá 5 lần). Hệ thống sẽ tự động theo dõi và tự động trao quà khi bạn hoàn thành.

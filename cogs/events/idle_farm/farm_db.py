@@ -596,12 +596,16 @@ async def sell_inventory(bot: commands.Bot, user_id: str, category: str) -> int:
         # Tính tiền
         if is_ore:
             profit_per_item = MINING_LOOT[item_id].get("price", 0)
+            total_profit += profit_per_item * count
         elif is_fish:
             profit_per_item = FISH_LOOT[item_id].get("price", 0)
+            total_profit += profit_per_item * count
         elif is_artisan:
             profit_per_item = ARTISAN_GOODS[item_id].get("price", 0)
+            total_profit += profit_per_item * count
         elif is_wood:
             profit_per_item = WOODCUTTING_LOOT[item_id].get("price", 0)
+            total_profit += profit_per_item * count
         else:
             # Là crop
             parts = item_id.split("_")
@@ -614,13 +618,20 @@ async def sell_inventory(bot: commands.Bot, user_id: str, category: str) -> int:
                 
             seed_config = config.SEEDS.get(seed_id)
             if seed_config:
-                base_cost = seed_config["reward_min"]
+                import random
                 multiplier = config.QUALITY_MULTIPLIERS.get(quality, 1.0)
-                profit_per_item = int(base_cost * multiplier)
-            else:
-                profit_per_item = 0
+                reward_min = seed_config.get("reward_min", 0)
+                reward_max = seed_config.get("reward_max", reward_min)
                 
-        total_profit += profit_per_item * count
+                # Roll giá riêng cho TỪNG cây được bán
+                item_profit_total = 0
+                for _ in range(count):
+                    base_cost = random.randint(reward_min, reward_max)
+                    item_profit_total += int(base_cost * multiplier)
+                total_profit += item_profit_total
+            else:
+                pass # không cộng profit
+
         
     if total_profit > 0:
         await add_event_points(bot, user_id, float(total_profit), is_earned=True)
@@ -739,14 +750,19 @@ async def sell_items_partial(
         return False, 0, "Số lượng không hợp lệ!"
 
     # Tính giá trị
+    total_profit = 0
     if item_id in MINING_LOOT:
         profit_per = MINING_LOOT[item_id].get("price", 0)
+        total_profit = profit_per * sell_qty
     elif item_id in FISH_LOOT:
         profit_per = FISH_LOOT[item_id].get("price", 0)
+        total_profit = profit_per * sell_qty
     elif item_id in ARTISAN_GOODS:
         profit_per = ARTISAN_GOODS[item_id].get("price", 0)
+        total_profit = profit_per * sell_qty
     elif item_id in WOODCUTTING_LOOT:
         profit_per = WOODCUTTING_LOOT[item_id].get("price", 0)
+        total_profit = profit_per * sell_qty
     elif item_id.startswith("seed_"):
         return False, 0, "Hạt giống không thể bán — hãy dùng để trồng cây!"
     else:
@@ -761,10 +777,16 @@ async def sell_items_partial(
         seed_cfg = config.SEEDS.get(seed_id)
         if not seed_cfg:
             return False, 0, f"Vật phẩm `{item_id}` không xác định được giá!"
+            
+        import random
         multiplier = config.QUALITY_MULTIPLIERS.get(quality, 1.0)
-        profit_per = int(seed_cfg["reward_min"] * multiplier)
-
-    total_profit = profit_per * sell_qty
+        reward_min = seed_cfg.get("reward_min", 0)
+        reward_max = seed_cfg.get("reward_max", reward_min)
+        
+        # Roll giá riêng cho TỪNG cây được bán
+        for _ in range(sell_qty):
+            base_cost = random.randint(reward_min, reward_max)
+            total_profit += int(base_cost * multiplier)
 
     # Cập nhật inventory
     new_qty = current_qty - sell_qty
