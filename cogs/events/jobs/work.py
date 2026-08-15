@@ -108,13 +108,13 @@ class WorkCog(commands.Cog):
 
                 if task_data and task_data.get("type") == "work" and not task_data.get("completed"):
                     task_data["progress"] = task_data.get("progress", 0) + 1
-                        if task_data["progress"] >= task_data["target"]:
-                            task_data["completed"] = True
-                            task_reward = 100 * (1.0 + pet_task_bonus)
-                            from cogs.common.db import update_intimacy
-                            await update_intimacy(self.bot, str(uid), int(task_reward))
-                            story += f"\n\n<:symbol_confetti:1537570146313306183> **Nhiệm Vụ Cặp Đôi Hoàn Thành!** (+{task_reward:.1f} DTM)"
-                        await execute_db(self.bot, "UPDATE marriages SET couple_task = $1::jsonb WHERE id = $2", json.dumps(task_data), mar["id"] if mar else 0)
+                    if task_data["progress"] >= task_data["target"]:
+                        task_data["completed"] = True
+                        task_reward = 100 * (1.0 + pet_task_bonus)
+                        from cogs.common.db import update_intimacy
+                        await update_intimacy(self.bot, str(uid), int(task_reward))
+                        story += f"\n\n<:symbol_confetti:1537570146313306183> **Nhiệm Vụ Cặp Đôi Hoàn Thành!** (+{task_reward:.1f} DTM)"
+                    await execute_db(self.bot, "UPDATE marriages SET couple_task = $1::jsonb WHERE id = $2", json.dumps(task_data), mar["id"] if mar else 0)
             
             # Cộng tiền (is_earned=True để tính vào cả đua top)
             await add_event_points(self.bot, str(uid), float(amount), is_earned=True)

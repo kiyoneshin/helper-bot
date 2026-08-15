@@ -566,6 +566,26 @@ CMD_DATA: dict[str, dict] = {
         "examples": ["{prefix}pray"],
         "note": "Luck càng cao, tỉ lệ rớt lootbox từ hoạt động hệ sinh thái (đào mỏ, chặt cây, câu cá) và tỉ lệ ra hàng hiếm khi mở hộp càng cao.",
     },
+    "skill": {
+        "name": "Kỹ Năng",
+        "emoji": "🌟",
+        "short": "Xem cấp độ Kỹ Năng và chọn Nghề Nghiệp.",
+        "aliases": ["skills", "kynang"],
+        "cooldown": None,
+        "usage": "{prefix}skill [tên_kỹ_năng] | {prefix}skill reset [tên_kỹ_năng]",
+        "examples": ["{prefix}skill", "{prefix}skill farming", "{prefix}skill reset mining"],
+        "note": "Kỹ năng (Farming, Mining, Fishing, Chopping) giúp tăng hiệu quả hoạt động sinh thái. Đạt Lv5 và Lv10 để chọn nghề. Reset nghề tốn 25k điểm.",
+    },
+    "code": {
+        "name": "Mã Quà Tặng",
+        "emoji": "🎁",
+        "short": "Nhập mã quà tặng (Giftcode) để nhận phần thưởng.",
+        "aliases": ["giftcode", "nhapcode"],
+        "cooldown": None,
+        "usage": "{prefix}code <mã_quà_tặng>",
+        "examples": ["{prefix}code VIP2024"],
+        "note": "Mã quà tặng thường được phát vào dịp lễ hoặc minigame trên kênh thông báo.",
+    },
 }
 
 CATEGORY_DATA: dict[str, dict] = {
@@ -579,7 +599,7 @@ CATEGORY_DATA: dict[str, dict] = {
     "Kinh Tế & Kho Đồ": {
         "emoji": "<:icon_08_shop:1536025530728587384>",
         "desc": "Quản lý điểm, túi đồ, cửa hàng, cột mốc và ngân hàng.",
-        "commands": ["inv", "use", "buy", "daily", "weekly", "point", "etop", "milestone", "shop", "black_market", "ebuy", "vayno", "trano", "lb", "pray"],
+        "commands": ["inv", "use", "buy", "daily", "weekly", "point", "etop", "milestone", "shop", "black_market", "ebuy", "vayno", "trano", "lb", "pray", "code"],
         "cogs": ["InventoryCog", "ShopCog", "EventShopCog", "Rewards", "MilestoneCog", "BlackMarketCog", "BankingCog", "LootboxCog"],
     },
     "Nhiệm Vụ & Công Việc": {
@@ -592,8 +612,8 @@ CATEGORY_DATA: dict[str, dict] = {
         "emoji": "<:symbol_plant:1536007706958237828>",
         "title": "Hệ Sinh Thái (Ecosystem)",
         "desc": "Khu vực sinh thái tự nhiên. Bạn có thể trồng trọt, khai thác tài nguyên và chế biến chúng.",
-        "commands": ["farm", "plant", "upgrade", "machine", "craft", "mine", "fish", "chop", "recipe", "cook", "boost"],
-        "cogs": ["IdleFarmCog", "Mining", "Fishing", "Woodcutting", "Recipes", "CookingCog"],
+        "commands": ["farm", "plant", "upgrade", "machine", "craft", "mine", "fish", "chop", "recipe", "cook", "boost", "skill"],
+        "cogs": ["IdleFarmCog", "Mining", "Fishing", "Woodcutting", "Recipes", "CookingCog", "SkillSystem"],
     },
     "Hệ Thống Tình Yêu": {
         "emoji": "<a:symbol_star_pink:1537739287947382864>",
