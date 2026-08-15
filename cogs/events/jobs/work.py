@@ -138,12 +138,14 @@ class WorkCog(commands.Cog):
                 # Trừ người gọi lệnh
                 ok1 = await deduct_event_points(self.bot, str(uid), float(reduced_amount))
                 if not ok1:
-                    await execute_db(self.bot, "UPDATE event_profiles SET points = 0 WHERE discord_id = $1", str(uid))
+                    # Phá sản: reset cả P (points) lẫn E (event_coins) về 0, L (total_earned) giữ nguyên
+                    await execute_db(self.bot, "UPDATE event_profiles SET points = 0, event_coins = 0 WHERE discord_id = $1", str(uid))
                     
                 # Trừ người partner
                 ok2 = await deduct_event_points(self.bot, str(partner_id), float(reduced_amount))
                 if not ok2:
-                    await execute_db(self.bot, "UPDATE event_profiles SET points = 0 WHERE discord_id = $1", str(partner_id))
+                    # Phá sản: reset cả P và E về 0
+                    await execute_db(self.bot, "UPDATE event_profiles SET points = 0, event_coins = 0 WHERE discord_id = $1", str(partner_id))
                     
                 # Reset cooldown cho cả hai
                 if ctx.command and hasattr(ctx.command, '_buckets') and ctx.command._buckets.valid:
@@ -160,8 +162,8 @@ class WorkCog(commands.Cog):
             else:
                 ok = await deduct_event_points(self.bot, str(uid), float(amount))
                 if not ok:
-                    # Nếu deduct trả về False tức là ví không đủ, siết sạch ví
-                    await execute_db(self.bot, "UPDATE event_profiles SET points = 0 WHERE discord_id = $1", str(uid))
+                    # Nếu deduct trả về False tức là ví không đủ, siết sạch cả P và E
+                    await execute_db(self.bot, "UPDATE event_profiles SET points = 0, event_coins = 0 WHERE discord_id = $1", str(uid))
                     story += "\n\n*(Ví bạn cháy sạch không còn một cắc, phá sản rồi cưng!)*"
             
             emb = discord.Embed(
