@@ -14,6 +14,7 @@ from discord.ext import commands
 
 from cogs.common.db import (
     deduct_event_points,
+    deduct_total_earned,
     execute_db,
     fetchrow_db,
     fetchval_db,
@@ -255,10 +256,17 @@ async def _buy_event_item(
                 new_cd_data[str(item["id"])] = int(now.timestamp())
 
         await get_or_create_event_profile(bot, uid)
-        ok = await deduct_event_points(bot, uid, total)
+        
+        if item["category"] == "event":
+            ok = await deduct_total_earned(bot, uid, total)
+            currency_name = "Điểm Tích Lũy (Chỉ có qua cày cuốc)"
+        else:
+            ok = await deduct_event_points(bot, uid, total)
+            currency_name = "điểm Số Dư"
+            
         if not ok:
             await ctx.send(
-                f"<:symbol_wrong:1536629915598848072> {ctx.author.mention} Không đủ điểm! Cần **{total:,}** điểm để mua **{amount}x {item['name']}**.",
+                f"<:symbol_wrong:1536629915598848072> {ctx.author.mention} Không đủ điểm! Cần **{total:,}** {currency_name} để mua **{amount}x {item['name']}**.",
                 delete_after=5.0
             )
             return

@@ -31,11 +31,11 @@ AXE_NAMES: dict = {
 # BẢNG TỶ LỆ RỚT GỖ (WOODCUTTING_LOOT)
 # ---------------------------------------------------------------------------
 WOODCUTTING_LOOT: dict = {
-    "twigs":      {"name": "Que Củi",    "icon": "<:wood_00_twigs:1535654317321748570>", "weight": 55, "category": "wood", "price": 20},
-    "wood":       {"name": "Gỗ Thường",  "icon": "<:wood_01_wood_scrap:1535654318856999043>", "weight": 25, "category": "wood", "price": 100},
-    "hardwood":   {"name": "Gỗ Cứng",    "icon": "<:wood_02_hardwood:1535654321025196102>", "weight": 12, "category": "wood", "price": 400},
-    "pine_resin": {"name": "Nhựa Thông", "icon": "<:wood_03_resin:1535654323231522857>", "weight": 5,  "category": "wood", "price": 1500},
-    "sap":        {"name": "Nhựa Cây",   "icon": "<:wood_04_sap:1535654325530136636>", "weight": 3,  "category": "wood", "price": 3000},
+    "twigs":      {"name": "Que Củi",    "icon": "<:wood_00_twigs:1535654317321748570>", "weight": 55, "category": "wood", "price": 1},
+    "wood":       {"name": "Gỗ Thường",  "icon": "<:wood_01_wood_scrap:1535654318856999043>", "weight": 25, "category": "wood", "price": 3},
+    "hardwood":   {"name": "Gỗ Cứng",    "icon": "<:wood_02_hardwood:1535654321025196102>", "weight": 12, "category": "wood", "price": 10},
+    "pine_resin": {"name": "Nhựa Thông", "icon": "<:wood_03_resin:1535654323231522857>", "weight": 5,  "category": "wood", "price": 30},
+    "sap":        {"name": "Nhựa Cây",   "icon": "<:wood_04_sap:1535654325530136636>", "weight": 3,  "category": "wood", "price": 60},
 }
 
 _WEIGHTS_BY_LEVEL: dict[int, list[int]] = {

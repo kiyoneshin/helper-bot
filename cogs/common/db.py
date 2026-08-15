@@ -436,6 +436,19 @@ async def deduct_event_points(bot: Any, discord_id: Union[str, int], amount: flo
     # res sẽ có dạng "UPDATE 1" nếu trừ thành công, "UPDATE 0" nếu số dư không đủ
     return res == "UPDATE 1"
 
+async def deduct_total_earned(bot: Any, discord_id: Union[str, int], amount: float) -> bool:
+    """Trừ Điểm Tích Lũy (Dùng cho Cửa hàng Sự Kiện). Trả về True nếu thành công, False nếu không đủ."""
+    if amount <= 0: return False
+    uid = str(discord_id)
+    
+    sql = '''
+        UPDATE event_profiles
+        SET total_earned = total_earned - $2
+        WHERE discord_id = $1 AND total_earned >= $2;
+    '''
+    res = await execute_db(bot, sql, uid, amount)
+    return res == "UPDATE 1"
+
 async def get_marriage(bot: Any, discord_id: str) -> Optional[Any]:
     """Lấy thông tin kết hôn của user."""
     sql = "SELECT * FROM marriages WHERE user1_id = $1 OR user2_id = $1"

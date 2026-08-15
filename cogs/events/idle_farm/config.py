@@ -45,8 +45,8 @@ SEEDS: Dict[str, SeedConfig] = {
         "icon": "<:farm_00_wheat:1535940025080881152>",
         "grow_time_seconds": 30 * 60,  # 30 phút
         "cost": 100,
-        "reward_min": 150,
-        "reward_max": 200,
+        "reward_min": 102,
+        "reward_max": 105,
         "description": "Cây trồng cơ bản, thu hoạch nhanh."
     },
     "potato": {
@@ -54,8 +54,8 @@ SEEDS: Dict[str, SeedConfig] = {
         "icon": "<:farm_01_potato:1535940026935017492>",
         "grow_time_seconds": 1 * 60 * 60,  # 1 tiếng
         "cost": 200,
-        "reward_min": 250,
-        "reward_max": 400,
+        "reward_min": 205,
+        "reward_max": 208,
         "description": "20% cơ hội nhân đôi thu hoạch.",
         "double_chance": 0.20,  # 20% ra x2 sản lượng
     },
@@ -64,8 +64,8 @@ SEEDS: Dict[str, SeedConfig] = {
         "icon": "<:farm_02_tomato:1535940028943966238>",
         "grow_time_seconds": 3 * 60 * 60,  # 3 tiếng
         "cost": 400,
-        "reward_min": 600,
-        "reward_max": 900,
+        "reward_min": 412,
+        "reward_max": 418,
         "description": "Nguyên liệu chế biến Mứt Cà Chua."
     },
     "strawberry": {
@@ -73,8 +73,8 @@ SEEDS: Dict[str, SeedConfig] = {
         "icon": "<:farm_03_strawberry:1535940030722351204>",
         "grow_time_seconds": 6 * 60 * 60,  # 6 tiếng
         "cost": 800,
-        "reward_min": 1500,
-        "reward_max": 2000,
+        "reward_min": 820,
+        "reward_max": 835,
         "description": "Nguyên liệu chế biến Rượu Dâu cao cấp."
     },
     "pumpkin": {
@@ -82,8 +82,8 @@ SEEDS: Dict[str, SeedConfig] = {
         "icon": "<:farm_04_pumpkin:1535940032731287552>",
         "grow_time_seconds": 8 * 60 * 60,  # 8 tiếng
         "cost": 1200,
-        "reward_min": 2500,
-        "reward_max": 3500,
+        "reward_min": 1235,
+        "reward_max": 1250,
         "description": "Nguyên liệu chế biến Mứt Bí Ngô thơm ngon."
     },
     "sunflower": {
@@ -91,8 +91,8 @@ SEEDS: Dict[str, SeedConfig] = {
         "icon": "<:farm_05_sunflower:1535940035927474217>",
         "grow_time_seconds": 12 * 60 * 60,  # 12 tiếng
         "cost": 500,
-        "reward_min": 1000,
-        "reward_max": 1500,
+        "reward_min": 550,
+        "reward_max": 570,
         "description": "Mang lại lợi nhuận cao nhưng mất nhiều thời gian."
     },
     "star": {
@@ -100,8 +100,8 @@ SEEDS: Dict[str, SeedConfig] = {
         "icon": "<:farm_06_star:1535940037487894559>",
         "grow_time_seconds": 24 * 60 * 60,  # 24 tiếng
         "cost": 2000,
-        "reward_min": 5000,
-        "reward_max": 10000,
+        "reward_min": 2070,
+        "reward_max": 2090,
         "description": "Vật phẩm hiếm, nguyên liệu chế Linh Tửu."
     }
 }

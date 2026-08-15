@@ -13,7 +13,7 @@ from typing import Tuple
 MAX_STAMINA: int = 100
 STAMINA_PER_HIT: int = 4
 STAMINA_REGEN_RATE: int = 1
-STAMINA_REGEN_INTERVAL_SECONDS: int = 18  # 18 giây hồi 1 điểm -> 100 điểm mất 30 phút
+STAMINA_REGEN_INTERVAL_SECONDS: int = 60  # 60 giây hồi 1 điểm -> 100 điểm mất 1h40m
 
 # ---------------------------------------------------------------------------
 # CẤU HÌNH NÂNG CẤP CUỐC
@@ -40,12 +40,12 @@ PICKAXE_NAMES: dict = {
 # ---------------------------------------------------------------------------
 
 MINING_LOOT: dict = {
-    "stone":      {"name": "Đá",           "icon": "<:mine_00_stone:1535654559412781067>", "weight": 55, "category": "ore",  "price": 50},
-    "coal":       {"name": "Than Đá",      "icon": "<:mine_01_coal:1535654561480708106>", "weight": 22, "category": "ore",  "price": 150},
-    "copper_ore": {"name": "Quặng Đồng",   "icon": "<:mine_02_copper_ore:1535654564504670449>", "weight": 14, "category": "ore",  "price": 500},
-    "iron_ore":   {"name": "Quặng Sắt",    "icon": "<:mine_03_iron_ore:1535654566853615717>", "weight": 7,  "category": "ore",  "price": 1500},
-    "gold_ore":   {"name": "Quặng Vàng",   "icon": "<:mine_04_gold_ore:1535654569143566396>", "weight": 2,  "category": "ore",  "price": 5000},
-    "diamond":    {"name": "Kim Cương",    "icon": "<:mine_05_diamond:1535654571039260774>", "weight": 0,  "category": "ore",  "price": 20000},
+    "stone":      {"name": "Đá",           "icon": "<:mine_00_stone:1535654559412781067>", "weight": 55, "category": "ore",  "price": 1},
+    "coal":       {"name": "Than Đá",      "icon": "<:mine_01_coal:1535654561480708106>", "weight": 22, "category": "ore",  "price": 2},
+    "copper_ore": {"name": "Quặng Đồng",   "icon": "<:mine_02_copper_ore:1535654564504670449>", "weight": 14, "category": "ore",  "price": 5},
+    "iron_ore":   {"name": "Quặng Sắt",    "icon": "<:mine_03_iron_ore:1535654566853615717>", "weight": 7,  "category": "ore",  "price": 10},
+    "gold_ore":   {"name": "Quặng Vàng",   "icon": "<:mine_04_gold_ore:1535654569143566396>", "weight": 2,  "category": "ore",  "price": 20},
+    "diamond":    {"name": "Kim Cương",    "icon": "<:mine_05_diamond:1535654571039260774>", "weight": 0,  "category": "ore",  "price": 50},
     # diamond weight=0 trong bảng cơ bản, chỉ xuất hiện ở Lv3+
 }
 

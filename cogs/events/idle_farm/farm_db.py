@@ -634,6 +634,10 @@ async def sell_inventory(bot: commands.Bot, user_id: str, category: str) -> int:
 
         
     if total_profit > 0:
+        row = await get_or_create_event_profile(bot, user_id)
+        if row:
+            p2w = float(row.get("p2w_multiplier") or 1.0)
+            total_profit = int(total_profit * p2w)
         await add_event_points(bot, user_id, float(total_profit), is_earned=True)
         
     farm_data["inventory"] = items_to_keep
@@ -799,6 +803,10 @@ async def sell_items_partial(
     await save_farm_data(bot, user_id, farm_data)
 
     if total_profit > 0:
+        row = await get_or_create_event_profile(bot, user_id)
+        if row:
+            p2w = float(row.get("p2w_multiplier") or 1.0)
+            total_profit = int(total_profit * p2w)
         await add_event_points(bot, user_id, float(total_profit), is_earned=True)
 
     return True, total_profit, f"Đã bán **{sell_qty}** vật phẩm, thu về **{total_profit:,}** điểm!"
