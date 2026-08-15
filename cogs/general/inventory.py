@@ -285,7 +285,7 @@ class SellItemModal(discord.ui.Modal):
     )
 
     def __init__(self, bot: commands.Bot, user_id: str, view: "InventoryView"):
-        super().__init__(title="<:icon_05_bm:1536017187243032736> Bán Vật Phẩm Nông Trại")
+        super().__init__(title="💰 Bán Vật Phẩm Nông Trại")
         self.bot = bot
         self.user_id = user_id
         self._view = view
@@ -334,7 +334,7 @@ class SellAllModal(discord.ui.Modal):
 
     def __init__(self, bot: commands.Bot, user_id: str, author: discord.Member | discord.User,
                  category: str, label: str, view: "InventoryView"):
-        super().__init__(title=f"<:symbol_alert:1537546957885542450> Bán Toàn Bộ {label}?")
+        super().__init__(title=f"⚠️ Bán Toàn Bộ {label}?")
         self.bot = bot
         self.user_id = user_id
         self.author = author
