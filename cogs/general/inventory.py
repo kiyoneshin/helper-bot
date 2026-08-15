@@ -139,76 +139,74 @@ def _build_farm_embed(
     total_crops_worth = total_ores_worth = total_wood_worth = total_fish_worth = total_artisan_worth = 0
 
     if tab_type == "crop":
-        PAGE_0_SEEDS = ["wheat", "potato", "tomato"]
-        PAGE_1_SEEDS = ["strawberry", "pumpkin", "sunflower", "star"]
+        PAGE_SEEDS = [
+            ["wheat", "potato"],
+            ["tomato", "strawberry"],
+            ["pumpkin", "sunflower"],
+            ["star"]
+        ]
         
         crop_lines = []
         artisan_lines = []
         
+        # Calculate total worth for footer and collect artisan lines
         for item_id, count in inventory.items():
             if count <= 0: continue
+            
+            if item_id.startswith("seed_"): continue # Skip seeds
+            
             parts = item_id.split("_")
             quality = parts[-1] if len(parts) > 1 else "normal"
             seed_id = "_".join(parts[:-1]) if len(parts) > 1 else item_id
             
             if item_id in ARTISAN_GOODS:
-                price = ARTISAN_GOODS[item_id].get("price", 0)
+                artisan = ARTISAN_GOODS[item_id]
+                price = artisan.get("price", 0)
                 total_artisan_worth += price * count
+                artisan_lines.append(
+                    f"• `[{item_id}]` {artisan['icon']} **{artisan['name']}** (x{count})"
+                    f" — {price:,} <:symbol_points_p:1538282388507987989>/cái"
+                )
             elif seed_id in SEEDS:
                 seed_info = SEEDS.get(seed_id)
-                multiplier = QUALITY_MULTIPLIERS.get(quality, 1.0)
-                min_worth = int(seed_info.get("reward_min", 0) * multiplier)
-                total_crops_worth += min_worth * count
-                
-        if crop_page == 0 or crop_page == 1:
-            seeds_to_show = PAGE_0_SEEDS if crop_page == 0 else PAGE_1_SEEDS
+                if seed_info:
+                    multiplier = QUALITY_MULTIPLIERS.get(quality, 1.0)
+                    min_worth = int(seed_info.get("reward_min", 0) * multiplier)
+                    total_crops_worth += min_worth * count
+                    
+        # Render current page
+        MAX_PAGES = len(PAGE_SEEDS) + 1 # 4 crop pages + 1 artisan page
+        if crop_page < 0: crop_page = 0
+        if crop_page >= MAX_PAGES: crop_page = MAX_PAGES - 1
+        
+        if crop_page < len(PAGE_SEEDS):
+            seeds_to_show = PAGE_SEEDS[crop_page]
             for seed_id in seeds_to_show:
                 seed_info = SEEDS.get(seed_id)
                 if not seed_info: continue
                 
-                seed_item_id = f"seed_{seed_id}"
-                seed_count = inventory.get(seed_item_id, 0)
-                if seed_count > 0:
-                    crop_lines.append(f"• {seed_info['icon']} **Hạt {seed_info['name']}** (x{seed_count}) — {seed_info['description']}")
-                
-                q_counts = {}
-                has_crop = False
+                # Retrieve all qualities for this crop
                 for q in ["normal", "silver", "gold", "iridium"]:
-                    c = inventory.get(f"{seed_id}_{q}", 0)
-                    q_counts[q] = c
-                    if c > 0: has_crop = True
-                    
-                if has_crop:
-                    line_parts = []
-                    for q in ["normal", "silver", "gold", "iridium"]:
-                        if q_counts.get(q, 0) > 0:
-                            emoji = QUALITY_EMOJIS.get(q, "")
-                            mult = QUALITY_MULTIPLIERS.get(q, 1.0)
-                            min_w = int(seed_info.get("reward_min", 0) * mult)
-                            max_w = int(seed_info.get("reward_max", 0) * mult)
-                            price_str = f"{min_w}" if min_w == max_w else f"{min_w}-{max_w}"
-                            name_str = "thường" if q == "normal" else emoji
-                            line_parts.append(f"{q_counts[q]} {name_str} ({price_str}P)")
-                            
-                    crop_lines.append(f"• {seed_info['icon']} **{seed_info['name']}:** " + " | ".join(line_parts))
-            
+                    item_id = f"{seed_id}_{q}" if q != "normal" else seed_id
+                    count = inventory.get(item_id, 0)
+                    if count > 0:
+                        emoji = QUALITY_EMOJIS.get(q, "")
+                        multiplier = QUALITY_MULTIPLIERS.get(q, 1.0)
+                        min_w = int(seed_info.get("reward_min", 0) * multiplier)
+                        max_w = int(seed_info.get("reward_max", 0) * multiplier)
+                        price_str = f"{min_w:,}" if min_w == max_w else f"{min_w:,} - {max_w:,}"
+                        crop_lines.append(f"• `[{item_id}]` {seed_info['icon']} **{seed_info['name']}** {emoji} (x{count}) — {price_str} <:symbol_points_p:1538282388507987989>/cái")
+                        
             if crop_lines:
-                embed.description = f"**Trang {crop_page + 1}/3**\\n" + "\\n".join(crop_lines)
+                embed.description = f"**Trang {crop_page + 1}/{MAX_PAGES}**\\n" + "\\n".join(crop_lines)
             else:
-                embed.description = f"**Trang {crop_page + 1}/3**\\n*Trống.*"
+                embed.description = f"**Trang {crop_page + 1}/{MAX_PAGES}**\\n*Không có nông sản nào ở trang này.*"
                 
-        elif crop_page == 2:
-            for item_id in ARTISAN_GOODS:
-                count = inventory.get(item_id, 0)
-                if count > 0:
-                    artisan = ARTISAN_GOODS[item_id]
-                    price = artisan.get("price", 0)
-                    artisan_lines.append(f"• `[{item_id}]` {artisan['icon']} **{artisan['name']}** (x{count}) — {price:,} <:symbol_points_p:1538282388507987989>/cái")
-                    
+        else: # Artisan goods page
             if artisan_lines:
-                embed.description = "**Trang 3/3 — Thủ Công Phẩm**\\n" + "\\n".join(artisan_lines)
+                embed.description = f"**Trang {MAX_PAGES}/{MAX_PAGES} — Thủ Công Phẩm**\\n" + "\\n".join(artisan_lines)
             else:
-                embed.description = "**Trang 3/3 — Thủ Công Phẩm**\\n*Trống.*"
+                embed.description = f"**Trang {MAX_PAGES}/{MAX_PAGES} — Thủ Công Phẩm**\\n*Trống.*"
                 
     else:
         ore_items, wood_items, fish_items = [], [], []
@@ -267,7 +265,6 @@ def _build_farm_embed(
 
     embed.set_footer(text="💡 Dùng các nút bên dưới để bán vật phẩm.")
     return embed
-
 
 
 # ============================================================
@@ -577,7 +574,7 @@ class InventoryView(discord.ui.View):
         await self._update_crop_view(interaction)
         
     async def _on_next(self, interaction: discord.Interaction) -> None:
-        self._crop_page = min(2, getattr(self, "_crop_page", 0) + 1)
+        self._crop_page = min(4, getattr(self, "_crop_page", 0) + 1)
         await self._update_crop_view(interaction)
         
     async def _update_crop_view(self, interaction: discord.Interaction) -> None:
@@ -586,7 +583,7 @@ class InventoryView(discord.ui.View):
         embed = _build_farm_embed(self.author, farm_data, tab_type="crop", crop_page=self._crop_page)
         
         self.btn_prev.disabled = (self._crop_page == 0)
-        self.btn_next.disabled = (self._crop_page == 2)
+        self.btn_next.disabled = (self._crop_page == 4)
         
         await interaction.response.edit_message(embed=embed, view=self)
 
