@@ -39,8 +39,8 @@ async def fetch_user_profile_data(bot: commands.Bot, user_id: str) -> dict:
         stats = {}
         
     db_title = row["title"]
-    if not db_title or db_title == "<:lb_06_godly:1535552639834783764> Kẻ Lang Thang":
-        db_title = "<:lb_06_godly:1535552639834783764> Kẻ Lang Thang"
+    if not db_title or db_title == "<:symbol_heart_breaking:1536296911655673936> Kẻ Lang Thang":
+        db_title = "<:symbol_heart_breaking:1536296911655673936> Kẻ Lang Thang"
         claimed_str = row.get("claimed_milestones")
         if claimed_str:
             claimed = json.loads(claimed_str) if isinstance(claimed_str, str) else claimed_str
@@ -52,7 +52,7 @@ async def fetch_user_profile_data(bot: commands.Bot, user_id: str) -> dict:
                         db_title = m_data["title"]
                         
             # Sync ngược lại vào DB nếu tìm thấy title cao hơn
-            if db_title != "<:lb_06_godly:1535552639834783764> Kẻ Lang Thang":
+            if db_title != "<:symbol_heart_breaking:1536296911655673936> Kẻ Lang Thang":
                 bot.loop.create_task(
                     getattr(bot, "db_pool").execute("UPDATE event_profiles SET title = $1 WHERE discord_id = $2", db_title, user_id)
                 )

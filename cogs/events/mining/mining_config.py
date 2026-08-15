@@ -13,7 +13,7 @@ from typing import Tuple
 MAX_STAMINA: int = 100
 STAMINA_PER_HIT: int = 4
 STAMINA_REGEN_RATE: int = 1
-STAMINA_REGEN_INTERVAL_SECONDS: int = 60  # 60 giây hồi 1 <:symbol_points_p:1538282388507987989> -> 100 <:symbol_points_p:1538282388507987989> mất 1h40m
+STAMINA_REGEN_INTERVAL_SECONDS: int = 60  # 60 giây hồi 1 điểm -> 100 điểm mất 1h40m
 
 # ---------------------------------------------------------------------------
 # CẤU HÌNH NÂNG CẤP CUỐC

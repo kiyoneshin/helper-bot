@@ -143,7 +143,7 @@ class EventStatsCog(commands.Cog):
         elif p2w < 1.75:
             rank = "Đại Gia Tầm Trung 🌸"
         else:
-            rank = "Chúa Tể P2W <:lb_06_godly:1535552639834783764>"
+            rank = "Chúa Tể P2W <a:symbol_star_blue:1537739284432420947>"
 
         embed = discord.Embed(
             title=f"<:symbol_credit_card:1536308433693712404> Ví Sự Kiện Angelic — {target.display_name}",

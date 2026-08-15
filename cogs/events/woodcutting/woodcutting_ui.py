@@ -62,7 +62,7 @@ def build_woodcutting_embed(author: discord.Member | discord.User, stamina: int,
         embed.add_field(name="<:icon_07_inventory:1535664855300710422> Kho Gỗ Của Bạn", value="\n".join(inv_lines), inline=False)
 
     embed.set_thumbnail(url="https://cdn.discordapp.com/emojis/1535660965637652510.gif")
-    embed.set_footer(text=f"Dùng kbag để bán vật phẩm. Thể lực hồi 1 <:symbol_points_p:1538282388507987989> mỗi {regen_interval} giây.")
+    embed.set_footer(text=f"Dùng kbag để bán vật phẩm. Thể lực hồi 1 điểm mỗi {regen_interval} giây.")
     return embed
 
 class WoodcuttingView(discord.ui.View):

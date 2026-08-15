@@ -147,7 +147,7 @@ async def _fetch_leaderboard_data(
 RANK_MEDALS = ["<:symbol_medal_gold:1537550996664885328>", "<:symbol_medal_silver:1537552840514347048>", "<:symbol_medal_bronze:1537552838412992712>"]
 ROLE_LABELS = {
     "all": "Tất Cả Chức Vụ",
-    "owner": "Owner <:lb_06_godly:1535552639834783764>",
+    "owner": "Owner 👑",
     "admin": "Admin 🛡️",
     "recep": "Recep 🌸",
     "supporter": "Supporter 💜",
@@ -646,7 +646,7 @@ class RoleFilterSelect(discord.ui.Select):
     def __init__(self, current_role: str = "all"):
         options = [
             discord.SelectOption(label="Tất cả chức vụ", description="Hiển thị toàn bộ nhân sự", value="all", emoji="<:symbol_trophy:1537550568665649232>", default=(current_role == "all")),
-            discord.SelectOption(label="Chỉ hiện Owner", description="Lọc chỉ Chủ sở hữu server", value="owner", emoji="<:lb_06_godly:1535552639834783764>", default=(current_role == "owner")),
+            discord.SelectOption(label="Chỉ hiện Owner", description="Lọc chỉ Chủ sở hữu server", value="owner", emoji="👑", default=(current_role == "owner")),
             discord.SelectOption(label="Chỉ hiện Admin", description="Lọc chỉ Quản trị viên", value="admin", emoji="🛡️", default=(current_role == "admin")),
             discord.SelectOption(label="Chỉ hiện Recep", description="Lọc chỉ Lễ tân chào đón", value="recep", emoji="🌸", default=(current_role == "recep")),
             discord.SelectOption(label="Chỉ hiện Supporter", description="Lọc chỉ Supporter", value="supporter", emoji="💜", default=(current_role == "supporter")),

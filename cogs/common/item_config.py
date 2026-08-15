@@ -67,7 +67,7 @@ ITEM_REGISTRY: dict[int, ItemEntry] = {
     14: {
         "id":          14,
         "name":        "Role Biểu Tượng Vĩnh Viễn",
-        "icon":        "<:lb_06_godly:1535552639834783764>",
+        "icon":        "<a:symbol_star_blue:1537739284432420947>",
         "price":       350000,
         "description": "Nhận role biểu tượng vĩnh viễn (Giới hạn: 5 slot).",
         "db_key":      "item_4",

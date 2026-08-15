@@ -188,7 +188,7 @@ class TransferSelect(discord.ui.UserSelect):
         if pool:
             await pool.execute("UPDATE active_voice_channels SET owner_id=$1 WHERE channel_id=$2",
                                new_owner.id, self.channel.id)
-        await interaction.response.send_message(f"<:lb_06_godly:1535552639834783764> Đã chuyển quyền chủ cho **{new_owner.display_name}**!", ephemeral=True)
+        await interaction.response.send_message(f"Đã chuyển quyền chủ cho **{new_owner.display_name}**!", ephemeral=True)
 
 # ==============================================================================
 # DROPDOWN MENUS
@@ -369,7 +369,7 @@ class VoiceControlView(discord.ui.View):
                            claimer.id, self.channel.id)
 
         embed = discord.Embed(
-            title="<:lb_06_godly:1535552639834783764> Quyền chủ phòng đã được chuyển!",
+            title="Quyền chủ phòng đã được chuyển!",
             description=f"**{claimer.display_name}** đã nhận quyền.",
             color=0xF1C40F
         )
