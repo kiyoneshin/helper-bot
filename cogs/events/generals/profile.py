@@ -20,7 +20,7 @@ from cogs.events.economy.milestone import EVENT_MILESTONES
 async def fetch_user_profile_data(bot: commands.Bot, user_id: str) -> dict:
     """Lấy dữ liệu thực tế từ event_profiles."""
     await get_or_create_event_profile(bot, user_id)
-    sql = "SELECT points, total_earned, title, marry_to, farm_data, stats, claimed_milestones FROM event_profiles WHERE discord_id = $1"
+    sql = "SELECT points, event_coins, total_earned, title, marry_to, farm_data, stats, claimed_milestones FROM event_profiles WHERE discord_id = $1"
     row = await fetchrow_db(bot, sql, user_id)
     
     if not row:
@@ -61,6 +61,7 @@ async def fetch_user_profile_data(bot: commands.Bot, user_id: str) -> dict:
         "title": db_title,
         "marry_to": row["marry_to"],
         "points": float(row["points"] or 0.0),
+        "event_coins": float(row["event_coins"] or 0.0),
         "total_earned": float(row["total_earned"] or 0.0),
         
         "axe_level": int(farm_data.get("axe_level", 1)),
