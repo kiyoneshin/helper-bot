@@ -117,6 +117,8 @@ Có 8 loại cá từ Rác → Cá Chép → Tôm Hùm → Cá Hồi → Sứa �
 **A:** Dùng lệnh `{prefix}recipe` để mở Bách khoa toàn thư chứa toàn bộ Công thức Nâng cấp, Máy móc và Nấu ăn!
 Dùng lệnh `{prefix}upgrade` để nâng cấp Cuốc, Cần Câu, hoặc Rìu bằng quặng và gỗ thu thập được. Công cụ cấp cao giúp tăng tỷ lệ rớt tài nguyên quý hiếm và có cơ hội thu được gấp đôi (x2) tài nguyên!
 
+### Phần 4: Ẩm Thực, Đỏ Đen & Ngân Hàng
+
 **Q20: Có những Công thức Nấu Ăn nào và chúng mang lại Buff gì?**
 **A:** Nấu ăn (`{prefix}cook <id> [số lượng]`) tiêu thụ nông sản và cá để chế biến ra các món ăn mang lại bùa lợi (Buff) siêu mạnh, hoặc có thể bán lấy nhiều tiền. Có 10 công thức (Xem bằng lệnh `{prefix}recipe`):
 - **Salad Cà Chua:** Hồi phục Thể lực ngay lập tức.
@@ -157,7 +159,7 @@ Dùng lệnh `{prefix}upgrade` để nâng cấp Cuốc, Cần Câu, hoặc Rìu
 **A:** Nếu hết vốn, hãy gõ `{prefix}vayno <số_tiền>`. Hạn mức vay tối đa bằng 50% tổng điểm tích lũy của bạn. Nợ tự sinh lãi mỗi ngày. Nếu không trả nợ (`{prefix}trano`) và để số dư tài khoản về âm liên tục, bạn sẽ bị cấm vào Casino hoặc bị Khóa Tài Khoản!
 
 
-### Phần 4: Chợ Đêm & Tù Tội (Tương Tác Xã Hội)
+### Phần 5: Chợ Đêm & Tù Tội (Tương Tác Xã Hội)
 
 **Q24: Chợ Đêm (`{prefix}choden`) khác gì với Cửa Hàng thường (`{prefix}shop`)?**
 **A:** `{prefix}shop` dùng để mua vật phẩm sinh tồn, nhẫn, hạt giống, quà tặng... (mở 24/7).
@@ -184,7 +186,7 @@ Còn `{prefix}choden` là nơi bán các Thẻ Bài hắc ám chuyên dùng đ�
 Admin cũng có thể dùng Thẻ Đặc Xá (`{prefix}thatu`) để thả bạn ra vô điều kiện.
 
 
-### Phần 5: Tình Yêu & Gia Đình (Gắn Kết)
+### Phần 6: Tình Yêu & Gia Đình (Gắn Kết)
 
 **Q27: Hệ thống Tình Yêu (Marriage) là gì và làm sao để kết hôn?**
 **A:** Bạn có thể cầu hôn bằng lệnh `{prefix}marry @user <id_nhẫn>` (Nhẫn mua trong `{prefix}shop`). Nếu được đồng ý, hai bạn sẽ thành vợ chồng và mở khóa Profile Tình Yêu! Xem profile bằng lệnh `{prefix}marry`.
