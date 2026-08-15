@@ -161,7 +161,7 @@ async def _send_confirm(ctx: commands.Context, bet: int, callback_fn) -> None:
         title="<:symbol_alert:1537546957885542450> Xác nhận cược toàn bộ",
         description=(
             f"{ctx.author.mention} Đầy cả ví ra cược hết!\n\n"
-            f"<:symbol_money_bag:1537567538097954896> **Số tiền sẽ cược:** **{bet:,.0f}** điểm\n\n"
+            f"<:symbol_money_bag:1537567538097954896> **Số tiền sẽ cược:** **{bet:,.0f}** <:symbol_points_p:1538282388507987989>\n\n"
             "<:symbol_right:1536629912515903578> Nhấn **Xác nhận** để vào sòng, hoặc <:symbol_wrong:1536629915598848072> **Hủy** để rút lui."
         ),
         color=0xFF8C00,

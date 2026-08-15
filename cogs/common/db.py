@@ -181,21 +181,36 @@ async def init_all_tables(bot: Any) -> bool:
             
             # Khắc phục/chuyển đổi kiểu dữ liệu cũ (BIGINT -> FLOAT) nếu cần
             try:
-                await conn.execute('''
-                    ALTER TABLE event_profiles ALTER COLUMN points TYPE FLOAT USING points::double precision;
-                    ALTER TABLE event_profiles ALTER COLUMN total_earned TYPE FLOAT USING total_earned::double precision;
-                    ALTER TABLE event_profiles ADD COLUMN IF NOT EXISTS farm_data JSONB DEFAULT '{"slots": 3, "crops": {}, "inventory": {}}'::jsonb;
-                    
-                    ALTER TABLE event_profiles ADD COLUMN IF NOT EXISTS debt FLOAT DEFAULT 0.0;
-                    ALTER TABLE event_profiles ADD COLUMN IF NOT EXISTS last_interest_date DATE DEFAULT (CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Ho_Chi_Minh')::date;
-                    ALTER TABLE event_profiles ADD COLUMN IF NOT EXISTS is_locked BOOLEAN DEFAULT FALSE;
-                    ALTER TABLE event_profiles ADD COLUMN IF NOT EXISTS negative_streak INT DEFAULT 0;
-                    
-                    ALTER TABLE event_profiles ADD COLUMN IF NOT EXISTS title VARCHAR DEFAULT ' Kẻ Lang Thang';
-                    ALTER TABLE event_profiles ADD COLUMN IF NOT EXISTS unlocked_titles JSONB DEFAULT '[]'::jsonb;
-                    ALTER TABLE event_profiles ADD COLUMN IF NOT EXISTS marry_to VARCHAR;
-                    ALTER TABLE event_profiles ADD COLUMN IF NOT EXISTS stats JSONB DEFAULT '{"quests": 0, "crops": 0, "jails": 0, "works": 0, "mines": 0, "fishes": 0}'::jsonb;
-                    ALTER TABLE event_profiles ADD COLUMN IF NOT EXISTS achievements JSONB DEFAULT '[]'::jsonb;
+                await conn.execute('''
+
+                    ALTER TABLE event_profiles ALTER COLUMN points TYPE FLOAT USING points::double precision;
+
+                    ALTER TABLE event_profiles ALTER COLUMN total_earned TYPE FLOAT USING total_earned::double precision;
+
+                    ALTER TABLE event_profiles ADD COLUMN IF NOT EXISTS farm_data JSONB DEFAULT '{"slots": 3, "crops": {}, "inventory": {}}'::jsonb;
+
+                    
+
+                    ALTER TABLE event_profiles ADD COLUMN IF NOT EXISTS debt FLOAT DEFAULT 0.0;
+
+                    ALTER TABLE event_profiles ADD COLUMN IF NOT EXISTS last_interest_date DATE DEFAULT (CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Ho_Chi_Minh')::date;
+
+                    ALTER TABLE event_profiles ADD COLUMN IF NOT EXISTS is_locked BOOLEAN DEFAULT FALSE;
+
+                    ALTER TABLE event_profiles ADD COLUMN IF NOT EXISTS negative_streak INT DEFAULT 0;
+
+                    
+
+                    ALTER TABLE event_profiles ADD COLUMN IF NOT EXISTS title VARCHAR DEFAULT ' Kẻ Lang Thang';
+
+                    ALTER TABLE event_profiles ADD COLUMN IF NOT EXISTS unlocked_titles JSONB DEFAULT '[]'::jsonb;
+
+                    ALTER TABLE event_profiles ADD COLUMN IF NOT EXISTS marry_to VARCHAR;
+
+                    ALTER TABLE event_profiles ADD COLUMN IF NOT EXISTS stats JSONB DEFAULT '{"quests": 0, "crops": 0, "jails": 0, "works": 0, "mines": 0, "fishes": 0}'::jsonb;
+
+                    ALTER TABLE event_profiles ADD COLUMN IF NOT EXISTS achievements JSONB DEFAULT '[]'::jsonb;
+
                 ''')
                 
                 # ── BẢNG MỚI: MARRIAGES (HỆ THỐNG CẶP ĐÔI) ──────────────────
@@ -346,7 +361,7 @@ async def init_all_tables(bot: Any) -> bool:
 # =====================================================================
 
 async def get_or_create_event_profile(bot: Any, discord_id: Union[str, int]) -> Optional[Any]:
-    """Lấy thông tin event của 1 user. Nếu chưa có trong DB, tự động tạo mới với 0 điểm."""
+    """Lấy thông tin event của 1 user. Nếu chưa có trong DB, tự động tạo mới với 0 <:symbol_points_p:1538282388507987989>."""
     uid = str(discord_id)
     # Bước 1: Kiểm tra reset ngày trước khi lấy dữ liệu
     await check_and_reset_daily(bot, uid)

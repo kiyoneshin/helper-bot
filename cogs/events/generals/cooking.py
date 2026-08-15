@@ -163,7 +163,7 @@ class CookingCog(commands.Cog):
         }
         
         # P2W
-        embed.add_field(name="<:lb_06_godly:1535552639834783764> Đặc Quyền P2W", value=f"Hệ số nhân: **x{p2w}** điểm.", inline=False)
+        embed.add_field(name="<:lb_06_godly:1535552639834783764> Đặc Quyền P2W", value=f"Hệ số nhân: **x{p2w}** <:symbol_points_p:1538282388507987989>.", inline=False)
         active_count = 1
         for b_key, b_data in boosts.items():
             expires_at = b_data.get("expires_at", 0)

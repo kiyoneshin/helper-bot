@@ -34,7 +34,7 @@ class QuickGrabView(discord.ui.View):
         if success:
             medal = ["<:symbol_medal_gold:1537550996664885328>", "<:symbol_medal_silver:1537552840514347048>", "<:symbol_medal_bronze:1537552838412992712>"][rank - 1]
             await interaction.response.send_message(
-                f"{medal} Chúc mừng! Bạn là người thứ **{rank}** nhặt được quà và nhận **{points} điểm**!", 
+                f"{medal} Chúc mừng! Bạn là người thứ **{rank}** nhặt được quà và nhận **{points} <:symbol_points_p:1538282388507987989>**!", 
                 ephemeral=True
             )
         else:
@@ -67,7 +67,7 @@ class QuickGrabView(discord.ui.View):
                 desc = "**Danh sách 3 chiến thần nhanh tay nhất:**\n\n"
                 medals = ["<:symbol_medal_gold:1537550996664885328>", "<:symbol_medal_silver:1537552840514347048>", "<:symbol_medal_bronze:1537552838412992712>"]
                 for i, w in enumerate(self.winners):
-                    desc += f"{medals[i]} {w.mention} ── **+{self.rewards[i]} điểm**\n"
+                    desc += f"{medals[i]} {w.mention} ── **+{self.rewards[i]} <:symbol_points_p:1538282388507987989>**\n"
                 embed.description = desc
             else:
                 embed.description = "Rất tiếc, không có ai nhanh tay nhặt được quà."

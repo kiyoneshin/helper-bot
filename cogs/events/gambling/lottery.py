@@ -2,9 +2,9 @@
 lottery.py — Cog Xổ Số Sự Kiện (Scheduled Lottery)
 ===================================================
 Trò chơi xổ số diễn ra mỗi ngày 1 lần vào đúng 18:00 (UTC+7).
-Người chơi có thể mua vé số. Giá vé cố định là 50 điểm/vé.
+Người chơi có thể mua vé số. Giá vé cố định là 50 <:symbol_points_p:1538282388507987989>/vé.
 Giới hạn: Mỗi người tối đa 200 vé.
-Tổng Hũ (Pot) = Số vé bán ra * 75 điểm.
+Tổng Hũ (Pot) = Số vé bán ra * 75 <:symbol_points_p:1538282388507987989>.
 Thuật toán: Weighted Random (Random có trọng số theo số lượng vé).
 """
 
@@ -75,7 +75,7 @@ async def buy_lottery_tickets(
     cost = amount * TICKET_PRICE
     ok = await deduct_event_points(bot, uid, cost)
     if not ok:
-        return False, f"<:symbol_wrong:1536629915598848072> Ví rỗng tuẼh mà đòi đú **{amount}** vé? Kiếm thêm **{cost:,}** điểm rồi quay lại!"
+        return False, f"<:symbol_wrong:1536629915598848072> Ví rỗng tuẼh mà đòi đú **{amount}** vé? Kiếm thêm **{cost:,}** <:symbol_points_p:1538282388507987989> rồi quay lại!"
 
     await execute_db(
         bot,
@@ -87,7 +87,7 @@ async def buy_lottery_tickets(
     )
 
     return True, (
-        f"<:symbol_right:1536629912515903578> Chốt kèo! Đã múc **{amount:,}** vé (bay mất **{cost:,}** điểm).\n"
+        f"<:symbol_right:1536629912515903578> Chốt kèo! Đã múc **{amount:,}** vé (bay mất **{cost:,}** <:symbol_points_p:1538282388507987989>).\n"
         f"Trong tay đang có **{current_tickets + amount:,}** vé, chuẩn bị đổi đời thôi!"
     )
 
@@ -180,7 +180,7 @@ class Lottery(commands.Cog):
             await channel.send(
                 f"<a:gambling_slot_machine_pixel:1536322200838340628> **XỔ SỐ BẮT ĐẦU QUAY!** <a:gambling_slot_machine_pixel:1536322200838340628>\n"
                 f"Tổng số vé đã bán: **{total_tickets:,}** vé\n"
-                f"Tổng Hũ (Pot): **{total_prize:,}** điểm\n"
+                f"Tổng Hũ (Pot): **{total_prize:,}** <:symbol_points_p:1538282388507987989>\n"
                 f"Ai sẽ là người ẵm trọn số tiền này? 🤞 Đang quay..."
             )
             await asyncio.sleep(3)
@@ -252,7 +252,7 @@ class Lottery(commands.Cog):
         if last_winner_row:
             lw_id = last_winner_row["winner_id"]
             lw_prize = int(last_winner_row["prize"])
-            last_winner_str = f"<@{lw_id}> ── **{lw_prize:,}** điểm"
+            last_winner_str = f"<@{lw_id}> ── **{lw_prize:,}** <:symbol_points_p:1538282388507987989>"
 
         # 4. Tính toán thời gian kỳ tới
         now = datetime.now(UTC7)
@@ -272,12 +272,12 @@ class Lottery(commands.Cog):
         )
         embed.add_field(
             name="<:symbol_money:1537466097282842775> Giá vé",
-            value=f"**{TICKET_PRICE:,}** điểm / vé\n*(Tối đa {MAX_TICKETS_PER_USER} vé)*",
+            value=f"**{TICKET_PRICE:,}** <:symbol_points_p:1538282388507987989> / vé\n*(Tối đa {MAX_TICKETS_PER_USER} vé)*",
             inline=True
         )
         embed.add_field(
             name="<:symbol_money_2:1537567535229050970> Tổng Hũ (Pot)",
-            value=f"**{pot:,}** điểm",
+            value=f"**{pot:,}** <:symbol_points_p:1538282388507987989>",
             inline=True
         )
         embed.add_field(
@@ -338,7 +338,7 @@ class Lottery(commands.Cog):
         await add_event_points(self.bot, uid, refund, is_earned=False)
 
         await ctx.send(
-            f"<:symbol_reload:1536007679640600648> {ctx.author.mention} Bán lúa non à? Sòng thu hồi **{amount:,}** vé, hoàn lại **{refund:,}** điểm.\n"
+            f"<:symbol_reload:1536007679640600648> {ctx.author.mention} Bán lúa non à? Sòng thu hồi **{amount:,}** vé, hoàn lại **{refund:,}** <:symbol_points_p:1538282388507987989>.\n"
             f"Giờ chỉ còn **{current_tickets - amount:,}** vé thôi nhé!",
             delete_after=5.0
         )

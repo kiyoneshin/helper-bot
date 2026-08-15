@@ -42,7 +42,7 @@ def _format_cost(cost_pts: int, cost_items: dict) -> str:
         f"**{v}** {_get_item_name(k)}"
         for k, v in cost_items.items()
     )
-    return f"**{cost_pts:,.0f} Điểm** + {items_str}"
+    return f"**{cost_pts:,.0f} <:symbol_points_p:1538282388507987989>** + {items_str}"
 
 def _build_recipe_embed(ctx, category: str) -> discord.Embed:
     embed = discord.Embed(

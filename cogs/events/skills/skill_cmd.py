@@ -90,7 +90,7 @@ async def build_overview_embed(user: discord.Member | discord.User, skills_data:
             inline=False,
         )
 
-    embed.set_footer(text=f"Dùng 'skill reset <tên>' để reset Nghề Nghiệp (Giá: {RESET_COST:,} điểm).")
+    embed.set_footer(text=f"Dùng 'skill reset <tên>' để reset Nghề Nghiệp (Giá: {RESET_COST:,} <:symbol_points_p:1538282388507987989>).")
     return embed
 
 
@@ -405,7 +405,7 @@ class ResetConfirmView(discord.ui.View):
         ok = await deduct_event_points(interaction.client, uid, RESET_COST)
         if not ok:
             await interaction.response.edit_message(
-                content=f"<:symbol_wrong:1536629915598848072> Không đủ điểm! Cần **{RESET_COST:,}** Điểm Sự Kiện.",
+                content=f"<:symbol_wrong:1536629915598848072> Không đủ điểm! Cần **{RESET_COST:,}** <:symbol_points_p:1538282388507987989>.",
                 view=None,
             )
             return
@@ -416,7 +416,7 @@ class ResetConfirmView(discord.ui.View):
         embed = await build_detail_embed(self.author, skills_data, self.skill_id)
         view = SkillDetailView(self.author, skills_data, self.skill_id)
         await interaction.response.edit_message(
-            content=f"<:symbol_right:1536629912515903578> Đã reset Nghề Nghiệp **{skill_cfg['icon']} {skill_cfg['name']}**! Trừ **{RESET_COST:,}** điểm.",
+            content=f"<:symbol_right:1536629912515903578> Đã reset Nghề Nghiệp **{skill_cfg['icon']} {skill_cfg['name']}**! Trừ **{RESET_COST:,}** <:symbol_points_p:1538282388507987989>.",
             embed=embed,
             view=view,
         )
@@ -490,7 +490,7 @@ class SkillCog(commands.Cog):
                     )
                 embed = discord.Embed(
                     title="<:symbol_reload:1536007679640600648> Reset Nghề Nghiệp",
-                    description=f"**Giá:** {RESET_COST:,} Điểm Sự Kiện\n\n"
+                    description=f"**Giá:** {RESET_COST:,} <:symbol_points_p:1538282388507987989>\n\n"
                                 "Dùng `skill reset <tên>` để reset. Ví dụ: `skill reset mining`\n\n"
                                 + "\n".join(lines),
                     color=0xe74c3c,
@@ -518,7 +518,7 @@ class SkillCog(commands.Cog):
                     f"Bạn sắp **reset** toàn bộ nghề nghiệp của kỹ năng **{scfg['name']}**.\n\n"
                     f"• Lv.5: **{p5_name}** → Mất\n"
                     f"• Lv.10: **{p10_name}** → Mất\n\n"
-                    f"**Chi phí:** {RESET_COST:,} Điểm Sự Kiện\n\n"
+                    f"**Chi phí:** {RESET_COST:,} <:symbol_points_p:1538282388507987989>\n\n"
                     "_Hãy chọn lại nghề nghiệp sau khi reset._"
                 ),
                 color=0xe74c3c,

@@ -442,7 +442,7 @@ class DuckRace(commands.Cog):
                     title=f"💉 Đã Bơm Thêm Máu!",
                     description=(
                         f"{ctx.author.mention} vừa dồn thêm **{bet:,}** vào {ex_emoji} **{ex_label}**.\n"
-                        f"Tổng cược hiện tại vào con này là: **{new_bet:,}** điểm."
+                        f"Tổng cược hiện tại vào con này là: **{new_bet:,}** <:symbol_points_p:1538282388507987989>."
                     ),
                     color=COLOR_INFO,
                 )

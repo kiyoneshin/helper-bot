@@ -160,7 +160,7 @@ class BetModal(discord.ui.Modal, title="💰 Đặt Cược - Quả Bóng Tham L
         )
 
         await interaction.response.send_message(
-            f"<:symbol_right:1536629912515903578> **Ghi nhận!** Bạn đã xuống xác **{bet:,}** điểm.\n"
+            f"<:symbol_right:1536629912515903578> **Ghi nhận!** Bạn đã xuống xác **{bet:,}** <:symbol_points_p:1538282388507987989>.\n"
             "Tiền đã được nhà cái giữ. Chờ bóng bay nhé!",
             ephemeral=True,
         )
@@ -264,7 +264,7 @@ class CrashActiveView(discord.ui.View):
             if user_id in self.cashed_out:
                 already = self.cashed_out[user_id]
                 await interaction.response.send_message(
-                    f"<:symbol_alert:1537546957885542450> Bấm hoài! Đã chốt lời **{already:,}** điểm từ trước rồi cha nội.",
+                    f"<:symbol_alert:1537546957885542450> Bấm hoài! Đã chốt lời **{already:,}** <:symbol_points_p:1538282388507987989> từ trước rồi cha nội.",
                     ephemeral=True,
                 )
                 return
@@ -300,7 +300,7 @@ class CrashActiveView(discord.ui.View):
         profit_display = payout - bet
         if snapshot_mult < 1.0:
             await interaction.response.send_message(
-                f"<:symbol_alert:1537546957885542450> Bạn đã Cắt Lỗ ở hệ số **x{snapshot_mult:.2f}** (Lỗ **{abs(profit_display):,}** điểm). Còn hơn là mất trắng!",
+                f"<:symbol_alert:1537546957885542450> Bạn đã Cắt Lỗ ở hệ số **x{snapshot_mult:.2f}** (Lỗ **{abs(profit_display):,}** <:symbol_points_p:1538282388507987989>). Còn hơn là mất trắng!",
                 ephemeral=True,
             )
         else:
@@ -337,7 +337,7 @@ def _build_lobby_embed(
     embed.add_field(name="👥 Con bạc tham gia", value=f"**{len(players_bets)}** mạng", inline=True)
 
     if players_bets:
-        lines = [f"<@{uid}> → **{bet:,}** điểm" for uid, bet in players_bets.items()]
+        lines = [f"<@{uid}> → **{bet:,}** <:symbol_points_p:1538282388507987989>" for uid, bet in players_bets.items()]
         embed.add_field(name="<:symbol_boards:1536007665153474681> Bảng Cược", value="\n".join(lines), inline=False)
 
     embed.set_footer(text="Angelic Casino • Crash")
@@ -440,7 +440,7 @@ def _build_crash_embed(
     losers = {uid: bet for uid, bet in players_bets.items() if uid not in cashed_out}
     if losers:
         loser_lines = [
-            f"<@{uid}> • Mất trắng **{bet:,}** điểm" for uid, bet in losers.items()
+            f"<@{uid}> • Mất trắng **{bet:,}** <:symbol_points_p:1538282388507987989>" for uid, bet in losers.items()
         ]
         embed.add_field(
             name="Cột Trụ Sòng Bạc — Tham Lam Chết Chìm",

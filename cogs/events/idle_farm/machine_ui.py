@@ -210,7 +210,7 @@ class RecipeSelect(discord.ui.Select):
             output = ARTISAN_GOODS.get(recipe["output_id"], {})
             price = output.get("price", recipe["sell_price"])
             duration_str = _format_duration(recipe["duration_seconds"])
-            desc = f"{duration_str} → Bán {price:,} điểm"
+            desc = f"{duration_str} → Bán {price:,} <:symbol_points_p:1538282388507987989>"
             if not can_craft:
                 desc = "<:symbol_alert:1537546957885542450> Chưa đủ nguyên liệu"
 

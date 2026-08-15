@@ -238,7 +238,7 @@ class BlackjackView(discord.ui.View):
         p_score = calculate_score(self.p_hand)
 
         if p_score > 21:
-            await self.finish_game(interaction, f"<:symbol_wrong:1536629915598848072> **Quắc (Bust)!** Vượt quá 21 điểm. Bạn mất **{self.bet:,}**!")
+            await self.finish_game(interaction, f"<:symbol_wrong:1536629915598848072> **Quắc (Bust)!** Vượt quá 21 <:symbol_points_p:1538282388507987989>. Bạn mất **{self.bet:,}**!")
         else:
             embed = self.build_embed(show_dealer=False)
             await interaction.response.edit_message(embed=embed, view=self)

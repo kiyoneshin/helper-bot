@@ -160,7 +160,7 @@ class BlackMarketCog(commands.Cog):
             stock_text = f"**{stock}** chiếc" if stock > 0 else "~~Cháy hàng~~"
             embed.add_field(
                 name=f"Mã số `[{slot_id}]` — {icon} {name}",
-                value=f"Giá: **{price:,}** điểm | Còn lại: {stock_text}\n*{desc}*",
+                value=f"Giá: **{price:,}** <:symbol_points_p:1538282388507987989> | Còn lại: {stock_text}\n*{desc}*",
                 inline=False,
             )
 
@@ -223,7 +223,7 @@ class BlackMarketCog(commands.Cog):
         success = await deduct_event_points(self.bot, uid, total_price)
         if not success:
             await ctx.send(
-                f"<:symbol_wrong:1536629915598848072> Số dư không đủ! Bạn cần **{total_price:,}** điểm để mua {quantity}x **{item_name}**.",
+                f"<:symbol_wrong:1536629915598848072> Số dư không đủ! Bạn cần **{total_price:,}** <:symbol_points_p:1538282388507987989> để mua {quantity}x **{item_name}**.",
                 delete_after=5.0,
             )
             return
@@ -257,7 +257,7 @@ class BlackMarketCog(commands.Cog):
 
         # 6. Thông báo thành công
         await ctx.send(
-            f"Mua thành công **{quantity}x {item_name}** với giá **{total_price:,}** điểm. "
+            f"Mua thành công **{quantity}x {item_name}** với giá **{total_price:,}** <:symbol_points_p:1538282388507987989>. "
             f"Hãy dùng `{ctx.prefix}use {slot_id}` để xài!"
         )
 

@@ -135,7 +135,7 @@ class VoteModal(discord.ui.Modal, title="Đánh Giá Nhân Sự"):
                 raise ValueError()
         except ValueError:
             await interaction.response.send_message(
-                "**Điểm đánh giá không hợp lệ!**\nVui lòng chỉ nhập điểm từ `0` đến `5`. Chấp nhận dạng số nguyên như `5`, `4` hoặc tối đa 1 chữ số thập phân như `5.0`, `4.5`.",
+                "**<:symbol_points_p:1538282388507987989> đánh giá không hợp lệ!**\nVui lòng chỉ nhập điểm từ `0` đến `5`. Chấp nhận dạng số nguyên như `5`, `4` hoặc tối đa 1 chữ số thập phân như `5.0`, `4.5`.",
                 ephemeral=True
             )
             return

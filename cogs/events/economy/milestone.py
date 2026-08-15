@@ -90,7 +90,7 @@ class MilestoneCog(commands.Cog):
             
         embed = discord.Embed(
             title="<:gift_00_symbol:1536003307011842099> TIẾN TRÌNH CỘT MỐC SỰ KIỆN <:gift_00_symbol:1536003307011842099>",
-            description=f"Tổng điểm đã cày: **{total_earned:,.2f}** điểm\n*(Tiến trình được tính dựa trên tổng điểm cày cuốc, không bị giảm khi tiêu xài)*\n",
+            description=f"Tổng điểm đã cày: **{total_earned:,.2f}** <:symbol_points_p:1538282388507987989>\n*(Tiến trình được tính dựa trên tổng điểm cày cuốc, không bị giảm khi tiêu xài)*\n",
             color=0xffb6c1
         )
         
@@ -113,7 +113,7 @@ class MilestoneCog(commands.Cog):
                 
             rewards = []
             if data.get("points"):
-                rewards.append(f"**{data['points']:,}** điểm")
+                rewards.append(f"**{data['points']:,}** <:symbol_points_p:1538282388507987989>")
             if data.get("tickets"):
                 rewards.append(f"**{data['tickets']}** vé số")
             if data.get("role_id"):
@@ -247,7 +247,7 @@ class MilestoneCog(commands.Cog):
             return s
             
         if total_points > 0:
-            embed.add_field(name="Điểm Thưởng", value=f"+**{_fmt(total_points)}** điểm", inline=True)
+            embed.add_field(name="Điểm Thưởng", value=f"+**{_fmt(total_points)}** <:symbol_points_p:1538282388507987989>", inline=True)
             
         if total_tickets > 0:
             embed.add_field(name="Vé Xổ Số", value=f"+**{total_tickets}** vé", inline=True)

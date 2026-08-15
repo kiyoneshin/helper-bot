@@ -129,7 +129,7 @@ ITEM_REGISTRY: dict[int, ItemEntry] = {
         "name":        "Bao Tay Đạo Chích",
         "icon":        "🧤",
         "price":       35000,
-        "description": "Trộm ngẫu nhiên 50–500 điểm sự kiện của mục tiêu.",
+        "description": "Trộm ngẫu nhiên 50–500 <:symbol_points_p:1538282388507987989> của mục tiêu.",
         "db_key":      "thief_card",
         "category":    "blackmarket",
         "usable":      True,

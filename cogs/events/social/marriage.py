@@ -955,7 +955,7 @@ class MarriageCog(commands.Cog):
             description=f"Nhiệm vụ hôm nay: **Hai người phải {task_data['desc']}**.\n\nTiến độ: **{task_data['progress']} / {task_data['target']}**",
             color=discord.Color.pink()
         )
-        emb.set_footer(text="Hoàn thành để nhận +100 Điểm Thân Mật (DTM)!")
+        emb.set_footer(text="Hoàn thành để nhận +100 <:symbol_points_p:1538282388507987989> Thân Mật (DTM)!")
         await ctx.send(embed=emb)
 
     # ---------------------------------------------------------
@@ -1069,7 +1069,7 @@ class MarriageCog(commands.Cog):
         # Random fail for tier 1 (Chọc ghẹo)
         fail_chance = 0.2 - pet_fail_reduction
         if act["tier"] == 1 and random.random() < fail_chance:
-            actual_dtm = -1.0 # Trừ 1 điểm nếu đối phương quạu
+            actual_dtm = -1.0 # Trừ 1 <:symbol_points_p:1538282388507987989> nếu đối phương quạu
             msg = f"💢 {ctx.author.display_name} chọc ghẹo không đúng lúc, {target.display_name} đang quạu! (Trừ 1 DTM)"
         else:
             if act["tier"] == 1 and pet_type == "Cánh Cụt":

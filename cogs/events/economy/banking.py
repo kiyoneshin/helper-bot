@@ -91,7 +91,7 @@ class BankingCog(commands.Cog):
             return
             
         if amount > available_loan:
-            await ctx.send(f"<:symbol_ban:1537546960003801319> {ctx.author.mention} Hạn mức còn lại của bạn chỉ là **{available_loan:,.0f}** điểm.")
+            await ctx.send(f"<:symbol_ban:1537546960003801319> {ctx.author.mention} Hạn mức còn lại của bạn chỉ là **{available_loan:,.0f}** <:symbol_points_p:1538282388507987989>.")
             return
 
         # Thực hiện vay

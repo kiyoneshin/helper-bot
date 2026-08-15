@@ -43,8 +43,11 @@ log = logging.getLogger("ShopCog")
 # EMBED BUILDERS
 # ============================================================
 
-def _format_price(price: int | None) -> str:
-    return f"{price:,} điểm" if price is not None else "Không bán"
+def _format_price(price: int | None, category: str = "") -> str:
+    if price is None:
+        return "Không bán"
+    emoji = "<:symbol_point_e:1538282386351984660>" if category == "event" else "<:symbol_points_p:1538282388507987989>"
+    return f"{price:,} {emoji}"
 
 
 def build_shop_embed(category: str, author: discord.Member | discord.User, prefix: str = 'k') -> discord.Embed:
@@ -83,7 +86,7 @@ def build_shop_embed(category: str, author: discord.Member | discord.User, prefi
             
             lines.append(
                 f"`[{item['id']}]` {item['icon']} **{item['name']}** | "
-                f"Giá: **{_format_price(item['price'])}** | {desc}"
+                f"Giá: **{_format_price(item['price'], category)}** | {desc}"
             )
         embed.description = "\n".join(lines)
     else:
@@ -259,10 +262,10 @@ async def _buy_event_item(
         
         if item["category"] == "event":
             ok = await deduct_total_earned(bot, uid, total)
-            currency_name = "Điểm Tích Lũy (Chỉ có qua cày cuốc)"
+            currency_name = "<:symbol_point_e:1538282386351984660> (Điểm Tích Lũy)"
         else:
             ok = await deduct_event_points(bot, uid, total)
-            currency_name = "điểm Số Dư"
+            currency_name = "<:symbol_points_p:1538282388507987989> (Số Dư)"
             
         if not ok:
             await ctx.send(
@@ -301,12 +304,13 @@ async def _buy_event_item(
             )
             await ctx.channel.send(
                 f"<:lb_06_godly:1535552639834783764> Chúc mừng {ctx.author.mention} vừa đổi thành công **{item['name']}** "
-                f"(với giá {total:,} điểm)! Hãy chờ Admin trao giải nhé!"
+                f"(với giá {total:,} <:symbol_point_e:1538282386351984660>)! Hãy chờ Admin trao giải nhé!"
             )
         else:
+            emoji = "<:symbol_point_e:1538282386351984660>" if item["category"] == "event" else "<:symbol_points_p:1538282388507987989>"
             await ctx.send(
                 f"<:symbol_right:1536629912515903578> {ctx.author.mention} Đã mua **{amount}x {item['icon']} {item['name']}** "
-                f"với giá **{total:,}** điểm. Vật phẩm đã nằm trong `{bot.custom_prefix}inv`!",
+                f"với giá **{total:,}** {emoji}. Vật phẩm đã nằm trong `{bot.custom_prefix}inv`!",
                 delete_after=10.0,
             )
     else:
@@ -350,7 +354,7 @@ async def _buy_blackmarket_item(
     ok = await deduct_event_points(bot, uid, total)
     if not ok:
         await ctx.send(
-            f"<:symbol_wrong:1536629915598848072> {ctx.author.mention} Không đủ điểm! Cần **{total:,}** điểm để mua "
+            f"<:symbol_wrong:1536629915598848072> {ctx.author.mention} Không đủ điểm! Cần **{total:,}** <:symbol_points_p:1538282388507987989> để mua "
             f"**{amount}x {item['name']}**.",
             delete_after=5.0,
         )
@@ -377,7 +381,7 @@ async def _buy_blackmarket_item(
 
     await ctx.send(
         f"<:symbol_right:1536629912515903578> {ctx.author.mention} Đã mua **{amount}x {item['icon']} {item['name']}** "
-        f"với giá **{total:,}** điểm. Dùng `{bot.custom_prefix}use {item['id']}` để sử dụng!",
+        f"với giá **{total:,}** <:symbol_points_p:1538282388507987989>. Dùng `{bot.custom_prefix}use {item['id']}` để sử dụng!",
         delete_after=10.0,
     )
 

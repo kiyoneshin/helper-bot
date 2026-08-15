@@ -163,7 +163,7 @@ def _build_farm_embed(
             total_ores_worth += price * count
             ore_lines.append(
                 f"• `[{item_id}]` {ore['icon']} **{ore['name']}** (x{count})"
-                f" — {price:,} điểm/cái"
+                f" — {price:,} <:symbol_points_p:1538282388507987989>/cái"
             )
         elif item_id in FISH_LOOT:
             fish = FISH_LOOT[item_id]
@@ -172,7 +172,7 @@ def _build_farm_embed(
             rare = "<a:symbol_star_yellow:1537739289834553385>" if fish.get("rare_rank", 0) >= 3 else ""
             fish_lines.append(
                 f"• `[{item_id}]` {fish['icon']} {rare}**{fish['name']}** (x{count})"
-                f" — {price:,} điểm/cái"
+                f" — {price:,} <:symbol_points_p:1538282388507987989>/cái"
             )
         else:
             parts = item_id.split("_")
@@ -186,7 +186,7 @@ def _build_farm_embed(
                 total_artisan_worth += price * count
                 artisan_lines.append(
                     f"• `[{item_id}]` {artisan['icon']} **{artisan['name']}** (x{count})"
-                    f" — {price:,} điểm/cái"
+                    f" — {price:,} <:symbol_points_p:1538282388507987989>/cái"
                 )
             # Wood items
             elif item_id in WOODCUTTING_LOOT:
@@ -195,7 +195,7 @@ def _build_farm_embed(
                 total_wood_worth += price * count
                 wood_lines.append(
                     f"• `[{item_id}]` {wood['icon']} **{wood['name']}** (x{count})"
-                    f" — {price:,} điểm/cái"
+                    f" — {price:,} <:symbol_points_p:1538282388507987989>/cái"
                 )
             elif seed_id in SEEDS:
                 seed_info = SEEDS.get(seed_id)
@@ -217,7 +217,7 @@ def _build_farm_embed(
                         
                     crop_lines.append(
                         f"• `[{item_id}]` {seed_info['icon']} **{seed_info['name']}**"
-                        f" {emoji} (x{count}) — {price_str} điểm/cái"
+                        f" {emoji} (x{count}) — {price_str} <:symbol_points_p:1538282388507987989>/cái"
                     )
 
     desc_parts: list[str] = []
@@ -239,16 +239,16 @@ def _build_farm_embed(
     footer_parts: list[str] = []
     if tab_type == "crop":
         if total_crops_worth > 0:
-            footer_parts.append(f"<:symbol_plant:1536007706958237828> {total_crops_worth:,} điểm")
+            footer_parts.append(f"<:symbol_plant:1536007706958237828> {total_crops_worth:,} <:symbol_points_p:1538282388507987989>")
         if total_artisan_worth > 0:
-            footer_parts.append(f"<:symbol_machine:1536297937498275850> {total_artisan_worth:,} điểm")
+            footer_parts.append(f"<:symbol_machine:1536297937498275850> {total_artisan_worth:,} <:symbol_points_p:1538282388507987989>")
     else:
         if total_ores_worth > 0:
-            footer_parts.append(f"<:symbol_00_mining:1536007694920585356> {total_ores_worth:,} điểm")
+            footer_parts.append(f"<:symbol_00_mining:1536007694920585356> {total_ores_worth:,} <:symbol_points_p:1538282388507987989>")
         if total_wood_worth > 0:
-            footer_parts.append(f"<:symbol_00_woodcutting:1536007697491558491> {total_wood_worth:,} điểm")
+            footer_parts.append(f"<:symbol_00_woodcutting:1536007697491558491> {total_wood_worth:,} <:symbol_points_p:1538282388507987989>")
         if total_fish_worth > 0:
-            footer_parts.append(f"<:symbol_fish:1536007699190386740> {total_fish_worth:,} điểm")
+            footer_parts.append(f"<:symbol_fish:1536007699190386740> {total_fish_worth:,} <:symbol_points_p:1538282388507987989>")
             
     if footer_parts:
         embed.add_field(
@@ -358,7 +358,7 @@ class SellAllModal(discord.ui.Modal):
         new_embed = _build_farm_embed(self.author, farm_data, tab_type=self._view._current_tab)
         await interaction.response.edit_message(embed=new_embed, view=self._view)
         await interaction.followup.send(
-            f"<:symbol_right:1536629912515903578> Đã bán toàn bộ **{self.label}**! Thu về **{profit:,.0f}** điểm.",
+            f"<:symbol_right:1536629912515903578> Đã bán toàn bộ **{self.label}**! Thu về **{profit:,.0f}** <:symbol_points_p:1538282388507987989>.",
             ephemeral=True,
         )
 

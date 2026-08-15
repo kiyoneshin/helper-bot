@@ -30,7 +30,7 @@ log = logging.getLogger("JailInteraction")
 
 # Giá bảo lãnh tối thiểu — phải đắt hơn Thẻ Tống Giam (25,000) + Thẻ Đặc Xá (15,000)
 BAIL_MIN_COST = 30_000
-BAIL_PER_COUNT = 500   # mỗi lần lau dọn còn lại = 500 điểm thêm
+BAIL_PER_COUNT = 500   # mỗi lần lau dọn còn lại = 500 <:symbol_points_p:1538282388507987989> thêm
 
 class BailConfirmView(discord.ui.View):
     def __init__(self, author_id: int):
@@ -235,9 +235,9 @@ class JailInteraction(commands.Cog):
                 title="<:symbol_money_2:1537567535229050970> Không Đủ Tiền Bảo Lãnh!",
                 description=(
                     f"{ctx.author.mention} muốn bảo lãnh {member.mention}.\n\n"
-                    f"<:symbol_money_bag:1537567538097954896> Chi phí bảo lãnh: **{bail_cost:,}** điểm\n"
-                    f"<:symbol_credit_card:1536308433693712404> Số dư của bạn: **{payer_points:,.0f}** điểm\n\n"
-                    f"Thiếu **{bail_cost - payer_points:,.0f}** điểm. Cày thêm đi! 😅"
+                    f"<:symbol_money_bag:1537567538097954896> Chi phí bảo lãnh: **{bail_cost:,}** <:symbol_points_p:1538282388507987989>\n"
+                    f"<:symbol_credit_card:1536308433693712404> Số dư của bạn: **{payer_points:,.0f}** <:symbol_points_p:1538282388507987989>\n\n"
+                    f"Thiếu **{bail_cost - payer_points:,.0f}** <:symbol_points_p:1538282388507987989>. Cày thêm đi! 😅"
                 ),
                 color=COLOR_WARN,
             )
@@ -249,8 +249,8 @@ class JailInteraction(commands.Cog):
             title="<:symbol_money_2:1537567535229050970> Yêu Cầu Bảo Lãnh",
             description=(
                 f"{ctx.author.mention} muốn bảo lãnh cho {member.mention}.\n\n"
-                f"<:symbol_money_bag:1537567538097954896> Chi phí bảo lãnh: **{bail_cost:,}** điểm\n"
-                f"<:symbol_credit_card:1536308433693712404> Số dư hiện tại: **{payer_points:,.0f}** điểm\n\n"
+                f"<:symbol_money_bag:1537567538097954896> Chi phí bảo lãnh: **{bail_cost:,}** <:symbol_points_p:1538282388507987989>\n"
+                f"<:symbol_credit_card:1536308433693712404> Số dư hiện tại: **{payer_points:,.0f}** <:symbol_points_p:1538282388507987989>\n\n"
                 f"Bạn có chắc chắn muốn bỏ ra số điểm này để bảo lãnh không?"
             ),
             color=discord.Color.gold(),
@@ -280,7 +280,7 @@ class JailInteraction(commands.Cog):
         embed = discord.Embed(
             title="🕊️ Bảo Lãnh Thành Công!",
             description=(
-                f"<:symbol_money_2:1537567535229050970> {ctx.author.mention} vừa bỏ **{bail_cost:,}** điểm ra bảo lãnh!\n\n"
+                f"<:symbol_money_2:1537567535229050970> {ctx.author.mention} vừa bỏ **{bail_cost:,}** <:symbol_points_p:1538282388507987989> ra bảo lãnh!\n\n"
                 f"<:symbol_unlocked:1537566882180366466> {member.mention} được trả tự do — role và nickname đã khôi phục."
             ),
             color=COLOR_FREE,

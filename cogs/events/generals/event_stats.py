@@ -77,9 +77,9 @@ class TopLeaderboardView(discord.ui.View):
                 c_pts = row["points"]
                 
                 if self.current_page == "total":
-                    leaderboard_text += f"{rank_icon} <@{user_id}>\n└ <:symbol_trophy:1537550568665649232> Tổng cày: **`{t_pts:,}`** điểm *(Dư: `{c_pts:,}`)*\n\n"
+                    leaderboard_text += f"{rank_icon} <@{user_id}>\n└ <:symbol_trophy:1537550568665649232> Tổng cày: **`{t_pts:,}`** <:symbol_point_e:1538282386351984660> *(Dư: `{c_pts:,}`)*\n\n"
                 else:
-                    leaderboard_text += f"{rank_icon} <@{user_id}>\n└ <:symbol_money_bag:1537567538097954896> Số dư: **`{c_pts:,}`** điểm *(Cày được: `{t_pts:,}`)*\n\n"
+                    leaderboard_text += f"{rank_icon} <@{user_id}>\n└ <:symbol_money_bag:1537567538097954896> Số dư: **`{c_pts:,}`** <:symbol_points_p:1538282388507987989> *(Cày được: `{t_pts:,}`)*\n\n"
                     
             embed.description = desc_prefix + leaderboard_text
             
@@ -152,12 +152,12 @@ class EventStatsCog(commands.Cog):
         )
         embed.add_field(
             name="<a:symbol_spinning_coin:1537739282452586536> Số dư hiện tại",
-            value=f"`{points:,}` điểm",
+            value=f"`{points:,}` <:symbol_points_p:1538282388507987989>",
             inline=True
         )
         embed.add_field(
             name="<:symbol_trophy:1537550568665649232> Tổng điểm tích lũy",
-            value=f"`{total_earned:,}` điểm",
+            value=f"`{total_earned:,}` <:symbol_point_e:1538282386351984660>",
             inline=True
         )
         embed.add_field(
@@ -172,12 +172,12 @@ class EventStatsCog(commands.Cog):
         if debt > 0:
             embed.add_field(
                 name="<:symbol_money_2:1537567535229050970> Nợ ngân hàng",
-                value=f"`{debt:,.0f}` điểm",
+                value=f"`{debt:,.0f}` <:symbol_points_p:1538282388507987989>",
                 inline=False
             )
         embed.add_field(
             name="<:symbol_bank:1537739277138530324> Hạn mức vay",
-            value=f"`{max_loan:,.0f}` điểm",
+            value=f"`{max_loan:,.0f}` <:symbol_points_p:1538282388507987989>",
             inline=True if debt == 0 else False
         )
         

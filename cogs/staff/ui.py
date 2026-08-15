@@ -189,7 +189,7 @@ class StaffUICog(commands.Cog):
             for staff_name, staff_id, score, review in my_reviews:
                 embed.add_field(
                     name=f"Đánh giá {staff_name}",
-                    value=f"• **Staff:** <@{staff_id}>\n• **Điểm số:** {score} <a:symbol_star_yellow:1537739289834553385>\n• **Nhận xét:** {review}",
+                    value=f"• **Staff:** <@{staff_id}>\n• **<:symbol_points_p:1538282388507987989> số:** {score} <a:symbol_star_yellow:1537739289834553385>\n• **Nhận xét:** {review}",
                     inline=False
                 )
 

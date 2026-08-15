@@ -362,13 +362,13 @@ async def buy_seed(bot: commands.Bot, user_id: str, seed_type: str, amount: int 
     
     user_points = await fetchval_db(bot, "SELECT points FROM event_profiles WHERE discord_id = $1", user_id)
     if user_points is None or float(user_points) < total_cost:
-        return False, f"Không đủ điểm sự kiện (Cần {total_cost:,} điểm)!"
+        return False, f"Không đủ điểm sự kiện (Cần {total_cost:,} <:symbol_points_p:1538282388507987989>)!"
         
     # Trừ tiền
     from cogs.common.db import deduct_event_points
     success = await deduct_event_points(bot, user_id, total_cost)
     if not success:
-        return False, f"Không đủ điểm sự kiện (Cần {total_cost:,} điểm)!"
+        return False, f"Không đủ điểm sự kiện (Cần {total_cost:,} <:symbol_points_p:1538282388507987989>)!"
         
     # Thêm vào kho đồ
     farm_data = await get_farm_data(bot, user_id)
@@ -705,12 +705,12 @@ async def expand_farm_slot(bot: commands.Bot, user_id: str) -> Tuple[bool, str]:
     
     user_points = await fetchval_db(bot, "SELECT points FROM event_profiles WHERE discord_id = $1", user_id)
     if user_points is None or float(user_points) < price:
-        return False, f"Không đủ điểm sự kiện để mở rộng (Cần {price:,} điểm)!"
+        return False, f"Không đủ điểm sự kiện để mở rộng (Cần {price:,} <:symbol_points_p:1538282388507987989>)!"
         
     from cogs.common.db import deduct_event_points
     success = await deduct_event_points(bot, user_id, price)
     if not success:
-        return False, f"Không đủ điểm sự kiện để mở rộng (Cần {price:,} điểm)!"
+        return False, f"Không đủ điểm sự kiện để mở rộng (Cần {price:,} <:symbol_points_p:1538282388507987989>)!"
         
     farm_data["slots"] = current_slots + 1
     await save_farm_data(bot, user_id, farm_data)
@@ -809,4 +809,4 @@ async def sell_items_partial(
             total_profit = int(total_profit * p2w)
         await add_event_points(bot, user_id, float(total_profit), is_earned=True)
 
-    return True, total_profit, f"Đã bán **{sell_qty}** vật phẩm, thu về **{total_profit:,}** điểm!"
+    return True, total_profit, f"Đã bán **{sell_qty}** vật phẩm, thu về **{total_profit:,}** <:symbol_points_p:1538282388507987989>!"

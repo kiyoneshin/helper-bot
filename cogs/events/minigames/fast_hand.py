@@ -79,7 +79,7 @@ class FastHandView(discord.ui.View):
             if isinstance(item, discord.ui.Button):
                 item.disabled = True
 
-        # Cộng 150 điểm cho người thắng
+        # Cộng 150 <:symbol_points_p:1538282388507987989> cho người thắng
         success = await add_event_points(self.bot, str(interaction.user.id), 150, is_earned=True)
         if not success:
             log.error(f"Lỗi cộng điểm cho {interaction.user.id} trong FastHand")
@@ -89,7 +89,7 @@ class FastHandView(discord.ui.View):
             embed = self.message.embeds[0] if self.message.embeds else discord.Embed()
             embed.color = 0x57f287
             embed.title = "<:symbol_confetti:1537570146313306183> TÌM THẤY BẢO VẬT!"
-            embed.description = f"<:symbol_confetti:1537570146313306183> Chiến thần {interaction.user.mention} đã tìm thấy **{self.target_name}** trong đống đổ nát và nhận **150 điểm**!"
+            embed.description = f"<:symbol_confetti:1537570146313306183> Chiến thần {interaction.user.mention} đã tìm thấy **{self.target_name}** trong đống đổ nát và nhận **150 <:symbol_points_p:1538282388507987989>**!"
             try:
                 await self.message.edit(embed=embed, view=self)
             except discord.HTTPException:
@@ -162,7 +162,7 @@ async def start_fast_words_game(bot, channel: discord.abc.Messageable, core_cog)
         description=(
             f"Trời đất chuyển vần! Một cơn gió lạ vừa thổi bay bảo vật của server vào đống đổ nát!\n\n"
             f"Hãy tìm ngay: **{target_name} ({target_emoji})**\n\n"
-            f"*Chiến thần nào có đôi mắt tinh tường và cánh tay nhanh nhất nhấn đúng nút dưới đây sẽ ẵm trọn **150 điểm thưởng**!*"
+            f"*Chiến thần nào có đôi mắt tinh tường và cánh tay nhanh nhất nhấn đúng nút dưới đây sẽ ẵm trọn **150 <:symbol_points_p:1538282388507987989> thưởng**!*"
         ),
         color=0x9b59b6
     )

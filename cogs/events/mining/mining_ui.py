@@ -86,7 +86,7 @@ def build_mining_embed(author: discord.Member | discord.User, stamina: int, farm
         embed.add_field(name="<:icon_07_inventory:1535664855300710422> Kho Quặng Của Bạn", value="\n".join(ore_lines), inline=False)
 
     embed.set_thumbnail(url="https://cdn.discordapp.com/emojis/1535660962781331497.gif")
-    embed.set_footer(text=f"Dùng kbag để bán quặng. Thể lực hồi 1 điểm mỗi {regen_interval} giây.")
+    embed.set_footer(text=f"Dùng kbag để bán quặng. Thể lực hồi 1 <:symbol_points_p:1538282388507987989> mỗi {regen_interval} giây.")
     return embed
 
 

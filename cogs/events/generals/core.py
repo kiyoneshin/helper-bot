@@ -233,7 +233,7 @@ class EventCoreCog(commands.Cog):
 
         if total_members_rewarded > 0:
             log.info(
-                f"[Voice Scanner] Đã phát tổng {_fmt(total_points_distributed)} điểm "
+                f"[Voice Scanner] Đã phát tổng {_fmt(total_points_distributed)} <:symbol_points_p:1538282388507987989> "
                 f"cho {total_members_rewarded} thành viên đang treo voice hợp lệ."
             )
 
@@ -315,12 +315,12 @@ class EventCoreCog(commands.Cog):
         if success:
             embed = discord.Embed(
                 title="Ngân Hàng Sự Kiện Angelic",
-                description=f"Đã chuyển thành công **{_fmt(val)} điểm** vào tài khoản của {target.mention}!",
+                description=f"Đã chuyển thành công **{_fmt(val)} <:symbol_points_p:1538282388507987989>** vào tài khoản của {target.mention}!",
                 color=0x57f287
             )
             embed.set_footer(text=f"Thực hiện bởi: {ctx.author.display_name} ໒꒱")
             await ctx.send(embed=embed)
-            log.info(f"[GIVE] {ctx.author.display_name} đã bơm {_fmt(val)} điểm cho {target.display_name} ({target.id}).")
+            log.info(f"[GIVE] {ctx.author.display_name} đã bơm {_fmt(val)} <:symbol_points_p:1538282388507987989> cho {target.display_name} ({target.id}).")
         else:
             await ctx.send("Giao dịch thất bại! Có lỗi xảy ra khi cập nhật Database.", ephemeral=True)
 
@@ -359,7 +359,7 @@ class EventCoreCog(commands.Cog):
             title="<:symbol_confetti:1537570146313306183> Lì Xì Toàn Server Angelic ໒꒱",
             description=(
                 f"**{ctx.author.display_name}** vừa phát lương cho toàn thể server!\n\n"
-                f"Mỗi thành viên nhận được: **+{_fmt(val)} điểm**\n"
+                f"Mỗi thành viên nhận được: **+{_fmt(val)} <:symbol_points_p:1538282388507987989>**\n"
                 f"Tổng số người nhận: **{len(valid_members)} thành viên**"
             ),
             color=0xffb6c1
@@ -368,7 +368,7 @@ class EventCoreCog(commands.Cog):
         embed.set_footer(text=f"Hãy dùng điểm này để đổi quà trong {ctx.prefix}shop nhé! 🌸")
         
         await msg.edit(content=None, embed=embed)
-        log.info(f"[GIVE ALL] {ctx.author.display_name} đã phát {_fmt(val)} điểm cho {len(valid_members)} thành viên.")
+        log.info(f"[GIVE ALL] {ctx.author.display_name} đã phát {_fmt(val)} <:symbol_points_p:1538282388507987989> cho {len(valid_members)} thành viên.")
 
     # =====================================================================
     # 4. LỆNH THU HỒI / ROLLBACK: Y!TAKE VÀ Y!TAKEALL (MỚI THÊM)
@@ -401,12 +401,12 @@ class EventCoreCog(commands.Cog):
         if res is not None:
             embed = discord.Embed(
                 title="Ngân Hàng Sự Kiện Angelic — Tịch Thu",
-                description=f"Đã rút **{_fmt(val)} điểm** từ tài khoản của {target.mention}!\n*(Số dư được chạm đáy ở mức 0 điểm)*",
+                description=f"Đã rút **{_fmt(val)} <:symbol_points_p:1538282388507987989>** từ tài khoản của {target.mention}!\n*(Số dư được chạm đáy ở mức 0 <:symbol_points_p:1538282388507987989>)*",
                 color=0xed4245  # Màu đỏ cảnh báo / xử phạt
             )
             embed.set_footer(text=f"Thực hiện bởi: {ctx.author.display_name} ໒꒱")
             await ctx.send(embed=embed)
-            log.info(f"[TAKE] {ctx.author.display_name} đã rút {_fmt(val)} điểm từ {target.display_name} ({target.id}).")
+            log.info(f"[TAKE] {ctx.author.display_name} đã rút {_fmt(val)} <:symbol_points_p:1538282388507987989> từ {target.display_name} ({target.id}).")
         else:
             await ctx.send("Giao dịch thất bại! Có lỗi xảy ra khi cập nhật Database.", ephemeral=True)
 
@@ -442,7 +442,7 @@ class EventCoreCog(commands.Cog):
             title="Thu Hồi Điểm Toàn Server Angelic ໒꒱",
             description=(
                 f"**{ctx.author.display_name}** vừa thực hiện thu hồi điểm của toàn thể server!\n\n"
-                f"Mỗi thành viên bị trừ: **-{_fmt(val)} điểm** *(tối đa về 0)*\n"
+                f"Mỗi thành viên bị trừ: **-{_fmt(val)} <:symbol_points_p:1538282388507987989>** *(tối đa về 0)*\n"
                 f"Tổng số bị ảnh hưởng: **{len(valid_members)} thành viên**"
             ),
             color=0xed4245
@@ -451,7 +451,7 @@ class EventCoreCog(commands.Cog):
         embed.set_footer(text="Hệ thống Ngân Hàng Angelic • Cân bằng lại dòng tiền 🌸")
         
         await msg.edit(content=None, embed=embed)
-        log.info(f"[TAKE ALL] {ctx.author.display_name} đã thu hồi {_fmt(val)} điểm từ {len(valid_members)} thành viên.")
+        log.info(f"[TAKE ALL] {ctx.author.display_name} đã thu hồi {_fmt(val)} <:symbol_points_p:1538282388507987989> từ {len(valid_members)} thành viên.")
 
     class DummyCore:
         is_minigame_running = True

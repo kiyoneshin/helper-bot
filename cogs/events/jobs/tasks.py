@@ -157,7 +157,7 @@ class TaskCog(commands.Cog):
                     await _add_lootbox_to_inventory(self.bot, str(uid), lb_tier, 1)
                     lb_msg = f" <:gift_00_symbol:1536003307011842099> {TIER_EMOJIS[lb_tier]} {TIER_NAMES[lb_tier]}"
                     
-                claimed_messages.append(f"<:symbol_right:1536629912515903578> Đã nhận thưởng nhiệm vụ ngày #{idx} (+{tdata['reward']:,} điểm{pet_msg}{lb_msg})")
+                claimed_messages.append(f"<:symbol_right:1536629912515903578> Đã nhận thưởng nhiệm vụ ngày #{idx} (+{tdata['reward']:,} <:symbol_points_p:1538282388507987989>{pet_msg}{lb_msg})")
                 db_changed = True
 
             status = "COMPLETED" if tdata["claimed"] else f"{tdata['progress']}/{tdata['target']}"
@@ -198,7 +198,7 @@ class TaskCog(commands.Cog):
                     await _add_lootbox_to_inventory(self.bot, str(uid), lb_tier, 1)
                     lb_msg = f" <:gift_00_symbol:1536003307011842099> {TIER_EMOJIS[lb_tier]} {TIER_NAMES[lb_tier]}"
                     
-                claimed_messages.append(f"<a:symbol_star_yellow:1537739289834553385> Đã nhận thưởng nhiệm vụ tuần #{idx} (+{tdata['reward']:,} điểm{pet_msg}{lb_msg})")
+                claimed_messages.append(f"<a:symbol_star_yellow:1537739289834553385> Đã nhận thưởng nhiệm vụ tuần #{idx} (+{tdata['reward']:,} <:symbol_points_p:1538282388507987989>{pet_msg}{lb_msg})")
                 db_changed = True
 
             status = "COMPLETED" if tdata["claimed"] else f"{tdata['progress']}/{tdata['target']}"
@@ -264,7 +264,7 @@ class TaskCog(commands.Cog):
                     await _add_lootbox_to_inventory(self.bot, str(uid), lb_tier, 1)
                     lb_msg = f" <:gift_00_symbol:1536003307011842099> {TIER_EMOJIS[lb_tier]} {TIER_NAMES[lb_tier]}"
 
-                claimed_messages.append(f"<:symbol_trophy:1537550568665649232> Đã hoàn thành siêu nhiệm vụ: **{conf['name']}** (+{tdata['reward']:,} điểm{lb_msg})")
+                claimed_messages.append(f"<:symbol_trophy:1537550568665649232> Đã hoàn thành siêu nhiệm vụ: **{conf['name']}** (+{tdata['reward']:,} <:symbol_points_p:1538282388507987989>{lb_msg})")
                 db_changed = True
 
             status = "COMPLETED" if tdata["claimed"] else f"{tdata['progress']}/{tdata['target']}"

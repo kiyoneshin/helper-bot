@@ -78,7 +78,7 @@ class IdleFarmCog(commands.Cog):
                         seed_id_map[s_key] = i_id
                         
                 seed_list = "\n".join(
-                    f"• `{seed_id_map.get(k, '?')}/{k}` — {v['icon']} {v['name']} ({v['grow_time_seconds']//60} phút, giá {v['cost']:,} điểm)"
+                    f"• `{seed_id_map.get(k, '?')}/{k}` — {v['icon']} {v['name']} ({v['grow_time_seconds']//60} phút, giá {v['cost']:,} <:symbol_points_p:1538282388507987989>)"
                     for k, v in SEEDS.items()
                 )
                 return await ctx.send(

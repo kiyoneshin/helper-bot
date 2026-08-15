@@ -133,7 +133,7 @@ class ProfileCog(commands.Cog, name="Profile"):
         
         embed.add_field(
             name="<:symbol_money_bag:1537567538097954896> Tài Sản & Ngân Khố",
-            value=f"<:symbol_money:1537466097282842775> **Số dư (Khả dụng):** {points:,.0f}\n<:symbol_trophy:1537550568665649232> **Tổng Điểm (Milestones):** {total_earned:,.0f}",
+            value=f"<:symbol_money:1537466097282842775> **Số dư:** {points:,.0f} <:symbol_points_p:1538282388507987989>\n<:symbol_trophy:1537550568665649232> **Điểm Tích Lũy:** {total_earned:,.0f} <:symbol_point_e:1538282386351984660>",
             inline=True
         )
         
