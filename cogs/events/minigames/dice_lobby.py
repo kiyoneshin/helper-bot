@@ -167,7 +167,7 @@ async def start_dice_lobby_game(bot, channel: discord.abc.Messageable, core_cog)
     result_lines = []
     for r in results:
         p = r["user"]
-        line = f"{p.mention} ── <:gambling_dice:1537539887769591828> [{r['d1']}] + [{r['d2']}] = **{r['total']} <:symbol_points_p:1538282388507987989>**"
+        line = f"{p.mention} ── <:gambling_dice:1537539887769591828> [{r['d1']}] + [{r['d2']}] = **{r['total']} điểm**"
         
         points_to_add = 0
         # Check thưởng nhân phẩm vô cực
@@ -189,7 +189,7 @@ async def start_dice_lobby_game(bot, channel: discord.abc.Messageable, core_cog)
     embed.set_field_at(0, name=f"👥 Danh sách tham gia ({len(view.players)}/10)", value="\n".join(result_lines), inline=False)
     embed.add_field(
         name="CHÚA TỂ NHÂN PHẨM", 
-        value=f"Vinh danh {winner['user'].mention} đã thắng áp đảo với **{max_total} <:symbol_points_p:1538282388507987989>** và ẵm trọn giải thưởng!", 
+        value=f"Vinh danh {winner['user'].mention} đã thắng áp đảo với **{max_total} điểm** và ẵm trọn giải thưởng!", 
         inline=False
     )
     

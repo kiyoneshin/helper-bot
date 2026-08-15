@@ -205,7 +205,7 @@ def _build_leaderboard_embed(
             name=f"{medal} #{rank_num} — {name}",
             value=(
                 f"• **Chức vụ:** `{role}` • <@{discord_id}>\n"
-                f"• <a:symbol_star_yellow:1537739289834553385> **<:symbol_points_p:1538282388507987989> TB:** `{rating:.1f}/5.0` • **Tin nhắn:** `{msg_count}` • **Reply:** `{replies}`"
+                f"• <a:symbol_star_yellow:1537739289834553385> **Điểm TB:** `{rating:.1f}/5.0` • **Tin nhắn:** `{msg_count}` • **Reply:** `{replies}`"
             ),
             inline=False,
         )
