@@ -106,13 +106,10 @@ def _build_regular_embed(
 
 def _build_farm_embed(
     author: discord.Member | discord.User,
-    farm_data: dict[str, Any],
-    tab_type: str = "eco"
+    farm_data: dict,
+    tab_type: str = "eco",
+    crop_page: int = 0
 ) -> discord.Embed:
-    """
-    Xây dựng Embed cho túi đồ nông trại.
-    Định dạng tương tự nhưng dùng key string từ farm_data.inventory.
-    """
     from cogs.events.mining.mining_config import MINING_LOOT
     from cogs.events.fishing.fishing_config import FISH_LOOT
     from cogs.events.idle_farm.config import SEEDS, QUALITY_EMOJIS, QUALITY_MULTIPLIERS
@@ -130,10 +127,7 @@ def _build_farm_embed(
             color=0xe67e22,
         )
         
-    embed.set_author(
-        name=f"Túi Đồ của {author.display_name}",
-        icon_url=author.display_avatar.url,
-    )
+    embed.set_author(name=f"Túi Đồ của {author.display_name}", icon_url=author.display_avatar.url)
     embed.set_thumbnail(url=author.display_avatar.url)
 
     inventory = farm_data.get("inventory", {})
@@ -142,101 +136,119 @@ def _build_farm_embed(
         embed.set_footer(text="💡 Dùng các nút bên dưới để bán vật phẩm.")
         return embed
 
-    seed_lines, crop_lines, ore_lines, wood_lines, fish_lines, artisan_lines = [], [], [], [], [], []
     total_crops_worth = total_ores_worth = total_wood_worth = total_fish_worth = total_artisan_worth = 0
 
-    for item_id, count in inventory.items():
-        if count <= 0:
-            continue
-
-        if item_id.startswith("seed_"):
-            seed_id = item_id[5:]
-            seed_info = SEEDS.get(seed_id)
-            if seed_info:
-                seed_lines.append(
-                    f"• {seed_info['icon']} **Hạt {seed_info['name']}** (x{count})"
-                    f" — {seed_info['description']}"
-                )
-        elif item_id in MINING_LOOT:
-            ore = MINING_LOOT[item_id]
-            price = ore.get("price", 0)
-            total_ores_worth += price * count
-            ore_lines.append(
-                f"• `[{item_id}]` {ore['icon']} **{ore['name']}** (x{count})"
-                f" — {price:,} <:symbol_points_p:1538282388507987989>/cái"
-            )
-        elif item_id in FISH_LOOT:
-            fish = FISH_LOOT[item_id]
-            price = fish.get("price", 0)
-            total_fish_worth += price * count
-            rare = "<a:symbol_star_yellow:1537739289834553385>" if fish.get("rare_rank", 0) >= 3 else ""
-            fish_lines.append(
-                f"• `[{item_id}]` {fish['icon']} {rare}**{fish['name']}** (x{count})"
-                f" — {price:,} <:symbol_points_p:1538282388507987989>/cái"
-            )
-        else:
+    if tab_type == "crop":
+        PAGE_0_SEEDS = ["wheat", "potato", "tomato"]
+        PAGE_1_SEEDS = ["strawberry", "pumpkin", "sunflower", "star"]
+        
+        crop_lines = []
+        artisan_lines = []
+        
+        for item_id, count in inventory.items():
+            if count <= 0: continue
             parts = item_id.split("_")
             quality = parts[-1] if len(parts) > 1 else "normal"
             seed_id = "_".join(parts[:-1]) if len(parts) > 1 else item_id
-
-            # Artisan Goods (Beer, Wine, Jam, Metal Bars)
+            
             if item_id in ARTISAN_GOODS:
-                artisan = ARTISAN_GOODS[item_id]
-                price = artisan.get("price", 0)
+                price = ARTISAN_GOODS[item_id].get("price", 0)
                 total_artisan_worth += price * count
-                artisan_lines.append(
-                    f"• `[{item_id}]` {artisan['icon']} **{artisan['name']}** (x{count})"
-                    f" — {price:,} <:symbol_points_p:1538282388507987989>/cái"
-                )
-            # Wood items
+            elif seed_id in SEEDS:
+                seed_info = SEEDS.get(seed_id)
+                multiplier = QUALITY_MULTIPLIERS.get(quality, 1.0)
+                min_worth = int(seed_info.get("reward_min", 0) * multiplier)
+                total_crops_worth += min_worth * count
+                
+        if crop_page == 0 or crop_page == 1:
+            seeds_to_show = PAGE_0_SEEDS if crop_page == 0 else PAGE_1_SEEDS
+            for seed_id in seeds_to_show:
+                seed_info = SEEDS.get(seed_id)
+                if not seed_info: continue
+                
+                seed_item_id = f"seed_{seed_id}"
+                seed_count = inventory.get(seed_item_id, 0)
+                if seed_count > 0:
+                    crop_lines.append(f"• {seed_info['icon']} **Hạt {seed_info['name']}** (x{seed_count}) — {seed_info['description']}")
+                
+                q_counts = {}
+                has_crop = False
+                for q in ["normal", "silver", "gold", "iridium"]:
+                    c = inventory.get(f"{seed_id}_{q}", 0)
+                    q_counts[q] = c
+                    if c > 0: has_crop = True
+                    
+                if has_crop:
+                    line_parts = []
+                    for q in ["normal", "silver", "gold", "iridium"]:
+                        if q_counts.get(q, 0) > 0:
+                            emoji = QUALITY_EMOJIS.get(q, "")
+                            mult = QUALITY_MULTIPLIERS.get(q, 1.0)
+                            min_w = int(seed_info.get("reward_min", 0) * mult)
+                            max_w = int(seed_info.get("reward_max", 0) * mult)
+                            price_str = f"{min_w}" if min_w == max_w else f"{min_w}-{max_w}"
+                            name_str = "thường" if q == "normal" else emoji
+                            line_parts.append(f"{q_counts[q]} {name_str} ({price_str}P)")
+                            
+                    crop_lines.append(f"• {seed_info['icon']} **{seed_info['name']}:** " + " | ".join(line_parts))
+            
+            if crop_lines:
+                embed.description = f"**Trang {crop_page + 1}/3**\\n" + "\\n".join(crop_lines)
+            else:
+                embed.description = f"**Trang {crop_page + 1}/3**\\n*Trống.*"
+                
+        elif crop_page == 2:
+            for item_id in ARTISAN_GOODS:
+                count = inventory.get(item_id, 0)
+                if count > 0:
+                    artisan = ARTISAN_GOODS[item_id]
+                    price = artisan.get("price", 0)
+                    artisan_lines.append(f"• `[{item_id}]` {artisan['icon']} **{artisan['name']}** (x{count}) — {price:,} <:symbol_points_p:1538282388507987989>/cái")
+                    
+            if artisan_lines:
+                embed.description = "**Trang 3/3 — Thủ Công Phẩm**\\n" + "\\n".join(artisan_lines)
+            else:
+                embed.description = "**Trang 3/3 — Thủ Công Phẩm**\\n*Trống.*"
+                
+    else:
+        ore_items, wood_items, fish_items = [], [], []
+        for item_id, count in inventory.items():
+            if count <= 0: continue
+            
+            if item_id in MINING_LOOT:
+                ore = MINING_LOOT[item_id]
+                price = ore.get("price", 0)
+                total_ores_worth += price * count
+                ore_items.append((item_id, count, price, ore))
             elif item_id in WOODCUTTING_LOOT:
                 wood = WOODCUTTING_LOOT[item_id]
                 price = wood.get("price", 0)
                 total_wood_worth += price * count
-                wood_lines.append(
-                    f"• `[{item_id}]` {wood['icon']} **{wood['name']}** (x{count})"
-                    f" — {price:,} <:symbol_points_p:1538282388507987989>/cái"
-                )
-            elif seed_id in SEEDS:
-                seed_info = SEEDS.get(seed_id)
-                if seed_info:
-                    emoji = QUALITY_EMOJIS.get(quality, "")
-                    multiplier = QUALITY_MULTIPLIERS.get(quality, 1.0)
-                    reward_min = seed_info.get("reward_min", 0)
-                    reward_max = seed_info.get("reward_max", reward_min)
-                    
-                    min_worth = int(reward_min * multiplier)
-                    max_worth = int(reward_max * multiplier)
-                    
-                    total_crops_worth += min_worth * count  # Tính theo giá trị tối thiểu
-                    
-                    if min_worth != max_worth:
-                        price_str = f"{min_worth:,} - {max_worth:,}"
-                    else:
-                        price_str = f"{min_worth:,}"
-                        
-                    crop_lines.append(
-                        f"• `[{item_id}]` {seed_info['icon']} **{seed_info['name']}**"
-                        f" {emoji} (x{count}) — {price_str} <:symbol_points_p:1538282388507987989>/cái"
-                    )
+                wood_items.append((item_id, count, price, wood))
+            elif item_id in FISH_LOOT:
+                fish = FISH_LOOT[item_id]
+                price = fish.get("price", 0)
+                total_fish_worth += price * count
+                fish_items.append((item_id, count, fish.get("rare_rank", 0), price, fish))
+                
+        ore_items.sort(key=lambda x: x[2])
+        wood_items.sort(key=lambda x: x[2])
+        fish_items.sort(key=lambda x: (x[2], x[3]))
+        
+        desc_parts = []
+        if ore_items:
+            lines = [f"• `[{i[0]}]` {i[3]['icon']} **{i[3]['name']}** (x{i[1]}) — {i[2]:,} <:symbol_points_p:1538282388507987989>/cái" for i in ore_items]
+            desc_parts.append("**<:symbol_00_mining:1536007694920585356> Khoáng sản:**\\n" + "\\n".join(lines))
+        if wood_items:
+            lines = [f"• `[{i[0]}]` {i[3]['icon']} **{i[3]['name']}** (x{i[1]}) — {i[2]:,} <:symbol_points_p:1538282388507987989>/cái" for i in wood_items]
+            desc_parts.append("**<:symbol_00_woodcutting:1536007697491558491> Gỗ:**\\n" + "\\n".join(lines))
+        if fish_items:
+            lines = [f"• `[{i[0]}]` {i[4]['icon']} **{i[4]['name']}** (x{i[1]}) — {i[3]:,} <:symbol_points_p:1538282388507987989>/cái" for i in fish_items]
+            desc_parts.append("**<:symbol_fish:1536007699190386740> Cá:**\\n" + "\\n".join(lines))
+            
+        embed.description = "\\n\\n".join(desc_parts) if desc_parts else "*Kho trống.*"
 
-    desc_parts: list[str] = []
-    if tab_type == "crop":
-        if crop_lines:
-            desc_parts.append("**<:symbol_plant:1536007706958237828> Nông sản:**\n" + "\n".join(crop_lines))
-        if artisan_lines:
-            desc_parts.append("**<:symbol_machine:1536297937498275850> Thủ Công Phẩm:**\n" + "\n".join(artisan_lines))
-    else:
-        if ore_lines:
-            desc_parts.append("**<:symbol_00_mining:1536007694920585356> Khoáng sản:**\n" + "\n".join(ore_lines))
-        if wood_lines:
-            desc_parts.append("**<:symbol_00_woodcutting:1536007697491558491> Gỗ:**\n" + "\n".join(wood_lines))
-        if fish_lines:
-            desc_parts.append("**<:symbol_fish:1536007699190386740> Cá:**\n" + "\n".join(fish_lines))
-
-    embed.description = "\n\n".join(desc_parts) if desc_parts else "*Kho trống.*"
-
-    footer_parts: list[str] = []
+    footer_parts = []
     if tab_type == "crop":
         if total_crops_worth > 0:
             footer_parts.append(f"<:symbol_plant:1536007706958237828> {total_crops_worth:,} <:symbol_points_p:1538282388507987989>")
@@ -251,14 +263,11 @@ def _build_farm_embed(
             footer_parts.append(f"<:symbol_fish:1536007699190386740> {total_fish_worth:,} <:symbol_points_p:1538282388507987989>")
             
     if footer_parts:
-        embed.add_field(
-            name="<:symbol_money_2:1537567535229050970> Tổng Giá Trị Ước Tính",
-            value=" | ".join(footer_parts),
-            inline=False,
-        )
+        embed.add_field(name="<:symbol_money_2:1537567535229050970> Tổng Giá Trị Ước Tính", value=" | ".join(footer_parts), inline=False)
 
     embed.set_footer(text="💡 Dùng các nút bên dưới để bán vật phẩm.")
     return embed
+
 
 
 # ============================================================
@@ -355,7 +364,7 @@ class SellAllModal(discord.ui.Modal):
             return
 
         farm_data = await get_farm_data(self.bot, self.user_id)
-        new_embed = _build_farm_embed(self.author, farm_data, tab_type=self._view._current_tab)
+        new_embed = _build_farm_embed(self.author, farm_data, tab_type=self._view._current_tab, crop_page=getattr(self._view, "_crop_page", 0))
         await interaction.response.edit_message(embed=new_embed, view=self._view)
         await interaction.followup.send(
             f"<:symbol_right:1536629912515903578> Đã bán toàn bộ **{self.label}**! Thu về **{profit:,.0f}** <:symbol_points_p:1538282388507987989>.",
@@ -456,8 +465,12 @@ class InventorySelect(discord.ui.Select):
 
         # Rebuild view buttons + embed theo tab được chọn
         if selected in ("eco", "crop"):
+            if selected == "crop":
+                view._crop_page = 0
+                view.btn_prev.disabled = True
+                view.btn_next.disabled = False
             farm_data = await get_farm_data(view.bot, user_id)
-            embed = _build_farm_embed(interaction.user, farm_data, tab_type=selected)
+            embed = _build_farm_embed(interaction.user, farm_data, tab_type=selected, crop_page=getattr(view, "_crop_page", 0))
             view._show_buttons_for_tab(selected)
         else:
             row = await fetchrow_db(
@@ -515,6 +528,8 @@ class InventoryView(discord.ui.View):
             label="Bán Tất Cả Cá", emoji="<:symbol_fish:1536007699190386740>",
             style=discord.ButtonStyle.secondary, row=2,
         )
+        self.btn_prev = discord.ui.Button(label="◀️", style=discord.ButtonStyle.secondary, row=1, disabled=True)
+        self.btn_next = discord.ui.Button(label="▶️", style=discord.ButtonStyle.secondary, row=1)
 
         # Gắn callback
         self.btn_sell_item.callback = self._on_sell_item
@@ -533,6 +548,10 @@ class InventoryView(discord.ui.View):
         async def cb_sell_fish(interaction: discord.Interaction):
             await self._on_sell_all(interaction, "fish", "Cá")
         self.btn_sell_fish.callback = cb_sell_fish
+        
+        self.btn_prev.callback = self._on_prev
+        self.btn_next.callback = self._on_next
+        self._crop_page = 0
 
         # Mặc định tab không phải farm nên ẩn nút
         if default_tab in ("eco", "crop"):
@@ -542,13 +561,34 @@ class InventoryView(discord.ui.View):
         self.clear_items()
         self.add_item(self.select_menu)
         if tab == "crop":
+            self.add_item(self.btn_prev)
             self.add_item(self.btn_sell_item)
+            self.add_item(self.btn_next)
             self.add_item(self.btn_sell_crops)
         elif tab == "eco":
             self.add_item(self.btn_sell_item)
             self.add_item(self.btn_sell_ores)
             self.add_item(self.btn_sell_wood)
             self.add_item(self.btn_sell_fish)
+
+
+    async def _on_prev(self, interaction: discord.Interaction) -> None:
+        self._crop_page = max(0, getattr(self, "_crop_page", 0) - 1)
+        await self._update_crop_view(interaction)
+        
+    async def _on_next(self, interaction: discord.Interaction) -> None:
+        self._crop_page = min(2, getattr(self, "_crop_page", 0) + 1)
+        await self._update_crop_view(interaction)
+        
+    async def _update_crop_view(self, interaction: discord.Interaction) -> None:
+        from cogs.common.db import get_farm_data
+        farm_data = await get_farm_data(self.bot, self.user_id)
+        embed = _build_farm_embed(self.author, farm_data, tab_type="crop", crop_page=self._crop_page)
+        
+        self.btn_prev.disabled = (self._crop_page == 0)
+        self.btn_next.disabled = (self._crop_page == 2)
+        
+        await interaction.response.edit_message(embed=embed, view=self)
 
     def _hide_farm_buttons(self) -> None:
         self.clear_items()
