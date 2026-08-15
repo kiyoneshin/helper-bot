@@ -304,6 +304,12 @@ class LootboxInfoView(discord.ui.View):
     def __init__(self, author_id: int):
         super().__init__(timeout=120.0)
         self.add_item(LootboxInfoSelect(author_id))
+        self.message: discord.Message | None = None
 
     async def on_timeout(self):
         self.clear_items()
+        if hasattr(self, "message") and self.message:
+            try:
+                await self.message.edit(view=self)
+            except Exception:
+                pass

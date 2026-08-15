@@ -54,6 +54,14 @@ class DiceLobbyView(discord.ui.View):
     async def on_timeout(self):
         self.game_started = True
         self.ready_event.set()
+        for item in self.children:
+            if hasattr(item, "disabled"):
+                item.disabled = True
+        if hasattr(self, "message") and self.message:
+            try:
+                await self.message.edit(view=self)
+            except Exception:
+                pass
 
 
 async def start_dice_lobby_game(bot, channel: discord.abc.Messageable, core_cog):

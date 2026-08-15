@@ -122,6 +122,14 @@ class FishCatchView(discord.ui.View):
 
     async def on_timeout(self) -> None:
         self.caught = False
+        for item in self.children:
+            if hasattr(item, "disabled"):
+                item.disabled = True
+        if hasattr(self, "message") and self.message:
+            try:
+                await self.message.edit(view=self)
+            except Exception:
+                pass
 
 
 # ---------------------------------------------------------------------------
@@ -139,6 +147,17 @@ class FishingView(discord.ui.View):
         self.regen_interval = regen_interval
         self.farm_data = farm_data
         self.cast_btn.disabled = (stamina < STAMINA_PER_FISH)
+        self.message: discord.Message | None = None
+
+    async def on_timeout(self) -> None:
+        for child in self.children:
+            if hasattr(child, "disabled"):
+                child.disabled = True
+        if hasattr(self, "message") and self.message:
+            try:
+                await self.message.edit(view=self)
+            except Exception:
+                pass
 
     @discord.ui.button(label="Quăng Cần", emoji="<:button_fishing:1536007667649347624>", style=discord.ButtonStyle.primary)
     async def cast_btn(self, interaction: discord.Interaction, button: discord.ui.Button):

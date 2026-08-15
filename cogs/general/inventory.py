@@ -316,7 +316,7 @@ class SellItemModal(discord.ui.Modal):
 
         # Cập nhật lại embed
         farm_data = await get_farm_data(self.bot, self.user_id)
-        new_embed = _build_farm_embed(interaction.user, farm_data)
+        new_embed = _build_farm_embed(interaction.user, farm_data, tab_type=self._view._current_tab)
         await interaction.response.edit_message(embed=new_embed, view=self._view)
         await interaction.followup.send(f"<:symbol_right:1536629912515903578> {msg}", ephemeral=True)
 
@@ -355,7 +355,7 @@ class SellAllModal(discord.ui.Modal):
             return
 
         farm_data = await get_farm_data(self.bot, self.user_id)
-        new_embed = _build_farm_embed(self.author, farm_data)
+        new_embed = _build_farm_embed(self.author, farm_data, tab_type=self._view._current_tab)
         await interaction.response.edit_message(embed=new_embed, view=self._view)
         await interaction.followup.send(
             f"<:symbol_right:1536629912515903578> Đã bán toàn bộ **{self.label}**! Thu về **{profit:,.0f}** điểm.",
@@ -449,6 +449,7 @@ class InventorySelect(discord.ui.Select):
         selected = self.values[0]
         view: InventoryView = self.view  # type: ignore
         user_id = str(interaction.user.id)
+        view._current_tab = selected
 
         for opt in self.options:
             opt.default = (opt.value == selected)

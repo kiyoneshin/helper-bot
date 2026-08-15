@@ -208,6 +208,11 @@ class SkillOverviewView(discord.ui.View):
         for child in self.children:
             if hasattr(child, "disabled"):
                 child.disabled = True
+        if hasattr(self, "message") and self.message:
+            try:
+                await self.message.edit(view=self)
+            except Exception:
+                pass
 
 
 # ---------------------------------------------------------------------------
@@ -244,6 +249,17 @@ class ProfessionChoiceView(discord.ui.View):
         cancel_btn = discord.ui.Button(label="Hủy", style=discord.ButtonStyle.secondary, row=1)
         cancel_btn.callback = self._cancel
         self.add_item(cancel_btn)
+        self.message: discord.Message | None = None
+
+    async def on_timeout(self) -> None:
+        for child in self.children:
+            if hasattr(child, "disabled"):
+                child.disabled = True
+        if hasattr(self, "message") and self.message:
+            try:
+                await self.message.edit(view=self)
+            except Exception:
+                pass
 
     def _make_callback(self, prof: dict):
         async def _cb(interaction: discord.Interaction):
@@ -345,11 +361,17 @@ class SkillDetailView(discord.ui.View):
 
         # Dropdown quay lại
         self.add_item(SkillSelect(author, skills_data))
+        self.message: discord.Message | None = None
 
     async def on_timeout(self) -> None:
         for child in self.children:
             if hasattr(child, "disabled"):
                 child.disabled = True
+        if hasattr(self, "message") and self.message:
+            try:
+                await self.message.edit(view=self)
+            except Exception:
+                pass
 
 
 # ---------------------------------------------------------------------------
@@ -361,6 +383,17 @@ class ResetConfirmView(discord.ui.View):
         super().__init__(timeout=30.0)
         self.author = author
         self.skill_id = skill_id
+        self.message: discord.Message | None = None
+
+    async def on_timeout(self) -> None:
+        for child in self.children:
+            if hasattr(child, "disabled"):
+                child.disabled = True
+        if hasattr(self, "message") and self.message:
+            try:
+                await self.message.edit(view=self)
+            except Exception:
+                pass
 
     @discord.ui.button(label="Xác Nhận Reset", style=discord.ButtonStyle.danger, emoji="⚠️")
     async def confirm_btn(self, interaction: discord.Interaction, button: discord.ui.Button):

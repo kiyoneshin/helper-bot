@@ -213,6 +213,11 @@ class CrashLobbyView(discord.ui.View):
         for item in self.children:
             if isinstance(item, discord.ui.Button):
                 item.disabled = True
+        if hasattr(self, "lobby_message_ref") and self.lobby_message_ref and self.lobby_message_ref[0]:
+            try:
+                await self.lobby_message_ref[0].edit(view=self)
+            except Exception:
+                pass
         self.stop()
 
 

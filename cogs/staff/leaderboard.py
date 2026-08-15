@@ -358,6 +358,7 @@ class DateSelectionView(discord.ui.View):
         # 4 biến trạng thái HOÀN TOÀN ĐỘC LẬP
         self.start_month: Optional[str] = None   # "MM-YYYY"
         self.end_month: Optional[str] = None     # "MM-YYYY"
+        self.message: discord.Message | None = None
         self.start_day: Optional[int] = None
         self.end_day: Optional[int] = None
 
@@ -604,6 +605,14 @@ class DateSelectionView(discord.ui.View):
             pass
 
     async def on_timeout(self):
+        for child in self.children:
+            if hasattr(child, "disabled"):
+                child.disabled = True
+        if hasattr(self, "message") and self.message:
+            try:
+                await self.message.edit(view=self)
+            except Exception:
+                pass
         self.stop()
 
 
