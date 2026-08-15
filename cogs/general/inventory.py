@@ -44,12 +44,12 @@ def _build_regular_embed(
     Định dạng: [ID] Icon Tên vật phẩm (xQTY) — Mô tả
     """
     CATEGORY_META = {
-        "event":       ("<:icon_08_shop:1536025530728587384> Vật phẩm Sự kiện",       0x9b59b6, f"<:symbol_light_bulb:1537739278765924422> Sử dụng: `{{prefix}}use <id>`"),
-        "blackmarket": ("<:icon_05_bm:1536017187243032736> Vật phẩm Chợ đen",        0x2b2d31, f"<:symbol_light_bulb:1537739278765924422> Sử dụng: `{{prefix}}use <id>`"),
-        "ring":        ("<:icon_02_ring:1536017180951318528> Nhẫn Cưới & Trang sức",  0xff69b4, f"<:symbol_light_bulb:1537739278765924422> Dùng `{prefix}marry` hoặc `{prefix}upgrade_ring`"),
-        "gift":        ("<:gift_00_symbol:1536003307011842099> Quà Tặng",                0xf1c40f, f"<:symbol_light_bulb:1537739278765924422> Dùng `{prefix}gift` để tặng"),
-        "lootbox":     ("<:lootbox:1535664857276489749> Hộp Quà Lootbox",         0x3498db, f"<:symbol_light_bulb:1537739278765924422> Dùng `{prefix}lb open <tier>` để mở"),
-        "farm":        ("<:icon_04_seed:1536017185057546242> Hạt giống",               0x2ecc71, f"<:symbol_light_bulb:1537739278765924422> Mua thêm hạt giống tại `{prefix}shop`"),
+        "event":       ("<:icon_08_shop:1536025530728587384> Vật phẩm Sự kiện",       0x9b59b6, f"💡 Sử dụng: `{{prefix}}use <id>`"),
+        "blackmarket": ("<:icon_05_bm:1536017187243032736> Vật phẩm Chợ đen",        0x2b2d31, f"💡 Sử dụng: `{{prefix}}use <id>`"),
+        "ring":        ("<:icon_02_ring:1536017180951318528> Nhẫn Cưới & Trang sức",  0xff69b4, f"💡 Dùng `{prefix}marry` hoặc `{prefix}upgrade_ring`"),
+        "gift":        ("<:gift_00_symbol:1536003307011842099> Quà Tặng",                0xf1c40f, f"💡 Dùng `{prefix}gift` để tặng"),
+        "lootbox":     ("<:lootbox:1535664857276489749> Hộp Quà Lootbox",         0x3498db, f"💡 Dùng `{prefix}lb open <tier>` để mở"),
+        "farm":        ("<:icon_04_seed:1536017185057546242> Hạt giống",               0x2ecc71, f"💡 Mua thêm hạt giống tại `{prefix}shop`"),
     }
     title, color, footer = CATEGORY_META.get(category, ("<:icon_07_inventory:1535664855300710422> Túi đồ", 0x7289da, ""))
 
@@ -517,10 +517,21 @@ class InventoryView(discord.ui.View):
 
         # Gắn callback
         self.btn_sell_item.callback = self._on_sell_item
-        self.btn_sell_crops.callback = lambda interaction: self._on_sell_all(interaction, "crops", "Nông sản")
-        self.btn_sell_ores.callback = lambda interaction: self._on_sell_all(interaction, "ores", "Khoáng sản")
-        self.btn_sell_wood.callback = lambda interaction: self._on_sell_all(interaction, "wood", "Gỗ")
-        self.btn_sell_fish.callback = lambda interaction: self._on_sell_all(interaction, "fish", "Cá")
+        async def cb_sell_crops(interaction: discord.Interaction):
+            await self._on_sell_all(interaction, "crops", "Nông sản")
+        self.btn_sell_crops.callback = cb_sell_crops
+        
+        async def cb_sell_ores(interaction: discord.Interaction):
+            await self._on_sell_all(interaction, "ores", "Khoáng sản")
+        self.btn_sell_ores.callback = cb_sell_ores
+        
+        async def cb_sell_wood(interaction: discord.Interaction):
+            await self._on_sell_all(interaction, "wood", "Gỗ")
+        self.btn_sell_wood.callback = cb_sell_wood
+        
+        async def cb_sell_fish(interaction: discord.Interaction):
+            await self._on_sell_all(interaction, "fish", "Cá")
+        self.btn_sell_fish.callback = cb_sell_fish
 
         # Mặc định tab không phải farm nên ẩn nút
         if default_tab in ("eco", "crop"):

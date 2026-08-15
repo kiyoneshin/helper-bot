@@ -111,7 +111,7 @@ class BankingCog(commands.Cog):
                 description=f"<:symbol_right:1536629912515903578> Giao dịch vay nợ thành công!\n\n<:symbol_money_2:1537567535229050970> **Số tiền vay:** `{amount:,.0f}` điểm\n<:symbol_money_2:1537567535229050970> **Số dư mới:** `{new_pts:,.0f}` điểm\n📉 **Tổng nợ hiện tại:** `{new_debt:,.0f}` điểm",
                 color=0x00FF00
             )
-            embed.set_footer(text="Lãi suất vay là 1%/ngày. Hãy nhớ ktrano nhé!")
+            embed.set_footer(text="Lãi suất vay là 1%/ngày. Hãy nhớ trả nợ nhé!")
             await ctx.send(embed=embed)
         else:
             await ctx.send("<:symbol_wrong:1536629915598848072> Đã có lỗi xảy ra khi vay nợ.")
