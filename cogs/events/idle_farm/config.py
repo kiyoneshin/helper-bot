@@ -46,7 +46,7 @@ SEEDS: Dict[str, SeedConfig] = {
         "grow_time_seconds": 30 * 60,  # 30 phút
         "cost": 100,
         "reward_min": 102,
-        "reward_max": 105,
+        "reward_max": 102,
         "description": "Cây trồng cơ bản, thu hoạch nhanh."
     },
     "potato": {
@@ -55,7 +55,7 @@ SEEDS: Dict[str, SeedConfig] = {
         "grow_time_seconds": 1 * 60 * 60,  # 1 tiếng
         "cost": 200,
         "reward_min": 205,
-        "reward_max": 208,
+        "reward_max": 205,
         "description": "20% cơ hội nhân đôi thu hoạch.",
         "double_chance": 0.20,  # 20% ra x2 sản lượng
     },
@@ -65,7 +65,7 @@ SEEDS: Dict[str, SeedConfig] = {
         "grow_time_seconds": 3 * 60 * 60,  # 3 tiếng
         "cost": 400,
         "reward_min": 412,
-        "reward_max": 418,
+        "reward_max": 412,
         "description": "Nguyên liệu chế biến Mứt Cà Chua."
     },
     "strawberry": {
@@ -74,7 +74,7 @@ SEEDS: Dict[str, SeedConfig] = {
         "grow_time_seconds": 6 * 60 * 60,  # 6 tiếng
         "cost": 800,
         "reward_min": 820,
-        "reward_max": 835,
+        "reward_max": 820,
         "description": "Nguyên liệu chế biến Rượu Dâu cao cấp."
     },
     "pumpkin": {
@@ -83,7 +83,7 @@ SEEDS: Dict[str, SeedConfig] = {
         "grow_time_seconds": 8 * 60 * 60,  # 8 tiếng
         "cost": 1200,
         "reward_min": 1235,
-        "reward_max": 1250,
+        "reward_max": 1235,
         "description": "Nguyên liệu chế biến Mứt Bí Ngô thơm ngon."
     },
     "sunflower": {
@@ -92,7 +92,7 @@ SEEDS: Dict[str, SeedConfig] = {
         "grow_time_seconds": 12 * 60 * 60,  # 12 tiếng
         "cost": 500,
         "reward_min": 550,
-        "reward_max": 570,
+        "reward_max": 550,
         "description": "Mang lại lợi nhuận cao nhưng mất nhiều thời gian."
     },
     "star": {
@@ -100,8 +100,8 @@ SEEDS: Dict[str, SeedConfig] = {
         "icon": "<:farm_06_star:1535940037487894559>",
         "grow_time_seconds": 24 * 60 * 60,  # 24 tiếng
         "cost": 2000,
-        "reward_min": 2070,
-        "reward_max": 2090,
+        "reward_min": 500,
+        "reward_max": 3000,
         "description": "Vật phẩm hiếm, nguyên liệu chế Linh Tửu."
     }
 }
