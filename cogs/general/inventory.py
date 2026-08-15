@@ -187,8 +187,15 @@ def _build_farm_embed(
                 
                 # Retrieve all qualities for this crop
                 for q in ["normal", "silver", "gold", "iridium"]:
-                    item_id = f"{seed_id}_{q}" if q != "normal" else seed_id
+                    item_id = f"{seed_id}_{q}"
                     count = inventory.get(item_id, 0)
+                    
+                    # Fallback for legacy items without _normal suffix
+                    if q == "normal" and count == 0:
+                        count = inventory.get(seed_id, 0)
+                        if count > 0:
+                            item_id = seed_id
+                            
                     if count > 0:
                         emoji = QUALITY_EMOJIS.get(q, "")
                         multiplier = QUALITY_MULTIPLIERS.get(q, 1.0)
