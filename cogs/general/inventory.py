@@ -198,15 +198,15 @@ def _build_farm_embed(
                         crop_lines.append(f"• `[{item_id}]` {seed_info['icon']} **{seed_info['name']}** {emoji} (x{count}) — {price_str} <:symbol_points_p:1538282388507987989>/cái")
                         
             if crop_lines:
-                embed.description = f"**Trang {crop_page + 1}/{MAX_PAGES}**\\n" + "\\n".join(crop_lines)
+                embed.description = f"**Trang {crop_page + 1}/{MAX_PAGES}**\n" + "\n".join(crop_lines)
             else:
-                embed.description = f"**Trang {crop_page + 1}/{MAX_PAGES}**\\n*Không có nông sản nào ở trang này.*"
+                embed.description = f"**Trang {crop_page + 1}/{MAX_PAGES}**\n*Không có nông sản nào ở trang này.*"
                 
         else: # Artisan goods page
             if artisan_lines:
-                embed.description = f"**Trang {MAX_PAGES}/{MAX_PAGES} — Thủ Công Phẩm**\\n" + "\\n".join(artisan_lines)
+                embed.description = f"**Trang {MAX_PAGES}/{MAX_PAGES} — Thủ Công Phẩm**\n" + "\n".join(artisan_lines)
             else:
-                embed.description = f"**Trang {MAX_PAGES}/{MAX_PAGES} — Thủ Công Phẩm**\\n*Trống.*"
+                embed.description = f"**Trang {MAX_PAGES}/{MAX_PAGES} — Thủ Công Phẩm**\n*Trống.*"
                 
     else:
         ore_items, wood_items, fish_items = [], [], []
@@ -236,15 +236,15 @@ def _build_farm_embed(
         desc_parts = []
         if ore_items:
             lines = [f"• `[{i[0]}]` {i[3]['icon']} **{i[3]['name']}** (x{i[1]}) — {i[2]:,} <:symbol_points_p:1538282388507987989>/cái" for i in ore_items]
-            desc_parts.append("**<:symbol_00_mining:1536007694920585356> Khoáng sản:**\\n" + "\\n".join(lines))
+            desc_parts.append("**<:symbol_00_mining:1536007694920585356> Khoáng sản:**\n" + "\n".join(lines))
         if wood_items:
             lines = [f"• `[{i[0]}]` {i[3]['icon']} **{i[3]['name']}** (x{i[1]}) — {i[2]:,} <:symbol_points_p:1538282388507987989>/cái" for i in wood_items]
-            desc_parts.append("**<:symbol_00_woodcutting:1536007697491558491> Gỗ:**\\n" + "\\n".join(lines))
+            desc_parts.append("**<:symbol_00_woodcutting:1536007697491558491> Gỗ:**\n" + "\n".join(lines))
         if fish_items:
             lines = [f"• `[{i[0]}]` {i[4]['icon']} **{i[4]['name']}** (x{i[1]}) — {i[3]:,} <:symbol_points_p:1538282388507987989>/cái" for i in fish_items]
-            desc_parts.append("**<:symbol_fish:1536007699190386740> Cá:**\\n" + "\\n".join(lines))
+            desc_parts.append("**<:symbol_fish:1536007699190386740> Cá:**\n" + "\n".join(lines))
             
-        embed.description = "\\n\\n".join(desc_parts) if desc_parts else "*Kho trống.*"
+        embed.description = "\n\n".join(desc_parts) if desc_parts else "*Kho trống.*"
 
     footer_parts = []
     if tab_type == "crop":
@@ -578,7 +578,7 @@ class InventoryView(discord.ui.View):
         await self._update_crop_view(interaction)
         
     async def _update_crop_view(self, interaction: discord.Interaction) -> None:
-        from cogs.common.db import get_farm_data
+        from cogs.events.idle_farm.farm_db import get_farm_data
         farm_data = await get_farm_data(self.bot, self.user_id)
         embed = _build_farm_embed(self.author, farm_data, tab_type="crop", crop_page=self._crop_page)
         
