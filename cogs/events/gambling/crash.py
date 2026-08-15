@@ -92,7 +92,7 @@ def _generate_market_path(house_edge: float = 0.05) -> list[float]:
     return path
 
 
-class BetModal(discord.ui.Modal, title="<:symbol_money_bag:1537567538097954896> Đặt Cược - Quả Bóng Tham Lam"):
+class BetModal(discord.ui.Modal, title="💰 Đặt Cược - Quả Bóng Tham Lam"):
     bet_input: discord.ui.TextInput = discord.ui.TextInput(
         label="Số tiền cược (vd: 50k, 1.5m, 200000)",
         placeholder="Nhập số tiền...",

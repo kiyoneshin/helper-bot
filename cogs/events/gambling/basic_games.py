@@ -304,7 +304,7 @@ class BasicGames(commands.Cog):
         """Logic thực thi game cups."""
         end_time = int(time.time()) + 30
         embed = discord.Embed(
-            description=f"Cục màu trắng ở đâu? ◽ **1, 2** hay **3** ?\nNhanh tay lẹ mắt nhào vô trước <t:{end_time}:R>!\n\n<:gambling_cup:1536019568697409667>  <:gambling_cup:1536019568697409667>  <:gambling_cup:1536019568697409667>\n",
+            description=f"Cục màu trắng ở đâu? ◽ **1, 2** hay **3** ?\nNhanh tay lẹ mắt nhào vô trước <t:{end_time}:R>!\n\n<:gambling_cup:1537978437069836339>  <:gambling_cup:1537978437069836339>  <:gambling_cup:1537978437069836339>\n",
             color=0xffb6c1,
         )
         embed.set_author(name=f"{ctx.author.display_name} — cups", icon_url=ctx.author.display_avatar.url)
@@ -481,7 +481,7 @@ class CupsView(discord.ui.View):
         _unlock_user(self.bot, self.author.id)
 
         correct = random.randint(1, 3)
-        cups_display = ["<:gambling_cup:1536019568697409667>", "<:gambling_cup:1536019568697409667>", "<:gambling_cup:1536019568697409667>"]
+        cups_display = ["<:gambling_cup:1537978437069836339>", "<:gambling_cup:1537978437069836339>", "<:gambling_cup:1537978437069836339>"]
         cups_display[correct - 1] = "◽"
         cups_line = "  ".join(cups_display)
 
@@ -494,7 +494,7 @@ class CupsView(discord.ui.View):
             new_balance = self.balance + delta
             result_line = f"+{delta:,}  *(x2.3)*"
             color = COLOR_WIN
-            title = "<:gambling_cup:1536019568697409667> Cups — Lụm Lúa! <:symbol_confetti:1537570146313306183>"
+            title = "<:gambling_cup:1537978437069836339> Cups — Lụm Lúa! <:symbol_confetti:1537570146313306183>"
             outcome_emoji = "<:symbol_right:1536629912515903578>"
         else:
             delta = -self.bet
@@ -502,7 +502,7 @@ class CupsView(discord.ui.View):
             new_balance = self.balance + delta
             result_line = f"-{self.bet:,}  *(Mút trọn)*"
             color = COLOR_LOSE
-            title = "<:gambling_cup:1536019568697409667> Cups — Bị Lùa!"
+            title = "<:gambling_cup:1537978437069836339> Cups — Bị Lùa!"
             outcome_emoji = "<:symbol_wrong:1536629915598848072>"
 
         embed = discord.Embed(
@@ -517,15 +517,15 @@ class CupsView(discord.ui.View):
         embed.set_footer(text="Angelic Casino • Cups 🌸")
         await interaction.response.edit_message(embed=embed, view=self)
 
-    @discord.ui.button(label="1", emoji="<:gambling_cup:1536019568697409667>", style=discord.ButtonStyle.secondary)
+    @discord.ui.button(label="1", emoji="<:gambling_cup:1537978437069836339>", style=discord.ButtonStyle.secondary)
     async def cup_1(self, interaction: discord.Interaction, button: discord.ui.Button):
         await self._resolve(interaction, 1)
 
-    @discord.ui.button(label="2", emoji="<:gambling_cup:1536019568697409667>", style=discord.ButtonStyle.secondary)
+    @discord.ui.button(label="2", emoji="<:gambling_cup:1537978437069836339>", style=discord.ButtonStyle.secondary)
     async def cup_2(self, interaction: discord.Interaction, button: discord.ui.Button):
         await self._resolve(interaction, 2)
 
-    @discord.ui.button(label="3", emoji="<:gambling_cup:1536019568697409667>", style=discord.ButtonStyle.secondary)
+    @discord.ui.button(label="3", emoji="<:gambling_cup:1537978437069836339>", style=discord.ButtonStyle.secondary)
     async def cup_3(self, interaction: discord.Interaction, button: discord.ui.Button):
         await self._resolve(interaction, 3)
 
@@ -539,8 +539,8 @@ class CupsView(discord.ui.View):
         if self.message:
             try:
                 embed = discord.Embed(
-            title="<:gambling_cup:1536019568697409667> Cups — Nhát Gan Bỏ Chạk",
-            description=f"Ngâm quá 30 giây không dám bốc.\nTiền cược **{self.bet:,}** được **trả lại** nguyên vẹn.\n\n<:gambling_cup:1536019568697409667>  <:gambling_cup:1536019568697409667>  <:gambling_cup:1536019568697409667>",
+            title="<:gambling_cup:1537978437069836339> Cups — Nhát Gan Bỏ Chạk",
+            description=f"Ngâm quá 30 giây không dám bốc.\nTiền cược **{self.bet:,}** được **trả lại** nguyên vẹn.\n\n<:gambling_cup:1537978437069836339>  <:gambling_cup:1537978437069836339>  <:gambling_cup:1537978437069836339>",
             color=0x95a5a6,
         )
                 embed.set_author(name=f"{self.author.display_name} — cups", icon_url=self.author.display_avatar.url)

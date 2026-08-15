@@ -64,7 +64,7 @@ CMD_DATA: dict[str, dict] = {
     },
     "cups": {
         "name": "Cups",
-        "emoji": "<:gambling_cup:1536019568697409667>",
+        "emoji": "<:gambling_cup:1537978437069836339>",
         "short": "Đoán ly có bảo vật trong 3 ly. Chọn đúng nhận x2.3.",
         "aliases": [],
         "cooldown": "30s timeout",
