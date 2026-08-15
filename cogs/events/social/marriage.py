@@ -443,7 +443,7 @@ class MarriageCog(commands.Cog):
         self.anti_ghosting_loop.cancel()
 
     @commands.hybrid_command(name="marry", aliases=["kethon"])
-    async def marry_cmd(self, ctx: commands.Context, target: Optional[discord.Member] = None, ring_id: int = 31):
+    async def marry_cmd(self, ctx: commands.Context, target: Optional[discord.Member | discord.User] = None, ring_id: int = 31):
         """Cầu hôn ai đó hoặc xem Profile Tình Yêu (nếu không tag ai)."""
         uid = str(ctx.author.id)
         
@@ -607,7 +607,7 @@ class MarriageCog(commands.Cog):
 
 
     @commands.hybrid_command(name="divorce", aliases=["lydi", "lyhon", "lidi"])
-    async def divorce_cmd(self, ctx: commands.Context, target: discord.Member):
+    async def divorce_cmd(self, ctx: commands.Context, target: discord.Member | discord.User):
         """Ly hôn với người hiện tại (Sẽ xóa toàn bộ DTM)."""
         uid = str(ctx.author.id)
         mar = await get_marriage(self.bot, uid)
@@ -867,7 +867,7 @@ class MarriageCog(commands.Cog):
 
 
     @commands.hybrid_command(name="gift", aliases=["tangqua"])
-    async def gift_cmd(self, ctx: commands.Context, target: discord.Member, item_id: int):
+    async def gift_cmd(self, ctx: commands.Context, target: discord.Member | discord.User, item_id: int):
         """Tặng quà mua từ Cửa Hàng (Quà Tặng) cho vợ/chồng."""
         uid = str(ctx.author.id)
         mar = await get_marriage(self.bot, uid)

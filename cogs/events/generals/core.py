@@ -295,7 +295,7 @@ class EventCoreCog(commands.Cog):
                 await channel.send(embed=emb)
 
     @commands.hybrid_command(name="give", aliases=["givepoints", "addpoints"])
-    async def give_cmd(self, ctx: commands.Context, target: discord.Member, amount: str):
+    async def give_cmd(self, ctx: commands.Context, target: discord.Member | discord.User, amount: str):
         """[Chỉ dành cho Yon] Bơm điểm sự kiện cho một thành viên bất kỳ."""
         if not ctx.guild:
             await ctx.send("Lệnh này chỉ có thể sử dụng bên trong Server!", ephemeral=True)

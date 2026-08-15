@@ -5,22 +5,23 @@ __**HƯỚNG DẪN VÀ CÁC CÂU HỎI THƯỜNG ĐƯỢC HỎI VỀ SỰ KIỆN
 **Q1: Sự kiện này là gì?**
 **A:** Đây là một sự kiện tương tác toàn diện trên server Angelic. Mục tiêu của sự kiện là thu thập tài sản, đua Top và mở khóa các Cột Mốc (Milestones). Khi đạt mốc, bạn sẽ nhận được các Danh hiệu độc quyền, Thẻ bài Chợ Đen, và nhiều phần thưởng vinh danh khác.
 
-**Q2: Hệ thống tiền tệ hoạt động như thế nào? Phân biệt Số dư và Điểm Tích Lũy?**
-**A:** Sự kiện sử dụng hệ thống **Hai Tiền Tệ Tách Biệt** để đảm bảo tính công bằng:
-- **Số Dư (Points):** Là "tiền mặt" bạn dùng để mua sắm hàng ngày (Hạt giống, Thức ăn, Nhẫn cưới, Thẻ bài Chợ đen) và dùng để chơi Cờ bạc (Casino).
-- **Điểm Tích Lũy (Total Earned):** Là "điểm cày cuốc" thể hiện tổng công sức của bạn từ đầu mùa. Mọi hệ thống Cột mốc (Milestones) hay Đua Top đều tính dựa trên Điểm Tích Lũy này!
+**Q2: Hệ thống tiền tệ hoạt động như thế nào?**
+**A:** Sự kiện sử dụng hệ thống **Ba Tiền Tệ Tách Biệt** để đảm bảo sự đa dạng và công bằng:
+- <:symbol_points_p:1538282388507987989> **Số Dư (Points - P):** Là "tiền mặt" bạn dùng để mua sắm hàng ngày (Hạt giống, Thức ăn, Nhẫn cưới) và dùng để chơi Cờ bạc (Casino).
+- <:symbol_point_e:1538282386351984660> **Điểm Tích Lũy (Event Coins - E):** Tiền tệ cao cấp dùng để trao đổi vật phẩm sự kiện giới hạn. Có thể tiêu xài nhưng không làm ảnh hưởng đến mốc đua Top.
+- <:symbol_point_l:1538301121909755964> **Tổng Cày Cuốc (Total Earned - L):** Thể hiện tổng công sức của bạn từ đầu mùa (chỉ tăng, không bao giờ giảm). Mọi hệ thống Cột mốc (Milestones) hay Bảng vàng Đua Top đều lấy đây làm chuẩn!
 
-**Q3: Tôi có thể kiếm tiền bằng những cách nào?**
+**Q3: Tôi có thể kiếm các loại tiền tệ này bằng những cách nào?**
 **A:** Có 6 cách chính để bạn làm giàu, và được chia thành 2 hướng:
-*Hướng Cày Cuốc (Tăng CẢ Số Dư lẫn Điểm Tích Lũy):*
+*Hướng Cày Cuốc (Tăng đồng thời Số Dư (P), Điểm Tích Lũy (E), và Tổng Cày Cuốc (L)):*
 1. Tương tác: Chat cùng mọi người, treo room voice (từ 2 người trở lên, không tắt tiếng).
 2. Điểm danh: Điểm danh hàng ngày (`{prefix}daily`) và hàng tuần (`{prefix}weekly`).
 3. Làm việc & Nhiệm vụ: Gõ `{prefix}work` đi làm, hoàn thành `{prefix}task` mỗi ngày.
 4. Khu Sinh Thái (An Toàn): Chơi Nông trại, Đào mỏ, Câu cá, Chặt cây để thu thập nguyên liệu và bán (`{prefix}inv`).
-*Hướng Đỏ Đen (CHỈ tăng Số Dư - Không tăng Điểm Tích Lũy):*
+
+*Hướng Đỏ Đen (CHỈ tăng/giảm Số Dư (P) - Không tăng E và L):*
 5. Casino (Rủi ro cao): Đánh cờ bạc (`{prefix}baucua`, `{prefix}tx`, `{prefix}bj`, `{prefix}xoso`...).
 6. Vay Nợ (`{prefix}vayno`): Vay vốn từ ngân hàng nếu cạn kiệt tài chính.
-
 **Q4: Mục đích chính của sự kiện này là gì?**
 **A:** Trở thành người có Điểm Tích Lũy cao nhất Server (`{prefix}etop`) hoặc hoàn thành bộ sưu tập Cột Mốc. Người chơi đạt Top server sẽ nhận phần thưởng vinh danh cuối sự kiện. Bạn cũng có thể kết hôn và xây dựng một cuộc sống phồn vinh cùng người bạn đời.
 
@@ -32,7 +33,7 @@ __**HƯỚNG DẪN VÀ CÁC CÂU HỎI THƯỜNG ĐƯỢC HỎI VỀ SỰ KIỆN
 - Xem Số dư, Thẻ đồ: Dùng lệnh `{prefix}profile` (hoặc `{prefix}p` / `{prefix}pro` / `{prefix}ep`).
 - Xem Kho đồ (Inventory): Dùng lệnh `{prefix}inv`.
 - Xem Thú Cưng, Nhẫn, Hôn nhân: Dùng lệnh `{prefix}marry` (hoặc `{prefix}kethon`).
-- Xem Điểm Tích Lũy (Total Earned) và Mốc nhận quà: Dùng lệnh `{prefix}qua` (hoặc `{prefix}milestone` / `{prefix}reward`).
+- Xem Tổng Cày Cuốc (L) và Mốc nhận quà: Dùng lệnh `{prefix}qua` (hoặc `{prefix}milestone` / `{prefix}reward`).
 - Xem Số Dư Hiện Tại và Xếp Hạng: Dùng lệnh `{prefix}point` (hoặc `{prefix}bal` / `{prefix}vi`).
 - Xem Bảng xếp hạng sự kiện: Dùng lệnh `{prefix}etop` (hoặc `{prefix}evtop`).
 

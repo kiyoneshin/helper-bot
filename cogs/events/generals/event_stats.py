@@ -130,7 +130,7 @@ class EventStatsCog(commands.Cog):
         self.bot = bot
 
     @commands.hybrid_command(name="point", aliases=["bal", "vi"])
-    async def point_cmd(self, ctx: commands.Context, member: Optional[discord.Member] = None) -> None:
+    async def point_cmd(self, ctx: commands.Context, member: Optional[discord.Member | discord.User] = None) -> None:
         """Kiểm tra số dư và tổng điểm sự kiện của bạn (hoặc người khác)."""
         target = member or ctx.author
         uid = str(target.id)

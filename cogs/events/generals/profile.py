@@ -83,7 +83,7 @@ class ProfileCog(commands.Cog, name="Profile"):
         self.bot = bot
 
     @commands.hybrid_command(name="profile", aliases=["p", "pro", "ep"])
-    async def profile_cmd(self, ctx: commands.Context, member: Optional[discord.Member] = None):
+    async def profile_cmd(self, ctx: commands.Context, member: Optional[discord.Member | discord.User] = None):
         """[Sự Kiện] Xem thông tin cá nhân, Số dư, Thú cưng, Thẻ đặc quyền."""
         if member:
             target_member = member
@@ -176,7 +176,7 @@ class ProfileCog(commands.Cog, name="Profile"):
             value=(
                 f"<:symbol_boards:1536007665153474681> **Nhiệm vụ (Quests):** {quests}\n"
                 f"<:icon_04_seed:1536017185057546242> **Cây trồng (Harvests):** {crops}\n"
-                f"<:symbol_00_woodcutting:1536007697491558491> **Chặt gỗ (Works):** {works}\n"
+                f"<:symbol_00_woodcutting:1536007697491558491> **Chặt gỗ (Chops):** {works}\n"
                 f"<:symbol_00_mining:1536007694920585356> **Đập đá (Mines):** {mines}\n"
                 f"<:symbol_00_fishing:1536007692437422171> **Câu cá (Fishes):** {fishes}\n"
                 f"<a:pet_cat:1535998182029398046> **Vô chuồng chó (Jails):** {jail} Lần"
