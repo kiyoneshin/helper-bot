@@ -253,6 +253,17 @@ async def init_all_tables(bot: Any) -> bool:
                     ALTER TABLE event_profiles ADD COLUMN IF NOT EXISTS skills JSONB DEFAULT '{}'::jsonb;
                 ''')
 
+                # ── HỆ THỐNG 3 LOẠI TIỀN TỆ: event_coins (E) ────────────────────
+                # event_coins: Điểm Tích Lũy (E) — tiêu được ở Shop Sự Kiện,
+                # nhưng KHÔNG ảnh hưởng đến total_earned (L) dùng cho Milestone/Top.
+                await conn.execute('''
+                    ALTER TABLE event_profiles ADD COLUMN IF NOT EXISTS event_coins FLOAT DEFAULT 0.0;
+                ''')
+                # Migration: đồng bộ event_coins = total_earned cho user chưa có
+                await conn.execute('''
+                    UPDATE event_profiles SET event_coins = total_earned WHERE event_coins = 0 AND total_earned > 0;
+                ''')
+
             except Exception as e:
                 log.error(f"Lỗi ALTER TABLE event_profiles hoặc khởi tạo MARRIAGES: {e}", exc_info=True)
 
@@ -395,8 +406,12 @@ async def check_and_reset_daily(bot: Any, discord_id: Union[str, int]) -> None:
 async def add_event_points(bot: Any, discord_id: Union[str, int], amount: float, is_earned: bool = True) -> bool:
     """
     Cộng điểm cho user.
-    - is_earned=True (Mặc định): Cộng vào cả `points` (tiêu xài) lẫn `total_earned` (đua top). Dùng khi cày chat, voice, thắng game.
-    - is_earned=False: Chỉ cộng vào `points` (tiêu xài). Dùng cho lệnh Admin kgive hoặc lì xì không tính vào đua top.
+    - is_earned=True (Mặc định): Cộng đồng thời cả 3 loại:
+        * points (P — Số Dư): tiêu xài hàng ngày
+        * event_coins (E — Điểm Tích Lũy): tiêu ở Shop Sự Kiện
+        * total_earned (L — Tổng Cày Cuốc): milestone & leaderboard, KHÔNG BAO GIỜ GIẢM
+      Dùng khi cày: kwork, farm, chat, voice, fish, mine, chop, daily, weekly, task, quest, bán machine.
+    - is_earned=False: Chỉ cộng vào `points` (P). Dùng cho Admin kgive / lì xì / casino thắng.
     """
     if amount <= 0: return False
     uid = str(discord_id)
@@ -405,13 +420,16 @@ async def add_event_points(bot: Any, discord_id: Union[str, int], amount: float,
     await get_or_create_event_profile(bot, uid)
     
     if is_earned:
+        # Tăng cả P (points), E (event_coins) và L (total_earned)
         sql = '''
             UPDATE event_profiles
             SET points = points + $2,
+                event_coins = event_coins + $2,
                 total_earned = total_earned + $2
             WHERE discord_id = $1;
         '''
     else:
+        # Chỉ tăng P (points) — không tính E/L
         sql = '''
             UPDATE event_profiles
             SET points = points + $2
@@ -451,18 +469,26 @@ async def deduct_event_points(bot: Any, discord_id: Union[str, int], amount: flo
     # res sẽ có dạng "UPDATE 1" nếu trừ thành công, "UPDATE 0" nếu số dư không đủ
     return res == "UPDATE 1"
 
-async def deduct_total_earned(bot: Any, discord_id: Union[str, int], amount: float) -> bool:
-    """Trừ Điểm Tích Lũy (Dùng cho Cửa hàng Sự Kiện). Trả về True nếu thành công, False nếu không đủ."""
+async def deduct_event_coins(bot: Any, discord_id: Union[str, int], amount: float) -> bool:
+    """
+    Trừ Điểm Tích Lũy (E — event_coins) — Dùng khi mua đồ ở Cửa Hàng Sự Kiện.
+    Chỉ trừ event_coins, KHÔNG đụng vào total_earned (L) → Milestone & Leaderboard không bị ảnh hưởng.
+    Trả về True nếu thành công, False nếu không đủ điểm.
+    """
     if amount <= 0: return False
     uid = str(discord_id)
     
     sql = '''
         UPDATE event_profiles
-        SET total_earned = total_earned - $2
-        WHERE discord_id = $1 AND total_earned >= $2;
+        SET event_coins = event_coins - $2
+        WHERE discord_id = $1 AND event_coins >= $2;
     '''
     res = await execute_db(bot, sql, uid, amount)
     return res == "UPDATE 1"
+
+async def deduct_total_earned(bot: Any, discord_id: Union[str, int], amount: float) -> bool:
+    """[DEPRECATED] Dùng deduct_event_coins() thay thế. Giữ lại để backward-compat."""
+    return await deduct_event_coins(bot, discord_id, amount)
 
 async def get_marriage(bot: Any, discord_id: str) -> Optional[Any]:
     """Lấy thông tin kết hôn của user."""

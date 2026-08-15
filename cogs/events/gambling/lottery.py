@@ -192,7 +192,8 @@ class Lottery(commands.Cog):
         winner_id = random.choices(population, weights=weights, k=1)[0]
         
         # 3. Trả thưởng
-        await add_event_points(self.bot, winner_id, total_prize, is_earned=True)
+        # Lottery là gambling: chỉ tăng Số Dư (P), không tăng E/L
+        await add_event_points(self.bot, winner_id, total_prize, is_earned=False)
         
         # 4. Lưu lịch sử
         await execute_db(

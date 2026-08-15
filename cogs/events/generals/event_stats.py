@@ -41,7 +41,7 @@ class TopLeaderboardView(discord.ui.View):
     async def _generate_embed(self) -> discord.Embed:
         if self.current_page == "total":
             sql = """
-                SELECT discord_id, total_earned, points 
+                SELECT discord_id, total_earned, event_coins, points 
                 FROM event_profiles 
                 WHERE total_earned > 0 
                 ORDER BY total_earned DESC 
@@ -49,10 +49,10 @@ class TopLeaderboardView(discord.ui.View):
             """
             title = "<:symbol_trophy:1537550568665649232> Bảng Xếp Hạng Đua Top Cày Cuốc ໒꒱"
             desc_prefix = "Vinh danh Top 10 chiến thần tích lũy điểm cày cuốc:\n\n"
-            footer = "Bảng xếp hạng dựa trên tổng điểm cày được (không bị trừ khi mua shop) 🌸"
+            footer = "Bảng xếp hạng dựa trên tổng điểm cày được trọn đời (không bị trừ khi mua shop) 🌸"
         else:
             sql = """
-                SELECT discord_id, total_earned, points 
+                SELECT discord_id, total_earned, event_coins, points 
                 FROM event_profiles 
                 WHERE points > 0 
                 ORDER BY points DESC 
@@ -73,13 +73,22 @@ class TopLeaderboardView(discord.ui.View):
             for idx, row in enumerate(rows):
                 rank_icon = medals[idx] if idx < 3 else f"**#{idx + 1}.**"
                 user_id = row["discord_id"]
-                t_pts = row["total_earned"]
-                c_pts = row["points"]
+                t_pts = int(row["total_earned"])
+                e_pts = int(row["event_coins"])
+                c_pts = int(row["points"])
                 
                 if self.current_page == "total":
-                    leaderboard_text += f"{rank_icon} <@{user_id}>\n└ <:symbol_trophy:1537550568665649232> Tổng cày: **`{t_pts:,}`** <:symbol_point_e:1538282386351984660> *(Dư: `{c_pts:,}`)*\n\n"
+                    leaderboard_text += (
+                        f"{rank_icon} <@{user_id}>\n"
+                        f"└ <:symbol_trophy:1537550568665649232> Tổng cày: **`{t_pts:,}`** <:symbol_point_l:1538301121909755964>"
+                        f" *(Tích lũy: `{e_pts:,}` <:symbol_point_e:1538282386351984660>)*\n\n"
+                    )
                 else:
-                    leaderboard_text += f"{rank_icon} <@{user_id}>\n└ <:symbol_money_bag:1537567538097954896> Số dư: **`{c_pts:,}`** <:symbol_points_p:1538282388507987989> *(Cày được: `{t_pts:,}`)*\n\n"
+                    leaderboard_text += (
+                        f"{rank_icon} <@{user_id}>\n"
+                        f"└ <:symbol_money_bag:1537567538097954896> Số dư: **`{c_pts:,}`** <:symbol_points_p:1538282388507987989>"
+                        f" *(Cày được: `{t_pts:,}` <:symbol_point_l:1538301121909755964>)*\n\n"
+                    )
                     
             embed.description = desc_prefix + leaderboard_text
             
@@ -135,6 +144,7 @@ class EventStatsCog(commands.Cog):
             return
 
         points = profile.get("points", 0)
+        event_coins = profile.get("event_coins", 0)
         total_earned = profile.get("total_earned", 0)
         p2w = float(profile.get("p2w_multiplier", 1.0))
         
@@ -152,12 +162,17 @@ class EventStatsCog(commands.Cog):
         )
         embed.add_field(
             name="<a:symbol_spinning_coin:1537739282452586536> Số dư hiện tại",
-            value=f"`{points:,}` <:symbol_points_p:1538282388507987989>",
+            value=f"`{int(points):,}` <:symbol_points_p:1538282388507987989>",
             inline=True
         )
         embed.add_field(
-            name="<:symbol_trophy:1537550568665649232> Tổng điểm tích lũy",
-            value=f"`{total_earned:,}` <:symbol_point_e:1538282386351984660>",
+            name="<:symbol_point_e:1538282386351984660> Điểm Tích Lũy",
+            value=f"`{int(event_coins):,}` <:symbol_point_e:1538282386351984660>",
+            inline=True
+        )
+        embed.add_field(
+            name="<:symbol_point_l:1538301121909755964> Tổng Cày Cuốc",
+            value=f"`{int(total_earned):,}` <:symbol_point_l:1538301121909755964>",
             inline=True
         )
         embed.add_field(
@@ -167,6 +182,7 @@ class EventStatsCog(commands.Cog):
         )
         
         debt = profile.get("debt", 0.0)
+        # Hạn mức vay dựa trên Tổng Cày Cuốc (L) — không đổi khi tiêu E
         max_loan = total_earned * 0.5
         
         if debt > 0:

@@ -129,11 +129,16 @@ class ProfileCog(commands.Cog, name="Profile"):
         
         # 2. TÀI SẢN & KINH TẾ
         points = data.get("points", 0)
+        event_coins = data.get("event_coins", 0)
         total_earned = data.get("total_earned", 0)
         
         embed.add_field(
             name="<:symbol_money_bag:1537567538097954896> Tài Sản & Ngân Khố",
-            value=f"<:symbol_money:1537466097282842775> **Số dư:** {points:,.0f} <:symbol_points_p:1538282388507987989>\n<:symbol_trophy:1537550568665649232> **Điểm Tích Lũy:** {total_earned:,.0f} <:symbol_point_e:1538282386351984660>",
+            value=(
+                f"<:symbol_money:1537466097282842775> **Số dư:** {int(points):,.0f} <:symbol_points_p:1538282388507987989>\n"
+                f"<:symbol_point_e:1538282386351984660> **Điểm Tích Lũy:** {int(event_coins):,.0f} <:symbol_point_e:1538282386351984660>\n"
+                f"<:symbol_point_l:1538301121909755964> **Tổng Cày Cuốc:** {int(total_earned):,.0f} <:symbol_point_l:1538301121909755964>"
+            ),
             inline=True
         )
         

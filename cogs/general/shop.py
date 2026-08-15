@@ -13,6 +13,7 @@ import discord
 from discord.ext import commands
 
 from cogs.common.db import (
+    deduct_event_coins,
     deduct_event_points,
     deduct_total_earned,
     execute_db,
@@ -261,17 +262,31 @@ async def _buy_event_item(
         await get_or_create_event_profile(bot, uid)
         
         if item["category"] == "event":
-            ok = await deduct_total_earned(bot, uid, total)
+            # Shop Sự Kiện: trừ event_coins (E), không đụng total_earned (L)
+            ok = await deduct_event_coins(bot, uid, total)
             currency_name = "<:symbol_point_e:1538282386351984660> (Điểm Tích Lũy)"
         else:
+            # Shop thường: trừ points (P — Số Dư)
             ok = await deduct_event_points(bot, uid, total)
             currency_name = "<:symbol_points_p:1538282388507987989> (Số Dư)"
             
         if not ok:
-            await ctx.send(
-                f"<:symbol_wrong:1536629915598848072> {ctx.author.mention} Không đủ điểm! Cần **{total:,}** {currency_name} để mua **{amount}x {item['name']}**.",
-                delete_after=5.0
-            )
+            # Lấy số dư hiện tại để hiển thị trong thông báo lỗi
+            row = await fetchrow_db(bot, "SELECT points, event_coins FROM event_profiles WHERE discord_id = $1", uid)
+            if item["category"] == "event":
+                have = int(row["event_coins"]) if row else 0
+                await ctx.send(
+                    f"<:symbol_wrong:1536629915598848072> {ctx.author.mention} Không đủ Điểm Tích Lũy! "
+                    f"Cần **{total:,}** <:symbol_point_e:1538282386351984660> nhưng bạn chỉ có **{have:,}** <:symbol_point_e:1538282386351984660>.",
+                    delete_after=8.0
+                )
+            else:
+                have = int(row["points"]) if row else 0
+                await ctx.send(
+                    f"<:symbol_wrong:1536629915598848072> {ctx.author.mention} Không đủ Số Dư! "
+                    f"Cần **{total:,}** <:symbol_points_p:1538282388507987989> nhưng bạn chỉ có **{have:,}** <:symbol_points_p:1538282388507987989>.",
+                    delete_after=8.0
+                )
             return
 
         if item["category"] == "lootbox" and 'new_cd_data' in locals():

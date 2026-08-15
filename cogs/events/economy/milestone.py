@@ -90,7 +90,7 @@ class MilestoneCog(commands.Cog):
             
         embed = discord.Embed(
             title="<:gift_00_symbol:1536003307011842099> TIẾN TRÌNH CỘT MỐC SỰ KIỆN <:gift_00_symbol:1536003307011842099>",
-            description=f"Tổng điểm đã cày: **{total_earned:,.2f}** <:symbol_point_e:1538282386351984660>\n*(Tiến trình được tính dựa trên tổng điểm cày cuốc)*\n",
+            description=f"Tổng điểm đã cày: **{total_earned:,.0f}** <:symbol_point_l:1538301121909755964>\n*(Tiến trình dựa trên Tổng Cày Cuốc — không bị giảm khi tiêu Điểm Tích Lũy)*\n",
             color=0xffb6c1
         )
         
