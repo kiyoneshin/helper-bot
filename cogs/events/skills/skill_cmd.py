@@ -90,7 +90,7 @@ async def build_overview_embed(user: discord.Member | discord.User, skills_data:
             inline=False,
         )
 
-    embed.set_footer(text=f"Dùng 'skill reset <tên>' để reset Nghề Nghiệp (Giá: {RESET_COST:,} <:symbol_points_p:1538282388507987989>).")
+    embed.set_footer(text=f"Dùng 'skill reset <tên>' để reset Nghề Nghiệp (Giá: {RESET_COST:,} Điểm.")
     return embed
 
 

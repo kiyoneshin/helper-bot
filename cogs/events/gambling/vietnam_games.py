@@ -296,7 +296,7 @@ class VietnamGames(commands.Cog):
         )
         embed.add_field(
             name="<:symbol_hour_glass:1537570149215899658> Đóng sảnh sau",
-            value=f"**{time_left} giây**  `[ <:gambling_dice:1537539887769591828> ] [ <:gambling_dice:1537539887769591828> ] [ <:gambling_dice:1537539887769591828> ]`",
+            value=f"**{time_left} giây**  [ <:gambling_dice:1537539887769591828> ] [ <:gambling_dice:1537539887769591828> ] [ <:gambling_dice:1537539887769591828> ]",
             inline=True,
         )
         embed.set_footer(text="Angelic Casino • Bầu Cua Tôm Cá 🌸")
