@@ -68,7 +68,8 @@ async def _check_perm(pool, guild_id: int, member: discord.Member, perm: str) ->
             guild_id, role_ids
         )
         return bool(rows and rows[0][perm])
-    except asyncpg.UndefinedColumnError:
+    except Exception as e:
+        log.warning(f"VM _check_perm exception for {perm}: {e}")
         return False
 
 # ==============================================================================
@@ -295,7 +296,7 @@ class PermissionsSelect(discord.ui.Select):
 
 class VoiceControlView(discord.ui.View):
     def __init__(self, channel: discord.VoiceChannel, owner_id: int, bot: commands.Bot):
-        super().__init__(timeout=120.0)
+        super().__init__(timeout=None)
         self.channel, self.owner_id, self.bot = channel, owner_id, bot
         self.add_item(SettingsSelect(channel, bot, owner_id))
         self.add_item(PermissionsSelect(channel, bot, owner_id))
@@ -503,23 +504,35 @@ class VoiceManagerCog(commands.Cog):
                         if has_move: owner_ow.move_members = True
                         await new_ch.set_permissions(member, overwrite=owner_ow)
 
-                    await member.move_to(new_ch)
                     await self.pool.execute("""
                         INSERT INTO active_voice_channels (channel_id, guild_id, owner_id)
                         VALUES ($1,$2,$3) ON CONFLICT (channel_id) DO NOTHING
                     """, new_ch.id, guild.id, member.id)
                     
-                    try:
-                        await new_ch.send(embed=_build_control_embed(new_ch, member),
-                                          view=VoiceControlView(new_ch, member.id, self.bot))
-                    except discord.Forbidden:
-                        pass
-                        
+                    await member.move_to(new_ch)
                     log.info(f"VM: Tạo kênh '{ch_name}' cho {member}")
                 except discord.Forbidden:
                     log.error("VM: Thiếu quyền tạo kênh!")
                 except Exception as e:
                     log.error(f"VM: Lỗi tạo kênh: {e}", exc_info=True)
+
+            if not (jtc_id and after.channel.id == jtc_id):
+                # Khi người dùng join 1 kênh không phải JTC (bao gồm cả kênh mới tạo xong bị move vào)
+                row = await _get_active_channel(self.pool, after.channel.id)
+                if row and row["owner_id"] == member.id:
+                    # Chủ phòng vào kênh -> Gửi lại embed để khỏi phải lướt lên
+                    try:
+                        async for msg in after.channel.history(limit=20):
+                            if msg.author.id == self.bot.user.id and msg.embeds:
+                                if msg.embeds[0].title and "Chào mừng đến kênh thoại tạm thời" in msg.embeds[0].title:
+                                    await msg.delete()
+                        
+                        await after.channel.send(
+                            embed=_build_control_embed(after.channel, member),
+                            view=VoiceControlView(after.channel, member.id, self.bot)
+                        )
+                    except Exception as e:
+                        log.error(f"VM: Lỗi gửi/xóa lại embed: {e}")
 
         # LEAVE
         if before.channel is not None:
