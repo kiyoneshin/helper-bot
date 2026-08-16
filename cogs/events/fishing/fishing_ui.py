@@ -20,7 +20,7 @@ from typing import Any, Dict
 from .fishing_config import (
     STAMINA_PER_FISH, CATCH_WINDOW_SECONDS, PERFECT_CATCH_THRESHOLD,
     WAIT_MIN_SECONDS, WAIT_MAX_SECONDS,
-    FISH_LOOT, get_fishing_loot, get_fishing_display_weights
+    FISH_LOOT, get_fishing_loot, get_fishing_display_weights, get_fishing_effective_weights
 )
 from cogs.events.idle_farm.farm_db import get_farm_data, save_farm_data, get_and_update_stamina
 from cogs.events.mining.mining_config import MAX_STAMINA
@@ -44,18 +44,30 @@ from cogs.events.mining.mining_ui import _mins_to_full
 # EMBED
 # ---------------------------------------------------------------------------
 
-def build_fishing_embed(author: discord.Member | discord.User, stamina: int, farm_data: Dict[str, Any] | None = None, regen_interval: int = 18) -> discord.Embed:
-    """Giao diện Hồ Câu Cá, hiển thị thể lực, cấp cần câu, và các loại cá."""
+def build_fishing_embed(
+    author: discord.Member | discord.User,
+    stamina: int,
+    farm_data: Dict[str, Any] | None = None,
+    regen_interval: int = 18,
+    boosts: dict = None,
+    skills_data: dict = None,
+) -> discord.Embed:
+    """Giao diện Hồ Câu Cá, hiển thị thể lực, cấp cần câu, và các loài cá."""
     rod_level = (farm_data or {}).get("rod_level", 1)
 
     from .fishing_config import ROD_NAMES
     rod_name = ROD_NAMES.get(rod_level, f"Lv{rod_level}")
 
+    # Tính stamina_cost thực tế
+    effective_stamina_cost = STAMINA_PER_FISH
+    if boosts and "stamina_discount" in boosts:
+        effective_stamina_cost = max(1, effective_stamina_cost - int(boosts["stamina_discount"]["value"]))
+
     embed = discord.Embed(
         title="Hồ Câu Cá Bình Yên",
         description=(
             f"Chào mừng **{author.display_name}** đến với hồ câu!\n"
-            f"Mỗi lần quăng cần tốn **{STAMINA_PER_FISH}** thể lực.\n"
+            f"Mỗi lần quăng cần tốn **{effective_stamina_cost}** thể lực.\n"
             f"Khi thấy <:symbol_alert:1537546957885542450> `CÁ CẮN CÂU!!`, hãy bấm **nhanh nhất có thể** trong "
             f"**{CATCH_WINDOW_SECONDS:.1f} giây** để không bị trượt!\n"
             f"*(Phản xạ < 2s = **Perfect Catch** — x2 cá hiếm!)*\n"
@@ -76,12 +88,19 @@ def build_fishing_embed(author: discord.Member | discord.User, stamina: int, far
         inline=True,
     )
 
-    display_weights = get_fishing_display_weights(rod_level)
+    # Hiển thị tỉ lệ thực tế nếu có buff
+    if boosts is not None or skills_data is not None:
+        display_weights = get_fishing_effective_weights(rod_level, boosts or {}, skills_data or {})
+        label = "<:symbol_fish:1536007699190386740> Các Loài (Thực Tế)"
+    else:
+        display_weights = get_fishing_display_weights(rod_level)
+        label = "<:symbol_fish:1536007699190386740> Các Loài (Base)"
+
     fish_lines = [
         f"{info['icon']} **{info['name']}** — {display_weights[fish_id]}%"
         for fish_id, info in FISH_LOOT.items()
     ]
-    embed.add_field(name="<:symbol_fish:1536007699190386740> Các Loài (Base)", value="\n".join(fish_lines), inline=True)
+    embed.add_field(name=label, value="\n".join(fish_lines), inline=True)
     
     inventory = (farm_data or {}).get("inventory", {})
     inv_lines = [
@@ -185,7 +204,8 @@ class FishingView(discord.ui.View):
         if current_stamina < stamina_cost:
             button.disabled = True
             farm_data = await get_farm_data(self.bot, self.user_id)
-            await interaction.response.edit_message(embed=build_fishing_embed(self.author, current_stamina, farm_data, self.regen_interval), view=self)
+            skills_data_early = await get_skills(self.bot, self.user_id)
+            await interaction.response.edit_message(embed=build_fishing_embed(self.author, current_stamina, farm_data, self.regen_interval, boosts=boosts, skills_data=skills_data_early), view=self)
             await interaction.followup.send(f"<:symbol_wrong:1536629915598848072> Bạn đã **kiệt sức**! Hãy đợi thể lực hồi phục.\n*(Hồi đầy sau: {_mins_to_full(current_stamina, self.regen_interval)})*", ephemeral=True)
             return
 
@@ -277,7 +297,7 @@ class FishingView(discord.ui.View):
                     result_msg += " Hãy dùng `skill fishing` để chọn Nghề Nghiệp!"
 
             self.cast_btn.disabled = (new_stamina < stamina_cost)
-            new_embed = build_fishing_embed(self.author, new_stamina, farm_data, self.regen_interval)
+            new_embed = build_fishing_embed(self.author, new_stamina, farm_data, self.regen_interval, boosts=boosts, skills_data=skills_data)
             await interaction.delete_original_response()
             await interaction.followup.send(
                 content=result_msg,
@@ -288,7 +308,7 @@ class FishingView(discord.ui.View):
         else:
             # Hết giờ — cá chạy mất
             self.cast_btn.disabled = (new_stamina < STAMINA_PER_FISH)
-            new_embed = build_fishing_embed(self.author, new_stamina, farm_data, self.regen_interval)
+            new_embed = build_fishing_embed(self.author, new_stamina, farm_data, self.regen_interval, boosts=boosts, skills_data=skills_data)
             await interaction.delete_original_response()
             await interaction.followup.send(
                 content="**Trượt rồi!** Cá đã chạy mất. Hãy thả mồi lại!",

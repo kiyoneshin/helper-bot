@@ -60,6 +60,55 @@ def get_fishing_display_weights(rod_level: int) -> dict[str, int]:
     return dict(zip(_FISH_KEYS, weights))
 
 
+def get_fishing_effective_weights(rod_level: int, food_boosts: dict = None, skills_data: dict = None) -> dict[str, float]:
+    """
+    Tính bảng tỉ lệ % thực tế của cá sau khi áp dụng tất cả buff (skill + food + profession).
+    Dùng bảng non-perfect để hiển thị cơ bản, normalize về 100%.
+    """
+    if food_boosts is None: food_boosts = {}
+    if skills_data is None: skills_data = {}
+
+    from cogs.events.skills.skills_db import has_profession
+    weights = list(_get_weights(rod_level, is_perfect=False))
+
+    # Skill per-level shift
+    fishing_level = skills_data.get("fishing", {}).get("level", 0)
+    rare_shift = min(fishing_level * 2.0, 30.0)
+    if rare_shift > 0:
+        max_reduce = weights[0] * (rare_shift / 100)
+        per_rare = max_reduce / 5
+        weights[0] = max(weights[0] - int(max_reduce), 2)
+        for i in range(1, len(weights)):
+            weights[i] = int(weights[i] + per_rare)
+
+    # Mariner profession
+    if has_profession(skills_data, "fishing", "mariner") and weights[0] > 0:
+        weights[1] += weights[0]
+        weights[0] = 0
+
+    # Food boosts
+    rare_bonus = float(food_boosts.get("rare_fish", {}).get("value", 0))
+    all_bonus = float(food_boosts.get("all_boost", {}).get("value", 0))
+    total_bonus = rare_bonus + all_bonus
+    if total_bonus > 0:
+        idx = len(_FISH_KEYS) - 1
+        weights[idx] += int(weights[idx] * total_bonus)
+
+    # Fisher profession
+    if has_profession(skills_data, "fishing", "fisher"):
+        for i in range(4, len(weights)):
+            weights[i] = int(weights[i] * 1.25)
+
+    # Pirate profession
+    if has_profession(skills_data, "fishing", "pirate"):
+        for i in range(4, len(weights)):
+            weights[i] = weights[i] * 2
+
+    # Normalize về 100%
+    total = sum(weights) or 1
+    return {k: round(w / total * 100, 1) for k, w in zip(_FISH_KEYS, weights)}
+
+
 def _get_weights(rod_level: int, is_perfect: bool) -> list[int]:
     """
     Weights động theo cấp cần câu.
@@ -140,6 +189,11 @@ def get_fishing_loot(rod_level: int, reaction_time: float, food_boosts: dict = N
     if has_profession(skills_data, "fishing", "pirate"):
         for i in range(4, len(weights)):
             weights[i] = weights[i] * 2
+
+    # --- Normalize trước random để tổng luôn đồng đều ---
+    total = sum(weights)
+    if total <= 0:
+        weights = list(_get_weights(rod_level, is_perfect))
 
     fish_id: str = random.choices(_FISH_KEYS, weights=weights, k=1)[0]
     return fish_id, is_perfect

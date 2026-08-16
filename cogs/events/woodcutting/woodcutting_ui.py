@@ -4,7 +4,7 @@ from typing import Any, Dict
 
 from .woodcutting_config import (
     STAMINA_PER_CHOP, WOODCUTTING_LOOT, AXE_NAMES,
-    get_woodcutting_loot, get_woodcutting_display_weights
+    get_woodcutting_loot, get_woodcutting_display_weights, get_woodcutting_effective_weights
 )
 from cogs.events.idle_farm.farm_db import get_farm_data, save_farm_data, get_and_update_stamina
 from cogs.events.mining.mining_config import MAX_STAMINA
@@ -17,15 +17,32 @@ def _stamina_bar(stamina: int, bar_len: int = 10) -> str:
     filled = round(stamina / MAX_STAMINA * bar_len)
     return "🟩" * filled + "⬛" * (bar_len - filled)
 
-def build_woodcutting_embed(author: discord.Member | discord.User, stamina: int, farm_data: Dict[str, Any], regen_interval: int = 18) -> discord.Embed:
+def build_woodcutting_embed(
+    author: discord.Member | discord.User,
+    stamina: int,
+    farm_data: Dict[str, Any],
+    regen_interval: int = 18,
+    boosts: dict = None,
+    skills_data: dict = None,
+) -> discord.Embed:
     axe_level = int(farm_data.get("axe_level", 1))
     axe_name = AXE_NAMES.get(axe_level, f"Lv{axe_level}")
+
+    # Tính stamina_cost thực tế
+    effective_stamina_cost = STAMINA_PER_CHOP
+    if boosts and "stamina_discount" in boosts:
+        effective_stamina_cost = max(1, effective_stamina_cost - int(boosts["stamina_discount"]["value"]))
+    # Gatherer profession: giảm thêm 1
+    if skills_data:
+        from cogs.events.skills.skills_db import has_profession
+        if has_profession(skills_data, "chopping", "gatherer"):
+            effective_stamina_cost = max(1, effective_stamina_cost - 1)
 
     embed = discord.Embed(
         title="Rừng Sâu (Woodcutting)",
         description=(
             f"Chào mừng **{author.display_name}** đến với khu rừng bí ẩn!\n"
-            f"Hãy đốn củi để tìm vật liệu. Mỗi lần chặt tốn **{STAMINA_PER_CHOP}** thể lực.\n"
+            f"Hãy đốn củi để tìm vật liệu. Mỗi lần chặt tốn **{effective_stamina_cost}** thể lực.\n"
         ),
         color=0x27ae60,
     )
@@ -45,12 +62,19 @@ def build_woodcutting_embed(author: discord.Member | discord.User, stamina: int,
         inline=True,
     )
 
-    display_weights = get_woodcutting_display_weights(axe_level)
+    # Hiển thị tỉ lệ thực tế nếu có buff
+    if boosts is not None or skills_data is not None:
+        display_weights = get_woodcutting_effective_weights(axe_level, boosts or {}, skills_data or {})
+        label = "<:symbol_log:1536007701518229544> Tỉ Lệ Rớt (Thực Tế)"
+    else:
+        display_weights = get_woodcutting_display_weights(axe_level)
+        label = "<:symbol_log:1536007701518229544> Tỉ Lệ Rớt (Base)"
+
     loot_lines = [
         f"{item['icon']} **{item['name']}** — {display_weights[item_id]}%"
         for item_id, item in WOODCUTTING_LOOT.items()
     ]
-    embed.add_field(name="<:symbol_log:1536007701518229544> Tỉ Lệ Rớt (Base)", value="\n".join(loot_lines), inline=True)
+    embed.add_field(name=label, value="\n".join(loot_lines), inline=True)
 
     inventory = farm_data.get("inventory", {})
     inv_lines = [
@@ -94,7 +118,7 @@ class WoodcuttingView(discord.ui.View):
         if current_stamina < stamina_cost:
             button.disabled = True
             farm_data = await get_farm_data(self.bot, self.user_id)
-            await interaction.response.edit_message(embed=build_woodcutting_embed(self.author, current_stamina, farm_data, self.regen_interval), view=self)
+            await interaction.response.edit_message(embed=build_woodcutting_embed(self.author, current_stamina, farm_data, self.regen_interval, boosts=boosts, skills_data=skills_data), view=self)
             await interaction.followup.send(f"<:symbol_wrong:1536629915598848072> Bạn đã **kiệt sức**! Hãy đợi thể lực hồi phục.\n*(Hồi đầy sau: {_mins_to_full(current_stamina, self.regen_interval)})*", ephemeral=True)
             return
 
@@ -127,7 +151,7 @@ class WoodcuttingView(discord.ui.View):
 
         self.chop_btn.disabled = (new_stamina < stamina_cost)
         double_str = " **(x2 Rìu Sắt!)**" if quantity == 2 else ""
-        new_embed = build_woodcutting_embed(self.author, new_stamina, farm_data, self.regen_interval)
+        new_embed = build_woodcutting_embed(self.author, new_stamina, farm_data, self.regen_interval, boosts=boosts, skills_data=skills_data)
         await interaction.response.edit_message(embed=new_embed, view=self)
 
         levelup_str = ""

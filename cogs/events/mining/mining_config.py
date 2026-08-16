@@ -64,6 +64,45 @@ def get_mining_display_weights(pickaxe_level: int) -> dict[str, int]:
     return dict(zip(_LOOT_KEYS, weights))
 
 
+def get_mining_effective_weights(pickaxe_level: int, food_boosts: dict = None, skills_data: dict = None) -> dict[str, float]:
+    """
+    Tính bảng tỉ lệ % thực tế sau khi áp dụng tất cả buff (skill + food + profession).
+    Normalize về tổng 100% để hiển thị chính xác trên UI.
+    """
+    if food_boosts is None: food_boosts = {}
+    if skills_data is None: skills_data = {}
+
+    from cogs.events.skills.skills_db import has_profession
+    weights = list(_WEIGHTS_BY_LEVEL.get(pickaxe_level, _WEIGHTS_BY_LEVEL[1]))
+
+    # Skill per-level shift
+    mining_level = skills_data.get("mining", {}).get("level", 0)
+    rare_shift = min(mining_level * 2.0, 30.0)
+    if rare_shift > 0:
+        max_reduce = weights[0] * (rare_shift / 100)
+        per_rare = max_reduce / 4
+        weights[0] = max(weights[0] - int(max_reduce), 5)
+        for i in range(2, len(weights)):
+            weights[i] = int(weights[i] + per_rare)
+
+    # Food boosts
+    rare_bonus = float(food_boosts.get("rare_ore", {}).get("value", 0))
+    all_bonus = float(food_boosts.get("all_boost", {}).get("value", 0))
+    total_food_bonus = rare_bonus + all_bonus
+    if total_food_bonus > 0:
+        for i in range(2, len(weights)):
+            weights[i] += int(weights[i] * total_food_bonus)
+
+    # Prospector profession
+    if has_profession(skills_data, "mining", "prospector"):
+        for i in range(2, len(weights)):
+            weights[i] = int(weights[i] * 1.20)
+
+    # Normalize về 100%
+    total = sum(weights) or 1
+    return {k: round(w / total * 100, 1) for k, w in zip(_LOOT_KEYS, weights)}
+
+
 def get_mining_loot(pickaxe_level: int, food_boosts: dict = None, skills_data: dict = None) -> Tuple[str, int]:
     """
     Random loot dựa theo cấp Cuốc + Skill Mining passive bonus.
@@ -104,6 +143,11 @@ def get_mining_loot(pickaxe_level: int, food_boosts: dict = None, skills_data: d
     if has_profession(skills_data, "mining", "prospector"):
         for i in range(2, len(weights)):
             weights[i] = int(weights[i] * 1.20)
+
+    # --- Normalize weights trước khi random để đảm bảo tổng = 100% ---
+    total = sum(weights)
+    if total <= 0:
+        weights = list(_WEIGHTS_BY_LEVEL.get(pickaxe_level, _WEIGHTS_BY_LEVEL[1]))
 
     item_id: str = random.choices(_LOOT_KEYS, weights=weights, k=1)[0]
 

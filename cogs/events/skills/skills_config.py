@@ -255,7 +255,7 @@ PROFESSIONS: dict[str, dict] = {
         "parent": "geologist",
         "name": "Nhà Khảo Cổ",
         "icon": "🏺",
-        "description": "Lootbox nhận được khi đào mỏ có xác suất rơi ở tier cao hơn.",
+        "description": "Lootbox khi đào mỏ có 40% cơ hội tự động nâng 1 tier, 10% nâng 2 tier.",
         "bonus_key": "mining_lootbox_tier_up",
         "bonus_value": 1,
     },

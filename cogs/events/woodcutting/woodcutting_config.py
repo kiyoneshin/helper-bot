@@ -52,6 +52,44 @@ def get_woodcutting_display_weights(axe_level: int) -> dict[str, int]:
     weights = _WEIGHTS_BY_LEVEL.get(axe_level, _WEIGHTS_BY_LEVEL[1])
     return dict(zip(_LOOT_KEYS, weights))
 
+
+def get_woodcutting_effective_weights(axe_level: int, food_boosts: dict = None, skills_data: dict = None) -> dict[str, float]:
+    """
+    Tính bảng tỉ lệ % thực tế sau khi áp dụng tất cả buff (skill + food + profession).
+    Normalize về tổng 100%.
+    """
+    if food_boosts is None: food_boosts = {}
+    if skills_data is None: skills_data = {}
+
+    from cogs.events.skills.skills_db import has_profession
+    weights = list(_WEIGHTS_BY_LEVEL.get(axe_level, _WEIGHTS_BY_LEVEL[1]))
+
+    # Skill per-level shift
+    chopping_level = skills_data.get("chopping", {}).get("level", 0)
+    rare_shift = min(chopping_level * 2.5, 40.0)
+    if rare_shift > 0:
+        max_reduce = weights[0] * (rare_shift / 100)
+        per_rare = max_reduce / 3
+        weights[0] = max(weights[0] - int(max_reduce), 5)
+        for i in range(2, len(weights)):
+            weights[i] = int(weights[i] + per_rare)
+
+    # Food boosts
+    rare_bonus = float(food_boosts.get("rare_wood", {}).get("value", 0))
+    all_bonus = float(food_boosts.get("all_boost", {}).get("value", 0))
+    total_bonus = rare_bonus + all_bonus
+    if total_bonus > 0 and len(weights) > 2:
+        weights[2] += int(weights[2] * total_bonus)
+
+    # Lumberjack profession
+    if has_profession(skills_data, "chopping", "lumberjack"):
+        for i in range(2, len(weights)):
+            weights[i] = int(weights[i] * 1.20)
+
+    # Normalize về 100%
+    total = sum(weights) or 1
+    return {k: round(w / total * 100, 1) for k, w in zip(_LOOT_KEYS, weights)}
+
 def get_woodcutting_loot(axe_level: int, food_boosts: dict = None, skills_data: dict = None) -> tuple[str, int]:
     if food_boosts is None: food_boosts = {}
     if skills_data is None: skills_data = {}
@@ -81,6 +119,11 @@ def get_woodcutting_loot(axe_level: int, food_boosts: dict = None, skills_data: 
     if has_profession(skills_data, "chopping", "lumberjack"):
         for i in range(2, len(weights)):
             weights[i] = int(weights[i] * 1.20)
+
+    # --- Normalize trước random để tổng luôn = 100% ---
+    total = sum(weights)
+    if total <= 0:
+        weights = list(_WEIGHTS_BY_LEVEL.get(axe_level, _WEIGHTS_BY_LEVEL[1]))
 
     chosen = random.choices(_LOOT_KEYS, weights=weights, k=1)[0]
     qty = 1
