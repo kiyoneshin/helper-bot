@@ -222,14 +222,9 @@ class FishingView(discord.ui.View):
         extra_window = 0.0
         if has_profession(skills_data, "fishing", "trapper"):
             extra_window += 1.5
-        if has_profession(skills_data, "fishing", "luremaster"):
-            extra_window += 0.5  # Luremaster bổ sung thêm khi đã có Trapper
         effective_perfect_threshold = PERFECT_CATCH_THRESHOLD + extra_window
 
-        # Luremaster profession: mở rộng cửa sổ bắt cá
         effective_catch_window = CATCH_WINDOW_SECONDS
-        if has_profession(skills_data, "fishing", "luremaster"):
-            effective_catch_window += 2.0
 
         # BƯỚC 4 — Chờ cá "cắn câu" (2–5 giây ngẫu nhiên)
         wait_time = random.uniform(WAIT_MIN_SECONDS, WAIT_MAX_SECONDS)
@@ -256,7 +251,7 @@ class FishingView(discord.ui.View):
             # RNG theo rod_level + reaction_time + boosts
             from cogs.common.db import get_active_boosts
             boosts = await get_active_boosts(self.bot, self.user_id)
-            fish_id, is_perfect = get_fishing_loot(rod_level, reaction_time, boosts, skills_data)
+            fish_id, is_perfect, qty = get_fishing_loot(rod_level, reaction_time, boosts, skills_data)
             fish_info = FISH_LOOT[fish_id]
 
             # 4. Lưu DB (cập nhật lootbox nếu có)
@@ -270,22 +265,26 @@ class FishingView(discord.ui.View):
                 lb_msg = f"\n<:gift_00_symbol:1536003307011842099> **Rớt thêm:** 1x {TIER_EMOJIS[lb_tier]} {TIER_NAMES[lb_tier]}"
 
             inventory = farm_data.setdefault("inventory", {})
-            inventory[fish_id] = inventory.get(fish_id, 0) + 1
+            inventory[fish_id] = inventory.get(fish_id, 0) + qty
             await save_farm_data(self.bot, self.user_id, farm_data)
-            await update_event_stat(self.bot, self.user_id, "fishes", 1)
-            await update_event_stat(self.bot, self.user_id, "fish_caught", 1)
+            await update_event_stat(self.bot, self.user_id, "fishes", qty)
+            await update_event_stat(self.bot, self.user_id, "fish_caught", qty)
             if fish_info.get("rare_rank", 0) >= 3:
-                await update_event_stat(self.bot, self.user_id, "legendary_fish", 1)
+                await update_event_stat(self.bot, self.user_id, "legendary_fish", qty)
 
             # Skill XP theo rare_rank
-            xp_gained = FISHING_XP_BY_RANK.get(fish_info.get("rare_rank", 0), 1)
+            xp_gained = FISHING_XP_BY_RANK.get(fish_info.get("rare_rank", 0), 1) * qty
             levelup_info = await add_skill_xp(self.bot, self.user_id, "fishing", xp_gained)
 
             # Tạo thông báo kết quả
             prefix = "**Perfect Catch!** " if is_perfect else "<:symbol_confetti:1537570146313306183> **Tuyệt vời!** "
             rare_tag = " <:symbol_confetti:1537570146313306183><:symbol_confetti:1537570146313306183><:symbol_confetti:1537570146313306183> **CỰC HIẾM!**" if fish_info["rare_rank"] >= 3 else ""
+            
+            qty_str = f"{qty}x " if qty > 1 else "1x "
+            double_msg = " **(x2 Luremaster!)**" if qty > 1 else ""
+
             result_msg = (
-                f"{prefix}Bạn đã câu được **1x {fish_info['icon']} {fish_info['name']}**!{rare_tag}{lb_msg}\n"
+                f"{prefix}Bạn đã câu được **{qty_str}{fish_info['icon']} {fish_info['name']}**!{rare_tag}{double_msg}{lb_msg}\n"
                 f"*(Phản xạ: **{reaction_time}s** | +{xp_gained} Fishing XP)*"
             )
 

@@ -384,7 +384,7 @@ PROFESSIONS: dict[str, dict] = {
         "parent": "trapper",
         "name": "Thủy Thủ",
         "icon": "⚓",
-        "description": "Không bao giờ câu được Rác.",
+        "description": "Không bao giờ câu được Rác. Tỉ lệ Rác sẽ được chia cho các loại cá khác.",
         "bonus_key": "fishing_no_trash",
         "bonus_value": 1,
     },
@@ -395,9 +395,9 @@ PROFESSIONS: dict[str, dict] = {
         "parent": "trapper",
         "name": "Bậc Thầy Mồi Câu",
         "icon": "🎭",
-        "description": "Tăng tổng cửa sổ giật cần (Catch Window) thêm 2s, ít bị trượt hơn.",
-        "bonus_key": "fishing_catch_window",
-        "bonus_value": 2.0,
+        "description": "Khi đạt Perfect Catch, có 30% cơ hội câu được x2 số lượng cá.",
+        "bonus_key": "fishing_double_catch",
+        "bonus_value": 0.3,
     },
 }
 
