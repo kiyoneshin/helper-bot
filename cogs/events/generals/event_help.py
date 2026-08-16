@@ -508,7 +508,7 @@ CMD_DATA: dict[str, dict] = {
     },
     "upgrade": {
         "name": "Nâng Cấp Nông Trại",
-        "emoji": "⬆️",
+        "emoji": "<:symbol_arrow_up:1538646239581577226>",
         "short": "Nâng cấp ô đất hoặc cần câu bằng nguyên liệu.",
         "aliases": ["nangcap", "morong"],
         "cooldown": None,

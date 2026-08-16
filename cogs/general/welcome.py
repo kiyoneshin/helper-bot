@@ -61,7 +61,7 @@ class WelcomeCog(commands.Cog):
                 except discord.NotFound:
                     await ctx.send(
                         f"<:symbol_alert:1537546957885542450> **Không tìm thấy thành viên có ID `{self.default_test_id}` trong server!**\n"
-                        "➡️ Đang chuyển sang sử dụng tài khoản của bạn để chạy test tạm..."
+                        "<:symbol_arrow_right:1538646237757186078> Đang chuyển sang sử dụng tài khoản của bạn để chạy test tạm..."
                     )
                     # Ép kiểu an toàn cho Pylance: Chỉ nhận nếu tác giả thực sự là Member trong guild
                     if isinstance(ctx.author, discord.Member):

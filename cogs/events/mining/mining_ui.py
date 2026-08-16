@@ -178,7 +178,7 @@ class MiningView(discord.ui.View):
         if levelup_info:
             from cogs.events.skills.skills_config import SKILLS
             sname = SKILLS["mining"]["name"]
-            levelup_str = f"\n⬆️ **Kỹ Năng {sname} lên Cấp {levelup_info['new_level']}!**"
+            levelup_str = f"\n<:symbol_arrow_up:1538646239581577226> **Kỹ Năng {sname} lên Cấp {levelup_info['new_level']}!**"
             if levelup_info.get("needs_profession"):
                 levelup_str += f" Hãy dùng `skill mining` để chọn Nghề Nghiệp!"
 

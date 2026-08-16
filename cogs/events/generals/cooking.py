@@ -176,30 +176,30 @@ class CookingCog(commands.Cog):
                 item_id = boost_to_item.get(b_key)
                 if item_id and item_id in ITEM_REGISTRY:
                     meta = ITEM_REGISTRY[item_id]
-                    name = f"{meta['icon']} {meta['name']} ({b_key})"
+                    name = f"{meta['icon']} {meta['name']}"
                 else:
-                    name = f"<:symbol_gear:1536007677468082266> Hiệu ứng chưa rõ ({b_key})"
+                    name = f"<:symbol_gear:1536007677468082266> Hiệu ứng ẩn"
                 
                 if b_key == "stamina_regen":
-                    desc = f"+ {int(b_val*100)}% Tốc độ hồi thể lực. Hết hạn: {time_left}"
+                    desc = f"<:symbol_arrow_right:1538646237757186078> **Tăng {int(b_val*100)}%** Tốc độ hồi thể lực\n⏳ Hết hạn: {time_left}"
                 elif b_key == "lb_drop_rate":
-                    desc = f"+ {int(b_val*100)}% Tỉ lệ rơi Lootbox. Hết hạn: {time_left}"
+                    desc = f"<:symbol_arrow_right:1538646237757186078> **Tăng {int(b_val*100)}%** Tỉ lệ rơi Lootbox\n⏳ Hết hạn: {time_left}"
                 elif b_key == "lb_rarity":
-                    desc = f"+ {int(b_val*100)}% Tỉ lệ Lootbox hiếm. Hết hạn: {time_left}"
+                    desc = f"<:symbol_arrow_right:1538646237757186078> **Tăng {int(b_val*100)}%** Tỉ lệ Lootbox hiếm\n⏳ Hết hạn: {time_left}"
                 elif b_key == "farm_yield":
-                    desc = f"+ {b_val} Sản lượng thu hoạch. Hết hạn: {time_left}"
+                    desc = f"<:symbol_arrow_right:1538646237757186078> **Tăng {b_val}** Sản lượng thu hoạch\n⏳ Hết hạn: {time_left}"
                 elif b_key == "rare_wood":
-                    desc = f"+ {int(b_val*100)}% Tỉ lệ Gỗ hiếm. Hết hạn: {time_left}"
+                    desc = f"<:symbol_arrow_right:1538646237757186078> **Tăng {int(b_val*100)}%** Tỉ lệ Gỗ hiếm\n⏳ Hết hạn: {time_left}"
                 elif b_key == "rare_ore":
-                    desc = f"+ {int(b_val*100)}% Tỉ lệ Quặng hiếm. Hết hạn: {time_left}"
+                    desc = f"<:symbol_arrow_right:1538646237757186078> **Tăng {int(b_val*100)}%** Tỉ lệ Quặng hiếm\n⏳ Hết hạn: {time_left}"
                 elif b_key == "rare_fish":
-                    desc = f"+ {int(b_val*100)}% Tỉ lệ Cá hiếm. Hết hạn: {time_left}"
+                    desc = f"<:symbol_arrow_right:1538646237757186078> **Tăng {int(b_val*100)}%** Tỉ lệ Cá hiếm\n⏳ Hết hạn: {time_left}"
                 elif b_key == "stamina_discount":
-                    desc = f"- {b_val} Thể lực tiêu hao. Hết hạn: {time_left}"
+                    desc = f"<:symbol_arrow_right:1538646237757186078> **Giảm {b_val}** Thể lực tiêu hao\n⏳ Hết hạn: {time_left}"
                 elif b_key == "all_boost":
-                    desc = f"+ {int(b_val*100)}% Tỉ lệ Đồ hiếm (Mọi H.động). Hết hạn: {time_left}"
+                    desc = f"<:symbol_arrow_right:1538646237757186078> **Tăng {int(b_val*100)}%** Tỉ lệ Đồ hiếm (Mọi H.động)\n⏳ Hết hạn: {time_left}"
                 else:
-                    desc = f"Giá trị: {b_val}. Hết hạn: {time_left}"
+                    desc = f"<:symbol_arrow_right:1538646237757186078> **Hiệu lực:** {b_val}\n⏳ Hết hạn: {time_left}"
                     
                 embed.add_field(name=name, value=desc, inline=False)
 

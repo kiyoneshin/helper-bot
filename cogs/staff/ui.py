@@ -45,7 +45,7 @@ class StaffUICog(commands.Cog):
         try:
             records = await query_db(self.bot, "SELECT discord_id, role, display_name FROM profiles")
             if not records:
-                await ctx.send("📭 **Database profiles đang TRỐNG!**\n➡️ Hãy lên Railway kiểm tra lại xem dữ liệu bạn nhập đã được ấn phím **Enter** để xác nhận lưu chưa nhé!")
+                await ctx.send("📭 **Database profiles đang TRỐNG!**\n<:symbol_arrow_right:1538646237757186078> Hãy lên Railway kiểm tra lại xem dữ liệu bạn nhập đã được ấn phím **Enter** để xác nhận lưu chưa nhé!")
                 return
 
             role_order = {'owner': 0, 'admin': 1, 'recep': 2}

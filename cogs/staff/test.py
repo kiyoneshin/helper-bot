@@ -22,7 +22,7 @@ def is_tester():
         if ctx.author.id not in TESTER_IDS:
             await ctx.send(
                 "<:symbol_alert:1537546957885542450> **Quyền truy cập bị từ chối!**\n"
-                f"➡️ Các lệnh `{ctx.prefix}test_...` chỉ dành riêng cho người kiểm thử hệ thống (Developer/Tester)."
+                f"<:symbol_arrow_right:1538646237757186078> Các lệnh `{ctx.prefix}test_...` chỉ dành riêng cho người kiểm thử hệ thống (Developer/Tester)."
             )
             return False
         return True
@@ -67,7 +67,7 @@ class StaffTestCog(commands.Cog):
             
             # Giả lập gửi ngay tin nhắn nhắc nhở mà tính năng lắng nghe 10 reply hay làm
             reminder_text = (
-                f"➡️ **[TEST TRIGGER]** Nếu bạn thấy {db_role} <@{target_id}> ({display_name}) nhiệt tình, "
+                f"<:symbol_arrow_right:1538646237757186078> **[TEST TRIGGER]** Nếu bạn thấy {db_role} <@{target_id}> ({display_name}) nhiệt tình, "
                 f"hãy đừng ngần ngại bỏ ra 1 phút sử dụng lệnh `{ctx.prefix}menu` chọn đến "
                 f"{db_role} để vote cho họ nhé!"
             )
@@ -81,7 +81,7 @@ class StaffTestCog(commands.Cog):
     async def test_inject_vote(self, ctx: commands.Context, target: Optional[str] = None, score: Optional[float] = None):
         target_id = extract_id(target)
         if not target_id or score is None:
-            await ctx.send(f"<:symbol_alert:1537546957885542450> **Sai cú pháp!**\n➡️ Cú pháp chuẩn: `{ctx.prefix}test_vote <ID hoặc @user> <điểm>` (Ví dụ: `{ctx.prefix}test_vote 4684... 4.8`)")
+            await ctx.send(f"<:symbol_alert:1537546957885542450> **Sai cú pháp!**\n<:symbol_arrow_right:1538646237757186078> Cú pháp chuẩn: `{ctx.prefix}test_vote <ID hoặc @user> <điểm>` (Ví dụ: `{ctx.prefix}test_vote 4684... 4.8`)")
             return
 
         if not (0.0 <= score <= 5.0):
@@ -124,7 +124,7 @@ class StaffTestCog(commands.Cog):
 
             await ctx.send(
                 f"<a:symbol_star_pink:1537739287947382864> **[TEST SUCCESS]** Đã bơm điểm ảo **{score} <a:symbol_star_yellow:1537739289834553385>** cho **{row['display_name']}** với ID `{fake_tester_id}`!\n"
-                f"➡️ Điểm trung bình mới cập nhật: **<a:symbol_star_yellow:1537739289834553385> {new_avg}/5.0** ({len(scores)} lượt)"
+                f"<:symbol_arrow_right:1538646237757186078> Điểm trung bình mới cập nhật: **<a:symbol_star_yellow:1537739289834553385> {new_avg}/5.0** ({len(scores)} lượt)"
             )
         except Exception as e:
             await ctx.send(f"Lỗi khi bơm điểm test: {e}")
@@ -134,7 +134,7 @@ class StaffTestCog(commands.Cog):
     async def test_reset_data(self, ctx: commands.Context, target: Optional[str] = None):
         target_id = extract_id(target)
         if not target_id:
-            await ctx.send(f"<:symbol_alert:1537546957885542450> **Thiếu thông tin!**\n➡️ Vui lòng nhập ID hoặc ping: `{ctx.prefix}test_reset 468428368828956692`")
+            await ctx.send(f"<:symbol_alert:1537546957885542450> **Thiếu thông tin!**\n<:symbol_arrow_right:1538646237757186078> Vui lòng nhập ID hoặc ping: `{ctx.prefix}test_reset 468428368828956692`")
             return
 
         try:
@@ -178,7 +178,7 @@ class StaffTestCog(commands.Cog):
 
             await ctx.send(
                 f"🧹 **[TEST CLEANUP]** Đã lọc và xóa **{removed_count} lượt vote ảo** khỏi hồ sơ của **{row['display_name']}**!\n"
-                f"➡️ Điểm trung bình thực tế còn lại: **<a:symbol_star_yellow:1537739289834553385> {new_avg}/5.0** ({len(scores)} lượt thực)"
+                f"<:symbol_arrow_right:1538646237757186078> Điểm trung bình thực tế còn lại: **<a:symbol_star_yellow:1537739289834553385> {new_avg}/5.0** ({len(scores)} lượt thực)"
             )
         except Exception as e:
             await ctx.send(f"Lỗi khi dọn điểm test: {e}")

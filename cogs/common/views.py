@@ -85,7 +85,7 @@ def _build_staff_list_embed(role_name: str, staff_records: list) -> discord.Embe
         name = row.get('display_name', 'Unnamed')
         doc_id = row.get('discord_id')
         list_text += f"**{idx}. {name}** (<@{doc_id}>)\n"
-    list_text += "\n⬇️ *Vui lòng chọn tên nhân sự từ menu thả xuống bên dưới để xem hồ sơ chi tiết và ảnh!*"
+    list_text += "\n<:symbol_arrow_down:1538646234003283988> *Vui lòng chọn tên nhân sự từ menu thả xuống bên dưới để xem hồ sơ chi tiết và ảnh!*"
     return discord.Embed(
         title=f"Danh sách {role_name.upper()}",
         description=list_text,
@@ -427,7 +427,7 @@ class ProfileView(BaseStaffView):
     # NÚT CHUYỂN ẢNH — Real-time sync từ DB
     # ------------------------------------------------------------------
 
-    @discord.ui.button(label="⏮️ Ảnh trước", style=discord.ButtonStyle.primary, row=0)
+    @discord.ui.button(label="Ảnh trước", emoji="<:symbol_arrow_left:1538646235966349454>", style=discord.ButtonStyle.primary, row=0)
     async def prev_btn(self, interaction: discord.Interaction, button: discord.ui.Button):
         bot: Any = interaction.client
         # Query DB lấy dữ liệu mới nhất
@@ -452,7 +452,7 @@ class ProfileView(BaseStaffView):
             embed = build_embed(fresh_data, self.member, self.photo_index)
             await interaction.response.edit_message(embed=embed, view=self)
 
-    @discord.ui.button(label="⏭️ Ảnh sau", style=discord.ButtonStyle.primary, row=0)
+    @discord.ui.button(label="Ảnh sau", emoji="<:symbol_arrow_right:1538646237757186078>", style=discord.ButtonStyle.primary, row=0)
     async def next_btn(self, interaction: discord.Interaction, button: discord.ui.Button):
         bot: Any = interaction.client
         fresh_data = await _fetch_fresh_user_data(bot, self.target_discord_id)

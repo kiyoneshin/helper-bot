@@ -120,7 +120,7 @@ def _build_recipe_embed(ctx, category: str) -> discord.Embed:
                 ing_str = " + ".join(f"**{v}** {_get_item_name(k)}" for k, v in r["ingredients"].items())
                 out_name = _get_item_name(r["output_id"])
                 time_str = _format_duration(r["duration_seconds"])
-                machine_lines.append(f"  └ **{r['name']}**: {ing_str} ➡️ **{r['output_qty']}** {out_name} ({time_str})")
+                machine_lines.append(f"  └ **{r['name']}**: {ing_str} <:symbol_arrow_right:1538646237757186078> **{r['output_qty']}** {out_name} ({time_str})")
         
         current_chunk = []
         current_len = 0

@@ -448,7 +448,7 @@ class DateSelectionView(discord.ui.View):
             "3️⃣ Bấm **🔎 Áp Dụng Bộ Lọc** khi đã điền đủ 4 trường.",
             "",
             "――――――――――――――――――――",
-            f"▶️ **Bắt đầu:** {start_str}",
+            f"<:symbol_arrow_right:1538646237757186078> **Bắt đầu:** {start_str}",
             f"⏹️ **Kết thúc:** {end_str}",
         ]
 

@@ -535,8 +535,8 @@ class InventoryView(discord.ui.View):
             label="Bán Tất Cả Cá", emoji="<:symbol_fish:1536007699190386740>",
             style=discord.ButtonStyle.secondary, row=2,
         )
-        self.btn_prev = discord.ui.Button(label="◀️", style=discord.ButtonStyle.secondary, row=1, disabled=True)
-        self.btn_next = discord.ui.Button(label="▶️", style=discord.ButtonStyle.secondary, row=1)
+        self.btn_prev = discord.ui.Button(label="", emoji="<:symbol_arrow_left:1538646235966349454>", style=discord.ButtonStyle.secondary, row=1, disabled=True)
+        self.btn_next = discord.ui.Button(label="", emoji="<:symbol_arrow_right:1538646237757186078>", style=discord.ButtonStyle.secondary, row=1)
 
         # Gắn callback
         self.btn_sell_item.callback = self._on_sell_item

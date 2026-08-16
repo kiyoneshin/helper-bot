@@ -134,7 +134,7 @@ class WoodcuttingView(discord.ui.View):
         if levelup_info:
             from cogs.events.skills.skills_config import SKILLS
             sname = SKILLS["chopping"]["name"]
-            levelup_str = f"\n⬆️ **Kỹ Năng {sname} lên Cấp {levelup_info['new_level']}!**"
+            levelup_str = f"\n<:symbol_arrow_up:1538646239581577226> **Kỹ Năng {sname} lên Cấp {levelup_info['new_level']}!**"
             if levelup_info.get("needs_profession"):
                 levelup_str += " Hãy dùng `skill chopping` để chọn Nghề Nghiệp!"
 
@@ -144,8 +144,8 @@ class WoodcuttingView(discord.ui.View):
             await update_event_stat(self.bot, self.user_id, "rare_wood_chopped", quantity)
 
         await interaction.followup.send(
-            f"<:symbol_00_woodcutting:1536007697491558491> Bạn vung rìu và nhận được: {loot_info['icon']} **{quantity}x {loot_info['name']}**{double_str}!{lb_msg}\n"
-            f"*(+{xp_gained} Chopping XP)*{levelup_str}",
+            f"<:symbol_00_woodcutting:1536007697491558491> Bạn vừa đốn được **{quantity}x {loot_info['icon']} {loot_info['name']}**!{double_str}{lb_msg}\n"
+            f"*(Thể lực: {new_stamina}/{MAX_STAMINA} | +{xp_gained} Chopping XP)*{levelup_str}",
             ephemeral=True
         )
 

@@ -197,8 +197,8 @@ class FishingView(discord.ui.View):
         await save_farm_data(self.bot, self.user_id, farm_data)
 
         # Trapper profession: mở rộng cửa sổ Perfect Catch
-        effective_perfect_threshold = PERFECT_CATCH_THRESHOLD if not hasattr(self, '_perfect_threshold') else self._perfect_threshold
         from .fishing_config import PERFECT_CATCH_THRESHOLD
+        effective_perfect_threshold = PERFECT_CATCH_THRESHOLD if not hasattr(self, '_perfect_threshold') else self._perfect_threshold
         extra_window = 0.0
         if has_profession(skills_data, "fishing", "trapper"):
             extra_window += 1.5
@@ -272,7 +272,7 @@ class FishingView(discord.ui.View):
             if levelup_info:
                 from cogs.events.skills.skills_config import SKILLS
                 sname = SKILLS["fishing"]["name"]
-                result_msg += f"\n⬆️ **Kỹ Năng {sname} lên Cấp {levelup_info['new_level']}!**"
+                result_msg += f"\n<:symbol_arrow_up:1538646239581577226> **Kỹ Năng {sname} lên Cấp {levelup_info['new_level']}!**"
                 if levelup_info.get("needs_profession"):
                     result_msg += " Hãy dùng `skill fishing` để chọn Nghề Nghiệp!"
 
