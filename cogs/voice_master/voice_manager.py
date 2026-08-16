@@ -88,15 +88,17 @@ class RenameModal(discord.ui.Modal, title="Đổi tên phòng"):
         if not new_name:
             await interaction.response.send_message("<:symbol_wrong:1536629915598848072> Tên phòng không được để trống!", ephemeral=True)
             return
+            
+        pool = getattr(self.bot, "db_pool", None)
+        if pool:
+            await _save_user_settings(pool, self.owner_id, channel_name=new_name)
+            
         try:
             await self.channel.edit(name=new_name)
-            pool = getattr(self.bot, "db_pool", None)
-            if pool:
-                await _save_user_settings(pool, self.owner_id, channel_name=new_name)
             await interaction.response.send_message(f"<:symbol_right:1536629912515903578> Đã đổi tên phòng: **{new_name}**", ephemeral=True)
         except discord.HTTPException as e:
-            msg = "Rate Limit! Discord chỉ cho đổi tên 2 lần/10 phút. Hãy đợi rồi thử lại!" if e.status == 429 else str(e)
-            await interaction.response.send_message(f"<:symbol_wrong:1536629915598848072> {msg}", ephemeral=True)
+            msg = "Discord chỉ cho đổi tên 2 lần/10 phút. Tên phòng mới đã được lưu và sẽ áp dụng cho các lần tạo sau!" if e.status == 429 else str(e)
+            await interaction.response.send_message(f"⚠️ {msg}", ephemeral=True)
 
 
 class LimitModal(discord.ui.Modal, title="Giới hạn người dùng"):
@@ -446,6 +448,9 @@ class VoiceManagerCog(commands.Cog):
     async def on_voice_state_update(self, member: discord.Member, before: discord.VoiceState, after: discord.VoiceState):
         if not self.pool:
             return
+        if before.channel == after.channel:
+            return
+            
         guild = member.guild
 
         # JOIN
