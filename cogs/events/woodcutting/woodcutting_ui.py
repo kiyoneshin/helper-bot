@@ -150,7 +150,6 @@ class WoodcuttingView(discord.ui.View):
         levelup_info = await add_skill_xp(self.bot, self.user_id, "chopping", xp_gained)
 
         self.chop_btn.disabled = (new_stamina < stamina_cost)
-        double_str = " **(x2 Rìu Sắt!)**" if quantity == 2 else ""
         new_embed = build_woodcutting_embed(self.author, new_stamina, farm_data, self.regen_interval, boosts=boosts, skills_data=skills_data)
         await interaction.response.edit_message(embed=new_embed, view=self)
 
@@ -168,7 +167,7 @@ class WoodcuttingView(discord.ui.View):
             await update_event_stat(self.bot, self.user_id, "rare_wood_chopped", quantity)
 
         await interaction.followup.send(
-            f"<:symbol_00_woodcutting:1536007697491558491> Bạn vừa đốn được **{quantity}x {loot_info['icon']} {loot_info['name']}**!{double_str}{lb_msg}\n"
+            f"<:symbol_00_woodcutting:1536007697491558491> Bạn vừa đốn được **{quantity}x {loot_info['icon']} {loot_info['name']}**!{lb_msg}\n"
             f"*(Thể lực: {new_stamina}/{MAX_STAMINA} | +{xp_gained} Chopping XP)*{levelup_str}",
             ephemeral=True
         )

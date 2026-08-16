@@ -281,10 +281,9 @@ class FishingView(discord.ui.View):
             rare_tag = " <:symbol_confetti:1537570146313306183><:symbol_confetti:1537570146313306183><:symbol_confetti:1537570146313306183> **CỰC HIẾM!**" if fish_info["rare_rank"] >= 3 else ""
             
             qty_str = f"{qty}x " if qty > 1 else "1x "
-            double_msg = " **(x2 Luremaster!)**" if qty > 1 else ""
 
             result_msg = (
-                f"{prefix}Bạn đã câu được **{qty_str}{fish_info['icon']} {fish_info['name']}**!{rare_tag}{double_msg}{lb_msg}\n"
+                f"{prefix}Bạn đã câu được **{qty_str}{fish_info['icon']} {fish_info['name']}**!{rare_tag}{lb_msg}\n"
                 f"*(Phản xạ: **{reaction_time}s** | +{xp_gained} Fishing XP)*"
             )
 

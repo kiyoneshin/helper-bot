@@ -201,7 +201,6 @@ class MiningView(discord.ui.View):
         if new_stamina < stamina_cost:
             button.disabled = True
 
-        double_str = " **(x2 Cuốc Sắt!)**" if quantity == 2 else ""
         new_embed = build_mining_embed(self.author, new_stamina, farm_data, regen_interval=self.regen_interval, boosts=boosts, skills_data=skills_data)
         await interaction.response.edit_message(embed=new_embed, view=self)
 
@@ -214,7 +213,7 @@ class MiningView(discord.ui.View):
                 levelup_str += f" Hãy dùng `skill mining` để chọn Nghề Nghiệp!"
 
         await interaction.followup.send(
-            f"<:symbol_00_mining:1536007694920585356> Bạn vừa đào được **{quantity}x {loot_info['icon']} {loot_info['name']}**!{double_str}{lb_msg}\n"
+            f"<:symbol_00_mining:1536007694920585356> Bạn vừa đào được **{quantity}x {loot_info['icon']} {loot_info['name']}**!{lb_msg}\n"
             f"*(Thể lực: {new_stamina}/{MAX_STAMINA} | +{xp_gained} Mining XP)*{levelup_str}",
             ephemeral=True,
         )
