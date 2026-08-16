@@ -7,12 +7,15 @@ dùng vật phẩm bằng ID số.
 """
 from __future__ import annotations
 
+import asyncio
 import json
 import logging
 from typing import Any
 
 import discord
 from discord.ext import commands
+
+user_locks = {}
 
 from cogs.common.db import execute_db, fetchrow_db, fetchval_db
 from cogs.common.item_config import (
@@ -701,6 +704,23 @@ class UnifiedInventoryCog(commands.Cog):
         target: discord.Member | None = None,
     ) -> None:
         """Sử dụng vật phẩm bằng ID số từ ITEM_REGISTRY."""
+        lock = user_locks.setdefault(ctx.author.id, asyncio.Lock())
+        if lock.locked():
+            await ctx.send("<:symbol_wrong:1536629915598848072> Thao tác quá nhanh, vui lòng đợi xử lý!", delete_after=5.0)
+            return
+        await lock.acquire()
+        try:
+            return await self._use_cmd_internal(ctx, item_id, target)
+        finally:
+            lock.release()
+
+    async def _use_cmd_internal(
+        self,
+        ctx: commands.Context,
+        item_id: int,
+        target: discord.Member | None = None,
+    ) -> None:
+        """Sử dụng vật phẩm bằng ID số từ ITEM_REGISTRY."""
         item = get_item_by_id(item_id)
         if item is None:
             await ctx.send(
@@ -818,6 +838,14 @@ class UnifiedInventoryCog(commands.Cog):
         
         if target:
             assert isinstance(target, discord.Member)
+            if target.bot:
+                await ctx.send("<:symbol_wrong:1536629915598848072> Không thể sử dụng vật phẩm lên Bot!", delete_after=5.0)
+                return
+            if target.id != ctx.author.id and ctx.guild:
+                bot_role = ctx.guild.get_role(1498711782120755352)
+                if bot_role and target.top_role.position >= bot_role.position:
+                    await ctx.send("<:symbol_wrong:1536629915598848072> Người này được hệ thống bảo vệ, không thể đụng vào!", delete_after=5.0)
+                    return
 
         from datetime import timedelta
 

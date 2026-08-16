@@ -198,9 +198,10 @@ class TransferSelect(discord.ui.UserSelect):
 # ==============================================================================
 
 class SettingsSelect(discord.ui.Select):
-    def __init__(self, channel: discord.VoiceChannel, bot: commands.Bot, owner_id: int):
-        self.channel, self.bot, self.owner_id = channel, bot, owner_id
+    def __init__(self, bot: commands.Bot):
+        self.bot = bot
         super().__init__(
+            custom_id="vm_settings",
             placeholder="Đổi cài đặt kênh...",
             row=0,
             options=[
@@ -211,26 +212,29 @@ class SettingsSelect(discord.ui.Select):
 
     async def callback(self, interaction: discord.Interaction):
         pool = getattr(self.bot, "db_pool", None)
-        if pool:
-            row = await _get_active_channel(pool, self.channel.id)
-            if row and interaction.user.id != row["owner_id"]:
-                return await interaction.response.send_message("<:symbol_ban:1537546960003801319> Chỉ **chủ phòng** mới có thể thay đổi!", ephemeral=True)
-        if not isinstance(interaction.guild, discord.Guild) or not isinstance(interaction.user, discord.Member):
-            return
+        if not pool or not interaction.guild: return
+        channel = interaction.guild.get_channel(interaction.channel_id)
+        if not isinstance(channel, discord.VoiceChannel): return
+        row = await _get_active_channel(pool, channel.id)
+        if row and interaction.user.id != row["owner_id"]:
+            return await interaction.response.send_message("<:symbol_ban:1537546960003801319> Chỉ **chủ phòng** mới có thể thay đổi!", ephemeral=True)
+        if not isinstance(interaction.user, discord.Member): return
         perm_key = "can_change_name" if self.values[0] == "rename" else "can_change_limit"
         has_perm = await _check_perm(pool, interaction.guild.id, interaction.user, perm_key) if pool else False
         if not has_perm:
             return await interaction.response.send_message("<:symbol_ban:1537546960003801319> Role của bạn chưa có quyền này!", ephemeral=True)
+        owner_id = row["owner_id"] if row else interaction.user.id
         if self.values[0] == "rename":
-            await interaction.response.send_modal(RenameModal(self.channel, self.bot, self.owner_id))
+            await interaction.response.send_modal(RenameModal(self.bot, owner_id))
         else:
-            await interaction.response.send_modal(LimitModal(self.channel, self.bot, self.owner_id))
+            await interaction.response.send_modal(LimitModal(self.bot, owner_id))
 
 
 class PermissionsSelect(discord.ui.Select):
-    def __init__(self, channel: discord.VoiceChannel, bot: commands.Bot, owner_id: int):
-        self.channel, self.bot, self.owner_id = channel, bot, owner_id
+    def __init__(self, bot: commands.Bot):
+        self.bot = bot
         super().__init__(
+            custom_id="vm_permissions",
             placeholder="🔑 Đổi quyền kênh...",
             row=1,
             options=[
@@ -248,19 +252,20 @@ class PermissionsSelect(discord.ui.Select):
     async def callback(self, interaction: discord.Interaction):
         pool = getattr(self.bot, "db_pool", None)
         val  = self.values[0]
-        if pool:
-            row = await _get_active_channel(pool, self.channel.id)
-            if row and interaction.user.id != row["owner_id"]:
-                return await interaction.response.send_message("<:symbol_ban:1537546960003801319> Chỉ **chủ phòng** mới có thể đổi quyền!", ephemeral=True)
-        if not isinstance(interaction.guild, discord.Guild) or not isinstance(interaction.user, discord.Member):
-            return
+        if not pool or not interaction.guild: return
+        channel = interaction.guild.get_channel(interaction.channel_id)
+        if not isinstance(channel, discord.VoiceChannel): return
+        row = await _get_active_channel(pool, channel.id)
+        if row and interaction.user.id != row["owner_id"]:
+            return await interaction.response.send_message("<:symbol_ban:1537546960003801319> Chỉ **chủ phòng** mới có thể đổi quyền!", ephemeral=True)
+        if not isinstance(interaction.user, discord.Member): return
 
         if val in ("lock", "unlock"):
             if not await _check_perm(pool, interaction.guild.id, interaction.user, "can_lock") if pool else False:
                 return await interaction.response.send_message("<:symbol_ban:1537546960003801319> Chưa có quyền khóa/mở phòng!", ephemeral=True)
-            ow = self.channel.overwrites_for(interaction.guild.default_role)
+            ow = channel.overwrites_for(interaction.guild.default_role)
             ow.connect = False if val == "lock" else None
-            await self.channel.set_permissions(interaction.guild.default_role, overwrite=ow)
+            await channel.set_permissions(interaction.guild.default_role, overwrite=ow)
             if pool:
                 await _save_user_settings(pool, interaction.user.id, is_locked=(val == "lock"))
             msg = "<:symbol_locked:1537566880066441296> Phòng đã **khóa**!" if val == "lock" else "<:symbol_unlocked:1537566882180366466> Phòng đã **mở khóa**!"
@@ -269,19 +274,19 @@ class PermissionsSelect(discord.ui.Select):
         elif val in ("hide", "show"):
             if not await _check_perm(pool, interaction.guild.id, interaction.user, "can_hide") if pool else False:
                 return await interaction.response.send_message("<:symbol_ban:1537546960003801319> Chưa có quyền ẩn/hiện phòng!", ephemeral=True)
-            ow = self.channel.overwrites_for(interaction.guild.default_role)
+            ow = channel.overwrites_for(interaction.guild.default_role)
             ow.view_channel = False if val == "hide" else None
-            await self.channel.set_permissions(interaction.guild.default_role, overwrite=ow)
+            await channel.set_permissions(interaction.guild.default_role, overwrite=ow)
             if pool:
                 await _save_user_settings(pool, interaction.user.id, is_hidden=(val == "hide"))
             msg = "👻 Phòng đã **ẩn**!" if val == "hide" else "👁️ Phòng đã **hiện** lại!"
             await interaction.response.send_message(msg, ephemeral=True)
 
         elif val in ("permit", "invite"):
-            await interaction.response.send_modal(PermitModal(self.channel))
+            await interaction.response.send_modal(PermitModal())
 
         elif val == "reject":
-            v = discord.ui.View(timeout=120.0); v.add_item(RejectSelect(self.channel))
+            v = discord.ui.View(timeout=120.0); v.add_item(RejectSelect(channel.id))
             await interaction.response.send_message("Chọn người cần đuổi:", view=v, ephemeral=True)
 
         elif val == "transfer":
@@ -289,19 +294,15 @@ class PermissionsSelect(discord.ui.Select):
                 return await interaction.response.send_message("<:symbol_ban:1537546960003801319> Chưa có quyền chuyển chủ phòng!", ephemeral=True)
             if await _check_perm(pool, interaction.guild.id, interaction.user, "is_persistent") if pool else False:
                 return await interaction.response.send_message("<:symbol_wrong:1536629915598848072> Kênh cá nhân (Level 50+) không thể chuyển nhượng!", ephemeral=True)
-            v = discord.ui.View(timeout=120.0); v.add_item(TransferSelect(self.channel, self.bot))
+            v = discord.ui.View(timeout=120.0); v.add_item(TransferSelect(channel.id, self.bot))
             await interaction.response.send_message("Chọn người nhận quyền chủ:", view=v, ephemeral=True)
 
-# ==============================================================================
-# MAIN VIEW
-# ==============================================================================
-
 class VoiceControlView(discord.ui.View):
-    def __init__(self, channel: discord.VoiceChannel, owner_id: int, bot: commands.Bot):
+    def __init__(self, bot: commands.Bot):
         super().__init__(timeout=None)
-        self.channel, self.owner_id, self.bot = channel, owner_id, bot
-        self.add_item(SettingsSelect(channel, bot, owner_id))
-        self.add_item(PermissionsSelect(channel, bot, owner_id))
+        self.bot = bot
+        self.add_item(SettingsSelect(bot))
+        self.add_item(PermissionsSelect(bot))
 
     @discord.ui.button(label="Nhận quyền chủ phòng", style=discord.ButtonStyle.primary,
                        custom_id="vm_claim", row=2)
@@ -310,7 +311,10 @@ class VoiceControlView(discord.ui.View):
         if not pool or not isinstance(interaction.guild, discord.Guild) or not isinstance(interaction.user, discord.Member):
             return await interaction.response.send_message("<:symbol_wrong:1536629915598848072> Lỗi hệ thống!", ephemeral=True)
 
-        row = await _get_active_channel(pool, self.channel.id)
+        channel = interaction.guild.get_channel(interaction.channel_id)
+        if not isinstance(channel, discord.VoiceChannel): return
+
+        row = await _get_active_channel(pool, channel.id)
         if not row:
             return await interaction.response.send_message("<:symbol_wrong:1536629915598848072> Không tìm thấy thông tin phòng!", ephemeral=True)
 
@@ -319,12 +323,12 @@ class VoiceControlView(discord.ui.View):
 
         if claimer.id == current_owner_id:
             return await interaction.response.send_message("<:symbol_ban:1537546960003801319> Bạn đang là chủ phòng rồi!", ephemeral=True)
-        if claimer not in self.channel.members:
+        if claimer not in channel.members:
             return await interaction.response.send_message("<:symbol_wrong:1536629915598848072> Bạn phải ở trong phòng để nhận quyền!", ephemeral=True)
             
-        old_owner = self.channel.guild.get_member(current_owner_id)
+        old_owner = channel.guild.get_member(current_owner_id)
         if old_owner:
-            if old_owner in self.channel.members:
+            if old_owner in channel.members:
                 return await interaction.response.send_message(
                     f"<:symbol_ban:1537546960003801319> **{old_owner.display_name}** vẫn trong phòng! Không thể Claim.", ephemeral=True
                 )
@@ -340,22 +344,22 @@ class VoiceControlView(discord.ui.View):
         n_lock  = cfg.get("is_locked", False)
         n_hide  = cfg.get("is_hidden", False)
 
-        real_count = len([m for m in self.channel.members if not m.bot])
+        real_count = len([m for m in channel.members if not m.bot])
         if 0 < n_limit < real_count:
             n_limit = real_count
 
         try:
-            await self.channel.edit(name=n_name, user_limit=n_limit)
+            await channel.edit(name=n_name, user_limit=n_limit)
         except discord.HTTPException:
             try:
-                await self.channel.edit(user_limit=n_limit)
+                await channel.edit(user_limit=n_limit)
             except Exception:
                 pass
 
-        ow = self.channel.overwrites_for(interaction.guild.default_role)
+        ow = channel.overwrites_for(interaction.guild.default_role)
         ow.connect      = False if n_lock else None
         ow.view_channel = False if n_hide else None
-        await self.channel.set_permissions(interaction.guild.default_role, overwrite=ow)
+        await channel.set_permissions(interaction.guild.default_role, overwrite=ow)
         
         # Apply native overrides if claimer has them
         has_priority = await _check_perm(pool, interaction.guild.id, claimer, "priority_speaker")
@@ -363,13 +367,13 @@ class VoiceControlView(discord.ui.View):
         has_status = await _check_perm(pool, interaction.guild.id, claimer, "set_status")
 
         if has_priority or has_move:
-            claimer_ow = self.channel.overwrites_for(claimer)
+            claimer_ow = channel.overwrites_for(claimer)
             if has_priority: claimer_ow.priority_speaker = True
             if has_move: claimer_ow.move_members = True
-            await self.channel.set_permissions(claimer, overwrite=claimer_ow)
+            await channel.set_permissions(claimer, overwrite=claimer_ow)
 
         await pool.execute("UPDATE active_voice_channels SET owner_id=$1 WHERE channel_id=$2",
-                           claimer.id, self.channel.id)
+                           claimer.id, channel.id)
 
         embed = discord.Embed(
             title="Quyền chủ phòng đã được chuyển!",
@@ -382,16 +386,19 @@ class VoiceControlView(discord.ui.View):
     @discord.ui.button(label="Xóa Kênh", style=discord.ButtonStyle.danger, custom_id="vm_delete", row=2)
     async def btn_delete(self, interaction: discord.Interaction, button: discord.ui.Button):
         pool = getattr(self.bot, "db_pool", None)
-        if pool:
-            row = await _get_active_channel(pool, self.channel.id)
-            if row and interaction.user.id != row["owner_id"]:
-                return await interaction.response.send_message("<:symbol_ban:1537546960003801319> Chỉ **chủ phòng** mới có quyền xóa kênh thủ công!", ephemeral=True)
+        if not pool or not interaction.guild: return
+        channel = interaction.guild.get_channel(interaction.channel_id)
+        if not isinstance(channel, discord.VoiceChannel): return
+        
+        row = await _get_active_channel(pool, channel.id)
+        if row and interaction.user.id != row["owner_id"]:
+            return await interaction.response.send_message("<:symbol_ban:1537546960003801319> Chỉ **chủ phòng** mới có quyền xóa kênh thủ công!", ephemeral=True)
         
         await interaction.response.send_message("<:symbol_right:1536629912515903578> Đang xóa kênh...", ephemeral=True)
         try:
-            await self.channel.delete(reason="Chủ phòng tự xóa")
+            await channel.delete(reason="Chủ phòng tự xóa")
             if pool:
-                await pool.execute("DELETE FROM active_voice_channels WHERE channel_id=$1", self.channel.id)
+                await pool.execute("DELETE FROM active_voice_channels WHERE channel_id=$1", channel.id)
         except discord.NotFound:
             pass
 
@@ -435,6 +442,10 @@ def _build_control_embed(channel: discord.VoiceChannel, owner: discord.Member) -
 class VoiceManagerCog(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
+        self.jtc_cooldowns = {}
+
+    async def cog_load(self):
+        self.bot.add_view(VoiceControlView(self.bot))
 
     async def cog_unload(self):
         pass
@@ -459,6 +470,17 @@ class VoiceManagerCog(commands.Cog):
             jtc_id = JOIN_TO_CREATE_CHANNEL_ID if JOIN_TO_CREATE_CHANNEL_ID != 0 else (setup["join_to_create_channel_id"] if setup else 0)
             
             if jtc_id and after.channel.id == jtc_id:
+                import time
+                now = time.time()
+                last_join = self.jtc_cooldowns.get(member.id, 0)
+                if now - last_join < 10.0:
+                    try:
+                        await member.move_to(None, reason="VoiceMaster: JTC Spam Cooldown")
+                    except Exception:
+                        pass
+                    return
+                self.jtc_cooldowns[member.id] = now
+                
                 # KIỂM TRA: User đã có kênh cá nhân hay chưa (Chống spam)
                 existing = await self.pool.fetchrow("SELECT channel_id FROM active_voice_channels WHERE owner_id=$1", member.id)
                 if existing:
@@ -534,7 +556,7 @@ class VoiceManagerCog(commands.Cog):
                         
                         await after.channel.send(
                             embed=_build_control_embed(after.channel, member),
-                            view=VoiceControlView(after.channel, member.id, self.bot)
+                            view=VoiceControlView(self.bot)
                         )
                     except Exception as e:
                         log.error(f"VM: Lỗi gửi/xóa lại embed: {e}")

@@ -439,6 +439,20 @@ class ShopCog(commands.Cog):
     )
     async def buy_cmd(self, ctx: commands.Context, item_id: int, amount: int = 1) -> None:
         """Mua vật phẩm theo ID số trong ITEM_REGISTRY."""
+        from cogs.general.inventory import user_locks
+        import asyncio
+        lock = user_locks.setdefault(ctx.author.id, asyncio.Lock())
+        if lock.locked():
+            return await ctx.send("<:symbol_wrong:1536629915598848072> Đang xử lý giao dịch mua trước đó, vui lòng đợi!", delete_after=5.0)
+        
+        await lock.acquire()
+        try:
+            return await self._buy_cmd_internal(ctx, item_id, amount)
+        finally:
+            lock.release()
+
+    async def _buy_cmd_internal(self, ctx: commands.Context, item_id: int, amount: int = 1) -> None:
+        """Mua vật phẩm theo ID số trong ITEM_REGISTRY."""
         if amount <= 0:
             await ctx.send("<:symbol_wrong:1536629915598848072> Số lượng mua phải lớn hơn 0!", delete_after=5.0)
             return

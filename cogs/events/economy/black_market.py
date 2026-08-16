@@ -173,6 +173,20 @@ class BlackMarketCog(commands.Cog):
     @commands.hybrid_command(name="ebuy", aliases=["muadem", "bmbuy"])
     async def event_buy_cmd(self, ctx: commands.Context, slot_id: str, quantity: int = 1) -> None:
         """Mua vật phẩm từ Chợ Đêm theo mã số ID vật phẩm"""
+        from cogs.general.inventory import user_locks
+        import asyncio
+        lock = user_locks.setdefault(ctx.author.id, asyncio.Lock())
+        if lock.locked():
+            return await ctx.send("<:symbol_wrong:1536629915598848072> Đang xử lý giao dịch mua trước đó, vui lòng đợi!", delete_after=5.0)
+        
+        await lock.acquire()
+        try:
+            return await self._event_buy_cmd_internal(ctx, slot_id, quantity)
+        finally:
+            lock.release()
+
+    async def _event_buy_cmd_internal(self, ctx: commands.Context, slot_id: str, quantity: int = 1) -> None:
+        """Mua vật phẩm từ Chợ Đêm theo mã số ID vật phẩm"""
         now_vn = datetime.now(UTC7)
         if not (0 <= now_vn.hour < 2):
             await ctx.send(f"<:symbol_wrong:1536629915598848072> Chợ Đêm hiện đang đóng cửa! Gõ `{ctx.prefix}choden` để xem thời gian mở lại.", delete_after=5.0)

@@ -49,7 +49,8 @@ class StaffBot(commands.Bot):
             command_prefix=get_custom_prefix,
             intents=intents, 
             help_command=None,
-            case_insensitive=True
+            case_insensitive=True,
+            allowed_mentions=discord.AllowedMentions(everyone=False, roles=False, users=True, replied_user=True)
         )
         self.db_pool: Optional[asyncpg.Pool] = None
         self.trap_channel_id: int = TRAP_CHANNEL_ID
