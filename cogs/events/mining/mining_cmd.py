@@ -33,8 +33,13 @@ class MiningCog(commands.Cog, name="Mining"):
         regen_interval = await get_true_stamina_regen(self.bot, user_id)
 
         # 3. Render giao diện và gửi
-        embed = build_mining_embed(ctx.author, stamina, farm_data, regen_interval)
-        view = MiningView(self.bot, user_id, ctx.author, stamina)
+        from cogs.common.db import get_active_boosts
+        from cogs.events.skills.skills_db import get_skills
+        boosts = await get_active_boosts(self.bot, user_id)
+        skills_data = await get_skills(self.bot, user_id)
+
+        embed = build_mining_embed(ctx.author, stamina, farm_data, regen_interval, boosts, skills_data)
+        view = MiningView(self.bot, user_id, ctx.author, stamina, regen_interval)
 
         await ctx.send(embed=embed, view=view)
 

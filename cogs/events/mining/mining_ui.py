@@ -116,11 +116,12 @@ def build_mining_embed(
 class MiningView(discord.ui.View):
     """View chính của Khu Mỏ."""
 
-    def __init__(self, bot: commands.Bot, user_id: str, author: discord.Member | discord.User, stamina: int):
+    def __init__(self, bot: commands.Bot, user_id: str, author: discord.Member | discord.User, stamina: int, regen_interval: int = 18):
         super().__init__(timeout=120.0)
         self.bot = bot
         self.user_id = user_id
         self.author = author
+        self.regen_interval = regen_interval
         self.mine_btn.disabled = (stamina < STAMINA_PER_HIT)
 
     @discord.ui.button(label="Đập Đá", emoji="<:button_mining:1536007673139568701>", style=discord.ButtonStyle.primary)
@@ -142,11 +143,11 @@ class MiningView(discord.ui.View):
             button.disabled = True
             farm_data = await get_farm_data(self.bot, self.user_id)
             await interaction.response.edit_message(
-                embed=build_mining_embed(self.author, current_stamina, farm_data, boosts=boosts), view=self
+                embed=build_mining_embed(self.author, current_stamina, farm_data, regen_interval=self.regen_interval, boosts=boosts, skills_data=skills_data), view=self
             )
             await interaction.followup.send(
                 f"😓 Bạn đã **kiệt sức**! Hãy đợi thể lực hồi phục.\n"
-                f"*(Hồi đầy sau: {_mins_to_full(current_stamina)})*",
+                f"*(Hồi đầy sau: {_mins_to_full(current_stamina, self.regen_interval)})*",
                 ephemeral=True,
             )
             return
@@ -201,7 +202,7 @@ class MiningView(discord.ui.View):
             button.disabled = True
 
         double_str = " **(x2 Cuốc Sắt!)**" if quantity == 2 else ""
-        new_embed = build_mining_embed(self.author, new_stamina, farm_data, boosts=boosts, skills_data=skills_data)
+        new_embed = build_mining_embed(self.author, new_stamina, farm_data, regen_interval=self.regen_interval, boosts=boosts, skills_data=skills_data)
         await interaction.response.edit_message(embed=new_embed, view=self)
 
         levelup_str = ""

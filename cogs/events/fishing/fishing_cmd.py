@@ -30,7 +30,12 @@ class FishingCog(commands.Cog, name="Fishing"):
         regen_interval = await get_true_stamina_regen(self.bot, user_id)
 
         # 2. Tạo giao diện và gửi
-        embed = build_fishing_embed(ctx.author, stamina, farm_data, regen_interval)
+        from cogs.common.db import get_active_boosts
+        from cogs.events.skills.skills_db import get_skills
+        boosts = await get_active_boosts(self.bot, user_id)
+        skills_data = await get_skills(self.bot, user_id)
+
+        embed = build_fishing_embed(ctx.author, stamina, farm_data, regen_interval, boosts, skills_data)
         view  = FishingView(self.bot, user_id, ctx.author, stamina, farm_data, regen_interval)
 
         await ctx.send(embed=embed, view=view)

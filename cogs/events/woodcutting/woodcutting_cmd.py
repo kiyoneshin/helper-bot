@@ -25,7 +25,12 @@ class WoodcuttingCog(commands.Cog, name="Woodcutting"):
         regen_interval = await get_true_stamina_regen(self.bot, user_id)
 
         # 2. Render giao diện và gửi
-        embed = build_woodcutting_embed(ctx.author, stamina, farm_data, regen_interval)
+        from cogs.common.db import get_active_boosts
+        from cogs.events.skills.skills_db import get_skills
+        boosts = await get_active_boosts(self.bot, user_id)
+        skills_data = await get_skills(self.bot, user_id)
+
+        embed = build_woodcutting_embed(ctx.author, stamina, farm_data, regen_interval, boosts, skills_data)
         view = WoodcuttingView(self.bot, user_id, ctx.author, stamina, farm_data, regen_interval)
 
         await ctx.send(embed=embed, view=view)
