@@ -469,7 +469,7 @@ SKILLS: dict[str, dict] = {
 # Mỗi cấp kỹ năng sẽ dịch chuyển weight table theo hướng hiếm hơn
 # Giá trị này là số % shift mỗi cấp
 SKILL_PER_LEVEL_BONUS = {
-    "farming":  {"double_harvest_pct": 3.0, "grow_time_reduction_pct": 1.0},
+    "farming":  {"double_harvest": 0.03, "grow_time_reduction": 0.01},
     "mining":   {"rare_shift_pct": 2.0},   # shift 2% từ stone sang các ore hiếm
     "chopping": {"rare_shift_pct": 2.5},   # shift 2.5% từ twigs sang gỗ hiếm
     "fishing":  {"rare_shift_pct": 2.0, "perfect_window_bonus": 0.1},  # +0.1s/cấp

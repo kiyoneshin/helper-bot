@@ -11,11 +11,12 @@ from cogs.common.db import fetchval_db, deduct_event_points, add_event_points
 class FarmView(discord.ui.View):
     """View chính của Nông Trại chứa các nút tương tác."""
     
-    def __init__(self, bot: commands.Bot, user_id: str, author: discord.Member | discord.User, farm_data: Dict[str, Any]):
+    def __init__(self, bot: commands.Bot, user_id: str, author: discord.Member | discord.User, farm_data: Dict[str, Any], skills_data: dict = None):
         super().__init__(timeout=120.0)
         self.bot = bot
         self.user_id = user_id
         self.author = author
+        self.skills_data = skills_data or {}
         # Dropdown gieo trồng đã được thay thế bằng lệnh kplant
         
     @discord.ui.button(label="Tưới Nước Tất Cả", emoji="<:symbol_watering_can:1536295381862715453>", style=discord.ButtonStyle.primary, row=0)
@@ -30,9 +31,9 @@ class FarmView(discord.ui.View):
             return
             
         new_farm_data = await get_farm_data(self.bot, self.user_id)
-        new_embed = build_farm_embed(self.author, new_farm_data)
+        new_embed = build_farm_embed(self.author, new_farm_data, self.skills_data)
         
-        new_view = FarmView(self.bot, self.user_id, self.author, new_farm_data)
+        new_view = FarmView(self.bot, self.user_id, self.author, new_farm_data, self.skills_data)
         
         await interaction.response.edit_message(embed=new_embed, view=new_view)
         await interaction.followup.send(f"<:symbol_watering_can:1536295381862715453> Đã tưới nước cho **{count}** cây! (Thời gian sinh trưởng giảm {int(WATER_BONUS * 100)}%)", ephemeral=True)
@@ -52,7 +53,7 @@ class FarmView(discord.ui.View):
             return
             
         new_farm_data = await get_farm_data(self.bot, self.user_id)
-        new_embed = build_farm_embed(self.author, new_farm_data)
+        new_embed = build_farm_embed(self.author, new_farm_data, self.skills_data)
         
         msg = []
         if harvested:
@@ -73,7 +74,7 @@ class FarmView(discord.ui.View):
         if withered > 0:
             msg.append(f"🥀 Đã dọn dẹp **{withered}** cây bị héo.")
             
-        new_view = FarmView(self.bot, self.user_id, self.author, new_farm_data)
+        new_view = FarmView(self.bot, self.user_id, self.author, new_farm_data, self.skills_data)
         await interaction.response.edit_message(embed=new_embed, view=new_view)
         await interaction.followup.send("\n".join(msg), ephemeral=True)
 
@@ -84,9 +85,9 @@ class FarmView(discord.ui.View):
             return
             
         new_farm_data = await get_farm_data(self.bot, self.user_id)
-        new_embed = build_farm_embed(self.author, new_farm_data)
+        new_embed = build_farm_embed(self.author, new_farm_data, self.skills_data)
         
-        new_view = FarmView(self.bot, self.user_id, self.author, new_farm_data)
+        new_view = FarmView(self.bot, self.user_id, self.author, new_farm_data, self.skills_data)
         await interaction.response.edit_message(embed=new_embed, view=new_view)
 
 
@@ -141,11 +142,19 @@ class PickConfirmView(discord.ui.View):
             pass
 
 
-def build_farm_embed(author: discord.Member | discord.User, farm_data: Dict[str, Any]) -> discord.Embed:
+def build_farm_embed(author: discord.Member | discord.User, farm_data: Dict[str, Any], skills_data: dict = None) -> discord.Embed:
     """
     Render giao diện text hiển thị trực quan các ô đất.
     Thay đổi icon cây trồng dựa theo tiến trình sinh trưởng.
     """
+    if skills_data is None:
+        skills_data = {}
+        
+    skill_grow_reduction = 0.0
+    if skills_data:
+        from cogs.events.skills.skills_db import get_skill_bonus
+        skill_grow_reduction = get_skill_bonus(skills_data, "farming", "grow_time_reduction")
+
     try:
         from .weather import get_current_weather
         weather = get_current_weather()
@@ -187,7 +196,7 @@ def build_farm_embed(author: discord.Member | discord.User, farm_data: Dict[str,
             grid_cells.append(f"[{i}] <:symbol_question_mark:1537739280640647178>")
             continue
             
-        status, remaining = calculate_crop_status(crop, slot_key, crops)
+        status, remaining = calculate_crop_status(crop, slot_key, crops, skill_grow_reduction)
         seed_name = seed_info["name"]
         seed_icon = seed_info["icon"]
         
@@ -198,6 +207,13 @@ def build_farm_embed(author: discord.Member | discord.User, farm_data: Dict[str,
             req_time = seed_info["grow_time_seconds"]
             if watered:
                 req_time -= int(req_time * WATER_BONUS)
+                
+            try:
+                from .weather import get_current_weather
+                weather = get_current_weather()
+                req_time = int(req_time * weather["growth_time_modifier"])
+            except:
+                pass
             
             # Tính Bonus Adjacency
             has_star = False
@@ -213,6 +229,10 @@ def build_farm_embed(author: discord.Member | discord.User, farm_data: Dict[str,
                         break
             if has_star:
                 req_time -= int(req_time * 0.20)
+                
+            if skill_grow_reduction > 0:
+                capped = min(skill_grow_reduction, 0.20)
+                req_time = max(60, int(req_time * (1.0 - capped)))
             
             elapsed = current_time - planted_at
             progress = elapsed / req_time if req_time > 0 else 1.0

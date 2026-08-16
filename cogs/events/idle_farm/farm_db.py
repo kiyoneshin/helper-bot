@@ -410,6 +410,10 @@ async def water_all(bot: commands.Bot, user_id: str) -> Tuple[bool, int]:
     farm_data = await get_farm_data(bot, user_id)
     crops = (farm_data or {}).get("crops", {})
     
+    from cogs.events.skills.skills_db import get_skills, get_skill_bonus
+    skills_data = await get_skills(bot, user_id)
+    skill_grow_reduction = get_skill_bonus(skills_data, "farming", "grow_time_reduction")
+    
     watered_count = 0
     changed = False
     
@@ -417,7 +421,7 @@ async def water_all(bot: commands.Bot, user_id: str) -> Tuple[bool, int]:
         if crop.get("watered"):
             continue
             
-        status, _ = calculate_crop_status(crop, slot_id, crops)
+        status, _ = calculate_crop_status(crop, slot_id, crops, skill_grow_reduction)
         if status == config.STATUS_GROWING:
             crop["watered"] = True
             watered_count += 1
@@ -441,6 +445,11 @@ async def harvest_all(bot: commands.Bot, user_id: str) -> Tuple[bool, Dict[str, 
     boosts = await get_active_boosts(bot, user_id)
     farm_yield = int(boosts.get("farm_yield", {}).get("value", 0))
     
+    from cogs.events.skills.skills_db import get_skills, get_skill_bonus
+    skills_data = await get_skills(bot, user_id)
+    skill_grow_reduction = get_skill_bonus(skills_data, "farming", "grow_time_reduction")
+    double_harvest_pct = get_skill_bonus(skills_data, "farming", "double_harvest")
+    
     harvest_report = {}
     withered_count = 0
     slots_to_remove = set()
@@ -459,9 +468,9 @@ async def harvest_all(bot: commands.Bot, user_id: str) -> Tuple[bool, Dict[str, 
                 
             c1, c2, c3 = crops[s1], crops[s2], crops[s3]
             if c1.get("seed") == c2.get("seed") == c3.get("seed"):
-                st1, _ = calculate_crop_status(c1, s1, crops)
-                st2, _ = calculate_crop_status(c2, s2, crops)
-                st3, _ = calculate_crop_status(c3, s3, crops)
+                st1, _ = calculate_crop_status(c1, s1, crops, skill_grow_reduction)
+                st2, _ = calculate_crop_status(c2, s2, crops, skill_grow_reduction)
+                st3, _ = calculate_crop_status(c3, s3, crops, skill_grow_reduction)
                 
                 if st1 == config.STATUS_READY and st2 == config.STATUS_READY and st3 == config.STATUS_READY:
                     seed_id = c1.get("seed")
@@ -478,6 +487,8 @@ async def harvest_all(bot: commands.Bot, user_id: str) -> Tuple[bool, Dict[str, 
                             
                         # Rơi ngẫu nhiên 5-8 vật phẩm + modifier + boost
                         drop_count = max(0, random.randint(5, 8) + yield_mod + farm_yield * 3)
+                        if random.random() < double_harvest_pct:
+                            drop_count *= 2
                         
                         for _ in range(drop_count):
                             # Tỉ lệ phẩm chất dựa trên cây thứ 1 (để đơn giản)
@@ -503,7 +514,7 @@ async def harvest_all(bot: commands.Bot, user_id: str) -> Tuple[bool, Dict[str, 
         if slot_id in slots_to_remove:
             continue
             
-        status, _ = calculate_crop_status(crop, slot_id, crops)
+        status, _ = calculate_crop_status(crop, slot_id, crops, skill_grow_reduction)
         
         if status == config.STATUS_READY:
             seed_id = crop.get("seed")
@@ -530,6 +541,9 @@ async def harvest_all(bot: commands.Bot, user_id: str) -> Tuple[bool, Dict[str, 
                     yield_amount = max(0, 1 + weather["yield_modifier"] + farm_yield)
                 except:
                     yield_amount = 1 + farm_yield
+                    
+                if random.random() < double_harvest_pct:
+                    yield_amount *= 2
                 
                 if yield_amount > 0:
                     inventory[item_id] = inventory.get(item_id, 0) + yield_amount

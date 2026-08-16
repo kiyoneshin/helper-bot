@@ -31,14 +31,16 @@ class IdleFarmCog(commands.Cog):
         """Mở giao diện Nông Trại của bạn."""
         user_id = str(ctx.author.id)
         
-        # 1. Fetch dữ liệu Nông Trại
+        # 1. Fetch dữ liệu Nông Trại và Kỹ năng
         farm_data = await get_farm_data(self.bot, user_id)
+        from cogs.events.skills.skills_db import get_skills
+        skills_data = await get_skills(self.bot, user_id)
         
         # 2. Xây dựng Embed trực quan
-        embed = build_farm_embed(ctx.author, farm_data)
+        embed = build_farm_embed(ctx.author, farm_data, skills_data)
         
         # 3. Khởi tạo Giao Diện View
-        view = FarmView(self.bot, user_id, ctx.author, farm_data)
+        view = FarmView(self.bot, user_id, ctx.author, farm_data, skills_data)
         
         # 4. Gửi kết quả
         await ctx.send(embed=embed, view=view)
