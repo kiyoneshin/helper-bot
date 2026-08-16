@@ -310,13 +310,36 @@ async def plant_seeds_batch(bot: commands.Bot, user_id: str, seed_type: str, slo
     seed_count = inventory.get(seed_item_id, 0)
     seed_info = config.SEEDS[seed_type]
 
-    # Loại trùng và sắp xếp
-    slot_ids = sorted(set(slot_ids_raw))
+    SEED_EMOJIS = {
+        "wheat": "<:seed_wheat:1538637236172754954>",
+        "potato": "<:seed_potato:1538637219701588088>",
+        "tomato": "<:seed_tomato:1538637234281128026>",
+        "strawberry": "<:seed_strawberry:1538637228304113756>",
+        "pumpkin": "<:seed_pumpkin:1538637222046081094>",
+        "sunflower": "<:seed_sunflower:1538637231856816128>",
+        "star": "<:seed_star:1538637224139030628>"
+    }
+    seed_icon = SEED_EMOJIS.get(seed_type, seed_info.get('icon', '🌱'))
 
-    # Kiểm tra từng ô
-    invalid_slots = [s for s in slot_ids if s < 1 or s > max_slots]
-    if invalid_slots:
-        return False, f"<:symbol_wrong:1536629915598848072> Ô đất **{', '.join(str(s) for s in invalid_slots)}** chưa được mở khóa! (Bạn đang có **{max_slots} ô**)."
+    # Kiểm tra ô đất có bị trùng lặp trong request không
+    slot_ids = list(set(slot_ids_raw))
+    
+    # Ép kiểu an toàn (đề phòng)
+    valid_slots = []
+    max_slots = (farm_data or {}).get("slots", 3)
+    
+    for s in slot_ids:
+        try:
+            slot_num = int(s)
+            if 1 <= slot_num <= max_slots:
+                valid_slots.append(slot_num)
+        except ValueError:
+            pass
+            
+    if not valid_slots:
+        return False, "<:symbol_wrong:1536629915598848072> Không có ô đất nào hợp lệ được chọn!"
+        
+    slot_ids = valid_slots
 
     occupied_slots = [s for s in slot_ids if str(s) in crops]
     if occupied_slots:
@@ -325,7 +348,7 @@ async def plant_seeds_batch(bot: commands.Bot, user_id: str, seed_type: str, slo
     needed = len(slot_ids)
     if seed_count < needed:
         return False, (
-            f"<:symbol_wrong:1536629915598848072> Không đủ hạt giống **{seed_info['icon']} {seed_info['name']}**!\n"
+            f"<:symbol_wrong:1536629915598848072> Không đủ hạt giống **{seed_icon} {seed_info['name']}**!\n"
             f"Cần **{needed}** hạt nhưng bạn chỉ có **{seed_count}** hạt."
         )
 
@@ -348,7 +371,7 @@ async def plant_seeds_batch(bot: commands.Bot, user_id: str, seed_type: str, slo
     await save_farm_data(bot, user_id, farm_data)
 
     slot_str = ", ".join(f"**Ô {s}**" for s in slot_ids)
-    return True, f"<:symbol_right:1536629912515903578> Đã gieo **{needed}x {seed_info['icon']} {seed_info['name']}** vào {slot_str}!"
+    return True, f"<:symbol_right:1536629912515903578> Đã gieo **{needed}x {seed_icon} {seed_info['name']}** vào {slot_str}!"
 
 async def buy_seed(bot: commands.Bot, user_id: str, seed_type: str, amount: int = 1) -> Tuple[bool, str]:
     """

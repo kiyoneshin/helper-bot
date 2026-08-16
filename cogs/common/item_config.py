@@ -397,7 +397,7 @@ ITEM_REGISTRY: dict[int, ItemEntry] = {
     51: {
         "id":          51,
         "name":        "Hạt Giống Lúa Mì",
-        "icon":        "<:farm_00_wheat:1535940025080881152>",
+        "icon":        "<:seed_wheat:1538637236172754954>",
         "price":       100,
         "description": "Cây cơ bản, thu hoạch sau 30 phút.",
         "db_key":      "seed_wheat",
@@ -407,7 +407,7 @@ ITEM_REGISTRY: dict[int, ItemEntry] = {
     52: {
         "id":          52,
         "name":        "Hạt Giống Khoai Tây",
-        "icon":        "🥔",
+        "icon":        "<:seed_potato:1538637219701588088>",
         "price":       200,
         "description": "Thu hoạch sau 1 tiếng. 20% cơ hội nhân đôi sản lượng!",
         "db_key":      "seed_potato",
@@ -417,7 +417,7 @@ ITEM_REGISTRY: dict[int, ItemEntry] = {
     53: {
         "id":          53,
         "name":        "Hạt Giống Cà Chua",
-        "icon":        "🍅",
+        "icon":        "<:seed_tomato:1538637234281128026>",
         "price":       400,
         "description": "Thu hoạch sau 3 tiếng. Nguyên liệu Mứt Cà Chua.",
         "db_key":      "seed_tomato",
@@ -427,7 +427,7 @@ ITEM_REGISTRY: dict[int, ItemEntry] = {
     54: {
         "id":          54,
         "name":        "Hạt Giống Dâu Tây",
-        "icon":        "🍓",
+        "icon":        "<:seed_strawberry:1538637228304113756>",
         "price":       800,
         "description": "Thu hoạch sau 6 tiếng. Nguyên liệu Rượu Dâu cao cấp.",
         "db_key":      "seed_strawberry",
@@ -437,7 +437,7 @@ ITEM_REGISTRY: dict[int, ItemEntry] = {
     55: {
         "id":          55,
         "name":        "Hạt Giống Bí Ngô",
-        "icon":        "🎃",
+        "icon":        "<:seed_pumpkin:1538637222046081094>",
         "price":       1200,
         "description": "Thu hoạch sau 8 tiếng. Nguyên liệu Mứt Bí Ngô thơm ngon.",
         "db_key":      "seed_pumpkin",
@@ -447,7 +447,7 @@ ITEM_REGISTRY: dict[int, ItemEntry] = {
     56: {
         "id":          56,
         "name":        "Hạt Giống Hướng Dương",
-        "icon":        "🌻",
+        "icon":        "<:seed_sunflower:1538637231856816128>",
         "price":       500,
         "description": "Lợi nhuận cao, thu hoạch sau 12 tiếng.",
         "db_key":      "seed_sunflower",
@@ -457,7 +457,7 @@ ITEM_REGISTRY: dict[int, ItemEntry] = {
     57: {
         "id":          57,
         "name":        "Hạt Giống Ngôi Sao",
-        "icon":        "<a:symbol_star_yellow:1537739289834553385>",
+        "icon":        "<:seed_star:1538637224139030628>",
         "price":       2000,
         "description": "Cây hiếm với phần thưởng ngẫu nhiên, thu hoạch sau 24 tiếng.",
         "db_key":      "seed_star",
