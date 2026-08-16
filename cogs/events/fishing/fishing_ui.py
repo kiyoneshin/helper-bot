@@ -63,6 +63,17 @@ def build_fishing_embed(
     if boosts and "stamina_discount" in boosts:
         effective_stamina_cost = max(1, effective_stamina_cost - int(boosts["stamina_discount"]["value"]))
 
+    from .fishing_config import PERFECT_CATCH_THRESHOLD
+    from cogs.events.skills.skills_config import SKILL_PER_LEVEL_BONUS
+    
+    effective_perfect_threshold = PERFECT_CATCH_THRESHOLD
+    if skills_data and has_profession(skills_data, "fishing", "trapper"):
+        effective_perfect_threshold += 1.5
+    if skills_data:
+        fishing_level = skills_data.get("fishing", {}).get("level", 0)
+        window_bonus = SKILL_PER_LEVEL_BONUS["fishing"].get("perfect_window_bonus", 0.0)
+        effective_perfect_threshold += (fishing_level * window_bonus)
+
     embed = discord.Embed(
         title="Hồ Câu Cá Bình Yên",
         description=(
@@ -70,7 +81,7 @@ def build_fishing_embed(
             f"Mỗi lần quăng cần tốn **{effective_stamina_cost}** thể lực.\n"
             f"Khi thấy <:symbol_alert:1537546957885542450> `CÁ CẮN CÂU!!`, hãy bấm **nhanh nhất có thể** trong "
             f"**{CATCH_WINDOW_SECONDS:.1f} giây** để không bị trượt!\n"
-            f"*(Phản xạ < 2s = **Perfect Catch** — x2 cá hiếm!)*\n"
+            f"*(Phản xạ < {effective_perfect_threshold:.1f}s = **Perfect Catch** — x2 cá hiếm!)*\n"
         ),
         color=0x1abc9c,
     )
@@ -262,7 +273,7 @@ class FishingView(discord.ui.View):
             from cogs.events.lootbox.lootbox_cmd import _get_luck_and_boost, _add_lootbox_to_inventory
             from cogs.events.lootbox.lootbox_config import get_activity_lootbox_drop, TIER_EMOJIS, TIER_NAMES
             luck, boost_active = await _get_luck_and_boost(self.bot, self.user_id)
-            lb_tier = get_activity_lootbox_drop("fish", luck, boost_active, boosts)
+            lb_tier = get_activity_lootbox_drop("fish", luck, boost_active, boosts, skills_data)
             lb_msg = ""
             if lb_tier:
                 await _add_lootbox_to_inventory(self.bot, self.user_id, lb_tier, 1)

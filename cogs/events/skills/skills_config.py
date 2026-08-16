@@ -114,7 +114,7 @@ FARMING_XP: dict[str, int] = {
 
 
 # ---------------------------------------------------------------------------
-# PROFESSIONS — 12 profession tổng cộng
+# PROFESSIONS — 24 profession tổng cộng
 # ---------------------------------------------------------------------------
 # profession_id phải khớp với profession_5/profession_10 lưu trong DB
 # parent_profession: None (Lv5) hoặc ID profession Lv5 (Lv10)

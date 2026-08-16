@@ -176,7 +176,9 @@ def _apply_fishing_boosts(rod_level: int, is_perfect: bool, food_boosts: dict, s
     elif has_profession(skills_data, "fishing", "fisher"):
         prof_bonus = 0.25
         
-    shift_pct = (fishing_level * 0.02) + food_rare + food_all + prof_bonus
+    from cogs.events.skills.skills_config import SKILL_PER_LEVEL_BONUS
+    rare_shift = SKILL_PER_LEVEL_BONUS["fishing"].get("rare_shift_pct", 2.0) / 100.0
+    shift_pct = (fishing_level * rare_shift) + food_rare + food_all + prof_bonus
     
     # Normal: trash (0), carp (1)
     # Rare: lobster (2), salmon (3), jellyfish (4), squid (5), stingray (6), legendary (7)
@@ -209,10 +211,14 @@ def get_fishing_loot(rod_level: int, reaction_time: float, food_boosts: dict = N
     if skills_data is None: skills_data = {}
     from cogs.events.skills.skills_db import has_profession
 
+    from cogs.events.skills.skills_config import SKILL_PER_LEVEL_BONUS
     # --- Tính Perfect Catch threshold ---
     effective_threshold = PERFECT_CATCH_THRESHOLD
     if has_profession(skills_data, "fishing", "trapper"):
         effective_threshold += 1.5
+    fishing_level = skills_data.get("fishing", {}).get("level", 0)
+    window_bonus = SKILL_PER_LEVEL_BONUS["fishing"].get("perfect_window_bonus", 0.0)
+    effective_threshold += (fishing_level * window_bonus)
 
     is_perfect = reaction_time < effective_threshold
 

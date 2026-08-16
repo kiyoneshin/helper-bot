@@ -75,7 +75,9 @@ def _apply_woodcutting_boosts(axe_level: int, food_boosts: dict, skills_data: di
     food_all = float(food_boosts.get("all_boost", {}).get("value", 0))
     prof_bonus = 0.20 if has_profession(skills_data, "chopping", "lumberjack") else 0.0
     
-    shift_pct = (chopping_level * 0.025) + food_rare + food_all + prof_bonus
+    from cogs.events.skills.skills_config import SKILL_PER_LEVEL_BONUS
+    rare_shift = SKILL_PER_LEVEL_BONUS["chopping"].get("rare_shift_pct", 2.5) / 100.0
+    shift_pct = (chopping_level * rare_shift) + food_rare + food_all + prof_bonus
     
     # Normal: twigs (0), wood (1)
     # Rare: hardwood (2), pine_resin (3), sap (4)

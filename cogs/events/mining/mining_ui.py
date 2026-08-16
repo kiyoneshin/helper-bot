@@ -172,7 +172,7 @@ class MiningView(discord.ui.View):
         from cogs.events.lootbox.lootbox_cmd import _get_luck_and_boost, _add_lootbox_to_inventory
         from cogs.events.lootbox.lootbox_config import get_activity_lootbox_drop, TIER_EMOJIS, TIER_NAMES
         luck, boost_active = await _get_luck_and_boost(self.bot, self.user_id)
-        lb_tier = get_activity_lootbox_drop("mine", luck, boost_active, boosts)
+        lb_tier = get_activity_lootbox_drop("mine", luck, boost_active, boosts, skills_data)
         # Excavator profession: upgrade lootbox tier
         from cogs.events.skills.skills_db import has_profession as _has_profession
         import random as _random

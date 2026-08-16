@@ -788,6 +788,18 @@ class UnifiedInventoryCog(commands.Cog):
                 if boost_key in boosts and boosts[boost_key].get("expires_at", 0) > now:
                     await ctx.send(f"<:symbol_wrong:1536629915598848072> Bạn đang có hiệu ứng của đồ ăn này rồi! Phải đợi hiệu ứng cũ hết hạn mới được ăn tiếp.", delete_after=5.0)
                     return
+                
+                # Áp dụng buff từ nghề nghiệp
+                from cogs.events.skills.skills_db import get_skills, get_skill_bonus
+                skills_data = await get_skills(self.bot, uid)
+                food_effect_boost = get_skill_bonus(skills_data, "farming", "food_effect_boost")
+                food_double_duration = get_skill_bonus(skills_data, "farming", "food_double_duration")
+                
+                import random
+                boost_val *= (1.0 + food_effect_boost)
+                if random.random() < food_double_duration:
+                    duration *= 2
+                    
                 boosts[boost_key] = {"value": boost_val, "expires_at": now + duration}
                 await execute_db(self.bot, "UPDATE event_profiles SET active_boosts = $2::jsonb WHERE discord_id = $1", uid, json.dumps(boosts))
             elif db_key == "food_70":

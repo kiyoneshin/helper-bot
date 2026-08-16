@@ -82,7 +82,9 @@ def _apply_mining_boosts(pickaxe_level: int, food_boosts: dict, skills_data: dic
     food_all = float(food_boosts.get("all_boost", {}).get("value", 0))
     prof_bonus = 0.20 if has_profession(skills_data, "mining", "prospector") else 0.0
     
-    shift_pct = (mining_level * 0.02) + food_rare + food_all + prof_bonus
+    from cogs.events.skills.skills_config import SKILL_PER_LEVEL_BONUS
+    rare_shift = SKILL_PER_LEVEL_BONUS["mining"].get("rare_shift_pct", 2.0) / 100.0
+    shift_pct = (mining_level * rare_shift) + food_rare + food_all + prof_bonus
     
     # Normal: stone (0), coal (1)
     # Rare: copper (2), iron (3), gold (4), diamond (5)

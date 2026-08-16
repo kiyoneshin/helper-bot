@@ -220,13 +220,15 @@ def get_activity_lootbox_drop(
     activity: str,
     luck: int = 0,
     item6_active: bool = False,
-    food_boosts: dict = None
+    food_boosts: dict = None,
+    skills_data: dict = None
 ) -> Optional[int]:
     """
     Roll xem có drop lootbox từ activity (fish/mine/chop) không.
     Trả về tier_id nếu drop, None nếu không.
     """
     if food_boosts is None: food_boosts = {}
+    if skills_data is None: skills_data = {}
     
     chances = ACTIVITY_DROP_CHANCES.get(activity, {})
     if not chances:
@@ -235,12 +237,18 @@ def get_activity_lootbox_drop(
     luck_bonus = calc_luck_bonus(luck)  # % thêm vào
     multiplier = 1.5 if item6_active else 1.0
     
+    # Cộng dồn profession bonus
+    geologist_bonus = 0.0
+    if activity == "mine":
+        from cogs.events.skills.skills_db import get_skill_bonus
+        geologist_bonus = get_skill_bonus(skills_data, "mining", "mining_lootbox_bonus")
+    
     # Cộng dồn food boosts
     all_boost = float(food_boosts.get("all_boost", {}).get("value", 0))
     lb_drop_rate = float(food_boosts.get("lb_drop_rate", {}).get("value", 0))
     lb_rarity = float(food_boosts.get("lb_rarity", {}).get("value", 0))
     
-    total_drop_bonus = all_boost + lb_drop_rate
+    total_drop_bonus = all_boost + lb_drop_rate + geologist_bonus
     total_rarity_bonus = all_boost + lb_rarity
 
     # Roll từng tier từ hiếm nhất xuống thường nhất

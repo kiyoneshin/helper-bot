@@ -601,6 +601,15 @@ async def sell_inventory(bot: commands.Bot, user_id: str, category: str) -> int:
     if not inventory:
         return 0
         
+    from cogs.events.skills.skills_db import get_skills, get_skill_bonus
+    skills_data = await get_skills(bot, user_id)
+    sell_price_farm = get_skill_bonus(skills_data, "farming", "sell_price_farm")
+    sell_price_artisan = get_skill_bonus(skills_data, "farming", "sell_price_artisan")
+    sell_price_metal_bar = get_skill_bonus(skills_data, "mining", "sell_price_metal_bar")
+    sell_price_rare_ore = get_skill_bonus(skills_data, "mining", "sell_price_rare_ore")
+    sell_price_wood = get_skill_bonus(skills_data, "chopping", "sell_price_wood")
+    sell_price_fish = get_skill_bonus(skills_data, "fishing", "sell_price_fish")
+        
     total_profit = 0
     items_to_keep = {}
     
@@ -633,15 +642,23 @@ async def sell_inventory(bot: commands.Bot, user_id: str, category: str) -> int:
         # Tính tiền
         if is_ore:
             profit_per_item = MINING_LOOT[item_id].get("price", 0)
+            if item_id in ["diamond", "gold_ore"]:
+                profit_per_item = int(profit_per_item * (1.0 + sell_price_rare_ore))
             total_profit += profit_per_item * count
         elif is_fish:
             profit_per_item = FISH_LOOT[item_id].get("price", 0)
+            profit_per_item = int(profit_per_item * (1.0 + sell_price_fish))
             total_profit += profit_per_item * count
         elif is_artisan:
             profit_per_item = ARTISAN_GOODS[item_id].get("price", 0)
+            if item_id in ["copper_bar", "iron_bar", "gold_bar"]:
+                profit_per_item = int(profit_per_item * (1.0 + sell_price_metal_bar))
+            else:
+                profit_per_item = int(profit_per_item * (1.0 + sell_price_artisan))
             total_profit += profit_per_item * count
         elif is_wood:
             profit_per_item = WOODCUTTING_LOOT[item_id].get("price", 0)
+            profit_per_item = int(profit_per_item * (1.0 + sell_price_wood))
             total_profit += profit_per_item * count
         else:
             # Là crop
@@ -664,7 +681,7 @@ async def sell_inventory(bot: commands.Bot, user_id: str, category: str) -> int:
                 item_profit_total = 0
                 for _ in range(count):
                     base_cost = random.randint(reward_min, reward_max)
-                    item_profit_total += int(base_cost * multiplier)
+                    item_profit_total += int(base_cost * multiplier * (1.0 + sell_price_farm))
                 total_profit += item_profit_total
             else:
                 pass # không cộng profit
@@ -790,19 +807,37 @@ async def sell_items_partial(
     if sell_qty <= 0:
         return False, 0, "Số lượng không hợp lệ!"
 
+    # Fetch skills data
+    from cogs.events.skills.skills_db import get_skills, get_skill_bonus
+    skills_data = await get_skills(bot, user_id)
+    sell_price_farm = get_skill_bonus(skills_data, "farming", "sell_price_farm")
+    sell_price_artisan = get_skill_bonus(skills_data, "farming", "sell_price_artisan")
+    sell_price_metal_bar = get_skill_bonus(skills_data, "mining", "sell_price_metal_bar")
+    sell_price_rare_ore = get_skill_bonus(skills_data, "mining", "sell_price_rare_ore")
+    sell_price_wood = get_skill_bonus(skills_data, "chopping", "sell_price_wood")
+    sell_price_fish = get_skill_bonus(skills_data, "fishing", "sell_price_fish")
+
     # Tính giá trị
     total_profit = 0
     if item_id in MINING_LOOT:
         profit_per = MINING_LOOT[item_id].get("price", 0)
+        if item_id in ["diamond", "gold_ore"]:
+            profit_per = int(profit_per * (1.0 + sell_price_rare_ore))
         total_profit = profit_per * sell_qty
     elif item_id in FISH_LOOT:
         profit_per = FISH_LOOT[item_id].get("price", 0)
+        profit_per = int(profit_per * (1.0 + sell_price_fish))
         total_profit = profit_per * sell_qty
     elif item_id in ARTISAN_GOODS:
         profit_per = ARTISAN_GOODS[item_id].get("price", 0)
+        if item_id in ["copper_bar", "iron_bar", "gold_bar"]:
+            profit_per = int(profit_per * (1.0 + sell_price_metal_bar))
+        else:
+            profit_per = int(profit_per * (1.0 + sell_price_artisan))
         total_profit = profit_per * sell_qty
     elif item_id in WOODCUTTING_LOOT:
         profit_per = WOODCUTTING_LOOT[item_id].get("price", 0)
+        profit_per = int(profit_per * (1.0 + sell_price_wood))
         total_profit = profit_per * sell_qty
     elif item_id.startswith("seed_"):
         return False, 0, "Hạt giống không thể bán — hãy dùng để trồng cây!"
@@ -827,7 +862,8 @@ async def sell_items_partial(
         # Roll giá riêng cho TỪNG cây được bán
         for _ in range(sell_qty):
             base_cost = random.randint(reward_min, reward_max)
-            total_profit += int(base_cost * multiplier)
+            cost = int(base_cost * multiplier * (1.0 + sell_price_farm))
+            total_profit += cost
 
     # Cập nhật inventory
     new_qty = current_qty - sell_qty

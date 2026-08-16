@@ -275,8 +275,15 @@ class RecipeSelect(discord.ui.Select):
             if inventory[item_id] <= 0:
                 del inventory[item_id]
 
+        # Fetch skills_data
+        from cogs.events.skills.skills_db import get_skills, get_skill_bonus
+        skills_data = await get_skills(self.bot, self.user_id)
+        time_reduction = get_skill_bonus(skills_data, "farming", "machine_time_reduction")
+        
+        duration = int(recipe["duration_seconds"] * (1.0 - time_reduction))
+        
         # Đưa vào chế biến
-        finish_time = now + recipe["duration_seconds"]
+        finish_time = now + duration
         slot_data.update({
             "status": "processing",
             "recipe_id": recipe_id,
@@ -293,7 +300,7 @@ class RecipeSelect(discord.ui.Select):
         output_info = ARTISAN_GOODS.get(recipe["output_id"], {})
         await interaction.response.send_message(
             f"Bắt đầu chế biến: {recipe['icon']} **{recipe['name']}**\n"
-            f"<:symbol_hour_glass:1537570149215899658> Hoàn thành sau **{_format_duration(recipe['duration_seconds'])}** → {output_info.get('icon','')} **{output_info.get('name','')}**",
+            f"<:symbol_hour_glass:1537570149215899658> Hoàn thành sau **{_format_duration(duration)}** → {output_info.get('icon','')} **{output_info.get('name','')}**",
             ephemeral=True,
         )
 

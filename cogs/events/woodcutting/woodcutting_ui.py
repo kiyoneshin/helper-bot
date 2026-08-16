@@ -137,11 +137,31 @@ class WoodcuttingView(discord.ui.View):
         from cogs.events.lootbox.lootbox_cmd import _get_luck_and_boost, _add_lootbox_to_inventory
         from cogs.events.lootbox.lootbox_config import get_activity_lootbox_drop, TIER_EMOJIS, TIER_NAMES
         luck, boost_active = await _get_luck_and_boost(self.bot, self.user_id)
-        lb_tier = get_activity_lootbox_drop("chop", luck, boost_active, boosts)
+        lb_tier = get_activity_lootbox_drop("chop", luck, boost_active, boosts, skills_data)
         lb_msg = ""
         if lb_tier:
             await _add_lootbox_to_inventory(self.bot, self.user_id, lb_tier, 1)
             lb_msg = f"\n<:gift_00_symbol:1536003307011842099> **Rớt thêm:** 1x {TIER_EMOJIS[lb_tier]} {TIER_NAMES[lb_tier]}"
+            
+        # Tracker cross-drop
+        tracker_msg = ""
+        import random
+        if has_profession(skills_data, "chopping", "tracker") and random.random() < 0.25:
+            if random.random() < 0.5:
+                # Mine
+                from cogs.events.mining.mining_config import get_mining_loot, MINING_LOOT
+                pickaxe_level = int(farm_data.get("pickaxe_level", 1))
+                t_loot_id, t_qty = get_mining_loot(pickaxe_level, boosts, skills_data)
+                t_info = MINING_LOOT[t_loot_id]
+            else:
+                # Fish
+                from cogs.events.fishing.fishing_config import get_fishing_loot, FISH_LOOT
+                rod_level = int(farm_data.get("fishing_rod", 1))
+                t_loot_id, _, t_qty = get_fishing_loot(rod_level, 3.0, boosts, skills_data)
+                t_info = FISH_LOOT[t_loot_id]
+                
+            inventory[t_loot_id] = inventory.get(t_loot_id, 0) + t_qty
+            tracker_msg = f"\n<:symbol_arrow_right:1538646237757186078> **Thợ Sưu Tầm:** Rớt thêm {t_qty}x {t_info['icon']} {t_info['name']}"
 
         await save_farm_data(self.bot, self.user_id, farm_data)
 
@@ -167,7 +187,7 @@ class WoodcuttingView(discord.ui.View):
             await update_event_stat(self.bot, self.user_id, "rare_wood_chopped", quantity)
 
         await interaction.followup.send(
-            f"<:symbol_00_woodcutting:1536007697491558491> Bạn vừa đốn được **{quantity}x {loot_info['icon']} {loot_info['name']}**!{lb_msg}\n"
+            f"<:symbol_00_woodcutting:1536007697491558491> Bạn vừa đốn được **{quantity}x {loot_info['icon']} {loot_info['name']}**!{lb_msg}{tracker_msg}\n"
             f"*(Thể lực: {new_stamina}/{MAX_STAMINA} | +{xp_gained} Chopping XP)*{levelup_str}",
             ephemeral=True
         )
