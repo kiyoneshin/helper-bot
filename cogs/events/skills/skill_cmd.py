@@ -59,9 +59,8 @@ async def build_overview_embed(user: discord.Member | discord.User, skills_data:
 
     for skill_id, skill_cfg in SKILLS.items():
         skill = skills_data.get(skill_id, {})
-        level = skill.get("level", 0)
         xp = skill.get("xp", 0)
-        _, xp_in, xp_need = get_level_from_xp(xp)
+        level, xp_in, xp_need = get_level_from_xp(xp)
 
         if level >= MAX_LEVEL:
             bar = _progress_bar(1, 1)
@@ -90,7 +89,7 @@ async def build_overview_embed(user: discord.Member | discord.User, skills_data:
             inline=False,
         )
 
-    embed.set_footer(text=f"Dùng 'skill reset <tên>' để reset Nghề Nghiệp (Giá: {RESET_COST:,} Điểm.")
+    embed.set_footer(text=f"Dùng 'skill reset <tên>' để reset Nghề Nghiệp (Giá: {RESET_COST:,} Điểm).")
     return embed
 
 
@@ -101,9 +100,8 @@ async def build_overview_embed(user: discord.Member | discord.User, skills_data:
 async def build_detail_embed(user: discord.Member | discord.User, skills_data: dict, skill_id: str) -> discord.Embed:
     skill_cfg = SKILLS[skill_id]
     skill = skills_data.get(skill_id, {})
-    level = skill.get("level", 0)
     xp = skill.get("xp", 0)
-    _, xp_in, xp_need = get_level_from_xp(xp)
+    level, xp_in, xp_need = get_level_from_xp(xp)
 
     if level >= MAX_LEVEL:
         bar = _progress_bar(1, 1)
