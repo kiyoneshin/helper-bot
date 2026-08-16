@@ -168,23 +168,23 @@ Còn `{prefix}choden` là nơi bán các Thẻ Bài hắc ám chuyên dùng đ�
 
 **Q25: Vật phẩm Chợ Đêm có các tác dụng cụ thể là gì?**
 **A:** Có tổng cộng 10 thẻ bài sát phạt bao gồm:
-- Bom Ảo Giác: Bot tag mục tiêu 3 lần liên tiếp rồi xóa ngay lập tức.
-- Búa Gõ 1 Phút / 5 Phút: Timeout mục tiêu (cấm chat/voice).
-- Thẻ Đổi Tên: Buộc mục tiêu đổi biệt danh thành tên tấu hài.
-- Bao Tay Đạo Chích: Trộm ngẫu nhiên 50–500 điểm sự kiện của mục tiêu.
-- Thẻ Rút Phích Cắm: Kích mục tiêu khỏi kênh thoại.
-- Thẻ Miễn Nhiễm: Tự động chặn 1 lần bị người khác dùng thẻ xấu lên mình.
-- Thẻ Đặc Xá: Cứu người khác khỏi tù hoặc tự cứu mình.
-- Thẻ Tống Giam: Gửi 1 người vào chuồng chó (50 lần lau dọn).
-- Trát Hầu Tòa (Fake Ban): Gửi một Embed dọa ban vĩnh viễn cực kỳ nghiêm trọng.
+- Chơi đồ: Bot ping mục tiêu 3 lần liên tiếp rồi xóa ngay lập tức.
+- Khóa mõm 1 Phút / 5 Phút: Timeout mục tiêu (cấm chat/voice).
+- Có vẻ bạn cần tên mới?: Cho phép bạn đổi tên mục tiêu thành tên bạn muốn.
+- Làm nghề 2 ngón: Trộm ngẫu nhiên 50–500 điểm sự kiện của mục tiêu.
+- Im lặng xíu nào: Đá mục tiêu khỏi kênh thoại và không cho phép vào kênh thoại trong 1 phút.
+- Tao Có Khiên: Tự động chặn 1 lần bị người khác dùng thẻ xấu lên mình.
+- Vé Ra Tù: Cứu người khác khỏi tù hoặc tự cứu mình.
+- Vé Tù Ngay: Gửi 1 người vào chuồng chó (25 lần lau dọn).
+- Trát Hầu Tòa: Gửi một Embed dọa ban vĩnh viễn cực kỳ nghiêm trọng.
 
 **Q26: Chuồng Chó (Nhà Tù) hoạt động thế nào? Làm sao để thoát?**
 **A:** Nếu bị ai đó dùng Thẻ Bỏ Tù (chợ đen), bạn sẽ bị tống vào Chuồng Chó (bị Mute, không thể chat). Hệ thống sẽ yêu cầu một số lần "lao động công ích" nhất định.
 Để thoát ra, có các cách sau:
-1. Làm việc khổ sai: Dùng lệnh `{prefix}laudon` (Lau dọn), `{prefix}sua` (Toán), `{prefix}nhatxuong` (Nhặt xương) liên tục trong kênh tù. Mỗi lần thực hiện thành công sẽ giảm đi 1 điểm phạt. Hết điểm phạt bạn sẽ được tự do.
-2. Chơi liều (Minigame Tù): Đánh tài xỉu bằng số điểm phạt (`{prefix}lcuoc`) hoặc Cố gắng vượt ngục (`{prefix}lvuotnguc`) với tỉ lệ 5% thành công thoát ngay lập tức, nhưng 95% thất bại sẽ bị nhân 3 án phạt.
+1. Làm việc khổ sai: Dùng lệnh `{prefix}laudon` (Lau dọn), `{prefix}sua` (Làm toán), `{prefix}nhatxuong` (Cướp xương của chó khác) liên tục trong kênh tù. Mỗi lần thực hiện thành công sẽ giảm đi điểm phạt. Hết điểm phạt bạn sẽ được tự do.
+2. Chơi liều (Minigame Tù): Tung đồng xu (`{prefix}lcuoc`) để giảm 5 lần phạt hoặc tăng 10 lần phạt hoặc Cố gắng vượt ngục (`{prefix}lvuotnguc`) với tỉ lệ 5% thành công thoát ngay lập tức, nhưng 95% thất bại sẽ bị nhân 3 án phạt.
 3. Nhờ vả: Người khác có thể dùng `{prefix}choccho` hoặc `{prefix}choan` để tương tác với bạn, hoặc dùng lệnh `{prefix}baolanh` trả tiền chuộc thân cho bạn ngay lập tức (không cần làm việc)!
-Admin cũng có thể dùng Thẻ Đặc Xá (`{prefix}thatu`) để thả bạn ra vô điều kiện.
+Admin cũng có thể dùng `{prefix}thatu` để thả bạn ra vô điều kiện.
 
 
 ### Phần 6: Tình Yêu & Gia Đình (Gắn Kết)

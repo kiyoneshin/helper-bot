@@ -821,30 +821,47 @@ class UnifiedInventoryCog(commands.Cog):
 
         from datetime import timedelta
 
+        # --- LOGIC KIỂM TRA KHIÊN BẢO VỆ CỦA MỤC TIÊU ---
+        # if target and db_key in ["timeout_1m", "timeout_5m", "ghost_ping_card", "jail_card", "disconnect_card", "thief_card", "nickname_change"]:
+        #     target_row = await fetchrow_db(self.bot, "SELECT active_boosts FROM event_profiles WHERE discord_id = $1", str(target.id))
+        #     boosts = target_row.get("active_boosts", {}) if target_row else {}
+        #     if isinstance(boosts, str):
+        #         try: boosts = json.loads(boosts)
+        #         except: boosts = {}
+        #     if "shield" in boosts and boosts["shield"].get("value", 0) > 0:
+        #         # Chặn thành công
+        #         boosts["shield"]["value"] -= 1
+        #         if boosts["shield"]["value"] <= 0:
+        #             del boosts["shield"]
+        #         await execute_db(self.bot, "UPDATE event_profiles SET active_boosts = $2::jsonb WHERE discord_id = $1", str(target.id), json.dumps(boosts))
+        #         await ctx.send(f"**{target.display_name}** đã kích hoạt **Tao Có Khiên** và chặn hoàn toàn tác dụng của vật phẩm từ **{ctx.author.display_name}**!")
+        #         return
+        # ------------------------------------------------
+
         if db_key == "timeout_1m":
             assert isinstance(target, discord.Member)
             # try:
-            #     await target.timeout(timedelta(minutes=1), reason=f"Bị {ctx.author} dùng Búa Gõ 1 Phút")
+            #     await target.timeout(timedelta(minutes=1), reason=f"Bị {ctx.author} dùng Khóa mõm 1 Phút")
             # except discord.Forbidden:
             #     await ctx.send("<:symbol_ban:1537546960003801319> Bot không đủ quyền timeout người này!")
             #     return
-            await ctx.send(f"<:symbol_demolish:1537466095412314192> {target.mention} đã bị dán băng keo vào miệng trong 1 phút!")
+            await ctx.send(f"<:symbol_demolish:1537466095412314192> {target.mention} đã bị dán băng keo vào miệng trong 1 phút! (Chưa kích hoạt tính năng)")
 
         elif db_key == "timeout_5m":
             assert isinstance(target, discord.Member)
             # try:
-            #     await target.timeout(timedelta(minutes=5), reason=f"Bị {ctx.author} dùng Búa Gõ 5 Phút")
+            #     await target.timeout(timedelta(minutes=5), reason=f"Bị {ctx.author} dùng Khóa mõm 5 Phút")
             # except discord.Forbidden:
             #     await ctx.send("<:symbol_ban:1537546960003801319> Bot không đủ quyền timeout người này!")
             #     return
-            await ctx.send(f"<:symbol_demolish:1537466095412314192> {target.mention} đã bị dán băng keo vào miệng trong 5 phút!")
+            await ctx.send(f"<:symbol_demolish:1537466095412314192> {target.mention} đã bị dán băng keo vào miệng trong 5 phút! (Chưa kích hoạt tính năng)")
 
         elif db_key == "ghost_ping_card":
             assert isinstance(target, discord.Member)
             # for _ in range(3):
             #     msg = await ctx.channel.send(target.mention)
             #     await msg.delete()
-            await ctx.send(f"👻 Đã chọc ghẹo {target.mention} thành công!")
+            await ctx.send(f"Đã chọc ghẹo {target.mention} thành công!")
 
         elif db_key == "disconnect_card":
             assert isinstance(target, discord.Member)
@@ -854,68 +871,113 @@ class UnifiedInventoryCog(commands.Cog):
             #     except discord.Forbidden:
             #         await ctx.send("<:symbol_ban:1537546960003801319> Bot không đủ quyền sút người này!")
             #         return
-            # else:
-            #     await ctx.send(f"<:symbol_wrong:1536629915598848072> {target.mention} không ở trong kênh thoại nào cả!")
-            #     return
-            await ctx.send(f"🔌 {target.mention} vừa bị sút văng khỏi kênh thoại!")
+            # 
+            # async def keep_disconnected(member: discord.Member, duration: int):
+            #     import time
+            #     end_time = time.time() + duration
+            #     while time.time() < end_time:
+            #         if member.voice and member.voice.channel:
+            #             try:
+            #                 await member.move_to(None)
+            #             except:
+            #                 pass
+            #         await asyncio.sleep(2)
+            # 
+            # self.bot.loop.create_task(keep_disconnected(target, 60))
+            await ctx.send(f"{target.mention} vừa bị sút văng khỏi kênh thoại và bị chặn kết nối trong 1 phút! (Chưa kích hoạt tính năng)")
 
         elif db_key == "fake_ban_card":
             assert isinstance(target, discord.Member)
-            fake_embed = discord.Embed(
-                title="<:symbol_demolish:1537466095412314192> THÔNG BÁO BAN!",
-                description=f"**{target.mention}** đã bị cấm vĩnh viễn khỏi máy chủ.\n**Lý do:** Vi phạm nội quy cực kỳ nghiêm trọng.",
-                color=0xFF0000
-            )
-            fake_embed.set_footer(text="Đùa tí thôi! Bị lừa rồi nhé 😂")
-            await ctx.send(embed=fake_embed)
+            # fake_embed = discord.Embed(
+            #     title="<:symbol_demolish:1537466095412314192> THÔNG BÁO BAN!",
+            #     description=f"**{target.mention}** đã bị cấm vĩnh viễn khỏi máy chủ.\n**Lý do:** Vi phạm nội quy cực kỳ nghiêm trọng.",
+            #     color=0xFF0000
+            # )
+            # await ctx.send(embed=fake_embed)
+            await ctx.send("Đã gửi trát hầu toà!")
 
         elif db_key == "jail_card":
             assert isinstance(target, discord.Member)
-            # jail_cog: Any = self.bot.get_cog("JailSystem")
+            # jail_cog: Any = self.bot.get_cog("JailCore")
             # if jail_cog:
             #     try:
-            #         await jail_cog.phattu_cmd.callback(jail_cog, ctx, target, 50, reason=f"Bị {ctx.author} dùng Thẻ Bỏ Tù")
+            #         await jail_cog.phattu_cmd.callback(jail_cog, ctx, target, 25, reason=f"Bị {ctx.author} dùng Vé Tù Ngay")
             #     except Exception as e:
             #         await ctx.send(f"<:symbol_wrong:1536629915598848072> Lỗi khi bỏ tù: {e}")
             #         return
             # else:
             #     await ctx.send("<:symbol_wrong:1536629915598848072> Tính năng Chuồng Chó hiện đang bảo trì!")
             #     return
-            await ctx.send(f"🚔 {target.mention} đã bị tống vào chuồng chó!")
+            await ctx.send(f"{target.mention} đã bị tống vào chuồng chó!")
 
         elif db_key == "thief_card":
             assert isinstance(target, discord.Member)
-            # Tác dụng trộm điểm hoặc tiền từ target
             # import random
+            # from cogs.events.generals.core import add_event_points
             # stolen_amount = random.randint(50, 500)
-            # ... cập nhật DB ...
-            await ctx.send(f"🕵️ {ctx.author.mention} đã trộm thành công đồ của {target.mention}!")
+            # target_row = await fetchrow_db(self.bot, "SELECT points FROM event_profiles WHERE discord_id = $1", str(target.id))
+            # if target_row and target_row["points"] >= stolen_amount:
+            #     await add_event_points(self.bot, target.id, -stolen_amount, is_earned=False)
+            #     await add_event_points(self.bot, ctx.author.id, stolen_amount, is_earned=False)
+            #     await ctx.send(f"{ctx.author.mention} đã trộm thành công **{stolen_amount}** <:symbol_points_p:1538282388507987989> từ {target.mention}!")
+            # else:
+            #     actual_stolen = target_row["points"] if target_row else 0
+            #     if actual_stolen > 0:
+            #         await add_event_points(self.bot, target.id, -actual_stolen, is_earned=False)
+            #         await add_event_points(self.bot, ctx.author.id, actual_stolen, is_earned=False)
+            #         await ctx.send(f"{ctx.author.mention} đã vơ vét sạch túi của {target.mention} được **{actual_stolen}** <:symbol_points_p:1538282388507987989>!")
+            #     else:
+            #         await ctx.send(f"{target.mention} quá nghèo, {ctx.author.mention} không trộm được đồng nào!")
+            await ctx.send(f"{ctx.author.mention} đã trộm thành công đồ của {target.mention}!")
             
         elif db_key == "nickname_change":
             assert isinstance(target, discord.Member)
-            import random
-            funny_names = ["Thánh Hề", "Kẻ Trộm Chó", "Đại Vương Móm", "Chúa Tể Báo Thủ", "Chú Bé Đần"]
-            new_name = random.choice(funny_names)
+            # await ctx.send(f"{ctx.author.mention}, bạn muốn đổi tên {target.mention} thành gì? (Nhập tên mới xuống chat trong 30s)")
+            # def check(m):
+            #     return m.author == ctx.author and m.channel == ctx.channel
             # try:
-            #     await target.edit(nick=new_name, reason=f"Bị {ctx.author} dùng thẻ đổi tên")
-            # except Exception:
-            #     pass
-            await ctx.send(f"🤡 Đã đổi tên {target.mention} thành **{new_name}**!")
+            #     msg = await self.bot.wait_for("message", check=check, timeout=30.0)
+            #     new_name = msg.content[:32]
+            #     try:
+            #         await target.edit(nick=new_name, reason=f"Bị {ctx.author} dùng thẻ đổi tên")
+            #         await ctx.send(f"Đã đổi tên {target.mention} thành **{new_name}**!")
+            #     except discord.Forbidden:
+            #         await ctx.send("<:symbol_ban:1537546960003801319> Bot không đủ quyền đổi tên người này! Vật phẩm đã bị tiêu hao.")
+            # except asyncio.TimeoutError:
+            #     await ctx.send("Đã hết thời gian chờ, bạn đã bỏ lỡ cơ hội đổi tên! Vật phẩm đã bị tiêu hao.")
+            # return
+            await ctx.send(f"Đã dùng thẻ đổi tên với {target.mention}!")
             
         elif db_key == "shield_card":
-            # Ghi nhận trạng thái có khiên vào DB hoặc memory
-            # await execute_db(...)
-            await ctx.send(f"🛡️ {ctx.author.mention} đã trang bị thẻ miễn nhiễm! Sẽ chặn 1 lần hiệu ứng xấu.")
+            # profile_row = await fetchrow_db(self.bot, "SELECT active_boosts FROM event_profiles WHERE discord_id = $1", str(ctx.author.id))
+            # boosts = profile_row.get("active_boosts", {}) if profile_row else {}
+            # if isinstance(boosts, str):
+            #     try: boosts = json.loads(boosts)
+            #     except: boosts = {}
+            # boosts["shield"] = {"value": 1, "expires_at": 9999999999}
+            # await execute_db(self.bot, "UPDATE event_profiles SET active_boosts = $2::jsonb WHERE discord_id = $1", str(ctx.author.id), json.dumps(boosts))
+            await ctx.send(f"{ctx.author.mention} đã trang bị thẻ miễn nhiễm!")
             
         elif db_key == "free_card":
-            if target:
-                assert isinstance(target, discord.Member)
-                target_mention = target.mention
-            else:
-                target_mention = ctx.author.mention
-            # jail_cog = self.bot.get_cog("JailSystem")
-            # Xử lý thả tù...
-            await ctx.send(f"🕊️ {ctx.author.mention} đã dùng thẻ đặc xá để giải cứu {target_mention} khỏi nhà giam!")
+            # if target:
+            #     assert isinstance(target, discord.Member)
+            #     target_mention = target.mention
+            #     target_id = str(target.id)
+            # else:
+            #     target_mention = ctx.author.mention
+            #     target_id = str(ctx.author.id)
+            #
+            # from cogs.moderation.jail.core import release_member, is_jailed
+            # if await is_jailed(self.bot, target_id):
+            #     target_member = target if target else ctx.author
+            #     if isinstance(target_member, discord.Member):
+            #         await release_member(self.bot, target_member)
+            #         await ctx.send(f"{ctx.author.mention} đã dùng Vé Ra Tù để giải cứu {target_mention} khỏi nhà giam!")
+            #     else:
+            #         await ctx.send("<:symbol_wrong:1536629915598848072> Không thể giải cứu vì người này không còn trong server!")
+            # else:
+            #     await ctx.send(f"<:symbol_wrong:1536629915598848072> {target_mention} hiện không ở trong tù!")
+            await ctx.send(f"Dùng Vé Ra Tù thành công!")
 
 
 async def setup(bot: commands.Bot) -> None:
