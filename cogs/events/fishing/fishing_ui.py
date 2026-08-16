@@ -56,7 +56,7 @@ def build_fishing_embed(author: discord.Member | discord.User, stamina: int, far
         description=(
             f"Chào mừng **{author.display_name}** đến với hồ câu!\n"
             f"Mỗi lần quăng cần tốn **{STAMINA_PER_FISH}** thể lực.\n"
-            f"Khi thấy `<:symbol_alert:1537546957885542450> CÁ CẮN CÂU!!`, hãy bấm **nhanh nhất có thể** trong "
+            f"Khi thấy <:symbol_alert:1537546957885542450> `CÁ CẮN CÂU!!`, hãy bấm **nhanh nhất có thể** trong "
             f"**{CATCH_WINDOW_SECONDS:.1f} giây** để không bị trượt!\n"
             f"*(Phản xạ < 2s = **Perfect Catch** — x2 cá hiếm!)*\n"
         ),
