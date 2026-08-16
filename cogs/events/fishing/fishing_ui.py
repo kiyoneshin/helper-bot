@@ -236,6 +236,10 @@ class FishingView(discord.ui.View):
             content="<:symbol_alert:1537546957885542450> **CÁ CẮN CÂU!! BẤM NHANH!!** <:symbol_alert:1537546957885542450>",
             view=catch_view,
         )
+        
+        # Đặt lại start_time sau khi tin nhắn đã thực sự được sửa trên Discord
+        # (giúp loại bỏ thời gian Ping API từ Bot lên Discord)
+        catch_view.start_time = time.time()
 
         # BƯỚC 6 — Chờ phản xạ người dùng
         await catch_view.wait()
