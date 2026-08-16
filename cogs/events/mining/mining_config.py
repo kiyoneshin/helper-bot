@@ -59,6 +59,39 @@ _WEIGHTS_BY_LEVEL: dict[int, list[int]] = {
 
 _LOOT_KEYS: list[str] = list(MINING_LOOT.keys())
 
+def apply_rare_shift(weights: list[float], normal_indices: list[int], rare_indices: list[int], rare_dist: list[float], shift_pct: float, max_shift: float = 0.8):
+    if shift_pct <= 0: return
+    shift_pct = min(shift_pct, max_shift)
+    
+    stolen = 0.0
+    for idx in normal_indices:
+        reduce_amount = weights[idx] * shift_pct
+        weights[idx] -= reduce_amount
+        stolen += reduce_amount
+        
+    for i, idx in enumerate(rare_indices):
+        weights[idx] += stolen * rare_dist[i]
+
+
+def _apply_mining_boosts(pickaxe_level: int, food_boosts: dict, skills_data: dict) -> list[float]:
+    from cogs.events.skills.skills_db import has_profession
+    weights = list(float(w) for w in _WEIGHTS_BY_LEVEL.get(pickaxe_level, _WEIGHTS_BY_LEVEL[1]))
+    
+    mining_level = skills_data.get("mining", {}).get("level", 0)
+    food_rare = float(food_boosts.get("rare_ore", {}).get("value", 0))
+    food_all = float(food_boosts.get("all_boost", {}).get("value", 0))
+    prof_bonus = 0.20 if has_profession(skills_data, "mining", "prospector") else 0.0
+    
+    shift_pct = (mining_level * 0.02) + food_rare + food_all + prof_bonus
+    
+    # Normal: stone (0), coal (1)
+    # Rare: copper (2), iron (3), gold (4), diamond (5)
+    # Dist: 45%, 30%, 15%, 10%
+    apply_rare_shift(weights, [0, 1], [2, 3, 4, 5], [0.45, 0.30, 0.15, 0.10], shift_pct, max_shift=0.8)
+    
+    return weights
+
+
 def get_mining_display_weights(pickaxe_level: int) -> dict[str, int]:
     weights = _WEIGHTS_BY_LEVEL.get(pickaxe_level, _WEIGHTS_BY_LEVEL[1])
     return dict(zip(_LOOT_KEYS, weights))
@@ -71,34 +104,8 @@ def get_mining_effective_weights(pickaxe_level: int, food_boosts: dict = None, s
     """
     if food_boosts is None: food_boosts = {}
     if skills_data is None: skills_data = {}
-
-    from cogs.events.skills.skills_db import has_profession
-    weights = list(_WEIGHTS_BY_LEVEL.get(pickaxe_level, _WEIGHTS_BY_LEVEL[1]))
-
-    # Skill per-level shift
-    mining_level = skills_data.get("mining", {}).get("level", 0)
-    rare_shift = min(mining_level * 2.0, 30.0)
-    if rare_shift > 0:
-        max_reduce = weights[0] * (rare_shift / 100)
-        per_rare = max_reduce / 4
-        weights[0] = max(weights[0] - int(max_reduce), 5)
-        for i in range(2, len(weights)):
-            weights[i] = int(weights[i] + per_rare)
-
-    # Food boosts
-    rare_bonus = float(food_boosts.get("rare_ore", {}).get("value", 0))
-    all_bonus = float(food_boosts.get("all_boost", {}).get("value", 0))
-    total_food_bonus = rare_bonus + all_bonus
-    if total_food_bonus > 0:
-        for i in range(2, len(weights)):
-            weights[i] += int(weights[i] * total_food_bonus)
-
-    # Prospector profession
-    if has_profession(skills_data, "mining", "prospector"):
-        for i in range(2, len(weights)):
-            weights[i] = int(weights[i] * 1.20)
-
-    # Normalize về 100%
+    
+    weights = _apply_mining_boosts(pickaxe_level, food_boosts, skills_data)
     total = sum(weights) or 1
     return {k: round(w / total * 100, 1) for k, w in zip(_LOOT_KEYS, weights)}
 
@@ -107,44 +114,13 @@ def get_mining_loot(pickaxe_level: int, food_boosts: dict = None, skills_data: d
     """
     Random loot dựa theo cấp Cuốc + Skill Mining passive bonus.
     Trả về (item_id, số_lượng).
-    - Lv3 (Cuốc Sắt): 15% cơ hội nhận x2 quặng.
-    - Lv4 (Cuốc Vàng): 20% cơ hội nhận x2 quặng.
-    - Miner profession: luôn +1 quặng.
-    - Prospector profession: +20% tỉ lệ quặng hiếm.
-    - Skill level: mỗi cấp Mining dịch chuyển 2% weight từ stone sang ore hiếm.
     """
     if food_boosts is None: food_boosts = {}
     if skills_data is None: skills_data = {}
+    from cogs.events.skills.skills_db import has_profession
 
-    weights = list(_WEIGHTS_BY_LEVEL.get(pickaxe_level, _WEIGHTS_BY_LEVEL[1]))
-
-    # --- Skill per-level passive: Mỗi cấp Mining shift 2% từ stone sang rare ore ---
-    from cogs.events.skills.skills_db import get_skill_bonus, has_profession
-    mining_level = skills_data.get("mining", {}).get("level", 0)
-    rare_shift = min(mining_level * 2.0, 30.0)  # Tối đa shift 30%
-
-    if rare_shift > 0:
-        # Trừ từ stone (index 0), phân phối đều cho copper/iron/gold/diamond (index 2-5)
-        max_reduce = weights[0] * (rare_shift / 100)
-        per_rare = max_reduce / 4
-        weights[0] = max(weights[0] - int(max_reduce), 5)
-        for i in range(2, len(weights)):
-            weights[i] = int(weights[i] + per_rare)
-
-    # --- Food boosts ---
-    rare_bonus = float(food_boosts.get("rare_ore", {}).get("value", 0))
-    all_bonus = float(food_boosts.get("all_boost", {}).get("value", 0))
-    total_food_bonus = rare_bonus + all_bonus
-    if total_food_bonus > 0:
-        for i in range(2, len(weights)):
-            weights[i] += int(weights[i] * total_food_bonus)
-
-    # --- Prospector profession: +20% tỉ lệ quặng hiếm ---
-    if has_profession(skills_data, "mining", "prospector"):
-        for i in range(2, len(weights)):
-            weights[i] = int(weights[i] * 1.20)
-
-    # --- Normalize weights trước khi random để đảm bảo tổng = 100% ---
+    weights = _apply_mining_boosts(pickaxe_level, food_boosts, skills_data)
+    
     total = sum(weights)
     if total <= 0:
         weights = list(_WEIGHTS_BY_LEVEL.get(pickaxe_level, _WEIGHTS_BY_LEVEL[1]))

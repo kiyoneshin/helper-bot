@@ -48,6 +48,43 @@ _WEIGHTS_BY_LEVEL: dict[int, list[int]] = {
 
 _LOOT_KEYS: list[str] = list(WOODCUTTING_LOOT.keys())
 
+def apply_rare_shift(weights: list[float], normal_indices: list[int], rare_indices: list[int], rare_dist: list[float], shift_pct: float, max_shift: float = 0.8):
+    """
+    Hút weight từ normal_indices và phân bổ cho rare_indices theo tỉ lệ rare_dist.
+    max_shift: tối đa hút bao nhiêu % của normal weight (mặc định 80% để chừa lại 1 ít đồ thường).
+    """
+    if shift_pct <= 0: return
+    shift_pct = min(shift_pct, max_shift)
+    
+    stolen = 0.0
+    for idx in normal_indices:
+        reduce_amount = weights[idx] * shift_pct
+        weights[idx] -= reduce_amount
+        stolen += reduce_amount
+        
+    for i, idx in enumerate(rare_indices):
+        weights[idx] += stolen * rare_dist[i]
+
+
+def _apply_woodcutting_boosts(axe_level: int, food_boosts: dict, skills_data: dict) -> list[float]:
+    from cogs.events.skills.skills_db import has_profession
+    weights = list(float(w) for w in _WEIGHTS_BY_LEVEL.get(axe_level, _WEIGHTS_BY_LEVEL[1]))
+    
+    chopping_level = skills_data.get("chopping", {}).get("level", 0)
+    food_rare = float(food_boosts.get("rare_wood", {}).get("value", 0))
+    food_all = float(food_boosts.get("all_boost", {}).get("value", 0))
+    prof_bonus = 0.20 if has_profession(skills_data, "chopping", "lumberjack") else 0.0
+    
+    shift_pct = (chopping_level * 0.025) + food_rare + food_all + prof_bonus
+    
+    # Normal: twigs (0), wood (1)
+    # Rare: hardwood (2), pine_resin (3), sap (4)
+    # Dist: 50%, 30%, 20%
+    apply_rare_shift(weights, [0, 1], [2, 3, 4], [0.50, 0.30, 0.20], shift_pct, max_shift=0.8)
+    
+    return weights
+
+
 def get_woodcutting_display_weights(axe_level: int) -> dict[str, int]:
     weights = _WEIGHTS_BY_LEVEL.get(axe_level, _WEIGHTS_BY_LEVEL[1])
     return dict(zip(_LOOT_KEYS, weights))
@@ -60,67 +97,19 @@ def get_woodcutting_effective_weights(axe_level: int, food_boosts: dict = None, 
     """
     if food_boosts is None: food_boosts = {}
     if skills_data is None: skills_data = {}
-
-    from cogs.events.skills.skills_db import has_profession
-    weights = list(_WEIGHTS_BY_LEVEL.get(axe_level, _WEIGHTS_BY_LEVEL[1]))
-
-    # Skill per-level shift
-    chopping_level = skills_data.get("chopping", {}).get("level", 0)
-    rare_shift = min(chopping_level * 2.5, 40.0)
-    if rare_shift > 0:
-        max_reduce = weights[0] * (rare_shift / 100)
-        per_rare = max_reduce / 3
-        weights[0] = max(weights[0] - int(max_reduce), 5)
-        for i in range(2, len(weights)):
-            weights[i] = int(weights[i] + per_rare)
-
-    # Food boosts
-    rare_bonus = float(food_boosts.get("rare_wood", {}).get("value", 0))
-    all_bonus = float(food_boosts.get("all_boost", {}).get("value", 0))
-    total_bonus = rare_bonus + all_bonus
-    if total_bonus > 0 and len(weights) > 2:
-        weights[2] += int(weights[2] * total_bonus)
-
-    # Lumberjack profession
-    if has_profession(skills_data, "chopping", "lumberjack"):
-        for i in range(2, len(weights)):
-            weights[i] = int(weights[i] * 1.20)
-
-    # Normalize về 100%
+    
+    weights = _apply_woodcutting_boosts(axe_level, food_boosts, skills_data)
     total = sum(weights) or 1
     return {k: round(w / total * 100, 1) for k, w in zip(_LOOT_KEYS, weights)}
+
 
 def get_woodcutting_loot(axe_level: int, food_boosts: dict = None, skills_data: dict = None) -> tuple[str, int]:
     if food_boosts is None: food_boosts = {}
     if skills_data is None: skills_data = {}
-
-    weights = list(_WEIGHTS_BY_LEVEL.get(axe_level, _WEIGHTS_BY_LEVEL[1]))
-
-    # --- Skill per-level: Mỗi cấp Chopping shift 2.5% từ twigs sang rare wood ---
     from cogs.events.skills.skills_db import has_profession
-    chopping_level = skills_data.get("chopping", {}).get("level", 0)
-    rare_shift = min(chopping_level * 2.5, 40.0)
-    if rare_shift > 0:
-        max_reduce = weights[0] * (rare_shift / 100)
-        per_rare = max_reduce / 3
-        weights[0] = max(weights[0] - int(max_reduce), 5)
-        for i in range(2, len(weights)):
-            weights[i] = int(weights[i] + per_rare)
 
-    # --- Food boosts ---
-    rare_bonus = float(food_boosts.get("rare_wood", {}).get("value", 0))
-    all_bonus = float(food_boosts.get("all_boost", {}).get("value", 0))
-    total_bonus = rare_bonus + all_bonus
-    if total_bonus > 0:
-        if len(weights) > 2:
-            weights[2] += int(weights[2] * total_bonus)
-
-    # --- Lumberjack profession: +20% gỗ hiếm ---
-    if has_profession(skills_data, "chopping", "lumberjack"):
-        for i in range(2, len(weights)):
-            weights[i] = int(weights[i] * 1.20)
-
-    # --- Normalize trước random để tổng luôn = 100% ---
+    weights = _apply_woodcutting_boosts(axe_level, food_boosts, skills_data)
+    
     total = sum(weights)
     if total <= 0:
         weights = list(_WEIGHTS_BY_LEVEL.get(axe_level, _WEIGHTS_BY_LEVEL[1]))

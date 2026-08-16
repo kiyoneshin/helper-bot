@@ -139,6 +139,67 @@ def _get_weights(rod_level: int, is_perfect: bool) -> list[int]:
     return w
 
 
+def apply_rare_shift(weights: list[float], normal_indices: list[int], rare_indices: list[int], rare_dist: list[float], shift_pct: float, max_shift: float = 0.8):
+    if shift_pct <= 0: return
+    shift_pct = min(shift_pct, max_shift)
+    
+    stolen = 0.0
+    for idx in normal_indices:
+        reduce_amount = weights[idx] * shift_pct
+        weights[idx] -= reduce_amount
+        stolen += reduce_amount
+        
+    for i, idx in enumerate(rare_indices):
+        weights[idx] += stolen * rare_dist[i]
+
+
+def _apply_fishing_boosts(rod_level: int, is_perfect: bool, food_boosts: dict, skills_data: dict) -> list[float]:
+    from cogs.events.skills.skills_db import has_profession
+    weights = list(float(w) for w in _get_weights(rod_level, is_perfect))
+    
+    # 1. Mariner profession: Không câu được rác, chia đều cho các loại cá khác
+    if has_profession(skills_data, "fishing", "mariner") and weights[0] > 0:
+        trash_w = weights[0]
+        weights[0] = 0
+        dist = [0.40, 0.15, 0.15, 0.10, 0.10, 0.08, 0.02]
+        for i in range(1, len(weights)):
+            weights[i] += trash_w * dist[i-1]
+            
+    # 2. Tính tổng shift %
+    fishing_level = skills_data.get("fishing", {}).get("level", 0)
+    food_rare = float(food_boosts.get("rare_fish", {}).get("value", 0))
+    food_all = float(food_boosts.get("all_boost", {}).get("value", 0))
+    
+    prof_bonus = 0.0
+    if has_profession(skills_data, "fishing", "pirate"):
+        prof_bonus = 0.50
+    elif has_profession(skills_data, "fishing", "fisher"):
+        prof_bonus = 0.25
+        
+    shift_pct = (fishing_level * 0.02) + food_rare + food_all + prof_bonus
+    
+    # Normal: trash (0), carp (1)
+    # Rare: lobster (2), salmon (3), jellyfish (4), squid (5), stingray (6), legendary (7)
+    # Dist: 40%, 25%, 15%, 10%, 7%, 3%
+    apply_rare_shift(weights, [0, 1], [2, 3, 4, 5, 6, 7], [0.40, 0.25, 0.15, 0.10, 0.07, 0.03], shift_pct, max_shift=0.8)
+    
+    return weights
+
+
+def get_fishing_effective_weights(rod_level: int, boosts: dict = None, skills_data: dict = None) -> dict[str, float]:
+    """
+    Tính bảng tỉ lệ % thực tế sau khi áp dụng tất cả buff.
+    Normalize về tổng 100%.
+    Ghi chú: is_perfect=False vì ở UI chưa biết người dùng bấm nhanh hay chậm.
+    """
+    if boosts is None: boosts = {}
+    if skills_data is None: skills_data = {}
+    
+    weights = _apply_fishing_boosts(rod_level, is_perfect=False, food_boosts=boosts, skills_data=skills_data)
+    total = sum(weights) or 1
+    return {k: round(w / total * 100, 1) for k, w in zip(_FISH_KEYS, weights)}
+
+
 def get_fishing_loot(rod_level: int, reaction_time: float, food_boosts: dict = None, skills_data: dict = None) -> Tuple[str, bool, int]:
     """
     Random cá dựa theo cấp Cần, phản xạ và Skill Fishing bonuses.
@@ -146,7 +207,6 @@ def get_fishing_loot(rod_level: int, reaction_time: float, food_boosts: dict = N
     """
     if food_boosts is None: food_boosts = {}
     if skills_data is None: skills_data = {}
-
     from cogs.events.skills.skills_db import has_profession
 
     # --- Tính Perfect Catch threshold ---
@@ -155,44 +215,9 @@ def get_fishing_loot(rod_level: int, reaction_time: float, food_boosts: dict = N
         effective_threshold += 1.5
 
     is_perfect = reaction_time < effective_threshold
-    weights = list(_get_weights(rod_level, is_perfect))
 
-    # --- Skill per-level: Mỗi cấp Fishing shift 2% từ trash sang rare fish ---
-    fishing_level = skills_data.get("fishing", {}).get("level", 0)
-    rare_shift = min(fishing_level * 2.0, 30.0)
-    if rare_shift > 0:
-        max_reduce = weights[0] * (rare_shift / 100)
-        per_rare = max_reduce / 5  # phân phối cho 5 loại cá có rank > 0
-        weights[0] = max(weights[0] - int(max_reduce), 2)
-        for i in range(1, len(weights)):
-            weights[i] = int(weights[i] + per_rare)
-
-    # --- Mariner profession: không rác, chuyển weight sang các loại cá khác ---
-    if has_profession(skills_data, "fishing", "mariner") and weights[0] > 0:
-        trash_w = weights[0]
-        weights[0] = 0
-        dist = [0.40, 0.15, 0.15, 0.10, 0.10, 0.08, 0.02]
-        for i in range(1, len(weights)):
-            weights[i] += int(trash_w * dist[i-1])
-
-    # --- Food boosts: tăng rare fish ---
-    rare_bonus = float(food_boosts.get("rare_fish", {}).get("value", 0))
-    all_bonus = float(food_boosts.get("all_boost", {}).get("value", 0))
-    total_bonus = rare_bonus + all_bonus
-    if total_bonus > 0:
-        idx = len(_FISH_KEYS) - 1
-        weights[idx] += int(weights[idx] * total_bonus)
-
-    # --- Fisher profession: +25% tỉ lệ cá Rare (rank 3+) ---
-    if has_profession(skills_data, "fishing", "fisher"):
-        # Rare fish: jellyfish(4), squid(5), stingray(6), legendary(7)
-        for i in range(4, len(weights)):
-            weights[i] = int(weights[i] * 1.25)
-
-    # --- Pirate profession: x2 tỉ lệ cá Rare (rank 3+) ---
-    if has_profession(skills_data, "fishing", "pirate"):
-        for i in range(4, len(weights)):
-            weights[i] = weights[i] * 2
+    # Lấy weight sau khi boost
+    weights = _apply_fishing_boosts(rod_level, is_perfect, food_boosts, skills_data)
 
     # --- Normalize trước random để tổng luôn đồng đều ---
     total = sum(weights)
