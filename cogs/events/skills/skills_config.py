@@ -221,7 +221,7 @@ PROFESSIONS: dict[str, dict] = {
         "parent": "miner",
         "name": "Thợ Rèn",
         "icon": "🔨",
-        "description": "+50% giá bán các Metal Bar (Đồng, Sắt, Vàng).",
+        "description": "+50% giá bán các Metal Bar.",
         "bonus_key": "sell_price_metal_bar",
         "bonus_value": 0.50,
     },
@@ -232,7 +232,7 @@ PROFESSIONS: dict[str, dict] = {
         "parent": "miner",
         "name": "Thợ Thăm Dò",
         "icon": "🗺️",
-        "description": "+20% tỉ lệ rơi Quặng Hiếm (từ Đồng trở lên).",
+        "description": "+20% tỉ lệ rơi Quặng Hiếm.",
         "bonus_key": "mining_rare_ore_bonus",
         "bonus_value": 0.20,
     },
@@ -338,7 +338,7 @@ PROFESSIONS: dict[str, dict] = {
         "parent": None,
         "name": "Cần Thủ",
         "icon": "🎣",
-        "description": "+25% tỉ lệ rơi Cá Hiếm (Rare rank 3 trở lên).",
+        "description": "+25% tỉ lệ rơi Cá Hiếm.",
         "bonus_key": "fishing_rare_bonus",
         "bonus_value": 0.25,
     },
@@ -351,7 +351,7 @@ PROFESSIONS: dict[str, dict] = {
         "icon": "🕸️",
         "description": "Tăng giới hạn Perfect Catch lên 3.5s.",
         "bonus_key": "fishing_perfect_window",
-        "bonus_value": 1.5,  # Cộng thêm 1.5s vào PERFECT_CATCH_THRESHOLD
+        "bonus_value": 1.5,
     },
     # ── FISHING LV10 (từ Fisher) ────────────────────────
     "angler": {
