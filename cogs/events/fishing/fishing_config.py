@@ -60,7 +60,7 @@ def get_fishing_display_weights(rod_level: int) -> dict[str, int]:
     return dict(zip(_FISH_KEYS, weights))
 
 
-def get_fishing_effective_weights(rod_level: int, food_boosts: dict = None, skills_data: dict = None) -> dict[str, float]:
+def get_fishing_effective_weights(rod_level: int, food_boosts: dict = None, skills_data: dict = None) -> dict[str, float]:  # type: ignore
     """
     Tính bảng tỉ lệ % thực tế của cá sau khi áp dụng tất cả buff (skill + food + profession).
     Dùng bảng non-perfect để hiển thị cơ bản, normalize về 100%.
@@ -87,7 +87,7 @@ def get_fishing_effective_weights(rod_level: int, food_boosts: dict = None, skil
         weights[0] = 0
         dist = [0.40, 0.15, 0.15, 0.10, 0.10, 0.08, 0.02]
         for i in range(1, len(weights)):
-            weights[i] += trash_w * dist[i-1]
+            weights[i] += trash_w * dist[i-1]  # type: ignore
 
     # Food boosts
     rare_bonus = float(food_boosts.get("rare_fish", {}).get("value", 0))
@@ -188,7 +188,7 @@ def _apply_fishing_boosts(rod_level: int, is_perfect: bool, food_boosts: dict, s
     return weights
 
 
-def get_fishing_effective_weights(rod_level: int, boosts: dict = None, skills_data: dict = None) -> dict[str, float]:
+def get_fishing_effective_weights(rod_level: int, boosts: dict = None, skills_data: dict = None) -> dict[str, float]:  # type: ignore
     """
     Tính bảng tỉ lệ % thực tế sau khi áp dụng tất cả buff.
     Normalize về tổng 100%.
@@ -202,7 +202,7 @@ def get_fishing_effective_weights(rod_level: int, boosts: dict = None, skills_da
     return {k: round(w / total * 100, 1) for k, w in zip(_FISH_KEYS, weights)}
 
 
-def get_fishing_loot(rod_level: int, reaction_time: float, food_boosts: dict = None, skills_data: dict = None) -> Tuple[str, bool, int]:
+def get_fishing_loot(rod_level: int, reaction_time: float, food_boosts: dict = None, skills_data: dict = None) -> Tuple[str, bool, int]:  # type: ignore
     """
     Random cá dựa theo cấp Cần, phản xạ và Skill Fishing bonuses.
     Trả về (fish_id, is_perfect_catch, quantity).

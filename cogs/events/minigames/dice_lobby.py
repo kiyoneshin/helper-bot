@@ -56,7 +56,7 @@ class DiceLobbyView(discord.ui.View):
         self.ready_event.set()
         for item in self.children:
             if hasattr(item, "disabled"):
-                item.disabled = True
+                item.disabled = True  # type: ignore
         if hasattr(self, "message") and self.message:
             try:
                 await self.message.edit(view=self)

@@ -22,8 +22,8 @@ def build_woodcutting_embed(
     stamina: int,
     farm_data: Dict[str, Any],
     regen_interval: int = 18,
-    boosts: dict = None,
-    skills_data: dict = None,
+    boosts: dict = None,  # type: ignore
+    skills_data: dict = None,  # type: ignore
 ) -> discord.Embed:
     axe_level = int(farm_data.get("axe_level", 1))
     axe_name = AXE_NAMES.get(axe_level, f"Lv{axe_level}")
@@ -90,7 +90,7 @@ def build_woodcutting_embed(
     return embed
 
 class WoodcuttingView(discord.ui.View):
-    def __init__(self, bot: commands.Bot, user_id: str, author: discord.Member | discord.User, stamina: int, farm_data: Dict[str, Any] = None, regen_interval: int = 18):
+    def __init__(self, bot: commands.Bot, user_id: str, author: discord.Member | discord.User, stamina: int, farm_data: Dict[str, Any] = None, regen_interval: int = 18):  # type: ignore
         super().__init__(timeout=120.0)
         self.bot = bot
         self.user_id = user_id
@@ -199,7 +199,7 @@ class WoodcuttingView(discord.ui.View):
                 child.disabled = True
         try:
             if hasattr(self, "message") and getattr(self, "message", None):
-                await self.message.edit(view=self)
+                await self.message.edit(view=self)  # type: ignore
         except Exception:
             pass
 

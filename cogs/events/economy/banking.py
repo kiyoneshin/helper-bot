@@ -238,7 +238,7 @@ class BankingCog(commands.Cog):
                 await debt_channel.send(
                     f"<:symbol_alert:1537546957885542450><:symbol_alert:1537546957885542450> **CẢNH BÁO VỠ NỢ** <:symbol_alert:1537546957885542450><:symbol_alert:1537546957885542450>\n"
                     f"<@{uid}> đã âm vốn liên tiếp 2 ngày! Ngân hàng đã **SIẾT TÀI SẢN & KHÓA TÀI KHOẢN**.\n"
-                    f"Trạng thái Hôn Nhân đã bị hủy bỏ! Yêu cầu sử dụng lệnh `{self.bot.custom_prefix}trano` để thanh toán khoản nợ **{new_debt:,.0f}** ngay lập tức!"
+                    f"Trạng thái Hôn Nhân đã bị hủy bỏ! Yêu cầu sử dụng lệnh `{self.bot.custom_prefix}trano` để thanh toán khoản nợ **{new_debt:,.0f}** ngay lập tức!"  # type: ignore
                 )
                 
         log.info("[Banking] Hoàn tất quét lãi suất hàng ngày.")

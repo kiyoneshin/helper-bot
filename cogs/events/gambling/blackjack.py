@@ -221,7 +221,7 @@ class BlackjackView(discord.ui.View):
         self.game_over = True
         for child in self.children:
             if hasattr(child, "disabled"):
-                child.disabled = True
+                child.disabled = True  # type: ignore
         self.stop()
         _unlock_user(self.bot, self.author.id)
 
@@ -301,7 +301,7 @@ class BlackjackView(discord.ui.View):
             try:
                 if hasattr(self, "message") and getattr(self, "message", None):
                     embed = self.build_embed(show_dealer=True, result_msg=f"<:symbol_hour_glass:1537570149215899658> **Hết thời gian!** Ngâm bài quá lâu nên bạn bị xử thua. Mất **{self.bet:,}**.")
-                    await self.message.edit(embed=embed, view=self)
+                    await self.message.edit(embed=embed, view=self)  # type: ignore
             except Exception:
                 pass
 
@@ -351,7 +351,7 @@ class BlackjackGame(commands.Cog):
             view.game_over = True
             _unlock_user(self.bot, ctx.author.id)
             for child in view.children:
-                child.disabled = True
+                child.disabled = True  # type: ignore
                 
             if d_score == 21:
                 # Tie

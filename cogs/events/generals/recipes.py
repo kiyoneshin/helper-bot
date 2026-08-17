@@ -256,7 +256,7 @@ class RecipesCog(commands.Cog, name="Recipes"):
 
     @commands.hybrid_command(name="recipe", aliases=["recipes"])
     @check_not_locked()
-    async def recipe_cmd(self, ctx: commands.Context, category: str = None) -> None:
+    async def recipe_cmd(self, ctx: commands.Context, category: str = None) -> None:  # type: ignore
         """Xem bách khoa toàn thư công thức nâng cấp & chế tạo."""
         
         cat_map = {

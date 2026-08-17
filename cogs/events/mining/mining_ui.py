@@ -47,8 +47,8 @@ def build_mining_embed(
     stamina: int,
     farm_data: Dict[str, Any],
     regen_interval: int = 18,
-    boosts: dict = None,
-    skills_data: dict = None,
+    boosts: dict = None,  # type: ignore
+    skills_data: dict = None,  # type: ignore
 ) -> discord.Embed:
     """Render giao diện Hang Động với thanh thể lực và thông tin cuốc hiện tại."""
     pickaxe_level = int(farm_data.get("pickaxe_level", 1))
@@ -143,7 +143,7 @@ class MiningView(discord.ui.View):
             button.disabled = True
             farm_data = await get_farm_data(self.bot, self.user_id)
             await interaction.response.edit_message(
-                embed=build_mining_embed(self.author, current_stamina, farm_data, regen_interval=self.regen_interval, boosts=boosts, skills_data=skills_data), view=self
+                embed=build_mining_embed(self.author, current_stamina, farm_data, regen_interval=self.regen_interval, boosts=boosts, skills_data=skills_data), view=self  # type: ignore
             )
             await interaction.followup.send(
                 f"😓 Bạn đã **kiệt sức**! Hãy đợi thể lực hồi phục.\n"
@@ -225,7 +225,7 @@ class MiningView(discord.ui.View):
                 child.disabled = True
         try:
             if hasattr(self, "message") and getattr(self, "message", None):
-                await self.message.edit(view=self)
+                await self.message.edit(view=self)  # type: ignore
         except Exception:
             pass
 

@@ -290,7 +290,7 @@ async def _buy_event_item(
             return
 
         if item["category"] == "lootbox" and 'new_cd_data' in locals():
-            await execute_db(bot, "UPDATE event_profiles SET lb_buy_cooldown = $1::jsonb WHERE discord_id = $2", json.dumps(new_cd_data), uid)
+            await execute_db(bot, "UPDATE event_profiles SET lb_buy_cooldown = $1::jsonb WHERE discord_id = $2", json.dumps(new_cd_data), uid)  # type: ignore
 
         # Write to inventory
         row = await fetchrow_db(bot, "SELECT inventory FROM event_profiles WHERE discord_id = $1", uid)
@@ -325,7 +325,7 @@ async def _buy_event_item(
             emoji = "<:symbol_point_e:1538282386351984660>" if item["category"] == "event" else "<:symbol_points_p:1538282388507987989>"
             await ctx.send(
                 f"<:symbol_right:1536629912515903578> {ctx.author.mention} Đã mua **{amount}x {item['icon']} {item['name']}** "
-                f"với giá **{total:,}** {emoji}. Vật phẩm đã nằm trong `{bot.custom_prefix}inv`!",
+                f"với giá **{total:,}** {emoji}. Vật phẩm đã nằm trong `{bot.custom_prefix}inv`!",  # type: ignore
                 delete_after=10.0,
             )
     else:
@@ -396,7 +396,7 @@ async def _buy_blackmarket_item(
 
     await ctx.send(
         f"<:symbol_right:1536629912515903578> {ctx.author.mention} Đã mua **{amount}x {item['icon']} {item['name']}** "
-        f"với giá **{total:,}** <:symbol_points_p:1538282388507987989>. Dùng `{bot.custom_prefix}use {item['id']}` để sử dụng!",
+        f"với giá **{total:,}** <:symbol_points_p:1538282388507987989>. Dùng `{bot.custom_prefix}use {item['id']}` để sử dụng!",  # type: ignore
         delete_after=10.0,
     )
 
@@ -443,7 +443,7 @@ class ShopCog(commands.Cog):
         import asyncio
         lock = user_locks.setdefault(ctx.author.id, asyncio.Lock())
         if lock.locked():
-            return await ctx.send("<:symbol_wrong:1536629915598848072> Đang xử lý giao dịch mua trước đó, vui lòng đợi!", delete_after=5.0)
+            return await ctx.send("<:symbol_wrong:1536629915598848072> Đang xử lý giao dịch mua trước đó, vui lòng đợi!", delete_after=5.0)  # type: ignore
         
         await lock.acquire()
         try:
@@ -461,7 +461,7 @@ class ShopCog(commands.Cog):
         if item is None:
             await ctx.send(
                 f"<:symbol_wrong:1536629915598848072> Không tìm thấy vật phẩm với ID `{item_id}`! "
-                f"Dùng `{self.bot.custom_prefix}shop` để xem danh sách.",
+                f"Dùng `{self.bot.custom_prefix}shop` để xem danh sách.",  # type: ignore
                 delete_after=5.0,
             )
             return
@@ -469,7 +469,7 @@ class ShopCog(commands.Cog):
         # Block black market buying
         if item["category"] == "blackmarket":
             await ctx.send(
-                f"<:symbol_wrong:1536629915598848072> Bạn không thể mua trực tiếp vật phẩm chợ đen ở đây! Hãy chờ Chợ Đêm mở (`{self.bot.custom_prefix}choden`) và dùng lệnh `{self.bot.custom_prefix}ebuy`.",
+                f"<:symbol_wrong:1536629915598848072> Bạn không thể mua trực tiếp vật phẩm chợ đen ở đây! Hãy chờ Chợ Đêm mở (`{self.bot.custom_prefix}choden`) và dùng lệnh `{self.bot.custom_prefix}ebuy`.",  # type: ignore
                 delete_after=7.0,
             )
             return

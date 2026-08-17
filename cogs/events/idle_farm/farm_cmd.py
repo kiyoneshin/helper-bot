@@ -83,7 +83,7 @@ class IdleFarmCog(commands.Cog):
                     f"• `{seed_id_map.get(k, '?')}/{k}` — {v['icon']} {v['name']} ({v['grow_time_seconds']//60} phút, giá {v['cost']:,} <:symbol_points_p:1538282388507987989>)"
                     for k, v in SEEDS.items()
                 )
-                return await ctx.send(
+                return await ctx.send(  # type: ignore
                     f"<:symbol_wrong:1536629915598848072> Không tìm thấy hạt giống `{seed_type}`!\n"
                     f"**Danh sách hạt giống hợp lệ:**\n{seed_list}\n\n"
                     f"*Cú pháp: `{prefix}plant <loại_hạt/id_hạt> <ô 1> <ô 2> ...`*"
@@ -93,7 +93,7 @@ class IdleFarmCog(commands.Cog):
         import re
         raw_numbers = re.findall(r'\d+', slots_str)
         if not raw_numbers:
-            return await ctx.send(
+            return await ctx.send(  # type: ignore
                 f"<:symbol_wrong:1536629915598848072> Bạn chưa nhập số ô đất nào!\n"
                 f"*Cú pháp: `{prefix}plant <loại_hạt/id_hạt> <ô 1> <ô 2> ...`\n"
                 f"Ví dụ: `{prefix}plant wheat 1 2 3` hoặc `{prefix}plant 51 1 2 3`*"
@@ -117,7 +117,7 @@ class IdleFarmCog(commands.Cog):
         import re
         raw_numbers = re.findall(r'\d+', slots_str)
         if not raw_numbers:
-            return await ctx.send(
+            return await ctx.send(  # type: ignore
                 f"<:symbol_wrong:1536629915598848072> Bạn chưa nhập số ô đất nào!\n"
                 f"*Cú pháp: `{prefix}pick <ô 1> <ô 2> ...`\n"
                 f"Ví dụ: `{prefix}pick 1 2 3`*"
@@ -131,7 +131,7 @@ class IdleFarmCog(commands.Cog):
         valid_slots = sorted([s for s in slot_ids if str(s) in crops])
         
         if not valid_slots:
-            return await ctx.send(
+            return await ctx.send(  # type: ignore
                 f"<:symbol_wrong:1536629915598848072> Các ô bạn chọn đều đang trống hoặc không tồn tại!"
             )
             

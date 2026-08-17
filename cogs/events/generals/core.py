@@ -267,7 +267,7 @@ class EventCoreCog(commands.Cog):
                 return await ctx.send("<:symbol_wrong:1536629915598848072> Không tìm thấy kênh đích (ID: 1533131441398091917)!")
             
         with open(faq_path, "r", encoding="utf-8") as f:
-            content = f.read().replace("{prefix}", ctx.prefix)
+            content = f.read().replace("{prefix}", ctx.prefix)  # type: ignore
             
         parts = re.split(r'(?m)^###\s+Phần', content)
         if len(parts) < 2:

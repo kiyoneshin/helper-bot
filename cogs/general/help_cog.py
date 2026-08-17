@@ -454,7 +454,7 @@ class _CategorySelect(discord.ui.Select):
 
     async def callback(self, interaction: discord.Interaction):
         cat_name = self.values[0]
-        embed = build_category_embed(cat_name, prefix=self.bot.custom_prefix)
+        embed = build_category_embed(cat_name, prefix=self.bot.custom_prefix)  # type: ignore
         view = CategoryView(self.bot, self.author, cat_name)
         view.message = self.view.message  # type: ignore
         await interaction.response.edit_message(embed=embed, view=view)
@@ -555,7 +555,7 @@ class _BackButton(discord.ui.Button):
 
     async def callback(self, interaction: discord.Interaction):
         view: DetailView = self.view  # type: ignore
-        embed = build_category_embed(view.cat_name, prefix=view.bot.custom_prefix)
+        embed = build_category_embed(view.cat_name, prefix=view.bot.custom_prefix)  # type: ignore
         new_view = CategoryView(view.bot, view.author, view.cat_name)
         new_view.message = view.message
         await interaction.response.edit_message(embed=embed, view=new_view)
@@ -567,7 +567,7 @@ class _HomeButton2(discord.ui.Button):
 
     async def callback(self, interaction: discord.Interaction):
         view: DetailView = self.view  # type: ignore
-        prefix = view.bot.custom_prefix
+        prefix = view.bot.custom_prefix  # type: ignore
         embed = build_home_embed(view.bot, view.author, prefix=prefix)
         new_view = HomeView(view.bot, view.author)
         new_view.message = view.message
@@ -606,7 +606,7 @@ class HelpCog(commands.Cog):
                         break
                 
                 if target_cat:
-                    embed = build_detail_embed(cmd_key, prefix=self.bot.custom_prefix)
+                    embed = build_detail_embed(cmd_key, prefix=self.bot.custom_prefix)  # type: ignore
                     view = DetailView(self.bot, ctx.author, target_cat)
                     view.message = await ctx.send(embed=embed, view=view)
                     return

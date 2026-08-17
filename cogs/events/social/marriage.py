@@ -311,7 +311,7 @@ class MarryConfirmView(discord.ui.View):
                 child.disabled = True
         try:
             if hasattr(self, "message") and getattr(self, "message", None):
-                await self.message.edit(view=self)
+                await self.message.edit(view=self)  # type: ignore
         except Exception:
             pass
 
@@ -356,7 +356,7 @@ class PetAdoptConfirmView(discord.ui.View):
                 child.disabled = True
         try:
             if hasattr(self, "message") and getattr(self, "message", None):
-                await self.message.edit(view=self)
+                await self.message.edit(view=self)  # type: ignore
         except Exception:
             pass
 
@@ -428,7 +428,7 @@ class DivorceConfirmView(discord.ui.View):
                 child.disabled = True
         try:
             if hasattr(self, "message") and getattr(self, "message", None):
-                await self.message.edit(view=self)
+                await self.message.edit(view=self)  # type: ignore
         except Exception:
             pass
 
@@ -597,7 +597,7 @@ class MarriageCog(commands.Cog):
         )
         if not isinstance(ctx.author, discord.Member):
             return await ctx.send("<:symbol_wrong:1536629915598848072> Lệnh này chỉ dùng trong server!")
-        view = MarryConfirmView(self.bot, ctx.author, target, ring_id)
+        view = MarryConfirmView(self.bot, ctx.author, target, ring_id)  # type: ignore
         await ctx.send(content=target.mention, embed=emb, view=view)
 
     @marry_cmd.error
@@ -1169,7 +1169,7 @@ class MarriageCog(commands.Cog):
     @tickle.error
     async def tickle_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument)):
-            await ctx.send(f"<:symbol_wrong:1536629915598848072> {ctx.author.mention} Tính tự kỷ hay gì mà xài hành động không tìm thấy ai? Nhớ tag tên hoặc reply tin nhắn của người ta nha! Xem chi tiết: `{ctx.prefix}ehelp {ctx.command.name}`")
+            await ctx.send(f"<:symbol_wrong:1536629915598848072> {ctx.author.mention} Tính tự kỷ hay gì mà xài hành động không tìm thấy ai? Nhớ tag tên hoặc reply tin nhắn của người ta nha! Xem chi tiết: `{ctx.prefix}ehelp {ctx.command.name}`")  # type: ignore
 
     @commands.command(aliases=["can"])
     async def bite(self, ctx, target: Optional[discord.Member] = None): await self.handle_action(ctx, target, "bite")

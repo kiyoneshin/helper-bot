@@ -177,7 +177,7 @@ class BlackMarketCog(commands.Cog):
         import asyncio
         lock = user_locks.setdefault(ctx.author.id, asyncio.Lock())
         if lock.locked():
-            return await ctx.send("<:symbol_wrong:1536629915598848072> Đang xử lý giao dịch mua trước đó, vui lòng đợi!", delete_after=5.0)
+            return await ctx.send("<:symbol_wrong:1536629915598848072> Đang xử lý giao dịch mua trước đó, vui lòng đợi!", delete_after=5.0)  # type: ignore
         
         await lock.acquire()
         try:

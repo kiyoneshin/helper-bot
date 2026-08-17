@@ -371,7 +371,7 @@ class LootboxCog(commands.Cog):
 
         if tier_raw:
             tier_id = parse_tier(tier_raw)  # type: ignore
-            rows = await self.bot.db_pool.fetch(
+            rows = await self.bot.db_pool.fetch(  # type: ignore
                 "SELECT drops, opened_at, count FROM lootbox_history "
                 "WHERE discord_id = $1 AND tier_id = $2 "
                 "ORDER BY opened_at DESC LIMIT 20",
@@ -383,11 +383,11 @@ class LootboxCog(commands.Cog):
                 if isinstance(drops, str):
                     drops = json.loads(drops)
                 records.append({"drops": drops, "opened_at": str(r["opened_at"]), "count": r["count"]})
-            embed = build_history_embed(ctx.author, tier_id, records)
+            embed = build_history_embed(ctx.author, tier_id, records)  # type: ignore
             await ctx.send(embed=embed)
         else:
             # Summary gộp
-            rows = await self.bot.db_pool.fetch(
+            rows = await self.bot.db_pool.fetch(  # type: ignore
                 "SELECT tier_id, COUNT(*) as sessions, SUM(count) as total "
                 "FROM lootbox_history WHERE discord_id = $1 GROUP BY tier_id",
                 uid,
@@ -411,7 +411,7 @@ class LootboxCog(commands.Cog):
             await ctx.send(embed=embed)
 
 
-async def setup(bot: commands.Bot):
+async def setup(bot: commands.Bot):  # type: ignore
     await bot.add_cog(LootboxCog(bot))
 
 async def setup(bot: commands.Bot):

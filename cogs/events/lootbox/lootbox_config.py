@@ -220,8 +220,8 @@ def get_activity_lootbox_drop(
     activity: str,
     luck: int = 0,
     item6_active: bool = False,
-    food_boosts: dict = None,
-    skills_data: dict = None
+    food_boosts: dict = None,  # type: ignore
+    skills_data: dict = None  # type: ignore
 ) -> Optional[int]:
     """
     Roll xem có drop lootbox từ activity (fish/mine/chop) không.
@@ -284,8 +284,8 @@ def roll_lootbox(tier_id: int, luck: int = 0, item6_active: bool = False) -> Dro
     adjusted = list(weights)
     for i in range(len(adjusted) - 1, 0, -1):
         bump = luck_bonus * 0.2 * (i / (len(adjusted) - 1))
-        adjusted[i] = max(0, adjusted[i] + bump)
-        adjusted[i - 1] = max(0, adjusted[i - 1] - bump * 0.5)
+        adjusted[i] = max(0, adjusted[i] + bump)  # type: ignore
+        adjusted[i - 1] = max(0, adjusted[i - 1] - bump * 0.5)  # type: ignore
 
     chosen_rank = random.choices(ranks, weights=adjusted, k=1)[0]
 

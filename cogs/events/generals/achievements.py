@@ -107,7 +107,7 @@ class ClaimButton(discord.ui.Button):
         
         # Mở kho đồ
         from cogs.events.idle_farm.farm_db import get_farm_data, save_farm_data
-        farm_data = await get_farm_data(interaction.client, uid)
+        farm_data = await get_farm_data(interaction.client, uid)  # type: ignore
         inventory = (farm_data or {}).setdefault("inventory", {})
         
         for ach_id, ach in ACHIEVEMENTS.items():
@@ -136,7 +136,7 @@ class ClaimButton(discord.ui.Button):
             "UPDATE event_profiles SET achievements = $1, unlocked_titles = $2 WHERE discord_id = $3",
             json.dumps(claimed), json.dumps(titles), uid
         )
-        await save_farm_data(interaction.client, uid, farm_data)
+        await save_farm_data(interaction.client, uid, farm_data)  # type: ignore
         
         msg = f"<:symbol_confetti:1537570146313306183> Chúc mừng bạn đã hoàn thành **{len(newly_claimed)}** thành tựu!\n\n" + "\n".join(reward_messages)
         
@@ -172,7 +172,7 @@ class AchView(discord.ui.View):
                 child.disabled = True
         try:
             if hasattr(self, "message") and getattr(self, "message", None):
-                await self.message.edit(view=self)
+                await self.message.edit(view=self)  # type: ignore
         except Exception:
             pass
 
@@ -313,15 +313,15 @@ class AchievementCog(commands.Cog):
             uid
         )
         
-        stats = json.loads(row["stats"]) if isinstance(row["stats"], str) else (row["stats"] or {})
-        claimed = json.loads(row["achievements"]) if isinstance(row["achievements"], str) else (row["achievements"] or [])
+        stats = json.loads(row["stats"]) if isinstance(row["stats"], str) else (row["stats"] or {})  # type: ignore
+        claimed = json.loads(row["achievements"]) if isinstance(row["achievements"], str) else (row["achievements"] or [])  # type: ignore
         
         embed = await build_ach_summary_embed(self.bot, ctx.author, stats, claimed)
         view = AchView(ctx.author, "summary", stats, claimed)
         await ctx.send(embed=embed, view=view)
         
     @commands.hybrid_command(name="title", aliases=["danhhieu"])
-    async def title_cmd(self, ctx: commands.Context, action: str = None, *, arg: str = None):
+    async def title_cmd(self, ctx: commands.Context, action: str = None, *, arg: str = None):  # type: ignore
         """Quản lý Danh Hiệu. Cú pháp: ktitle | ktitle use <tên>"""
         uid = str(ctx.author.id)
         await get_or_create_event_profile(self.bot, uid)
@@ -332,8 +332,8 @@ class AchievementCog(commands.Cog):
             uid
         )
         
-        current_title = row["title"] or "<:symbol_heart_breaking:1536296911655673936> Kẻ Lang Thang"
-        titles = json.loads(row["unlocked_titles"]) if isinstance(row["unlocked_titles"], str) else (row["unlocked_titles"] or [])
+        current_title = row["title"] or "<:symbol_heart_breaking:1536296911655673936> Kẻ Lang Thang"  # type: ignore
+        titles = json.loads(row["unlocked_titles"]) if isinstance(row["unlocked_titles"], str) else (row["unlocked_titles"] or [])  # type: ignore
         
         if "<:symbol_heart_breaking:1536296911655673936> Kẻ Lang Thang" not in titles:
             titles.insert(0, "<:symbol_heart_breaking:1536296911655673936> Kẻ Lang Thang")

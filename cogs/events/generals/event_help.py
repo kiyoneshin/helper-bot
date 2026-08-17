@@ -769,7 +769,7 @@ class _CategorySelect(discord.ui.Select):
 
     async def callback(self, interaction: discord.Interaction):
         cat_name = self.values[0]
-        embed = build_category_embed(cat_name, prefix=self.bot.custom_prefix)
+        embed = build_category_embed(cat_name, prefix=self.bot.custom_prefix)  # type: ignore
         view = CategoryView(self.bot, self.author, cat_name)
         view.message = self.view.message  # type: ignore
         await interaction.response.edit_message(embed=embed, view=view)
@@ -833,7 +833,7 @@ class _CommandSelect(discord.ui.Select):
 
     async def callback(self, interaction: discord.Interaction):
         cmd_key = self.values[0]
-        embed = build_detail_embed(cmd_key, prefix=str(self.bot.custom_prefix))
+        embed = build_detail_embed(cmd_key, prefix=str(self.bot.custom_prefix))  # type: ignore
         view = DetailView(self.bot, self.author, self.cat_name)
         view.message = self.view.message  # type: ignore
         await interaction.response.edit_message(embed=embed, view=view)
@@ -890,7 +890,7 @@ class _BackButton(discord.ui.Button):
 
     async def callback(self, interaction: discord.Interaction):
         view: DetailView = self.view  # type: ignore
-        embed = build_category_embed(view.cat_name, prefix=view.bot.custom_prefix)
+        embed = build_category_embed(view.cat_name, prefix=view.bot.custom_prefix)  # type: ignore
         new_view = CategoryView(view.bot, view.author, view.cat_name)
         new_view.message = view.message
         await interaction.response.edit_message(embed=embed, view=new_view)

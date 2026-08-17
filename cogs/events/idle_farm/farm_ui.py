@@ -11,7 +11,7 @@ from cogs.common.db import fetchval_db, deduct_event_points, add_event_points
 class FarmView(discord.ui.View):
     """View chính của Nông Trại chứa các nút tương tác."""
     
-    def __init__(self, bot: commands.Bot, user_id: str, author: discord.Member | discord.User, farm_data: Dict[str, Any], skills_data: dict = None):
+    def __init__(self, bot: commands.Bot, user_id: str, author: discord.Member | discord.User, farm_data: Dict[str, Any], skills_data: dict = None):  # type: ignore
         super().__init__(timeout=120.0)
         self.bot = bot
         self.user_id = user_id
@@ -98,7 +98,7 @@ class FarmView(discord.ui.View):
                 child.disabled = True
         try:
             if hasattr(self, "message") and getattr(self, "message", None):
-                await self.message.edit(view=self)
+                await self.message.edit(view=self)  # type: ignore
         except Exception:
             pass
 
@@ -137,12 +137,12 @@ class PickConfirmView(discord.ui.View):
                 child.disabled = True
         try:
             if hasattr(self, "message") and getattr(self, "message", None):
-                await self.message.edit(view=self)
+                await self.message.edit(view=self)  # type: ignore
         except Exception:
             pass
 
 
-def build_farm_embed(author: discord.Member | discord.User, farm_data: Dict[str, Any], skills_data: dict = None) -> discord.Embed:
+def build_farm_embed(author: discord.Member | discord.User, farm_data: Dict[str, Any], skills_data: dict = None) -> discord.Embed:  # type: ignore
     """
     Render giao diện text hiển thị trực quan các ô đất.
     Thay đổi icon cây trồng dựa theo tiến trình sinh trưởng.

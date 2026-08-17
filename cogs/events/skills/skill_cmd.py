@@ -205,10 +205,10 @@ class SkillOverviewView(discord.ui.View):
     async def on_timeout(self) -> None:
         for child in self.children:
             if hasattr(child, "disabled"):
-                child.disabled = True
-        if hasattr(self, "message") and self.message:
+                child.disabled = True  # type: ignore
+        if hasattr(self, "message") and self.message:  # type: ignore
             try:
-                await self.message.edit(view=self)
+                await self.message.edit(view=self)  # type: ignore
             except Exception:
                 pass
 
@@ -252,7 +252,7 @@ class ProfessionChoiceView(discord.ui.View):
     async def on_timeout(self) -> None:
         for child in self.children:
             if hasattr(child, "disabled"):
-                child.disabled = True
+                child.disabled = True  # type: ignore
         if hasattr(self, "message") and self.message:
             try:
                 await self.message.edit(view=self)
@@ -364,7 +364,7 @@ class SkillDetailView(discord.ui.View):
     async def on_timeout(self) -> None:
         for child in self.children:
             if hasattr(child, "disabled"):
-                child.disabled = True
+                child.disabled = True  # type: ignore
         if hasattr(self, "message") and self.message:
             try:
                 await self.message.edit(view=self)
@@ -386,7 +386,7 @@ class ResetConfirmView(discord.ui.View):
     async def on_timeout(self) -> None:
         for child in self.children:
             if hasattr(child, "disabled"):
-                child.disabled = True
+                child.disabled = True  # type: ignore
         if hasattr(self, "message") and self.message:
             try:
                 await self.message.edit(view=self)

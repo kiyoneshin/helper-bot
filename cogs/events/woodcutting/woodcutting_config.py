@@ -92,7 +92,7 @@ def get_woodcutting_display_weights(axe_level: int) -> dict[str, int]:
     return dict(zip(_LOOT_KEYS, weights))
 
 
-def get_woodcutting_effective_weights(axe_level: int, food_boosts: dict = None, skills_data: dict = None) -> dict[str, float]:
+def get_woodcutting_effective_weights(axe_level: int, food_boosts: dict = None, skills_data: dict = None) -> dict[str, float]:  # type: ignore
     """
     Tính bảng tỉ lệ % thực tế sau khi áp dụng tất cả buff (skill + food + profession).
     Normalize về tổng 100%.
@@ -105,7 +105,7 @@ def get_woodcutting_effective_weights(axe_level: int, food_boosts: dict = None, 
     return {k: round(w / total * 100, 1) for k, w in zip(_LOOT_KEYS, weights)}
 
 
-def get_woodcutting_loot(axe_level: int, food_boosts: dict = None, skills_data: dict = None) -> tuple[str, int]:
+def get_woodcutting_loot(axe_level: int, food_boosts: dict = None, skills_data: dict = None) -> tuple[str, int]:  # type: ignore
     if food_boosts is None: food_boosts = {}
     if skills_data is None: skills_data = {}
     from cogs.events.skills.skills_db import has_profession

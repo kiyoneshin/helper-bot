@@ -49,8 +49,8 @@ def build_fishing_embed(
     stamina: int,
     farm_data: Dict[str, Any] | None = None,
     regen_interval: int = 18,
-    boosts: dict = None,
-    skills_data: dict = None,
+    boosts: dict = None,  # type: ignore
+    skills_data: dict = None,  # type: ignore
 ) -> discord.Embed:
     """Giao diện Hồ Câu Cá, hiển thị thể lực, cấp cần câu, và các loài cá."""
     rod_level = (farm_data or {}).get("rod_level", 1)
@@ -154,10 +154,10 @@ class FishCatchView(discord.ui.View):
         self.caught = False
         for item in self.children:
             if hasattr(item, "disabled"):
-                item.disabled = True
-        if hasattr(self, "message") and self.message:
+                item.disabled = True  # type: ignore
+        if hasattr(self, "message") and self.message:  # type: ignore
             try:
-                await self.message.edit(view=self)
+                await self.message.edit(view=self)  # type: ignore
             except Exception:
                 pass
 
@@ -182,7 +182,7 @@ class FishingView(discord.ui.View):
     async def on_timeout(self) -> None:
         for child in self.children:
             if hasattr(child, "disabled"):
-                child.disabled = True
+                child.disabled = True  # type: ignore
         if hasattr(self, "message") and self.message:
             try:
                 await self.message.edit(view=self)
@@ -229,7 +229,7 @@ class FishingView(discord.ui.View):
 
         # Trapper profession: mở rộng cửa sổ Perfect Catch
         from .fishing_config import PERFECT_CATCH_THRESHOLD
-        effective_perfect_threshold = PERFECT_CATCH_THRESHOLD if not hasattr(self, '_perfect_threshold') else self._perfect_threshold
+        effective_perfect_threshold = PERFECT_CATCH_THRESHOLD if not hasattr(self, '_perfect_threshold') else self._perfect_threshold  # type: ignore
         extra_window = 0.0
         if has_profession(skills_data, "fishing", "trapper"):
             extra_window += 1.5

@@ -99,7 +99,7 @@ def get_mining_display_weights(pickaxe_level: int) -> dict[str, int]:
     return dict(zip(_LOOT_KEYS, weights))
 
 
-def get_mining_effective_weights(pickaxe_level: int, food_boosts: dict = None, skills_data: dict = None) -> dict[str, float]:
+def get_mining_effective_weights(pickaxe_level: int, food_boosts: dict = None, skills_data: dict = None) -> dict[str, float]:  # type: ignore
     """
     Tính bảng tỉ lệ % thực tế sau khi áp dụng tất cả buff (skill + food + profession).
     Normalize về tổng 100% để hiển thị chính xác trên UI.
@@ -112,7 +112,7 @@ def get_mining_effective_weights(pickaxe_level: int, food_boosts: dict = None, s
     return {k: round(w / total * 100, 1) for k, w in zip(_LOOT_KEYS, weights)}
 
 
-def get_mining_loot(pickaxe_level: int, food_boosts: dict = None, skills_data: dict = None) -> Tuple[str, int]:
+def get_mining_loot(pickaxe_level: int, food_boosts: dict = None, skills_data: dict = None) -> Tuple[str, int]:  # type: ignore
     """
     Random loot dựa theo cấp Cuốc + Skill Mining passive bonus.
     Trả về (item_id, số_lượng).

@@ -26,7 +26,7 @@ class GiftCodeCog(commands.Cog):
 
     @commands.command(name="code", aliases=["giftcode", "nhapcode"], help="Nhập mã quà tặng. Cú pháp: {prefix}code <code>")
     @check_not_locked()
-    async def code_cmd(self, ctx: commands.Context, *, code_str: str = None):
+    async def code_cmd(self, ctx: commands.Context, *, code_str: str = None):  # type: ignore
         if not code_str:
             await ctx.send(f"<:symbol_wrong:1536629915598848072> {ctx.author.mention} Vui lòng nhập mã code! Cú pháp: `{ctx.prefix}code <code>`")
             return
@@ -61,7 +61,7 @@ class GiftCodeCog(commands.Cog):
         # 3. Tính toán role bonus (Cộng dồn từ TẤT CẢ các role hợp lệ)
         # TODO: Người dùng chưa nghĩ ra role bonus cụ thể, nhưng cấu trúc đã có sẵn để họ thêm vào file JSON.
         role_bonus_data = code_info.get("role_bonus", {})
-        user_role_ids = [str(r.id) for r in ctx.author.roles]
+        user_role_ids = [str(r.id) for r in ctx.author.roles]  # type: ignore
         
         for role_id_str, bonus_rewards in role_bonus_data.items():
             if role_id_str in user_role_ids:
@@ -118,9 +118,9 @@ class GiftCodeCog(commands.Cog):
                 rewards_list.append(f"+ **{quantity}** Vật phẩm không xác định (ID: {item_id})")
 
         if rewards_list:
-            embed.description += "\n" + "\n".join(rewards_list)
+            embed.description += "\n" + "\n".join(rewards_list)  # type: ignore
         else:
-            embed.description += "\n*(Không có phần thưởng nào)*"
+            embed.description += "\n*(Không có phần thưởng nào)*"  # type: ignore
 
         embed.set_footer(text="Cảm ơn bạn đã tham gia sự kiện cùng Angelic!")
         await ctx.send(embed=embed)

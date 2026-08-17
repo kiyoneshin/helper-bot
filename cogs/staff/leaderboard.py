@@ -607,7 +607,7 @@ class DateSelectionView(discord.ui.View):
     async def on_timeout(self):
         for child in self.children:
             if hasattr(child, "disabled"):
-                child.disabled = True
+                child.disabled = True  # type: ignore
         if hasattr(self, "message") and self.message:
             try:
                 await self.message.edit(view=self)

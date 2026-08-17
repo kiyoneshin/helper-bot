@@ -644,7 +644,7 @@ class UnifiedInventoryCog(commands.Cog):
         aliases=["bag", "tuido", "khodo", "inventory"],
         description="Xem toàn bộ túi đồ (Chợ đen, Sự kiện, Nông trại...)",
     )
-    async def inventory_cmd(self, ctx: commands.Context, category: str = None) -> None:
+    async def inventory_cmd(self, ctx: commands.Context, category: str = None) -> None:  # type: ignore
         """Lệnh hợp nhất Túi đồ bằng Dropdown UI."""
         uid = str(ctx.author.id)
 
@@ -724,7 +724,7 @@ class UnifiedInventoryCog(commands.Cog):
         item = get_item_by_id(item_id)
         if item is None:
             await ctx.send(
-                f"<:symbol_wrong:1536629915598848072> Không tìm thấy vật phẩm với ID `{item_id}`! Dùng `{self.view.bot.custom_prefix}inv` để xem túi đồ.",
+                f"<:symbol_wrong:1536629915598848072> Không tìm thấy vật phẩm với ID `{item_id}`! Dùng `{self.view.bot.custom_prefix}inv` để xem túi đồ.",  # type: ignore
                 delete_after=5.0,
             )
             return

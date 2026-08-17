@@ -320,7 +320,7 @@ class RecipeSelectView(discord.ui.View):
                 child.disabled = True
         try:
             if hasattr(self, "message") and getattr(self, "message", None):
-                await self.message.edit(view=self)
+                await self.message.edit(view=self)  # type: ignore
         except Exception:
             pass
 
@@ -417,7 +417,7 @@ class DemolishSelectView(discord.ui.View):
                 child.disabled = True
         try:
             if hasattr(self, "message") and getattr(self, "message", None):
-                await self.message.edit(view=self)
+                await self.message.edit(view=self)  # type: ignore
         except Exception:
             pass
 
@@ -480,7 +480,7 @@ class DemolishConfirmView(discord.ui.View):
                 child.disabled = True
         try:
             if hasattr(self, "message") and getattr(self, "message", None):
-                await self.message.edit(view=self)
+                await self.message.edit(view=self)  # type: ignore
         except Exception:
             pass
 
@@ -626,7 +626,7 @@ class MachineView(discord.ui.View):
                     
             if not idle_slot_id:
                 return await interaction.response.send_message(
-                    f"<:symbol_wrong:1536629915598848072> Bạn không có cái {MACHINES[machine_id]['name']} nào đang trống! Vui lòng Thu Hoạch máy cũ hoặc xây thêm máy mới bằng lệnh `{self.bot.custom_prefix}craft`.", 
+                    f"<:symbol_wrong:1536629915598848072> Bạn không có cái {MACHINES[machine_id]['name']} nào đang trống! Vui lòng Thu Hoạch máy cũ hoặc xây thêm máy mới bằng lệnh `{self.bot.custom_prefix}craft`.",   # type: ignore
                     ephemeral=True
                 )
 
@@ -681,7 +681,7 @@ class MachineView(discord.ui.View):
                 child.disabled = True
         try:
             if hasattr(self, "message") and getattr(self, "message", None):
-                await self.message.edit(view=self)
+                await self.message.edit(view=self)  # type: ignore
         except Exception:
             pass
 

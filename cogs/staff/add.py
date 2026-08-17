@@ -178,7 +178,7 @@ class AddPhotoAfterRegisterView(discord.ui.View):
         except asyncio.TimeoutError:
             await interaction.followup.send(
                 "**Đã hết thời gian 60 giây!** Bạn chưa gửi ảnh nào. "
-                f"Hãy bấm nút **Thêm ảnh mới** để thử lại, hoặc dùng `{interaction.client.custom_prefix}set` để cập nhật ảnh sau.",
+                f"Hãy bấm nút **Thêm ảnh mới** để thử lại, hoặc dùng `{interaction.client.custom_prefix}set` để cập nhật ảnh sau.",  # type: ignore
                 ephemeral=True,
             )
             return
@@ -292,7 +292,7 @@ class AddPhotoAfterRegisterView(discord.ui.View):
 
         await interaction.followup.send(
             f"Đã thêm thành công **{len(new_photos)}** bức ảnh vào hồ sơ của bạn!\n"
-            f"Bạn có thể dùng `{interaction.client.custom_prefix}set` để quản lý thêm/xóa ảnh bất cứ lúc nào.",
+            f"Bạn có thể dùng `{interaction.client.custom_prefix}set` để quản lý thêm/xóa ảnh bất cứ lúc nào.",  # type: ignore
             ephemeral=True,
         )
 

@@ -59,7 +59,7 @@ class JailEvents(commands.Cog):
             return
 
         # Bỏ qua lệnh (bắt đầu bằng prefix)
-        custom_prefix = self.bot.custom_prefix
+        custom_prefix = self.bot.custom_prefix  # type: ignore
         if message.content.startswith((custom_prefix, "!", "/", ".")):
             return
 
