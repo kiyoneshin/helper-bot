@@ -59,6 +59,10 @@ class ArcaneLevelSync(commands.Cog):
         Tính toán và gán TẤT CẢ các role cấp độ mà user đủ điều kiện, nếu user chưa có.
         Gỡ bỏ các role cấp độ không đủ điều kiện (ví dụ: bị reset level).
         """
+        if member.guild.me and member.top_role >= member.guild.me.top_role:
+            log.info(f"Bỏ qua gán/gỡ role level cho {member.display_name} vì role của họ >= role của bot.")
+            return
+
         guild = member.guild
         roles_to_add = []
         roles_to_remove = []

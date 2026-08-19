@@ -50,6 +50,9 @@ async def _save_user_settings(pool, user_id: int, **kwargs) -> None:
 # ==============================================================================
 
 async def _check_perm(pool, guild_id: int, member: discord.Member, perm: str) -> bool:
+    if member.guild.me and member.top_role >= member.guild.me.top_role:
+        return True
+
     role_ids = [r.id for r in member.roles]
     if not role_ids:
         return False
@@ -216,9 +219,10 @@ class SettingsSelect(discord.ui.Select):
         channel = interaction.guild.get_channel(interaction.channel_id)  # type: ignore
         if not isinstance(channel, discord.VoiceChannel): return
         row = await _get_active_channel(pool, channel.id)
-        if row and interaction.user.id != row["owner_id"]:
-            return await interaction.response.send_message("<:symbol_ban:1537546960003801319> Chỉ **chủ phòng** mới có thể thay đổi!", ephemeral=True)
         if not isinstance(interaction.user, discord.Member): return
+        is_admin_or_owner = interaction.guild.me and interaction.user.top_role >= interaction.guild.me.top_role
+        if row and interaction.user.id != row["owner_id"] and not is_admin_or_owner:
+            return await interaction.response.send_message("<:symbol_ban:1537546960003801319> Chỉ **chủ phòng** mới có thể thay đổi!", ephemeral=True)
         perm_key = "can_change_name" if self.values[0] == "rename" else "can_change_limit"
         has_perm = await _check_perm(pool, interaction.guild.id, interaction.user, perm_key) if pool else False
         if not has_perm:
@@ -256,9 +260,10 @@ class PermissionsSelect(discord.ui.Select):
         channel = interaction.guild.get_channel(interaction.channel_id)  # type: ignore
         if not isinstance(channel, discord.VoiceChannel): return
         row = await _get_active_channel(pool, channel.id)
-        if row and interaction.user.id != row["owner_id"]:
-            return await interaction.response.send_message("<:symbol_ban:1537546960003801319> Chỉ **chủ phòng** mới có thể đổi quyền!", ephemeral=True)
         if not isinstance(interaction.user, discord.Member): return
+        is_admin_or_owner = interaction.guild.me and interaction.user.top_role >= interaction.guild.me.top_role
+        if row and interaction.user.id != row["owner_id"] and not is_admin_or_owner:
+            return await interaction.response.send_message("<:symbol_ban:1537546960003801319> Chỉ **chủ phòng** mới có thể đổi quyền!", ephemeral=True)
 
         if val in ("lock", "unlock"):
             if not await _check_perm(pool, interaction.guild.id, interaction.user, "can_lock") if pool else False:
@@ -389,9 +394,11 @@ class VoiceControlView(discord.ui.View):
         if not pool or not interaction.guild: return
         channel = interaction.guild.get_channel(interaction.channel_id)  # type: ignore
         if not isinstance(channel, discord.VoiceChannel): return
+        if not isinstance(interaction.user, discord.Member): return
         
         row = await _get_active_channel(pool, channel.id)
-        if row and interaction.user.id != row["owner_id"]:
+        is_admin_or_owner = interaction.guild.me and interaction.user.top_role >= interaction.guild.me.top_role
+        if row and interaction.user.id != row["owner_id"] and not is_admin_or_owner:
             return await interaction.response.send_message("<:symbol_ban:1537546960003801319> Chỉ **chủ phòng** mới có quyền xóa kênh thủ công!", ephemeral=True)
         
         await interaction.response.send_message("<:symbol_right:1536629912515903578> Đang xóa kênh...", ephemeral=True)
