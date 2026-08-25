@@ -71,6 +71,8 @@ async def _check_perm(pool, guild_id: int, member: discord.Member, perm: str) ->
             guild_id, role_ids
         )
         return bool(rows and rows[0][perm])
+    except asyncpg.exceptions.UndefinedColumnError:
+        return False
     except Exception as e:
         log.warning(f"VM _check_perm exception for {perm}: {e}")
         return False
@@ -229,9 +231,9 @@ class SettingsSelect(discord.ui.Select):
             return await interaction.response.send_message("<:symbol_ban:1537546960003801319> Role của bạn chưa có quyền này!", ephemeral=True)
         owner_id = row["owner_id"] if row else interaction.user.id
         if self.values[0] == "rename":
-            await interaction.response.send_modal(RenameModal(self.bot, owner_id))  # type: ignore
+            await interaction.response.send_modal(RenameModal(channel, self.bot, owner_id))  # type: ignore
         else:
-            await interaction.response.send_modal(LimitModal(self.bot, owner_id))  # type: ignore
+            await interaction.response.send_modal(LimitModal(channel, self.bot, owner_id))  # type: ignore
 
 
 class PermissionsSelect(discord.ui.Select):
@@ -288,10 +290,10 @@ class PermissionsSelect(discord.ui.Select):
             await interaction.response.send_message(msg, ephemeral=True)
 
         elif val in ("permit", "invite"):
-            await interaction.response.send_modal(PermitModal())  # type: ignore
+            await interaction.response.send_modal(PermitModal(channel))  # type: ignore
 
         elif val == "reject":
-            v = discord.ui.View(timeout=120.0); v.add_item(RejectSelect(channel.id))  # type: ignore
+            v = discord.ui.View(timeout=120.0); v.add_item(RejectSelect(channel))  # type: ignore
             await interaction.response.send_message("Chọn người cần đuổi:", view=v, ephemeral=True)
 
         elif val == "transfer":
@@ -299,7 +301,7 @@ class PermissionsSelect(discord.ui.Select):
                 return await interaction.response.send_message("<:symbol_ban:1537546960003801319> Chưa có quyền chuyển chủ phòng!", ephemeral=True)
             if await _check_perm(pool, interaction.guild.id, interaction.user, "is_persistent") if pool else False:
                 return await interaction.response.send_message("<:symbol_wrong:1536629915598848072> Kênh cá nhân (Level 50+) không thể chuyển nhượng!", ephemeral=True)
-            v = discord.ui.View(timeout=120.0); v.add_item(TransferSelect(channel.id, self.bot))  # type: ignore
+            v = discord.ui.View(timeout=120.0); v.add_item(TransferSelect(channel, self.bot))  # type: ignore
             await interaction.response.send_message("Chọn người nhận quyền chủ:", view=v, ephemeral=True)
 
 class VoiceControlView(discord.ui.View):
@@ -450,6 +452,7 @@ class VoiceManagerCog(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         self.jtc_cooldowns = {}
+        self.embed_cooldowns = {}
 
     async def cog_load(self):
         self.bot.add_view(VoiceControlView(self.bot))
@@ -554,6 +557,13 @@ class VoiceManagerCog(commands.Cog):
                 # Khi người dùng join 1 kênh không phải JTC (bao gồm cả kênh mới tạo xong bị move vào)
                 row = await _get_active_channel(self.pool, after.channel.id)
                 if row and row["owner_id"] == member.id:
+                    import time
+                    now = time.time()
+                    last_sent = self.embed_cooldowns.get(after.channel.id, 0)
+                    if now - last_sent < 5.0:
+                        return
+                    self.embed_cooldowns[after.channel.id] = now
+
                     # Chủ phòng vào kênh -> Gửi lại embed để khỏi phải lướt lên
                     try:
                         async for msg in after.channel.history(limit=20):
