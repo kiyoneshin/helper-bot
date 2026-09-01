@@ -273,6 +273,12 @@ class PermissionsSelect(discord.ui.Select):
             ow = channel.overwrites_for(interaction.guild.default_role)
             ow.connect = False if val == "lock" else None
             await channel.set_permissions(interaction.guild.default_role, overwrite=ow)
+            # Đảm bảo chủ phòng luôn có quyền vào/nhắn tin dù kênh bị khóa
+            owner_ow = channel.overwrites_for(interaction.user)
+            owner_ow.connect = True
+            owner_ow.view_channel = True
+            owner_ow.send_messages = True
+            await channel.set_permissions(interaction.user, overwrite=owner_ow)
             if pool:
                 await _save_user_settings(pool, interaction.user.id, is_locked=(val == "lock"))
             msg = "<:symbol_locked:1537566880066441296> Phòng đã **khóa**!" if val == "lock" else "<:symbol_unlocked:1537566882180366466> Phòng đã **mở khóa**!"
@@ -373,11 +379,14 @@ class VoiceControlView(discord.ui.View):
         has_move = await _check_perm(pool, interaction.guild.id, claimer, "move_members")
         has_status = await _check_perm(pool, interaction.guild.id, claimer, "set_status")
 
-        if has_priority or has_move:
-            claimer_ow = channel.overwrites_for(claimer)
-            if has_priority: claimer_ow.priority_speaker = True
-            if has_move: claimer_ow.move_members = True
-            await channel.set_permissions(claimer, overwrite=claimer_ow)
+        # Luôn đảm bảo chủ phòng mới có quyền cơ bản (đặc biệt quan trọng khi kênh đang bị khóa/ẩn)
+        claimer_ow = channel.overwrites_for(claimer)
+        claimer_ow.connect = True
+        claimer_ow.view_channel = True
+        claimer_ow.send_messages = True
+        if has_priority: claimer_ow.priority_speaker = True
+        if has_move: claimer_ow.move_members = True
+        await channel.set_permissions(claimer, overwrite=claimer_ow)
 
         await pool.execute("UPDATE active_voice_channels SET owner_id=$1 WHERE channel_id=$2",
                            claimer.id, channel.id)
@@ -535,11 +544,14 @@ class VoiceManagerCog(commands.Cog):
                     has_move = await _check_perm(self.pool, guild.id, member, "move_members")
                     has_status = await _check_perm(self.pool, guild.id, member, "set_status")
                     
-                    if has_priority or has_move:
-                        owner_ow = new_ch.overwrites_for(member)
-                        if has_priority: owner_ow.priority_speaker = True
-                        if has_move: owner_ow.move_members = True
-                        await new_ch.set_permissions(member, overwrite=owner_ow)
+                    # Luôn đảm bảo chủ phòng có quyền cơ bản (đặc biệt quan trọng khi kênh bị khóa/ẩn)
+                    owner_ow = new_ch.overwrites_for(member)
+                    owner_ow.connect = True
+                    owner_ow.view_channel = True
+                    owner_ow.send_messages = True
+                    if has_priority: owner_ow.priority_speaker = True
+                    if has_move: owner_ow.move_members = True
+                    await new_ch.set_permissions(member, overwrite=owner_ow)
 
                     await self.pool.execute("""
                         INSERT INTO active_voice_channels (channel_id, guild_id, owner_id)
