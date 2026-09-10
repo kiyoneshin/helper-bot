@@ -649,7 +649,8 @@ class VoiceManagerCog(commands.Cog):
             f"`{p}voicesetup init <#kênh_join> <#danh_mục>`\n"
             f"`{p}voicesetup role add <@Role> <lock> <hide> <limit> <name> [priority]`\n"
             f"`{p}voicesetup role view`\n"
-            f"`{p}voicesetup status`"
+            f"`{p}voicesetup status`\n"
+            f"`{p}voicesetup fix_owners` (Sửa lỗi mất quyền chủ phòng)"
         ))
         await ctx.send(embed=embed)
 
@@ -724,6 +725,37 @@ class VoiceManagerCog(commands.Cog):
         embed.add_field(name="Danh mục",       value=cat.mention if cat else "X", inline=True)
         embed.add_field(name="Phòng hoạt động",value=str(count or 0),             inline=True)
         await ctx.send(embed=embed)
+
+    @voicesetup.command(name="fix_owners")
+    @commands.has_permissions(administrator=True)
+    async def voicesetup_fix_owners(self, ctx: commands.Context):
+        if not ctx.guild: return
+        if not self.pool: return await ctx.send("Lỗi DB!")
+        
+        msg = await ctx.send("<a:loading:1537566880066441296> Đang duyệt qua tất cả các phòng hiện có để cấp lại toàn quyền cho chủ phòng...")
+        rows = await self.pool.fetch("SELECT * FROM active_voice_channels WHERE guild_id=$1", ctx.guild.id)
+        fixed_count = 0
+        for row in rows:
+            channel = ctx.guild.get_channel(row["channel_id"])
+            if isinstance(channel, discord.VoiceChannel):
+                owner = ctx.guild.get_member(row["owner_id"])
+                if owner:
+                    ow = channel.overwrites_for(owner)
+                    needs_update = False
+                    if ow.connect is not True or ow.view_channel is not True or ow.send_messages is not True:
+                        ow.connect = True
+                        ow.view_channel = True
+                        ow.send_messages = True
+                        needs_update = True
+                        
+                    if needs_update:
+                        try:
+                            await channel.set_permissions(owner, overwrite=ow)
+                            fixed_count += 1
+                        except Exception:
+                            pass
+                            
+        await msg.edit(content=f"<:symbol_right:1536629912515903578> Đã duyệt xong và cấp lại quyền cho chủ của **{fixed_count}** phòng bị lỗi!")
 
 
 async def setup(bot: commands.Bot) -> None:
