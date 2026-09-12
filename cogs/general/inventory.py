@@ -107,6 +107,78 @@ def _build_regular_embed(
     return embed
 
 
+def _build_seed_embed(
+    author: discord.Member | discord.User,
+    farm_data: dict,
+    prefix: str = 'k',
+) -> discord.Embed:
+    """
+    Xây dựng Embed tab "Hạt Giống" — dữ liệu được đọc từ farm_data.inventory
+    vì buy_seed() lưu seed vào bảng farm_profiles (không phải event_profiles).
+    """
+    from cogs.events.idle_farm.config import SEEDS
+    from cogs.common.item_config import ITEM_REGISTRY
+
+    embed = discord.Embed(
+        title="<:icon_04_seed:1536017185057546242> Hạt Giống",
+        color=0x2ecc71,
+    )
+    embed.set_author(
+        name=f"Túi Đồ của {author.display_name}",
+        icon_url=author.display_avatar.url,
+    )
+    embed.set_thumbnail(url=author.display_avatar.url)
+
+    inventory: dict = farm_data.get("inventory", {})
+
+    # Lọc chỉ lấy các key bắt đầu bằng "seed_" và có số lượng > 0
+    seed_items = [
+        (k, v)
+        for k, v in inventory.items()
+        if k.startswith("seed_") and v > 0
+    ]
+
+    if not seed_items:
+        embed.description = (
+            f"*Túi hạt giống đang trống. Hãy ghé `{prefix}shop` mục **Nông Trại** để mua hạt giống!*"
+        )
+    else:
+        # Xây dựng lookup: seed_key -> item registry entry
+        db_key_to_item = {
+            item["db_key"]: item
+            for item in ITEM_REGISTRY.values()
+            if item["category"] == "farm"
+        }
+
+        lines: list[str] = []
+        # Sắp xếp theo ID
+        def _sort_key(kv: tuple) -> int:
+            meta = db_key_to_item.get(kv[0])
+            return meta["id"] if meta else 9999
+
+        for db_key, qty in sorted(seed_items, key=_sort_key):
+            meta = db_key_to_item.get(db_key)
+            seed_type = db_key.removeprefix("seed_")
+            seed_cfg = SEEDS.get(seed_type)
+            if meta:
+                lines.append(
+                    f"`[{meta['id']}]` {meta['icon']} **{meta['name']}** (x{qty}) — {meta['description']}"
+                )
+            elif seed_cfg:
+                # Fallback nếu thiếu trong ITEM_REGISTRY
+                lines.append(
+                    f"{seed_cfg['icon']} **{seed_cfg['name']}** (x{qty}) — {seed_cfg['description']}"
+                )
+            else:
+                lines.append(f"• `{db_key}` × {qty}")
+
+        embed.description = "\n".join(lines)
+
+    embed.set_footer(text=f"💡 Dùng `{prefix}plant <ô_đất> <seed_type>` để trồng. Mua thêm tại `{prefix}shop`")
+    return embed
+
+
+
 def _build_farm_embed(
     author: discord.Member | discord.User,
     farm_data: dict,
@@ -471,14 +543,19 @@ class InventorySelect(discord.ui.Select):
             opt.default = (opt.value == selected)
 
         # Rebuild view buttons + embed theo tab được chọn
-        if selected in ("eco", "crop"):
+        if selected in ("eco", "crop", "farm"):
             if selected == "crop":
                 view._crop_page = 0
                 view.btn_prev.disabled = True
                 view.btn_next.disabled = False
             farm_data = await get_farm_data(view.bot, user_id)
-            embed = _build_farm_embed(interaction.user, farm_data, tab_type=selected, crop_page=getattr(view, "_crop_page", 0))
-            view._show_buttons_for_tab(selected)
+            if selected == "farm":
+                # Tab Hạt giống: đọc seeds từ farm_data (không phải event_profiles)
+                embed = _build_seed_embed(interaction.user, farm_data)
+                view._hide_farm_buttons()
+            else:
+                embed = _build_farm_embed(interaction.user, farm_data, tab_type=selected, crop_page=getattr(view, "_crop_page", 0))
+                view._show_buttons_for_tab(selected)
         else:
             row = await fetchrow_db(
                 view.bot,
@@ -683,6 +760,11 @@ class UnifiedInventoryCog(commands.Cog):
             from cogs.events.idle_farm.farm_db import get_farm_data
             farm_data = await get_farm_data(self.bot, uid)
             embed = _build_farm_embed(ctx.author, farm_data, tab_type=default_tab)
+        elif default_tab == "farm":
+            # Tab Hạt Giống: đọc từ farm_data.inventory (buy_seed lưu vào đó)
+            from cogs.events.idle_farm.farm_db import get_farm_data
+            farm_data = await get_farm_data(self.bot, uid)
+            embed = _build_seed_embed(ctx.author, farm_data)
         else:
             embed = _build_regular_embed(ctx.author, inv, default_tab)
             
