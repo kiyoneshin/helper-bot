@@ -7,7 +7,7 @@ Cơ chế:
     Tiền bị trừ NGAY LẬP TỨC khi đặt thành công.
   - Game loop: Hệ số tăng dần theo thời gian thực.
     Chỉ update Discord mỗi ~1.5s để chống rate-limit.
-  - Nổ: Crash point được tính ngay từ đầu (House Edge 5%).
+  - Nổ: Crash point được tính ngay từ đầu (House Edge 8%).
     Ai chưa chốt lời -> mất trắng (tiền đã trừ từ Lobby).
     """
 
@@ -76,19 +76,25 @@ def _parse_bet(raw: str, balance: int) -> tuple[Optional[int], Optional[str]]:
     return amount, None
 
 
-def _generate_market_path(house_edge: float = 0.05) -> list[float]:
+def _generate_market_path(house_edge: float = 0.08) -> list[float]:
+    """
+    Sinh đường bay của bóng.
+    House edge 8%: mỗi bước có 8% khả năng crash ngay lập tức.
+    Range nhân hệ số [0.55, 1.55] → mean = 1.05 (tăng nhẹ hơn, giảm nhiều hơn
+    so với range cũ [0.60, 1.70] mean=1.15).
+    """
     path = [1.00]
     while True:
-        change = random.uniform(0.60, 1.70)
+        change = random.uniform(0.55, 1.55)
         next_val = path[-1] * change
         path.append(next_val)
-        
+
         if random.random() < house_edge:
             break
-            
+
         if next_val <= 0.10:
             break
-            
+
     return path
 
 
@@ -329,7 +335,7 @@ def _build_lobby_embed(
             "Nhấn **<:symbol_money_bag:1537567538097954896> Đặt Cược** để tham gia nhảy dù.\n"
             "Tiền sẽ bị **trừ ngay** khi đặt mâm thành công.\n"
             "Bóng sẽ bay sau khi sảnh đóng — biết chốt lời đúng lúc thì sống, tham thì chết thảm!\n\n"
-            "**House Edge 5%** — Crash Point tính ngẫu nhiên bao minh bạch."
+            "**House Edge 8%** — Crash Point tính ngẫu nhiên bao minh bạch."
         ),
         color=COLOR_LOBBY,
     )

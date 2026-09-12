@@ -348,7 +348,7 @@ class BasicGames(commands.Cog):
 
     async def _exec_dice(self, ctx: commands.Context, bet: int, uid: str, balance: int):
         """Logic thực thi game dice."""
-        face = random.choices([1, 2, 3, 4, 5, 6, 7], weights=[16.75, 16.75, 16.75, 16.5, 16.5, 16.5, 0.25], k=1)[0]
+        face = random.choices([1, 2, 3, 4, 5, 6, 7], weights=[18.0, 18.0, 18.0, 15.5, 15.5, 14.75, 0.25], k=1)[0]
         # ... logic tính điểm ...
         PAYOUT = {
             1: (-1.00, "<:gambling_dice_1:1536019570849091706>", COLOR_LOSE,    "Mút trọn (Mất 100%)"),
@@ -433,7 +433,7 @@ class BasicGames(commands.Cog):
                 "Ổ đạn 6 buồng, chỉ có 1 viên đạn thật. Bóp cò là không có đường lui.\n\n"
                 "Sống sót càng lâu, húp càng đẫm. Dám chơi lớn không?\n\n"
                 "**Hệ số thưởng:**\n"
-                "Lần 1: x1.1\nLần 2: x1.3\nLần 3: x1.8\nLần 4: x2.7\nLần 5: x5\n\n"
+                "Lần 1: x1.1\nLần 2: x1.3\nLần 3: x1.65\nLần 4: x2.0\nLần 5: x2.4\n\n"
                 f"<:symbol_hour_glass:1537570149215899658> **Hành động trước:** <t:{end_time}:R>"
             ),
             color=0x2b2d31,
@@ -561,7 +561,7 @@ class RouletteView(discord.ui.View):
         self.survived_rounds = 0
         self.chamber = [True] + [False] * 5
         random.shuffle(self.chamber)
-        self.multipliers = {0: 1.0, 1: 1.1, 2: 1.3, 3: 1.8, 4: 2.7, 5: 5.0}
+        self.multipliers = {0: 1.0, 1: 1.1, 2: 1.3, 3: 1.65, 4: 2.0, 5: 2.4}
 
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
         if interaction.user.id != self.author.id:
