@@ -215,10 +215,16 @@ class RecipeSelect(discord.ui.Select):
 
         for recipe_id in machine["recipes"]:
             recipe = RECIPES[recipe_id]
-            can_craft = all(
-                inventory.get(k, 0) >= v
-                for k, v in recipe["ingredients"].items()
-            )
+            can_craft = True
+            for k, v in recipe["ingredients"].items():
+                qty = inventory.get(k, 0)
+                if k.endswith("_normal"):
+                    base = k.replace("_normal", "")
+                    qty += inventory.get(base, 0)
+                if qty < v:
+                    can_craft = False
+                    break
+
             output = ARTISAN_GOODS.get(recipe["output_id"], {})
             price = output.get("price", recipe["sell_price"])
             duration_str = _format_duration(recipe["duration_seconds"])
@@ -266,10 +272,13 @@ class RecipeSelect(discord.ui.Select):
                 "<:symbol_wrong:1536629915598848072> Máy này không còn trống nữa!", ephemeral=True
             )
 
-        # Kiểm tra nguyên liệu
+        # Kiểm tra nguyên liệu (hỗ trợ cả legacy và standard key)
         missing = []
         for item_id, qty_needed in recipe["ingredients"].items():
             qty_have = inventory.get(item_id, 0)
+            if item_id.endswith("_normal"):
+                base = item_id.replace("_normal", "")
+                qty_have += inventory.get(base, 0)
             if qty_have < qty_needed:
                 name = _get_item_display_name(item_id)
                 missing.append(f"{name} (cần {qty_needed}, có {qty_have})")
@@ -283,9 +292,23 @@ class RecipeSelect(discord.ui.Select):
 
         # Trừ nguyên liệu
         for item_id, qty_needed in recipe["ingredients"].items():
-            inventory[item_id] -= qty_needed
-            if inventory[item_id] <= 0:
-                del inventory[item_id]
+            if item_id.endswith("_normal"):
+                base = item_id.replace("_normal", "")
+                rem = qty_needed
+                for key_to_try in (item_id, base):
+                    avail = inventory.get(key_to_try, 0)
+                    deduct = min(avail, rem)
+                    if deduct > 0:
+                        inventory[key_to_try] -= deduct
+                        if inventory[key_to_try] <= 0:
+                            del inventory[key_to_try]
+                        rem -= deduct
+                    if rem <= 0:
+                        break
+            else:
+                inventory[item_id] -= qty_needed
+                if inventory[item_id] <= 0:
+                    del inventory[item_id]
 
         # Fetch skills_data
         from cogs.events.skills.skills_db import get_skills, get_skill_bonus
@@ -663,7 +686,9 @@ class MachineView(discord.ui.View):
         harvested_items = {}
         for slot_id, item in queue_list:
             if item.get("status") == "done":
-                output_id = item["output_id"]
+                output_id = item.get("output_id")
+                if not output_id:
+                    continue
                 output_qty = item.get("output_qty", 1)
                 inventory[output_id] = inventory.get(output_id, 0) + output_qty
                 
@@ -692,14 +717,19 @@ class MachineView(discord.ui.View):
         lines = []
         for out_id, qty in harvested_items.items():
             info = ARTISAN_GOODS.get(out_id, {})
-            lines.append(f"**{qty}x** {info.get('icon', '')} {info.get('name', out_id)}")
-        msg = "Thu hoạch thành công:\n" + "\n".join(lines)
+            lines.append(f"• **{qty}x** {info.get('icon', '')} **{info.get('name', out_id)}**")
+        prefix = getattr(self.bot, "custom_prefix", "k")
+        msg = (
+            "<:symbol_right:1536629912515903578> **Thu hoạch thành công:**\n"
+            + "\n".join(lines)
+            + f"\n\n*Thành phẩm đã được thêm vào kho nông trại! Dùng `{prefix}bag artisan` để xem.*"
+        )
 
         await interaction.response.send_message(msg, ephemeral=True)
 
-        # Cập nhật lại UI
-        embed = build_machine_embed(self.author, farm_data, page=self.page, per_page=self.per_page)
+        # Cập nhật lại UI: update buttons trước để clamp self.page chuẩn xác
         self._update_buttons(farm_data)
+        embed = build_machine_embed(self.author, farm_data, page=self.page, per_page=self.per_page)
         if interaction.message:
             await interaction.message.edit(embed=embed, view=self)
 

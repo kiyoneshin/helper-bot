@@ -291,7 +291,8 @@ def _build_farm_embed(
                 embed.description = f"**Trang {MAX_PAGES}/{MAX_PAGES} — Thủ Công Phẩm**\n*Trống.*"
                 
     else:
-        ore_items, wood_items, fish_items = [], [], []
+        ore_items, wood_items, fish_items, bar_items = [], [], [], []
+        total_bars_worth = 0
         for item_id, count in inventory.items():
             if count <= 0: continue
             
@@ -310,15 +311,24 @@ def _build_farm_embed(
                 price = fish.get("price", 0)
                 total_fish_worth += price * count
                 fish_items.append((item_id, count, fish.get("rare_rank", 0), price, fish))
+            elif item_id in ("copper_bar", "iron_bar", "gold_bar") and item_id in ARTISAN_GOODS:
+                bar = ARTISAN_GOODS[item_id]
+                price = bar.get("price", 0)
+                total_bars_worth += price * count
+                bar_items.append((item_id, count, price, bar))
                 
         ore_items.sort(key=lambda x: x[2])
         wood_items.sort(key=lambda x: x[2])
         fish_items.sort(key=lambda x: (x[2], x[3]))
+        bar_items.sort(key=lambda x: x[2])
         
         desc_parts = []
         if ore_items:
             lines = [f"• `[{i[0]}]` {i[3]['icon']} **{i[3]['name']}** (x{i[1]}) — {i[2]:,} <:symbol_points_p:1538282388507987989>/cái" for i in ore_items]
             desc_parts.append("**<:symbol_00_mining:1536007694920585356> Khoáng sản:**\n" + "\n".join(lines))
+        if bar_items:
+            lines = [f"• `[{i[0]}]` {i[3]['icon']} **{i[3]['name']}** (x{i[1]}) — {i[2]:,} <:symbol_points_p:1538282388507987989>/cái" for i in bar_items]
+            desc_parts.append("**<:machine_05_bronze_bar:1535647172840919143> Phôi Kim Loại (Lò Rèn):**\n" + "\n".join(lines))
         if wood_items:
             lines = [f"• `[{i[0]}]` {i[3]['icon']} **{i[3]['name']}** (x{i[1]}) — {i[2]:,} <:symbol_points_p:1538282388507987989>/cái" for i in wood_items]
             desc_parts.append("**<:symbol_00_woodcutting:1536007697491558491> Gỗ:**\n" + "\n".join(lines))
@@ -337,6 +347,8 @@ def _build_farm_embed(
     else:
         if total_ores_worth > 0:
             footer_parts.append(f"<:symbol_00_mining:1536007694920585356> {total_ores_worth:,} <:symbol_points_p:1538282388507987989>")
+        if total_bars_worth > 0:
+            footer_parts.append(f"<:machine_05_bronze_bar:1535647172840919143> {total_bars_worth:,} <:symbol_points_p:1538282388507987989>")
         if total_wood_worth > 0:
             footer_parts.append(f"<:symbol_00_woodcutting:1536007697491558491> {total_wood_worth:,} <:symbol_points_p:1538282388507987989>")
         if total_fish_worth > 0:
@@ -346,6 +358,66 @@ def _build_farm_embed(
         embed.add_field(name="<:symbol_money_2:1537567535229050970> Tổng Giá Trị Ước Tính", value=" | ".join(footer_parts), inline=False)
 
     embed.set_footer(text="💡 Dùng các nút bên dưới để bán vật phẩm.")
+    return embed
+
+
+def _build_artisan_embed(
+    author: discord.Member | discord.User,
+    farm_data: dict,
+) -> discord.Embed:
+    from cogs.events.idle_farm.machine_config import ARTISAN_GOODS
+
+    embed = discord.Embed(
+        title="<:icon_06_artisan:1536017189386059797> Thủ Công Phẩm — Túi Đồ Nông Trại",
+        color=0xe67e22,
+    )
+    embed.set_author(name=f"Túi Đồ của {author.display_name}", icon_url=author.display_avatar.url)
+    embed.set_thumbnail(url=author.display_avatar.url)
+
+    inventory = farm_data.get("inventory", {})
+    drinks, jams, bars = [], [], []
+    total_artisan_worth = 0
+
+    for item_id, count in inventory.items():
+        if count <= 0: continue
+        if item_id in ARTISAN_GOODS:
+            art = ARTISAN_GOODS[item_id]
+            price = art.get("price", 0)
+            total_artisan_worth += price * count
+            line = f"• `[{item_id}]` {art['icon']} **{art['name']}** (x{count}) — {price:,} <:symbol_points_p:1538282388507987989>/cái"
+            if item_id in ("beer", "wine_strawb", "spirit_star"):
+                drinks.append((price, line))
+            elif item_id in ("tomato_jam", "pumpkin_jam"):
+                jams.append((price, line))
+            elif item_id in ("copper_bar", "iron_bar", "gold_bar"):
+                bars.append((price, line))
+            else:
+                drinks.append((price, line))
+
+    desc_parts = []
+    if drinks:
+        drinks.sort(key=lambda x: x[0])
+        desc_parts.append("**<:machine_00_beer:1535647162590040164> Đồ Uống & Rượu (Thùng Ủ - Keg):**\n" + "\n".join(x[1] for x in drinks))
+    if jams:
+        jams.sort(key=lambda x: x[0])
+        desc_parts.append("**<:machine_03_tomato_jam:1535647168252088390> Mứt Nông Sản (Máy Làm Mứt - Jar):**\n" + "\n".join(x[1] for x in jams))
+    if bars:
+        bars.sort(key=lambda x: x[0])
+        desc_parts.append("**<:machine_05_bronze_bar:1535647172840919143> Phôi Kim Loại (Lò Rèn - Furnace):**\n" + "\n".join(x[1] for x in bars))
+
+    if desc_parts:
+        embed.description = "\n\n".join(desc_parts)
+    else:
+        embed.description = "*Chưa có thủ công phẩm nào trong kho.*\n*Dùng `kmachine` để chế biến nông sản và luyện quặng!*"
+
+    if total_artisan_worth > 0:
+        embed.add_field(
+            name="<:symbol_money_2:1537567535229050970> Tổng Giá Trị Ước Tính",
+            value=f"<:symbol_machine:1536297937498275850> **{total_artisan_worth:,}** <:symbol_points_p:1538282388507987989>",
+            inline=False
+        )
+
+    embed.set_footer(text="💡 Dùng nút bên dưới để bán vật phẩm hoặc kmachine để chế biến tiếp.")
     return embed
 
 
@@ -479,14 +551,21 @@ class InventorySelect(discord.ui.Select):
                 label="Nông sản",
                 value="crop",
                 emoji="<:icon_06_artisan:1536017189386059797>",
-                description="Cây đã thu hoạch & thủ công phẩm",
+                description="Cây đã thu hoạch & hoa màu",
                 default=(current == "crop"),
+            ),
+            discord.SelectOption(
+                label="Thủ công phẩm",
+                value="artisan",
+                emoji="<:symbol_machine:1536297937498275850>",
+                description="Bia, rượu, mứt & phôi kim loại",
+                default=(current == "artisan"),
             ),
             discord.SelectOption(
                 label="Hệ sinh thái",
                 value="eco",
                 emoji="<:icon_03_farm_field:1536017183216369815>",
-                description="Xem khoáng sản, gỗ, cá",
+                description="Xem khoáng sản, phôi kim loại, gỗ, cá",
                 default=(current == "eco"),
             ),
             discord.SelectOption(
@@ -543,7 +622,7 @@ class InventorySelect(discord.ui.Select):
             opt.default = (opt.value == selected)
 
         # Rebuild view buttons + embed theo tab được chọn
-        if selected in ("eco", "crop", "farm"):
+        if selected in ("eco", "crop", "farm", "artisan"):
             if selected == "crop":
                 view._crop_page = 0
                 view.btn_prev.disabled = True
@@ -553,6 +632,9 @@ class InventorySelect(discord.ui.Select):
                 # Tab Hạt giống: đọc seeds từ farm_data (không phải event_profiles)
                 embed = _build_seed_embed(interaction.user, farm_data)
                 view._hide_farm_buttons()
+            elif selected == "artisan":
+                embed = _build_artisan_embed(interaction.user, farm_data)
+                view._show_buttons_for_tab(selected)
             else:
                 embed = _build_farm_embed(interaction.user, farm_data, tab_type=selected, crop_page=getattr(view, "_crop_page", 0))
                 view._show_buttons_for_tab(selected)
@@ -591,13 +673,17 @@ class InventoryView(discord.ui.View):
         self.select_menu = InventorySelect(author, default_tab)
         self.add_item(self.select_menu)
 
-        # Khai báo sẵn 4 nút bán (ẩn khi không ở tab farm)
+        # Khai báo sẵn các nút bán (ẩn khi không ở tab farm/eco/artisan)
         self.btn_sell_item = discord.ui.Button(
             label="Bán theo Loại & Số lượng", emoji="<:icon_05_bm:1536017187243032736>",
             style=discord.ButtonStyle.primary, row=1,
         )
         self.btn_sell_crops = discord.ui.Button(
             label="Bán Tất Cả Nông Sản", emoji="<:symbol_plant:1536007706958237828>",
+            style=discord.ButtonStyle.success, row=2,
+        )
+        self.btn_sell_artisan = discord.ui.Button(
+            label="Bán Tất Cả Thủ Công Phẩm", emoji="<:icon_06_artisan:1536017189386059797>",
             style=discord.ButtonStyle.success, row=2,
         )
         self.btn_sell_ores = discord.ui.Button(
@@ -620,6 +706,10 @@ class InventoryView(discord.ui.View):
         async def cb_sell_crops(interaction: discord.Interaction):
             await self._on_sell_all(interaction, "crops", "Nông sản")
         self.btn_sell_crops.callback = cb_sell_crops
+
+        async def cb_sell_artisan(interaction: discord.Interaction):
+            await self._on_sell_all(interaction, "artisan", "Thủ công phẩm")
+        self.btn_sell_artisan.callback = cb_sell_artisan
         
         async def cb_sell_ores(interaction: discord.Interaction):
             await self._on_sell_all(interaction, "ores", "Khoáng sản")
@@ -638,7 +728,7 @@ class InventoryView(discord.ui.View):
         self._crop_page = 0
 
         # Mặc định tab không phải farm nên ẩn nút
-        if default_tab in ("eco", "crop"):
+        if default_tab in ("eco", "crop", "artisan"):
             self._show_buttons_for_tab(default_tab)
 
     def _show_buttons_for_tab(self, tab: str) -> None:
@@ -649,6 +739,9 @@ class InventoryView(discord.ui.View):
             self.add_item(self.btn_sell_item)
             self.add_item(self.btn_next)
             self.add_item(self.btn_sell_crops)
+        elif tab == "artisan":
+            self.add_item(self.btn_sell_item)
+            self.add_item(self.btn_sell_artisan)
         elif tab == "eco":
             self.add_item(self.btn_sell_item)
             self.add_item(self.btn_sell_ores)
@@ -731,6 +824,7 @@ class UnifiedInventoryCog(commands.Cog):
             "farm": "eco", "nongtrai": "eco",
             "crop": "crop", "nongsan": "crop",
             "seed": "farm", "hatgiong": "farm",
+            "artisan": "artisan", "thucong": "artisan", "chebien": "artisan", "tc": "artisan", "bar": "artisan", "phoi": "artisan", "may": "artisan",
             "bm": "blackmarket", "choden": "blackmarket", "blackmarket": "blackmarket",
             "ev": "event", "event": "event", "sukien": "event",
             "ring": "ring", "nhan": "ring",
@@ -760,6 +854,10 @@ class UnifiedInventoryCog(commands.Cog):
             from cogs.events.idle_farm.farm_db import get_farm_data
             farm_data = await get_farm_data(self.bot, uid)
             embed = _build_farm_embed(ctx.author, farm_data, tab_type=default_tab)
+        elif default_tab == "artisan":
+            from cogs.events.idle_farm.farm_db import get_farm_data
+            farm_data = await get_farm_data(self.bot, uid)
+            embed = _build_artisan_embed(ctx.author, farm_data)
         elif default_tab == "farm":
             # Tab Hạt Giống: đọc từ farm_data.inventory (buy_seed lưu vào đó)
             from cogs.events.idle_farm.farm_db import get_farm_data
@@ -769,7 +867,7 @@ class UnifiedInventoryCog(commands.Cog):
             embed = _build_regular_embed(ctx.author, inv, default_tab)
             
         view = InventoryView(self.bot, ctx.author, default_tab=default_tab)
-        if default_tab in ("eco", "crop"):
+        if default_tab in ("eco", "crop", "artisan"):
             view._show_buttons_for_tab(default_tab)
             
         view.message = await ctx.send(embed=embed, view=view)

@@ -173,8 +173,8 @@ class IdleFarmCog(commands.Cog):
 
     @commands.hybrid_command(name="craft", aliases=["chebien2", "bophuong"])
     @check_not_locked()
-    async def craft_cmd(self, ctx: commands.Context, machine_id_str: str, quantity: int = 1) -> discord.Message | None:
-        """ Chế tạo máy mới. VD: kcraft 101 2 (101 = Keg)"""
+    async def craft_cmd(self, ctx: commands.Context, machine_id_str: str = None, quantity: int = 1) -> discord.Message | None:
+        """ Chế tạo máy mới. VD: kcraft 101 2 hoặc kcraft keg 2 (101 = Keg)"""
         from .farm_db import get_farm_data, save_farm_data
         from .machine_config import MACHINE_BY_ID, MACHINES
         from .machine_ui import _get_queue_list, MAX_QUEUE_SLOTS, _get_item_display_name
@@ -182,21 +182,45 @@ class IdleFarmCog(commands.Cog):
 
         user_id = str(ctx.author.id)
 
-        try:
-            machine_numeric = int(machine_id_str)
-        except ValueError:
+        if not machine_id_str:
+            lines = []
+            for m_key, m_info in MACHINES.items():
+                m_id = m_info["id"]
+                m_icon = m_info["icon"]
+                m_name = m_info["name"]
+                ing_str = " + ".join(f"{_get_item_display_name(k)} x{v}" for k, v in m_info["ingredients"].items())
+                lines.append(f"• `{m_id}` / `{m_key}` — {m_icon} **{m_name}**:\n  Cần: {ing_str}")
+            embed = discord.Embed(
+                title="<:symbol_machine:1536297937498275850> Chế Tạo Máy Chế Biến",
+                description=f"Dùng lệnh `{ctx.prefix}craft <id_hoặc_tên_máy> [số_lượng]` để chế tạo.\n\n" + "\n\n".join(lines),
+                color=0xe67e22,
+            )
+            embed.set_footer(text=f"Ví dụ: {ctx.prefix}craft 101 2 hoặc {ctx.prefix}craft keg 2")
+            return await ctx.send(embed=embed)
+
+        machine_key = None
+        if machine_id_str.isdigit():
+            m_num = int(machine_id_str)
+            if m_num in MACHINE_BY_ID:
+                machine_key = MACHINE_BY_ID[m_num]
+        else:
+            s = machine_id_str.lower().strip()
+            name_map = {
+                "keg": "keg", "thung": "keg", "u": "keg", "ruou": "keg",
+                "jar": "jar", "mut": "jar", "lo": "jar", "hu": "jar",
+                "furnace": "furnace", "loren": "furnace", "ren": "furnace",
+            }
+            if s in name_map:
+                machine_key = name_map[s]
+            elif s in MACHINES:
+                machine_key = s
+
+        if not machine_key:
             return await ctx.send(
-                f"<:symbol_wrong:1536629915598848072> {ctx.author.mention} ID máy phải là số! (Ví dụ: Keg là `101`).\n"
-                f"*Dùng `{ctx.prefix}recipe` để xem ID của từng máy.*"
+                f"<:symbol_wrong:1536629915598848072> {ctx.author.mention} Không tìm thấy máy `{machine_id_str}`!\n"
+                f"*Dùng `{ctx.prefix}craft` để xem danh sách máy và nguyên liệu.*"
             )
 
-        if machine_numeric not in MACHINE_BY_ID:
-            return await ctx.send(
-                f"<:symbol_wrong:1536629915598848072> {ctx.author.mention} Không tìm thấy máy nào có ID `{machine_numeric}`!\n"
-                f"*Dùng `{ctx.prefix}recipe` để xem ID hợp lệ.*"
-            )
-
-        machine_key = MACHINE_BY_ID[machine_numeric]
         machine = MACHINES[machine_key]
 
         if quantity <= 0:

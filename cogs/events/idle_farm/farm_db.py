@@ -626,7 +626,9 @@ async def sell_inventory(bot: commands.Bot, user_id: str, category: str) -> int:
         is_crop = not (is_ore or is_fish or is_artisan or is_wood)
         
         should_sell = False
-        if category == "crops" and (is_crop or is_artisan):
+        if category == "crops" and is_crop:
+            should_sell = True
+        elif category == "artisan" and is_artisan:
             should_sell = True
         elif category == "ores" and is_ore:
             should_sell = True
