@@ -108,6 +108,8 @@ def _get_queue_list(farm_data: Dict[str, Any]) -> list:
 def build_machine_embed(
     author: discord.Member | discord.User,
     farm_data: Dict[str, Any],
+    page: int = 0,
+    per_page: int = 5,
 ) -> discord.Embed:
     queue_list = _get_queue_list(farm_data)
     num_active = len(queue_list)
@@ -129,9 +131,15 @@ def build_machine_embed(
         header += "\n*Dùng lệnh `kcraft <id>` để xây thêm máy vào các slot trống.*"
     embed.description = header
 
-    lines = []
     display_slots = max(MAX_QUEUE_SLOTS, len(queue_list))
-    for i in range(display_slots):
+    total_pages = max(1, (display_slots + per_page - 1) // per_page)
+    page = max(0, min(page, total_pages - 1))
+
+    start_idx = page * per_page
+    end_idx = min(start_idx + per_page, display_slots)
+
+    lines = []
+    for i in range(start_idx, end_idx):
         num = i + 1
         if i < len(queue_list):
             slot_id, item = queue_list[i]
@@ -156,24 +164,27 @@ def build_machine_embed(
                 
                 recipe_id = item.get("recipe_id", "")
                 recipe = RECIPES.get(recipe_id, {})
-                ingredients_str = _build_ingredient_summary(recipe.get("ingredients", {}))
                 
                 now = time.time()
                 finish_time = item.get("finish_time", 0)
                 remaining = int(finish_time - now) if finish_time > now else 0
-                lines.append(f"`{num:>2}.` {machine_icon} **{machine_name}**: {ingredients_str} → {output_display} | <:symbol_hour_glass:1537570149215899658> còn **{_format_duration(remaining)}**")
+                lines.append(f"`{num:>2}.` {machine_icon} **{machine_name}**: {output_display} | <:symbol_hour_glass:1537570149215899658> còn **{_format_duration(remaining)}**")
         else:
             lines.append(f"`{num:>2}.` ▫️ *trống*")
 
+    field_value = "\n".join(lines) if lines else "*Không có máy nào.*"
+    if len(field_value) > 1024:
+        field_value = field_value[:1021] + "..."
+
     embed.add_field(
-        name="<:symbol_boards:1536007665153474681> Danh Sách Máy (Slots)",
-        value="\n".join(lines),
+        name=f"<:symbol_boards:1536007665153474681> Danh Sách Máy (Trang {page + 1}/{total_pages} • Slot {start_idx + 1}-{end_idx})",
+        value=field_value,
         inline=False,
     )
 
     embed.set_thumbnail(url="https://cdn.discordapp.com/emojis/1535660945752326154.gif")
     embed.set_footer(
-        text="Dùng kbag để bán thành phẩm  |  kcraft <id_máy> để xây máy mới"
+        text=f"Trang {page + 1}/{total_pages}  •  kbag để bán thành phẩm  •  kcraft <id> để xây máy mới"
     )
     return embed
 
@@ -190,12 +201,14 @@ class RecipeSelect(discord.ui.Select):
         machine_id: str,
         farm_data: Dict[str, Any],
         author: discord.Member | discord.User,
+        parent_view: Any = None,
     ):
         self.bot = bot
         self.user_id = user_id
         self.slot_id = slot_id
         self.machine_id = machine_id
         self.author = author
+        self.parent_view = parent_view
 
         machine = MACHINES[machine_id]
         inventory = farm_data.get("inventory", {})
@@ -304,9 +317,19 @@ class RecipeSelect(discord.ui.Select):
             ephemeral=True,
         )
 
-        embed = build_machine_embed(self.author, farm_data)
-        if interaction.message:
-            await interaction.message.edit(embed=embed)
+        if self.parent_view and getattr(self.parent_view, "message", None):
+            try:
+                self.parent_view._update_buttons(farm_data)
+                embed_main = build_machine_embed(self.author, farm_data, page=self.parent_view.page)
+                await self.parent_view.message.edit(embed=embed_main, view=self.parent_view)
+            except Exception:
+                pass
+        elif interaction.message:
+            try:
+                embed = build_machine_embed(self.author, farm_data)
+                await interaction.message.edit(embed=embed)
+            except Exception:
+                pass
 
 class RecipeSelectView(discord.ui.View):
     def __init__(self, select_obj: discord.ui.Select):
@@ -336,10 +359,12 @@ class DemolishSelect(discord.ui.Select):
         user_id: str,
         farm_data: Dict[str, Any],
         author: discord.Member | discord.User,
+        parent_view: Any = None,
     ):
         self.bot = bot
         self.user_id = user_id
         self.author = author
+        self.parent_view = parent_view
         
         options = []
         queue_list = _get_queue_list(farm_data)
@@ -394,7 +419,7 @@ class DemolishSelect(discord.ui.Select):
         index = next((i for i, (s_id, _) in enumerate(queue_list) if s_id == slot_id), 0) + 1
         
         confirm_view = DemolishConfirmView(
-            self.bot, self.user_id, self.author, slot_id, machine_id, index
+            self.bot, self.user_id, self.author, slot_id, machine_id, index, parent_view=self.parent_view
         )
         
         await interaction.response.send_message(
@@ -430,7 +455,8 @@ class DemolishConfirmView(discord.ui.View):
         author: discord.Member | discord.User,
         slot_id: str,
         machine_id: str,
-        index: int
+        index: int,
+        parent_view: Any = None,
     ):
         super().__init__(timeout=120.0)
         self.bot = bot
@@ -439,6 +465,7 @@ class DemolishConfirmView(discord.ui.View):
         self.slot_id = slot_id
         self.machine_id = machine_id
         self.index = index
+        self.parent_view = parent_view
 
     @discord.ui.button(label="Đồng Ý Phá", style=discord.ButtonStyle.danger, emoji="<:symbol_demolish:1537466095412314192>")
     async def confirm_btn(self, interaction: discord.Interaction, button: discord.ui.Button):
@@ -473,6 +500,14 @@ class DemolishConfirmView(discord.ui.View):
         
         await interaction.response.edit_message(content=msg, view=None)
 
+        if self.parent_view and getattr(self.parent_view, "message", None):
+            try:
+                self.parent_view._update_buttons(farm_data)
+                embed_main = build_machine_embed(self.author, farm_data, page=self.parent_view.page)
+                await self.parent_view.message.edit(embed=embed_main, view=self.parent_view)
+            except Exception:
+                pass
+
 
     async def on_timeout(self) -> None:
         for child in getattr(self, "children", []):
@@ -496,16 +531,23 @@ class MachineView(discord.ui.View):
         user_id: str,
         farm_data: Dict[str, Any],
         author: discord.Member | discord.User,
+        page: int = 0,
     ):
         super().__init__(timeout=120.0)
         self.bot = bot
         self.user_id = user_id
         self.author = author
+        self.page = page
+        self.total_pages = 1
+        self.message: discord.Message | None = None
         self._update_buttons(farm_data)
 
     def _update_buttons(self, farm_data: Dict[str, Any]):
         self.clear_items()
         queue_list = _get_queue_list(farm_data)
+        display_slots = max(MAX_QUEUE_SLOTS, len(queue_list))
+        self.total_pages = max(1, (display_slots + 4) // 5)
+        self.page = max(0, min(self.page, self.total_pages - 1))
         
         # Check harvestable
         ready_count = sum(1 for _, item in queue_list if item.get("status") == "done")
@@ -520,7 +562,7 @@ class MachineView(discord.ui.View):
         btn_harvest.callback = self._harvest_callback
         self.add_item(btn_harvest)
 
-        # Nút cho các máy
+        # Nút cho các máy (Row 0)
         machine_styles = {
             "keg": (MACHINES["keg"]["icon"], "Keg", discord.ButtonStyle.primary),
             "jar": (MACHINES["jar"]["icon"], "Jar", discord.ButtonStyle.primary),
@@ -541,6 +583,36 @@ class MachineView(discord.ui.View):
             btn.callback = self._make_machine_callback(machine_id)
             self.add_item(btn)
             
+        # Row 1: Phân trang & Phá Dỡ
+        btn_prev = discord.ui.Button(
+            emoji="<:symbol_arrow_left:1538646235966349454>",
+            style=discord.ButtonStyle.secondary,
+            custom_id="btn_prev_page",
+            disabled=(self.page <= 0),
+            row=1,
+        )
+        btn_prev.callback = self._prev_page_callback
+        self.add_item(btn_prev)
+
+        btn_indicator = discord.ui.Button(
+            label=f"Trang {self.page + 1}/{self.total_pages}",
+            style=discord.ButtonStyle.secondary,
+            custom_id="btn_page_num",
+            disabled=True,
+            row=1,
+        )
+        self.add_item(btn_indicator)
+
+        btn_next = discord.ui.Button(
+            emoji="<:symbol_arrow_right:1538646237757186078>",
+            style=discord.ButtonStyle.secondary,
+            custom_id="btn_next_page",
+            disabled=(self.page >= self.total_pages - 1),
+            row=1,
+        )
+        btn_next.callback = self._next_page_callback
+        self.add_item(btn_next)
+
         # Nút Phá Dỡ
         btn_demolish = discord.ui.Button(
             label="Phá Dỡ Máy",
@@ -552,6 +624,30 @@ class MachineView(discord.ui.View):
         )
         btn_demolish.callback = self._demolish_callback
         self.add_item(btn_demolish)
+
+    async def _prev_page_callback(self, interaction: discord.Interaction):
+        if str(interaction.user.id) != self.user_id:
+            return await interaction.response.send_message(
+                "<:symbol_ban:1537546960003801319> Bạn không thể thao tác trên nông trại người khác!", ephemeral=True
+            )
+        if self.page > 0:
+            self.page -= 1
+        farm_data = await get_farm_data(self.bot, self.user_id)
+        embed = build_machine_embed(self.author, farm_data, page=self.page)
+        self._update_buttons(farm_data)
+        await interaction.response.edit_message(embed=embed, view=self)
+
+    async def _next_page_callback(self, interaction: discord.Interaction):
+        if str(interaction.user.id) != self.user_id:
+            return await interaction.response.send_message(
+                "<:symbol_ban:1537546960003801319> Bạn không thể thao tác trên nông trại người khác!", ephemeral=True
+            )
+        if self.page < self.total_pages - 1:
+            self.page += 1
+        farm_data = await get_farm_data(self.bot, self.user_id)
+        embed = build_machine_embed(self.author, farm_data, page=self.page)
+        self._update_buttons(farm_data)
+        await interaction.response.edit_message(embed=embed, view=self)
 
     async def _harvest_callback(self, interaction: discord.Interaction):
         if str(interaction.user.id) != self.user_id:
@@ -602,7 +698,7 @@ class MachineView(discord.ui.View):
         await interaction.response.send_message(msg, ephemeral=True)
 
         # Cập nhật lại UI
-        embed = build_machine_embed(self.author, farm_data)
+        embed = build_machine_embed(self.author, farm_data, page=self.page)
         self._update_buttons(farm_data)
         if interaction.message:
             await interaction.message.edit(embed=embed, view=self)
@@ -637,6 +733,7 @@ class MachineView(discord.ui.View):
                 machine_id=machine_id,
                 farm_data=farm_data,
                 author=self.author,
+                parent_view=self,
             )
             view = RecipeSelectView(select)
             await interaction.response.send_message(
@@ -666,6 +763,7 @@ class MachineView(discord.ui.View):
             user_id=self.user_id,
             farm_data=farm_data,
             author=self.author,
+            parent_view=self,
         )
         view = DemolishSelectView(select)
         await interaction.response.send_message(
@@ -689,6 +787,7 @@ class MachineView(discord.ui.View):
 async def send_machine_panel(ctx: commands.Context) -> None:
     user_id = str(ctx.author.id)
     farm_data = await get_farm_data(ctx.bot, user_id)
-    embed = build_machine_embed(ctx.author, farm_data)
     view = MachineView(ctx.bot, user_id, farm_data, ctx.author)
-    await ctx.send(embed=embed, view=view)
+    embed = build_machine_embed(ctx.author, farm_data, page=view.page)
+    msg = await ctx.send(embed=embed, view=view)
+    view.message = msg

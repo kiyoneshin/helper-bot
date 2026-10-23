@@ -166,9 +166,10 @@ class IdleFarmCog(commands.Cog):
         """Khu vực Chế biến Nông sản (Keg, Jar, Furnace)."""
         user_id = str(ctx.author.id)
         farm_data = await get_farm_data(self.bot, user_id)
-        embed = build_machine_embed(ctx.author, farm_data)
         view = MachineView(self.bot, user_id, farm_data, ctx.author)
-        await ctx.send(embed=embed, view=view)
+        embed = build_machine_embed(ctx.author, farm_data, page=view.page)
+        msg = await ctx.send(embed=embed, view=view)
+        view.message = msg
 
     @commands.hybrid_command(name="craft", aliases=["chebien2", "bophuong"])
     @check_not_locked()
