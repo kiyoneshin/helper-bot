@@ -151,7 +151,7 @@ MACHINES: Dict[str, MachineConfig] = {
         "description": "Biến nông sản thành đồ uống giá trị cao.",
         "db_key": "keg",
         "recipes": ["keg_beer", "keg_wine_strawb", "keg_spirit_star"],
-        "ingredients": {"wood_normal": 30, "copper_bar": 1, "iron_bar": 1}
+        "ingredients": {"wood": 30, "copper_bar": 1, "iron_bar": 1}
     },
     "jar": {
         "id": 102,
@@ -160,7 +160,7 @@ MACHINES: Dict[str, MachineConfig] = {
         "description": "Chế biến rau củ thành mứt thơm ngon.",
         "db_key": "jar",
         "recipes": ["jar_tomato_jam", "jar_pumpkin_jam"],
-        "ingredients": {"wood_normal": 30, "stone": 20, "coal": 2}
+        "ingredients": {"wood": 30, "stone": 20, "coal": 2}
     },
     "furnace": {
         "id": 103,

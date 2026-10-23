@@ -167,14 +167,14 @@ class IdleFarmCog(commands.Cog):
         user_id = str(ctx.author.id)
         farm_data = await get_farm_data(self.bot, user_id)
         view = MachineView(self.bot, user_id, farm_data, ctx.author)
-        embed = build_machine_embed(ctx.author, farm_data, page=view.page)
+        embed = build_machine_embed(ctx.author, farm_data, page=view.page, per_page=view.per_page)
         msg = await ctx.send(embed=embed, view=view)
         view.message = msg
 
     @commands.hybrid_command(name="craft", aliases=["chebien2", "bophuong"])
     @check_not_locked()
     async def craft_cmd(self, ctx: commands.Context, machine_id_str: str, quantity: int = 1) -> discord.Message | None:
-        """ Chế tạo máy mới. VD: kcraft 61 2 (61 = Keg)"""
+        """ Chế tạo máy mới. VD: kcraft 101 2 (101 = Keg)"""
         from .farm_db import get_farm_data, save_farm_data
         from .machine_config import MACHINE_BY_ID, MACHINES
         from .machine_ui import _get_queue_list, MAX_QUEUE_SLOTS, _get_item_display_name
@@ -186,7 +186,7 @@ class IdleFarmCog(commands.Cog):
             machine_numeric = int(machine_id_str)
         except ValueError:
             return await ctx.send(
-                f"<:symbol_wrong:1536629915598848072> {ctx.author.mention} ID máy phải là số! (Ví dụ: Keg là `61`).\n"
+                f"<:symbol_wrong:1536629915598848072> {ctx.author.mention} ID máy phải là số! (Ví dụ: Keg là `101`).\n"
                 f"*Dùng `{ctx.prefix}recipe` để xem ID của từng máy.*"
             )
 
@@ -225,7 +225,10 @@ class IdleFarmCog(commands.Cog):
         missing = []
         for item_id, qty_needed in machine["ingredients"].items():
             total_needed = qty_needed * quantity
-            qty_have = inventory.get(item_id, 0)
+            if item_id in ("wood", "wood_normal"):
+                qty_have = inventory.get("wood", 0) + inventory.get("wood_normal", 0)
+            else:
+                qty_have = inventory.get(item_id, 0)
             if qty_have < total_needed:
                 name = _get_item_display_name(item_id)
                 missing.append(f"{name} (thiếu {total_needed - qty_have}, có {qty_have}/{total_needed})")
@@ -240,9 +243,22 @@ class IdleFarmCog(commands.Cog):
         # Trừ nguyên liệu
         for item_id, qty_needed in machine["ingredients"].items():
             total_needed = qty_needed * quantity
-            inventory[item_id] -= total_needed
-            if inventory[item_id] <= 0:
-                del inventory[item_id]
+            if item_id in ("wood", "wood_normal"):
+                rem = total_needed
+                for w_key in ("wood_normal", "wood"):
+                    avail = inventory.get(w_key, 0)
+                    deduct = min(avail, rem)
+                    if deduct > 0:
+                        inventory[w_key] -= deduct
+                        if inventory[w_key] <= 0:
+                            del inventory[w_key]
+                        rem -= deduct
+                    if rem <= 0:
+                        break
+            else:
+                inventory[item_id] -= total_needed
+                if inventory[item_id] <= 0:
+                    del inventory[item_id]
 
         # Thêm vào slots (như là idle machines)
         import time

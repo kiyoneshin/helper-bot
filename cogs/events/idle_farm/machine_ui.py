@@ -39,6 +39,7 @@ def _get_item_display_name(item_id: str) -> str:
     from cogs.events.fishing.fishing_config import FISH_LOOT
     from cogs.events.idle_farm.config import SEEDS, QUALITY_EMOJIS
 
+    if item_id in ("wood", "wood_normal") and "wood" in WOODCUTTING_LOOT: return f"{WOODCUTTING_LOOT['wood']['icon']} {WOODCUTTING_LOOT['wood']['name']}"
     if item_id in MINING_LOOT: return f"{MINING_LOOT[item_id]['icon']} {MINING_LOOT[item_id]['name']}"
     if item_id in WOODCUTTING_LOOT: return f"{WOODCUTTING_LOOT[item_id]['icon']} {WOODCUTTING_LOOT[item_id]['name']}"
     if item_id in FISH_LOOT: return f"{FISH_LOOT[item_id]['icon']} {FISH_LOOT[item_id]['name']}"
@@ -109,7 +110,7 @@ def build_machine_embed(
     author: discord.Member | discord.User,
     farm_data: Dict[str, Any],
     page: int = 0,
-    per_page: int = 5,
+    per_page: int = 4,
 ) -> discord.Embed:
     queue_list = _get_queue_list(farm_data)
     num_active = len(queue_list)
@@ -126,10 +127,9 @@ def build_machine_embed(
         f"<:symbol_boards:1536007665153474681> Slot đang dùng: **{num_active}/{MAX_QUEUE_SLOTS}**"
     )
     if ready_count:
-        header += f"\n **{ready_count}** thành phẩm đang chờ thu hoạch! Nhấn nút **Thu Hoạch** nhé."
+        header += f"\n**{ready_count}** thành phẩm đang chờ thu hoạch! Nhấn nút **Thu Hoạch** nhé."
     else:
         header += "\n*Dùng lệnh `kcraft <id>` để xây thêm máy vào các slot trống.*"
-    embed.description = header
 
     display_slots = max(MAX_QUEUE_SLOTS, len(queue_list))
     total_pages = max(1, (display_slots + per_page - 1) // per_page)
@@ -150,41 +150,40 @@ def build_machine_embed(
             status = item.get("status", "idle")
             
             if status == "idle":
-                lines.append(f"`{num:>2}.` {machine_icon} **{machine_name}**: (Trống) | 🟢 Chờ nguyên liệu")
+                lines.append(f"`{num:>2}.` {machine_icon} **{machine_name}** • 🟢 *Chờ nguyên liệu*")
             elif status == "done":
                 output_id = item.get("output_id", "")
                 output_info = ARTISAN_GOODS.get(output_id, {})
-                output_display = f"{output_info.get('icon', '')} {output_info.get('name', output_id)}"
-                lines.append(f"`{num:>2}.` {machine_icon} **{machine_name}**: {output_display} | <:symbol_right:1536629912515903578> Xong!")
+                output_icon = output_info.get("icon", "")
+                output_name = output_info.get("name", output_id)
+                lines.append(f"`{num:>2}.` {machine_icon} {output_icon} **{output_name}** • ✅ *Xong!*")
             else:
                 # processing
                 output_id = item.get("output_id", "")
                 output_info = ARTISAN_GOODS.get(output_id, {})
-                output_display = f"{output_info.get('icon', '')} {output_info.get('name', output_id)}"
-                
-                recipe_id = item.get("recipe_id", "")
-                recipe = RECIPES.get(recipe_id, {})
+                output_icon = output_info.get("icon", "")
+                output_name = output_info.get("name", output_id)
                 
                 now = time.time()
                 finish_time = item.get("finish_time", 0)
                 remaining = int(finish_time - now) if finish_time > now else 0
-                lines.append(f"`{num:>2}.` {machine_icon} **{machine_name}**: {output_display} | <:symbol_hour_glass:1537570149215899658> còn **{_format_duration(remaining)}**")
+                lines.append(f"`{num:>2}.` {machine_icon} {output_icon} **{output_name}** • ⏳ **{_format_duration(remaining)}**")
         else:
-            lines.append(f"`{num:>2}.` ▫️ *trống*")
+            lines.append(f"`{num:>2}.` ▫️ *Ô trống*")
 
-    field_value = "\n".join(lines) if lines else "*Không có máy nào.*"
-    if len(field_value) > 1024:
-        field_value = field_value[:1021] + "..."
+    slots_text = "\n".join(lines) if lines else "*Không có máy nào.*"
 
-    embed.add_field(
-        name=f"<:symbol_boards:1536007665153474681> Danh Sách Máy (Trang {page + 1}/{total_pages} • Slot {start_idx + 1}-{end_idx})",
-        value=field_value,
-        inline=False,
+    desc_content = (
+        f"{header}\n\n"
+        f"<:symbol_boards:1536007665153474681> **Danh Sách Máy (Trang {page + 1}/{total_pages} • Slot {start_idx + 1} - {end_idx}):**\n"
+        f"{slots_text}"
     )
+    if len(desc_content) > 4000:
+        desc_content = desc_content[:3996] + "..."
+    embed.description = desc_content
 
-    embed.set_thumbnail(url="https://cdn.discordapp.com/emojis/1535660945752326154.gif")
     embed.set_footer(
-        text=f"Trang {page + 1}/{total_pages}  •  kbag để bán thành phẩm  •  kcraft <id> để xây máy mới"
+        text=f"Trang {page + 1}/{total_pages}  •  kbag để bán  •  kcraft <id> để xây máy mới"
     )
     return embed
 
@@ -320,7 +319,7 @@ class RecipeSelect(discord.ui.Select):
         if self.parent_view and getattr(self.parent_view, "message", None):
             try:
                 self.parent_view._update_buttons(farm_data)
-                embed_main = build_machine_embed(self.author, farm_data, page=self.parent_view.page)
+                embed_main = build_machine_embed(self.author, farm_data, page=self.parent_view.page, per_page=self.parent_view.per_page)
                 await self.parent_view.message.edit(embed=embed_main, view=self.parent_view)
             except Exception:
                 pass
@@ -503,7 +502,7 @@ class DemolishConfirmView(discord.ui.View):
         if self.parent_view and getattr(self.parent_view, "message", None):
             try:
                 self.parent_view._update_buttons(farm_data)
-                embed_main = build_machine_embed(self.author, farm_data, page=self.parent_view.page)
+                embed_main = build_machine_embed(self.author, farm_data, page=self.parent_view.page, per_page=self.parent_view.per_page)
                 await self.parent_view.message.edit(embed=embed_main, view=self.parent_view)
             except Exception:
                 pass
@@ -538,6 +537,7 @@ class MachineView(discord.ui.View):
         self.user_id = user_id
         self.author = author
         self.page = page
+        self.per_page = 4
         self.total_pages = 1
         self.message: discord.Message | None = None
         self._update_buttons(farm_data)
@@ -546,7 +546,7 @@ class MachineView(discord.ui.View):
         self.clear_items()
         queue_list = _get_queue_list(farm_data)
         display_slots = max(MAX_QUEUE_SLOTS, len(queue_list))
-        self.total_pages = max(1, (display_slots + 4) // 5)
+        self.total_pages = max(1, (display_slots + self.per_page - 1) // self.per_page)
         self.page = max(0, min(self.page, self.total_pages - 1))
         
         # Check harvestable
@@ -633,7 +633,7 @@ class MachineView(discord.ui.View):
         if self.page > 0:
             self.page -= 1
         farm_data = await get_farm_data(self.bot, self.user_id)
-        embed = build_machine_embed(self.author, farm_data, page=self.page)
+        embed = build_machine_embed(self.author, farm_data, page=self.page, per_page=self.per_page)
         self._update_buttons(farm_data)
         await interaction.response.edit_message(embed=embed, view=self)
 
@@ -645,7 +645,7 @@ class MachineView(discord.ui.View):
         if self.page < self.total_pages - 1:
             self.page += 1
         farm_data = await get_farm_data(self.bot, self.user_id)
-        embed = build_machine_embed(self.author, farm_data, page=self.page)
+        embed = build_machine_embed(self.author, farm_data, page=self.page, per_page=self.per_page)
         self._update_buttons(farm_data)
         await interaction.response.edit_message(embed=embed, view=self)
 
@@ -698,7 +698,7 @@ class MachineView(discord.ui.View):
         await interaction.response.send_message(msg, ephemeral=True)
 
         # Cập nhật lại UI
-        embed = build_machine_embed(self.author, farm_data, page=self.page)
+        embed = build_machine_embed(self.author, farm_data, page=self.page, per_page=self.per_page)
         self._update_buttons(farm_data)
         if interaction.message:
             await interaction.message.edit(embed=embed, view=self)
@@ -788,6 +788,6 @@ async def send_machine_panel(ctx: commands.Context) -> None:
     user_id = str(ctx.author.id)
     farm_data = await get_farm_data(ctx.bot, user_id)
     view = MachineView(ctx.bot, user_id, farm_data, ctx.author)
-    embed = build_machine_embed(ctx.author, farm_data, page=view.page)
+    embed = build_machine_embed(ctx.author, farm_data, page=view.page, per_page=view.per_page)
     msg = await ctx.send(embed=embed, view=view)
     view.message = msg
