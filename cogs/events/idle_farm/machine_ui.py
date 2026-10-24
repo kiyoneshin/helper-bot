@@ -110,7 +110,7 @@ def build_machine_embed(
     author: discord.Member | discord.User,
     farm_data: Dict[str, Any],
     page: int = 0,
-    per_page: int = 4,
+    per_page: int = 5,
 ) -> discord.Embed:
     queue_list = _get_queue_list(farm_data)
     num_active = len(queue_list)
@@ -122,68 +122,75 @@ def build_machine_embed(
     )
     embed.set_thumbnail(url="https://cdn.discordapp.com/emojis/1535660945752326154.gif")
 
-    header = (
-        f"**{author.display_name}** | "
-        f"<:symbol_boards:1536007665153474681> Slot đang dùng: **{num_active}/{MAX_QUEUE_SLOTS}**"
-    )
-    if ready_count:
-        header += f"\n**{ready_count}** thành phẩm đang chờ thu hoạch! Nhấn nút **Thu Hoạch** nhé."
+    header_parts = [
+        f"**{author.display_name}** | <:symbol_boards:1536007665153474681> Máy sở hữu: **{num_active}/{MAX_QUEUE_SLOTS}**"
+    ]
+    if ready_count > 0:
+        header_parts.append(f"<:symbol_right:1536629912515903578> **{ready_count}** máy đã hoàn thành! Nhấn nút **Thu Hoạch** để nhận.")
+    elif num_active < MAX_QUEUE_SLOTS:
+        header_parts.append(f"💡 Còn trống **{MAX_QUEUE_SLOTS - num_active}** slot máy. Dùng `kcraft` để chế tạo thêm.")
     else:
-        header += "\n*Dùng lệnh `kcraft <id>` để xây thêm máy vào các slot trống.*"
+        header_parts.append("💡 Đã đạt tối đa slot máy chế biến.")
 
-    display_slots = max(MAX_QUEUE_SLOTS, len(queue_list))
+    header = "\n".join(header_parts)
+
+    display_slots = max(1, num_active)
     total_pages = max(1, (display_slots + per_page - 1) // per_page)
     page = max(0, min(page, total_pages - 1))
 
     start_idx = page * per_page
-    end_idx = min(start_idx + per_page, display_slots)
+    end_idx = min(start_idx + per_page, num_active)
 
     lines = []
-    for i in range(start_idx, end_idx):
-        num = i + 1
-        if i < len(queue_list):
+    if num_active == 0:
+        lines.append("*Bạn chưa sở hữu máy chế biến nào!*\n*Dùng lệnh `kcraft` để chế tạo Thùng Ủ (Keg), Hũ Mứt (Jar), hoặc Lò Rèn (Furnace).*")
+    else:
+        now = time.time()
+        for i in range(start_idx, end_idx):
+            num = i + 1
             slot_id, item = queue_list[i]
             machine_id = item.get("machine_id", "")
             machine = MACHINES.get(machine_id, {})
             machine_icon = machine.get("icon", "<:symbol_machine:1536297937498275850>")
             machine_name = machine.get("name", machine_id)
             status = item.get("status", "idle")
-            
+
             if status == "idle":
-                lines.append(f"`{num:>2}.` {machine_icon} **{machine_name}** • 🟢 *Chờ nguyên liệu*")
+                lines.append(f"`{num:>2}.` {machine_icon} **{machine_name}** • 🟢 *Rảnh*")
             elif status == "done":
-                output_id = item.get("output_id", "")
+                output_id = item.get("output_id") or (RECIPES.get(item.get("recipe_id", {}), {}).get("output_id") if item.get("recipe_id") else "")
                 output_info = ARTISAN_GOODS.get(output_id, {})
                 output_icon = output_info.get("icon", "")
-                output_name = output_info.get("name", output_id)
-                lines.append(f"`{num:>2}.` {machine_icon} {output_icon} **{output_name}** • ✅ *Xong!*")
+                output_name = output_info.get("name", output_id or "Thành phẩm")
+                lines.append(f"`{num:>2}.` {machine_icon} ➔ {output_icon} **{output_name}** • ✅ **Xong!** *(Thu hoạch)*")
             else:
                 # processing
-                output_id = item.get("output_id", "")
+                output_id = item.get("output_id") or (RECIPES.get(item.get("recipe_id", {}), {}).get("output_id") if item.get("recipe_id") else "")
                 output_info = ARTISAN_GOODS.get(output_id, {})
                 output_icon = output_info.get("icon", "")
-                output_name = output_info.get("name", output_id)
-                
-                now = time.time()
-                finish_time = item.get("finish_time", 0)
+                output_name = output_info.get("name", output_id or "Đang nấu")
+
+                finish_time = item.get("finish_time") or 0
                 remaining = int(finish_time - now) if finish_time > now else 0
-                lines.append(f"`{num:>2}.` {machine_icon} {output_icon} **{output_name}** • ⏳ **{_format_duration(remaining)}**")
-        else:
-            lines.append(f"`{num:>2}.` ▫️ *Ô trống*")
+                lines.append(f"`{num:>2}.` {machine_icon} ➔ {output_icon} **{output_name}** • ⏳ **{_format_duration(remaining)}**")
 
-    slots_text = "\n".join(lines) if lines else "*Không có máy nào.*"
+    slots_text = "\n".join(lines)
 
-    desc_content = (
-        f"{header}\n\n"
-        f"<:symbol_boards:1536007665153474681> **Danh Sách Máy (Trang {page + 1}/{total_pages} • Slot {start_idx + 1} - {end_idx}):**\n"
-        f"{slots_text}"
-    )
+    if num_active > 0:
+        desc_content = (
+            f"{header}\n\n"
+            f"<:symbol_boards:1536007665153474681> **Danh Sách Máy (Trang {page + 1}/{total_pages} • Máy {start_idx + 1} - {end_idx}):**\n"
+            f"{slots_text}"
+        )
+    else:
+        desc_content = f"{header}\n\n{slots_text}"
+
     if len(desc_content) > 4000:
         desc_content = desc_content[:3996] + "..."
     embed.description = desc_content
 
     embed.set_footer(
-        text=f"Trang {page + 1}/{total_pages}  •  kbag để bán  •  kcraft <id> để xây máy mới"
+        text=f"Trang {page + 1}/{total_pages}  •  kbag artisan để xem kho  •  kcraft để xây máy"
     )
     return embed
 
@@ -228,9 +235,10 @@ class RecipeSelect(discord.ui.Select):
             output = ARTISAN_GOODS.get(recipe["output_id"], {})
             price = output.get("price", recipe["sell_price"])
             duration_str = _format_duration(recipe["duration_seconds"])
-            desc = f"{duration_str} → Bán {price:,} <:symbol_points_p:1538282388507987989>"
-            if not can_craft:
-                desc = "<:symbol_alert:1537546957885542450> Chưa đủ nguyên liệu"
+            if can_craft:
+                desc = f"{duration_str} • Bán {price:,} điểm"
+            else:
+                desc = "⚠️ Chưa đủ nguyên liệu"
 
             options.append(
                 discord.SelectOption(
@@ -560,7 +568,7 @@ class MachineView(discord.ui.View):
         self.user_id = user_id
         self.author = author
         self.page = page
-        self.per_page = 4
+        self.per_page = 5
         self.total_pages = 1
         self.message: discord.Message | None = None
         self._update_buttons(farm_data)
@@ -568,7 +576,7 @@ class MachineView(discord.ui.View):
     def _update_buttons(self, farm_data: Dict[str, Any]):
         self.clear_items()
         queue_list = _get_queue_list(farm_data)
-        display_slots = max(MAX_QUEUE_SLOTS, len(queue_list))
+        display_slots = max(1, len(queue_list))
         self.total_pages = max(1, (display_slots + self.per_page - 1) // self.per_page)
         self.page = max(0, min(self.page, self.total_pages - 1))
         
@@ -687,14 +695,18 @@ class MachineView(discord.ui.View):
         for slot_id, item in queue_list:
             if item.get("status") == "done":
                 output_id = item.get("output_id")
-                if not output_id:
-                    continue
-                output_qty = item.get("output_qty", 1)
-                inventory[output_id] = inventory.get(output_id, 0) + output_qty
-                
-                # Update harvest msg
-                harvested_items[output_id] = harvested_items.get(output_id, 0) + output_qty
-                
+                if not output_id and item.get("recipe_id"):
+                    rec = RECIPES.get(item["recipe_id"])
+                    if rec:
+                        output_id = rec.get("output_id")
+                        output_qty = rec.get("output_qty", 1)
+                else:
+                    output_qty = item.get("output_qty", 1)
+
+                if output_id:
+                    inventory[output_id] = inventory.get(output_id, 0) + output_qty
+                    harvested_items[output_id] = harvested_items.get(output_id, 0) + output_qty
+
                 # Reset slot to idle
                 item["status"] = "idle"
                 item.pop("recipe_id", None)
@@ -730,8 +742,13 @@ class MachineView(discord.ui.View):
         # Cập nhật lại UI: update buttons trước để clamp self.page chuẩn xác
         self._update_buttons(farm_data)
         embed = build_machine_embed(self.author, farm_data, page=self.page, per_page=self.per_page)
-        if interaction.message:
-            await interaction.message.edit(embed=embed, view=self)
+        try:
+            if interaction.message:
+                await interaction.message.edit(embed=embed, view=self)
+            elif self.message:
+                await self.message.edit(embed=embed, view=self)
+        except Exception:
+            pass
 
     def _make_machine_callback(self, machine_id: str):
         async def callback(interaction: discord.Interaction):

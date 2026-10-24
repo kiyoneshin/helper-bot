@@ -211,7 +211,7 @@ def _build_farm_embed(
         embed.set_footer(text="💡 Dùng các nút bên dưới để bán vật phẩm.")
         return embed
 
-    total_crops_worth = total_ores_worth = total_wood_worth = total_fish_worth = total_artisan_worth = 0
+    total_crops_worth = total_ores_worth = total_wood_worth = total_fish_worth = 0
 
     if tab_type == "crop":
         PAGE_SEEDS = [
@@ -222,73 +222,56 @@ def _build_farm_embed(
         ]
         
         crop_lines = []
-        artisan_lines = []
         
-        # Calculate total worth for footer and collect artisan lines
+        # Calculate total worth for crops only
         for item_id, count in inventory.items():
             if count <= 0: continue
-            
             if item_id.startswith("seed_"): continue # Skip seeds
             
             parts = item_id.split("_")
             quality = parts[-1] if len(parts) > 1 else "normal"
             seed_id = "_".join(parts[:-1]) if len(parts) > 1 else item_id
             
-            if item_id in ARTISAN_GOODS:
-                artisan = ARTISAN_GOODS[item_id]
-                price = artisan.get("price", 0)
-                total_artisan_worth += price * count
-                artisan_lines.append(
-                    f"• `[{item_id}]` {artisan['icon']} **{artisan['name']}** (x{count})"
-                    f" — {price:,} <:symbol_points_p:1538282388507987989>/cái"
-                )
-            elif seed_id in SEEDS:
+            if seed_id in SEEDS:
                 seed_info = SEEDS.get(seed_id)
                 if seed_info:
                     multiplier = QUALITY_MULTIPLIERS.get(quality, 1.0)
                     min_worth = int(seed_info.get("reward_min", 0) * multiplier)
                     total_crops_worth += min_worth * count
                     
-        # Render current page
-        MAX_PAGES = len(PAGE_SEEDS) + 1 # 4 crop pages + 1 artisan page
+        # Render current page (4 crop pages, no artisan page)
+        MAX_PAGES = len(PAGE_SEEDS)
         if crop_page < 0: crop_page = 0
         if crop_page >= MAX_PAGES: crop_page = MAX_PAGES - 1
         
-        if crop_page < len(PAGE_SEEDS):
-            seeds_to_show = PAGE_SEEDS[crop_page]
-            for seed_id in seeds_to_show:
-                seed_info = SEEDS.get(seed_id)
-                if not seed_info: continue
+        seeds_to_show = PAGE_SEEDS[crop_page]
+        for seed_id in seeds_to_show:
+            seed_info = SEEDS.get(seed_id)
+            if not seed_info: continue
+            
+            # Retrieve all qualities for this crop
+            for q in ["normal", "silver", "gold", "iridium"]:
+                item_id = f"{seed_id}_{q}"
+                count = inventory.get(item_id, 0)
                 
-                # Retrieve all qualities for this crop
-                for q in ["normal", "silver", "gold", "iridium"]:
-                    item_id = f"{seed_id}_{q}"
-                    count = inventory.get(item_id, 0)
-                    
-                    # Fallback for legacy items without _normal suffix
-                    if q == "normal" and count == 0:
-                        count = inventory.get(seed_id, 0)
-                        if count > 0:
-                            item_id = seed_id
-                            
+                # Fallback for legacy items without _normal suffix
+                if q == "normal" and count == 0:
+                    count = inventory.get(seed_id, 0)
                     if count > 0:
-                        emoji = QUALITY_EMOJIS.get(q, "")
-                        multiplier = QUALITY_MULTIPLIERS.get(q, 1.0)
-                        min_w = int(seed_info.get("reward_min", 0) * multiplier)
-                        max_w = int(seed_info.get("reward_max", 0) * multiplier)
-                        price_str = f"{min_w:,}" if min_w == max_w else f"{min_w:,} - {max_w:,}"
-                        crop_lines.append(f"• `[{item_id}]` {seed_info['icon']} **{seed_info['name']}** {emoji} (x{count}) — {price_str} <:symbol_points_p:1538282388507987989>/cái")
+                        item_id = seed_id
                         
-            if crop_lines:
-                embed.description = f"**Trang {crop_page + 1}/{MAX_PAGES}**\n" + "\n".join(crop_lines)
-            else:
-                embed.description = f"**Trang {crop_page + 1}/{MAX_PAGES}**\n*Không có nông sản nào ở trang này.*"
-                
-        else: # Artisan goods page
-            if artisan_lines:
-                embed.description = f"**Trang {MAX_PAGES}/{MAX_PAGES} — Thủ Công Phẩm**\n" + "\n".join(artisan_lines)
-            else:
-                embed.description = f"**Trang {MAX_PAGES}/{MAX_PAGES} — Thủ Công Phẩm**\n*Trống.*"
+                if count > 0:
+                    emoji = QUALITY_EMOJIS.get(q, "")
+                    multiplier = QUALITY_MULTIPLIERS.get(q, 1.0)
+                    min_w = int(seed_info.get("reward_min", 0) * multiplier)
+                    max_w = int(seed_info.get("reward_max", 0) * multiplier)
+                    price_str = f"{min_w:,}" if min_w == max_w else f"{min_w:,} - {max_w:,}"
+                    crop_lines.append(f"• `[{item_id}]` {seed_info['icon']} **{seed_info['name']}** {emoji} (x{count}) — {price_str} <:symbol_points_p:1538282388507987989>/cái")
+                    
+        if crop_lines:
+            embed.description = f"**Trang {crop_page + 1}/{MAX_PAGES}**\n" + "\n".join(crop_lines)
+        else:
+            embed.description = f"**Trang {crop_page + 1}/{MAX_PAGES}**\n*Không có nông sản nào ở trang này.*"
                 
     else:
         ore_items, wood_items, fish_items, bar_items = [], [], [], []
@@ -342,8 +325,6 @@ def _build_farm_embed(
     if tab_type == "crop":
         if total_crops_worth > 0:
             footer_parts.append(f"<:symbol_plant:1536007706958237828> {total_crops_worth:,} <:symbol_points_p:1538282388507987989>")
-        if total_artisan_worth > 0:
-            footer_parts.append(f"<:symbol_machine:1536297937498275850> {total_artisan_worth:,} <:symbol_points_p:1538282388507987989>")
     else:
         if total_ores_worth > 0:
             footer_parts.append(f"<:symbol_00_mining:1536007694920585356> {total_ores_worth:,} <:symbol_points_p:1538282388507987989>")
@@ -555,18 +536,18 @@ class InventorySelect(discord.ui.Select):
                 default=(current == "crop"),
             ),
             discord.SelectOption(
+                label="Hệ sinh thái",
+                value="eco",
+                emoji="<:icon_03_farm_field:1536017183216369815>",
+                description="Xem khoáng sản, gỗ, cá",
+                default=(current == "eco"),
+            ),
+            discord.SelectOption(
                 label="Thủ công phẩm",
                 value="artisan",
                 emoji="<:symbol_machine:1536297937498275850>",
                 description="Bia, rượu, mứt & phôi kim loại",
                 default=(current == "artisan"),
-            ),
-            discord.SelectOption(
-                label="Hệ sinh thái",
-                value="eco",
-                emoji="<:icon_03_farm_field:1536017183216369815>",
-                description="Xem khoáng sản, phôi kim loại, gỗ, cá",
-                default=(current == "eco"),
             ),
             discord.SelectOption(
                 label="Vật phẩm Chợ đen",
@@ -754,7 +735,7 @@ class InventoryView(discord.ui.View):
         await self._update_crop_view(interaction)
         
     async def _on_next(self, interaction: discord.Interaction) -> None:
-        self._crop_page = min(4, getattr(self, "_crop_page", 0) + 1)
+        self._crop_page = min(3, getattr(self, "_crop_page", 0) + 1)
         await self._update_crop_view(interaction)
         
     async def _update_crop_view(self, interaction: discord.Interaction) -> None:
@@ -763,7 +744,7 @@ class InventoryView(discord.ui.View):
         embed = _build_farm_embed(self.author, farm_data, tab_type="crop", crop_page=self._crop_page)
         
         self.btn_prev.disabled = (self._crop_page == 0)
-        self.btn_next.disabled = (self._crop_page == 4)
+        self.btn_next.disabled = (self._crop_page >= 3)
         
         await interaction.response.edit_message(embed=embed, view=self)
 
