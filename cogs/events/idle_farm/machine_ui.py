@@ -102,6 +102,37 @@ def _get_queue_list(farm_data: Dict[str, Any]) -> list:
     items.sort(key=lambda x: x[1].get("start_time", 0) if "start_time" in x[1] else float("inf"))
     return items
 
+def get_machine_page_slices(n: int) -> list[tuple[int, int]]:
+    """
+    Phân chia trang động theo số lượng máy hoạt động:
+    - n <= 2: 1 trang
+    - 3 <= n <= 5: 2 trang
+    - 6 <= n <= 8: 4 trang
+    - n > 8: 5 trang
+    """
+    if n <= 0:
+        return [(0, 0)]
+    if n <= 2:
+        total_pages = 1
+    elif n <= 5:
+        total_pages = 2
+    elif n <= 8:
+        total_pages = 4
+    else:
+        total_pages = 5
+
+    base = n // total_pages
+    remainder = n % total_pages
+    slices = []
+    curr = 0
+    for p in range(total_pages):
+        count = base + (1 if p < remainder else 0)
+        start = curr
+        end = curr + count
+        slices.append((start, end))
+        curr = end
+    return slices
+
 # ---------------------------------------------------------------------------
 # EMBED BUILDER
 # ---------------------------------------------------------------------------
@@ -110,7 +141,7 @@ def build_machine_embed(
     author: discord.Member | discord.User,
     farm_data: Dict[str, Any],
     page: int = 0,
-    per_page: int = 5,
+    per_page: int | None = None,
 ) -> discord.Embed:
     queue_list = _get_queue_list(farm_data)
     num_active = len(queue_list)
@@ -134,12 +165,10 @@ def build_machine_embed(
 
     header = "\n".join(header_parts)
 
-    display_slots = max(1, num_active)
-    total_pages = max(1, (display_slots + per_page - 1) // per_page)
+    slices = get_machine_page_slices(num_active)
+    total_pages = len(slices)
     page = max(0, min(page, total_pages - 1))
-
-    start_idx = page * per_page
-    end_idx = min(start_idx + per_page, num_active)
+    start_idx, end_idx = slices[page]
 
     lines = []
     if num_active == 0:
@@ -562,13 +591,14 @@ class MachineView(discord.ui.View):
         farm_data: Dict[str, Any],
         author: discord.Member | discord.User,
         page: int = 0,
+        per_page: int | None = None,
     ):
         super().__init__(timeout=120.0)
         self.bot = bot
         self.user_id = user_id
         self.author = author
         self.page = page
-        self.per_page = 5
+        self.per_page = per_page
         self.total_pages = 1
         self.message: discord.Message | None = None
         self._update_buttons(farm_data)
@@ -576,8 +606,9 @@ class MachineView(discord.ui.View):
     def _update_buttons(self, farm_data: Dict[str, Any]):
         self.clear_items()
         queue_list = _get_queue_list(farm_data)
-        display_slots = max(1, len(queue_list))
-        self.total_pages = max(1, (display_slots + self.per_page - 1) // self.per_page)
+        num_active = len(queue_list)
+        slices = get_machine_page_slices(num_active)
+        self.total_pages = len(slices)
         self.page = max(0, min(self.page, self.total_pages - 1))
         
         # Check harvestable
